@@ -1,0 +1,63 @@
+import { MathCode } from '@/components/lesson/MathCode';
+import { Callout } from '@/components/lesson/Callout';
+
+## Why can't position 3 attend to position 5?
+
+For next-token prediction, the model is given tokens $0, 1, \ldots, i$ and must predict token $i+1$. It is not allowed to peek at the answer. So when position $i$ computes its attention over earlier positions, the model must mask out everything at index $> i$.
+
+The mechanism is a lower-triangular mask applied to the score matrix *before* softmax: set $\text{scores}_{i,j} = -\infty$ for $j > i$. After softmax, those weights are zero. The post-softmax weight matrix is the strict lower triangle (with the diagonal) — every position attends only to itself and to the past.
+
+## The formula
+
+$$
+\mathbf{M}_{ij} = \begin{cases} 0 & \text{if } j \le i \\ -\infty & \text{if } j > i \end{cases}, \qquad
+\mathbf{W} = \operatorname{softmax}\!\left(\frac{Q K^\top}{\sqrt{d_k}} + \mathbf{M}\right)
+$$
+
+The mask is added to the (already-scaled) score matrix. $-\infty$ propagates through softmax as $\exp(-\infty) = 0$.
+
+<MathCode
+  math="\mathbf{M}_{ij} = \begin{cases} 0 & j \le i \\ -\infty & j > i \end{cases}, \quad \mathbf{W} = \operatorname{softmax}\!\left(\frac{QK^\top}{\sqrt{d_k}} + \mathbf{M}\right)"
+  code={`import numpy as np
+
+def causal_mask(n):
+    M = np.full((n, n), -np.inf)
+    return np.tril(M)  # lower triangle, including diagonal, is 0; rest is -inf
+
+scores = Q @ K.T / np.sqrt(d_k) + causal_mask(n)
+weights = np.exp(scores) / np.exp(scores).sum(axis=-1, keepdims=True)
+# weight[:, j > i] is now exactly zero`}
+  caption="Mask the upper triangle before softmax; the rest of the row sums to one."
+/>
+
+## Try it
+
+<Callout targetInteractive="causal-mask-explorer">
+  Start with the causal mask on. The post-softmax weight matrix is strictly lower-triangular — every row $i$ has zero weight for positions $> i$. Drag the sequence-length slider from $n = 3$ to $n = 8$ and watch the upper triangle stay pinned to zero.
+</Callout>
+
+<Callout targetInteractive="causal-mask-explorer">
+  Toggle the causal mask off. Now every row of the weight matrix can attend to every position. Position $0$ might give significant weight to position $5$, which it has no business seeing at training time. The mask is the only thing enforcing "predict the next token without cheating."
+</Callout>
+
+## Reading the result
+
+Two things to internalize.
+
+**The mask is a hard wall, not a soft suggestion.** Setting the score to $-\infty$ is binary: the post-softmax weight is *exactly* zero, not a small number. A soft penalty like $-10$ would also work (the post-softmax weight would be small but nonzero, leaking future information through the gradient). Causal masking is the difference between training a language model and training a language model that has memorized the answer.
+
+**The lower triangle is the only structure the model can use.** For position $i$, the available keys are $0, 1, \ldots, i$ — exactly $i+1$ of them. The model has to build its next-token prediction from those. If the attention pattern is well-trained, the row of weights for position $i$ concentrates mass on whichever past position is most relevant (the previous word, a syntactic head, a long-range referent).
+
+The cost of causal masking: every row of the score matrix throws away half of its information (the upper triangle). But this is what makes the model *generative* — capable of producing one token at a time without seeing the future. Bidirectional models (BERT-style) drop the mask and use both halves; they can only encode, not generate.
+
+## A second look
+
+A side-by-side: same scores, mask on vs mask off. The post-softmax weights are identical in the lower triangle; the upper triangle is the difference.
+
+<Callout targetInteractive="causal-mask-explorer">
+  Flip the toggle a few times. The lower triangle is the same in both views — the only thing that changes is the upper triangle, where "mask off" lets the model see the future. In a real model, the upper triangle is what makes the model a *bidirectional encoder*; masking it off is what makes it a *generative decoder*.
+</Callout>
+
+## Recap
+
+For next-token prediction, position $i$ must attend only to positions $\le i$. A lower-triangular mask of $-\infty$, added to the score matrix before softmax, makes the post-softmax weights exactly zero above the diagonal. The next lesson takes the attention block and runs it in parallel: instead of one attention computation, the model learns $h$ of them and concatenates the results.

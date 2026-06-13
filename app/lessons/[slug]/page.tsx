@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation';
 import { LessonShell } from '@/components/lesson/LessonShell';
 import { Workbench } from '@/components/lesson/Workbench';
+import { PrevNext } from '@/components/lesson/PrevNext';
 import { getLesson, listSlugs } from '@/lib/lessons';
 
 export function generateStaticParams() {
@@ -31,6 +32,7 @@ export default async function LessonPage({ params }: PageProps) {
         defaultActive={defaultActive}
         prose={<Lesson />}
       />
+      <PrevNext slug={slug} />
     </LessonShell>
   );
 }

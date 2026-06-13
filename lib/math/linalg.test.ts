@@ -5,6 +5,7 @@ import {
   dot,
   magnitude,
   matMul,
+  nearestNeighbors,
   normalize,
   projection,
   residual,
@@ -88,6 +89,25 @@ describe('cosTheta', () => {
   it('scaledDot throws on non-positive d_k', () => {
     expect(() => scaledDot([1], [1], 0)).toThrow();
     expect(() => scaledDot([1], [1], -1)).toThrow();
+  });
+
+  it('nearestNeighbors returns top-k indices by cosine similarity', () => {
+    const vectors = [
+      [1, 0],   // 0: same direction
+      [0.9, 0.1], // 1: nearly same
+      [0, 1],   // 2: orthogonal
+      [-1, 0],  // 3: opposite
+1,   // 4: same as 0
+    ];
+    const top2 = nearestNeighbors([1, 0], vectors, 2);
+    expect(top2).toContain(0);
+    expect(top2).toContain(1);
+    expect(top2).not.toContain(3); // opposite direction
+  });
+
+  it('nearestNeighbors returns empty array for empty input', () => {
+    expect(nearestNeighbors([1, 0], [], 3)).toEqual([]);
+    expect(nearestNeighbors([1, 0], [[1, 0]], 0)).toEqual([]);
   });
 
   it('returns 1 for identical direction', () => {

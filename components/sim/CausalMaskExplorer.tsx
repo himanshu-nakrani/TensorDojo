@@ -1,0 +1,154 @@
+'use client';
+
+import { useMemo, useState } from 'react';
+import clsx from 'clsx';
+import { Heatmap } from '@/components/sim/primitives/Heatmap';
+import { causalMask, applyMask, NEG_INF } from '@/lib/math/mask';
+import { softmaxRows } from '@/lib/math/softmax';
+
+export interface CausalMaskExplorerPreset {
+  n?: number;
+  scores?: number[][];
+}
+
+/**
+ * A small (n×n) score matrix with a causal-mask toggle. The
+ * centerpiece shows what causal masking does to the post-softmax
+ * weights: the upper triangle goes to zero.
+ */
+export function CausalMaskExplorer({ preset }: { preset?: CausalMaskExplorerPreset }) {
+  const [n, setN] = useState(preset?.n ?? 6);
+  const [maskOn, setMaskOn] = useState(true);
+
+  // Default scores: a small block where later positions have larger
+  // scores — so the "without mask" view has the bottom row dominating
+  // everything.
+  const scores = useMemo(() => {
+    if (preset?.scores) return preset.scores;
+    return Array.from({ length: n }, (_, i) =>
+      Array.from({ length: n }, (_, j) => {
+        // Score grows with both i and j, with a small offset for visual interest.
+        return (i + j) * 0.5 + Math.sin(i * j) * 0.4;
+      }),
+    );
+  }, [preset, n]);
+
+  const mask = useMemo(() => causalMask(n), [n]);
+  const maskedScores = useMemo(
+    () => (maskOn ? applyMask(scores, mask) : scores),
+    [scores, mask, maskOn],
+  );
+  const weights = useMemo(() => softmaxRows(maskedScores), [maskedScores]);
+
+  return (
+    <div className="rounded-xl border border-border bg-surface p-6 sm:p-8 shadow-[0_1px_0_rgba(255,255,255,0.02)_inset]">
+      <div className="flex items-baseline justify-between mb-5">
+        <h3 className="text-[11px] uppercase tracking-[0.18em] text-dim font-mono">
+          Causal mask
+        </h3>
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={() => setMaskOn((s) => !s)}
+            className={clsx(
+              'text-[10px] uppercase tracking-[0.18em] font-mono px-2 py-0.5 rounded border transition-colors',
+              maskOn
+                ? 'border-accent text-accent'
+                : 'border-border text-muted hover:text-ink',
+            )}
+            aria-pressed={maskOn}
+          >
+            Causal mask: {maskOn ? 'on' : 'off'}
+          </button>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <div className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono mb-2">
+            Scores
+          </div>
+          <div className="relative">
+            <Heatmap
+              values={maskedScores}
+              colormap="diverging"
+              precision={2}
+              cellSize={56}
+              ariaLabel="Causal-masked score matrix"
+            />
+            {/* Overlay: dim the upper triangle cells */}
+            {maskOn && (
+              <svg
+                viewBox={`0 0 ${24 + n * 56} ${n * 56}`}
+                className="absolute inset-0 pointer-events-none"
+                preserveAspectRatio="xMidYMid meet"
+              >
+                {Array.from({ length: n }, (_, i) =>
+                  Array.from({ length: n }, (_, j) => {
+                    if (j <= i) return null;
+                    return (
+                      <g key={`${i}-${j}`}>
+                        <line
+                          x1={24 + j * 56 + 14}
+                          y1={i * 56 + 14}
+                          x2={24 + j * 56 + 42}
+                          y2={i * 56 + 42}
+                          stroke="#71717A"
+                          strokeWidth={2}
+                          vectorEffect="non-scaling-stroke"
+                        />
+                        <line
+                          x1={24 + j * 56 + 42}
+                          y1={i * 56 + 14}
+                          x2={24 + j * 56 + 14}
+                          y2={i * 56 + 42}
+                          stroke="#71717A"
+                          strokeWidth={2}
+                          vectorEffect="non-scaling-stroke"
+                        />
+                      </g>
+                    );
+                  }),
+                )}
+              </svg>
+            )}
+          </div>
+        </div>
+
+        <div>
+          <div className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono mb-2">
+            Weights (post-softmax)
+          </div>
+          <Heatmap
+            values={weights}
+            colormap="accent"
+            precision={2}
+            cellSize={56}
+            ariaLabel="Post-softmax attention weights"
+          />
+          <div className="text-[10px] text-dim font-mono mt-1">
+            Each row sums to 1.00; the upper triangle {maskOn ? 'is zero' : 'is not'}.
+          </div>
+        </div>
+      </div>
+
+      <div className="mt-4 flex items-baseline gap-3 font-mono text-[12px]">
+        <span className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono">
+          Sequence length
+        </span>
+        <input
+          type="range"
+          min={3}
+          max={8}
+          step={1}
+          value={n}
+          onChange={(e) => setN(parseInt(e.target.value, 10))}
+          className="slider flex-1 min-w-0"
+          style={{ ['--fill' as string]: `${((n - 3) / 5) * 100}%` }}
+          aria-label="Sequence length"
+        />
+        <span className="text-ink tabular-nums w-6 text-right">{n}</span>
+      </div>
+    </div>
+  );
+}

@@ -13,6 +13,16 @@ import { meta as attentionScoresMeta } from '@/content/lessons/attention-scores/
 import { interactives as attentionScoresInteractives } from '@/content/lessons/attention-scores/interactives';
 import { meta as scaledAttentionMeta } from '@/content/lessons/scaled-attention/meta';
 import { interactives as scaledAttentionInteractives } from '@/content/lessons/scaled-attention/interactives';
+import { meta as tokenEmbeddingsMeta } from '@/content/lessons/token-embeddings/meta';
+import { interactives as tokenEmbeddingsInteractives } from '@/content/lessons/token-embeddings/interactives';
+import { meta as positionalEncodingMeta } from '@/content/lessons/positional-encoding/meta';
+import { interactives as positionalEncodingInteractives } from '@/content/lessons/positional-encoding/interactives';
+import { meta as causalMaskMeta } from '@/content/lessons/causal-mask/meta';
+import { interactives as causalMaskInteractives } from '@/content/lessons/causal-mask/interactives';
+import { meta as multiHeadAttentionMeta } from '@/content/lessons/multi-head-attention/meta';
+import { interactives as multiHeadAttentionInteractives } from '@/content/lessons/multi-head-attention/interactives';
+import { meta as residualsLayernormMeta } from '@/content/lessons/residuals-layernorm/meta';
+import { interactives as residualsLayernormInteractives } from '@/content/lessons/residuals-layernorm/interactives';
 import type { InteractiveEntry } from '@/components/lesson/Workbench';
 
 export interface LessonManifestEntry {
@@ -46,6 +56,26 @@ const manifest: readonly LessonManifestEntry[] = [
   {
     meta: scaledAttentionMeta,
     interactives: scaledAttentionInteractives,
+  },
+  {
+    meta: tokenEmbeddingsMeta,
+    interactives: tokenEmbeddingsInteractives,
+  },
+  {
+    meta: positionalEncodingMeta,
+    interactives: positionalEncodingInteractives,
+  },
+  {
+    meta: causalMaskMeta,
+    interactives: causalMaskInteractives,
+  },
+  {
+    meta: multiHeadAttentionMeta,
+    interactives: multiHeadAttentionInteractives,
+  },
+  {
+    meta: residualsLayernormMeta,
+    interactives: residualsLayernormInteractives,
   },
 ];
 

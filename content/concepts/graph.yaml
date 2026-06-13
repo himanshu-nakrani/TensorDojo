@@ -20,6 +20,18 @@ nodes:
     title: Temperature
   - id: scaled-dot-product
     title: Scaled dot product
+  - id: token-embedding
+    title: Token embedding
+  - id: positional-encoding
+    title: Positional encoding
+  - id: causal-mask
+    title: Causal mask
+  - id: multi-head
+    title: Multi-head attention
+  - id: residual
+    title: Residual connection
+  - id: layer-norm
+    title: Layer normalization
 
   # Lesson concept nodes
   - id: dot-product-concept
@@ -37,6 +49,21 @@ nodes:
   - id: scaled-attention-concept
     title: "Why we scale attention by √d_k"
     lesson: scaled-attention
+  - id: token-embeddings-concept
+    title: "Token embeddings: from ids to vectors"
+    lesson: token-embeddings
+  - id: positional-encoding-concept
+    title: "Positional encoding: giving order to a bag"
+    lesson: positional-encoding
+  - id: causal-mask-concept
+    title: "Causal masking: don't peek at the future"
+    lesson: causal-mask
+  - id: multi-head-attention-concept
+    title: "Multi-head attention: parallel views"
+    lesson: multi-head-attention
+  - id: residuals-layernorm-concept
+    title: "Residual connections + layer normalization"
+    lesson: residuals-layernorm
 
 edges:
   # Atomic prerequisite chain
@@ -66,8 +93,26 @@ edges:
     to: scaled-dot-product
   - from: scaled-dot-product
     to: attention-weight
+  - from: token-embedding
+    to: attention-score
+  - from: token-embedding
+    to: positional-encoding
+  - from: attention-score
+    to: causal-mask
+  - from: causal-mask
+    to: attention-weight
+  - from: attention-score
+    to: multi-head
+  - from: multi-head
+    to: attention-weight
+  - from: attention-score
+    to: residual
+  - from: residual
+    to: layer-norm
+  - from: layer-norm
+    to: attention-weight
 
-  # Lesson nodes
+  # Lesson concept nodes
   - from: dot-product
     to: dot-product-concept
   - from: projection
@@ -78,3 +123,13 @@ edges:
     to: attention-scores-concept
   - from: scaled-dot-product
     to: scaled-attention-concept
+  - from: token-embedding
+    to: token-embeddings-concept
+  - from: positional-encoding
+    to: positional-encoding-concept
+  - from: causal-mask
+    to: causal-mask-concept
+  - from: multi-head
+    to: multi-head-attention-concept
+  - from: residual
+    to: residuals-layernorm-concept

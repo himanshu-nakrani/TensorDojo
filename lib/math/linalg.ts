@@ -1,8 +1,10 @@
 /**
  * Small vector and matrix helpers for lessons. Intentionally limited to
  * what the lessons need: 2D and n-D dot product, vector magnitude, cosine
- * similarity, projection, normalisation, 2D matrix math. No linear
- * algebra system — anything richer reaches for numpy / a real lab.
+ * similarity, projection, normalisation, 2D matrix math, attention-
+ * specific helpers (scaled dot, row-wise softmax, causal mask).
+ * No linear algebra system — anything richer reaches for numpy / a
+ * real lab.
  */
 
 /** Dot product of two equal-length vectors. Throws on length mismatch. */
@@ -135,4 +137,20 @@ export function transpose(
     }
   }
   return out;
+}
+
+/**
+ * k-nearest neighbors of `query` in `vectors` by cosine similarity.
+ * Returns indices into `vectors`, sorted by similarity descending.
+ * Ties broken by original order. The query itself is not in `vectors`.
+ */
+export function nearestNeighbors(
+  query: readonly number[],
+  vectors: readonly (readonly number[])[],
+  k: number,
+): number[] {
+  if (k <= 0 || vectors.length === 0) return [];
+  const scored = vectors.map((v, i) => ({ i, sim: cosTheta(query, v) }));
+  scored.sort((a, b) => b.sim - a.sim);
+  return scored.slice(0, k).map((s) => s.i);
 }

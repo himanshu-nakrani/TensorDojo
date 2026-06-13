@@ -1,67 +1,63 @@
 import { MathCode } from '@/components/lesson/MathCode';
 import { Callout } from '@/components/lesson/Callout';
 
-## Motivation
+## How do three scores become a choice?
 
-Models emit raw numbers. A classifier might score three candidate tokens at $+3.2$, $+0.7$, and $-1.4$. A reinforcement-learning policy might value three moves at $1.0$, $0.8$, and $0.95$. None of these numbers carry meaning on their own — they are just real-valued signals of relative preference.
+A language model has three candidate next tokens with raw scores $+3.2$, $+0.7$, $-1.4$. To *pick* one, you need a probability distribution — non-negative weights that sum to one. **Softmax** is the function that turns raw reals into that distribution, and the temperature dial is the only knob that controls how peaked the output is.
 
-The next step almost always requires a *distribution*: a set of non-negative weights that sum to one. We need one to pick a token, to sample a move, to weight components of a mixture, to interpret an attention head. The conversion from raw scores to a probability distribution is the job of the **softmax function**, and it is small enough to hold in your head and wide enough to show up almost everywhere in deep learning.
-
-The only knob you control is **temperature**. Master that knob and you have the contrast control behind sampling, decoding, and attention.
+The interactive below shows five scores and the resulting distribution. Drag the temperature; watch what happens to the bars.
 
 ## The formula
 
 $$
-\operatorname{softmax}(x_i) \;=\; \frac{e^{x_i}}{\sum_j e^{x_j}}
+\operatorname{softmax}(\mathbf{x})_i \;=\; \frac{e^{x_i}}{\sum_j e^{x_j}}
 $$
 
-Each score is exponentiated (which is always positive) and then divided by the sum of the exponentiated scores. The result is non-negative, sums to one, and assigns more mass to larger inputs.
+Each score is exponentiated (always positive), then divided by the sum of all the exponentiated scores. The result is non-negative and sums to one.
 
 <MathCode
-  math="\operatorname{softmax}(x_i, T) = \frac{e^{\,x_i / T}}{\sum_j e^{\,x_j / T}}"
+  math="\operatorname{softmax}(\mathbf{x}, T)_i = \frac{e^{x_i / T}}{\sum_j e^{x_j / T}}"
   code={`def softmax(x, T=1.0):
     z = (x - x.max()) / T   # subtract the max for stability
     e = np.exp(z)
     return e / e.sum()`}
-  caption="Numerically stable softmax in NumPy — note the subtract-the-max line."
+  caption="Numerically stable softmax in NumPy — subtract the max so the largest exponent is 0."
 />
+
+<Callout title="Why subtract the max" targetInteractive="softmax-explorer">
+  If the scores are $[1000, 1001, 1002]$, naive $\exp$ overflows. Subtracting the max gives $[0, 1, 2]$ — perfectly tame — and the ratios are identical because dividing numerator and denominator by the same constant leaves the quotient unchanged.
+</Callout>
 
 ## Try it
 
-The interactive on the right is the centerpiece: five score inputs, one temperature slider, and a live distribution. Drag, type, watch.
+<Callout targetInteractive="softmax-explorer">
+  Set the temperature to $0.2$ and watch the largest bar absorb the rest. That is *low temperature*: a peaked distribution, useful at decoding time when the model should commit to its top guess. Now drag the slider toward $3.0$ and watch the bars equalize. That is *high temperature*: exploration, sampling, mixing among several reasonable moves. The same function, the only dial is how much contrast you want.
+</Callout>
 
-<Callout title="What's going on" targetInteractive="softmax-explorer">
-  The **dominant bar** — the entry with the largest probability — lights up in the accent color. Everything else stays dim. Notice that the winning bar can change as you drag the slider, even when the scores do not.
+<Callout title="What to watch for" targetInteractive="softmax-explorer">
+  Set the first score to $0.1$ and the second to $2.0$. At $T = 0.1$, the second bar dominates; at $T = 3.0$, the first wins. The winning entry flips at a *specific* temperature, not gradually — that is the exponential in action.
 </Callout>
 
 ## Reading the result
 
 Two facts to internalize.
 
-**Low temperature sharpens.** A small $T$ divides every score by a small number, so differences between scores are *amplified* by the exponential. The largest score wins almost all the mass; the rest are pushed toward zero. This is the regime used at decoding time, when you want the model to commit to its top guess.
+**Low $T$ sharpens.** A small $T$ divides every score by a small number, so the exponential amplifies their differences. The largest score wins almost all the mass; the rest are pushed toward zero. The model commits to its top guess.
 
-**High temperature flattens.** A large $T$ shrinks the differences, and the softmax approaches a uniform distribution over the entries. This is the regime used when you want to explore — sample a less-likely token, mix among several reasonable moves, encourage diverse outputs.
+**High $T$ flattens.** A large $T$ shrinks the differences, and softmax approaches a uniform distribution. The model explores.
 
-The same function, the same formula, the only dial is how much contrast you want. $T = 1$ is the canonical definition; every other temperature is a deliberate choice about how peaked the distribution should be.
+$T = 1$ is the canonical definition; every other temperature is a deliberate choice about how peaked you want the distribution to be.
 
-## Three experiments
-
-**1. The amplification effect.** Set $T$ to $0.2$. The largest score wins nearly all the mass. Now increase one of the smaller scores by $1.0$ — say, raise the fourth input from $-0.5$ to $0.5$. Watch the entire distribution reshuffle: a small change in inputs, amplified by the exponential, causes a large change in outputs. This is the same math that makes a sharp distribution brittle.
-
-**2. The slow start, fast finish.** Set $T$ to $3.0$. The five probabilities are within a few hundredths of each other. Now drag the slider slowly toward $0.1$. The bars barely move for the first half of the drag, then collapse to one almost-all-the-mass winner in the last fraction. The exponential compresses: most of the action happens at the bottom of the temperature range.
-
-**3. The constant case.** Set all five scores to the same value, say $1.0$. No matter where you drag the temperature, the distribution stays exactly uniform. $T$ is a *contrast* knob, not a *shift* knob — it cannot invent preference that is not in the input.
+The exponential does most of the work. It is positive everywhere, which is why the output is non-negative, and it amplifies differences between the inputs. A difference of $1$ in score space becomes a ratio of $e$ in output space; a difference of $4$ becomes a ratio of $e^4 \approx 55$. Small changes in the input become large changes in the output. That is also why softmax is brittle at low temperature: a single large score absorbs almost all the mass, and any small perturbation to the runner-up has zero visible effect on the distribution. The temperature dial is what walks the output smoothly between these two regimes — committed and exploratory.
 
 ## A second look
 
-A smaller interactive that exercises the same pattern: edit a score, the distribution responds. Focus any cell in the workbench and nudge with the arrow keys. Hold `Shift` for a 10× step.
+A smaller interactive that exercises the same pattern: edit a score, the distribution responds. Use arrow keys to nudge values.
 
 <Callout targetInteractive="score-editor">
-  The temperature here is fixed at $T = 1.0$ — the point is to feel the score→probability mapping directly, without the extra dial. Try nudging the largest score down until it loses to its neighbour. Notice how the handoff is not smooth: the second-place bar does not just creep up. At some score value, the exponential weighting swings the winner in a single step.
+  At $T = 1$, nudge the largest score down until it loses to its neighbour. The handoff is not smooth: at some score value, the exponential weighting swings the winner in a single step. That step is exactly what the temperature slider smooths over.
 </Callout>
-
-That is the same behaviour the temperature slider controls — the temperature is just a smooth way to walk through these handoffs, with the threshold of each handoff determined by the relative sizes of the scores.
 
 ## Recap
 
-Softmax turns arbitrary reals into a probability distribution. The temperature $T$ controls the contrast: low $T$ peaks on the largest input, high $T$ spreads mass roughly evenly. Subtracting the maximum before exponentiating is not a cosmetic improvement — it is what makes the function safe to call on real model outputs. The next time you see a model's decoding temperature, a sampling distribution in RL, or an attention softmax, this is the function doing the work.
+Softmax turns arbitrary reals into a probability distribution. Temperature $T$ controls the contrast: low $T$ peaks on the largest input, high $T$ spreads mass roughly evenly. Subtracting the maximum before exponentiating is what makes the function numerically safe. The next lesson shows where this distribution comes from in the first place: the attention score matrix $Q K^\top$ is a row of raw scores, and the attention weight matrix is the row-wise softmax of that.
