@@ -47,10 +47,10 @@ Two facts to internalize.
 
 ## A second look
 
-The same four-token attention matrix from the previous lesson, here as a sanity check.
+The same four-token attention matrix from the previous lesson, here as a sanity check that wide scores really do break softmax.
 
 <Callout targetInteractive="attention-matrix-scaled">
-  Drag the $Q$ and $K$ vectors until one of the score cells reads $4.0$ or higher. The weight cell in the same position is essentially $1.0$ — softmax has saturated. The other weights in the same row are $\approx 0$. Imagine every score in the row divided by $\sqrt{d_k}$ first: the values shrink back to the linear regime and the weight distribution is informative.
+  Drag the $Q$ and $K$ vectors until one of the score cells reads $4.0$ or higher. The weight cell in the same position is essentially $1.0$ — softmax has saturated. The other weights in the same row are $\approx 0$ and their gradients with them. That is exactly the failure mode the $\sqrt{d_k}$ divisor exists to prevent: shrink the scores back into the linear regime, and the weight distribution carries information again.
 </Callout>
 
 ## Recap

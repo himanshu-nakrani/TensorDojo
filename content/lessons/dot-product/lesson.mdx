@@ -5,7 +5,7 @@ import { Callout } from '@/components/lesson/Callout';
 
 A word embedding wants to know which other embeddings point the same way. A query wants to know which keys in a retrieval index are aligned with it. A classifier wants to know which side of a decision boundary a sample falls on. All of these are the same question, asked of two vectors. The answer is a single number.
 
-**The dot product is that number.** It is the only bilinear operation between two vectors that is symmetric, positive-definite on self, and differentiable in every component. One formula; three ways to read it.
+**The dot product is that number.** It is the natural choice — symmetric, smooth, and built from a single sum of products — and every "how aligned?" computation in a neural network reduces to it. One formula; three ways to read it.
 
 ## The formula
 

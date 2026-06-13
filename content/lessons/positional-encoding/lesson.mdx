@@ -57,7 +57,7 @@ The sinusoidal scheme has a nice property that the original paper exploited: a s
 A 1D plot of one dimension of PE as a function of position. The frequency slider picks which dimension.
 
 <Callout targetInteractive="positional-sinewave">
-  With $d = 16$, the dimension indices $0, 1, 2, \ldots$ have wavelengths $2\pi, 2\pi \cdot 10000^{1/8}, 2\pi \cdot 10000^{2/8}, \ldots$ — a geometric progression from "this dimension flips every 6 positions" to "this dimension barely moves in 32 positions". The wavelengths spread by a factor of 10 per 8 dimension-indices.
+  With $d = 16$, dimension index $0$ has wavelength $2\pi \approx 6.3$ — the curve completes one full cycle every six positions. Dimension index $4$ has wavelength $2\pi \cdot 10000^{2/8} \approx 63$, ten times longer. Dimension index $14$ has wavelength $\approx 6{,}300$ — across the 32 positions on screen the curve barely budges. Step the frequency slider through $0, 4, 14$ and watch the period stretch by a factor of $\approx 10$ each time you jump four indices.
 </Callout>
 
 ## Recap

@@ -3,7 +3,7 @@ import { Callout } from '@/components/lesson/Callout';
 
 ## Why can a transformer be 12 layers deep without everything collapsing?
 
-A 12-layer transformer is a stack of 12 sublayers, each of which is a non-linear function $\mathbf{x} \mapsto \operatorname{sublayer}(\mathbf{x})$. Naively, the gradient of the loss with respect to the input is the product of 12 Jacobians, and the spectral norm of each Jacobian is rarely exactly 1 — most are slightly above (exploding) or slightly below (vanishing). After 12 multiplications, the gradient is either $0$ or $\infty$, and the model stops learning.
+A 12-layer transformer is a stack of 12 sublayers, each of which is a non-linear function $\mathbf{x} \mapsto \operatorname{sublayer}(\mathbf{x})$. Naively, the gradient of the loss with respect to the input is the product of 12 Jacobians. The spectral norm of each Jacobian is rarely exactly 1 — for transformer-style sublayers it is typically slightly less than 1, so after 12 multiplications the gradient *vanishes* and the early layers stop learning. (The opposite case, exploding, can also happen if the sublayer is poorly initialized; both are failures of the same product-of-Jacobians problem.) Either way, depth is the enemy.
 
 The fix is two ideas that always travel together in the architecture:
 
@@ -38,7 +38,7 @@ In modern transformers, the layernorm is applied *before* the sublayer ("pre-nor
 ## Try it
 
 <Callout targetInteractive="residual-stack">
-  With residuals ON, layer norm OFF, drag the stack depth from $N = 1$ to $N = 24$. The per-layer activation norm stays roughly constant (residuals preserve the signal), but the per-layer gradient norm *grows* with depth — each layer amplifies the gradient slightly, and after 24 layers the gradient is huge. Training is unstable.
+  With residuals ON, layer norm OFF, drag the stack depth from $N = 1$ to $N = 24$. The per-layer activation norm stays roughly constant (residuals preserve the signal), but the per-layer gradient norm drifts with depth — without layernorm to bound activation scale, this toy stack happens to amplify, but a real transformer's analogous failure mode is the opposite (vanishing gradients into early layers). Either way, the gradient is no longer well-behaved by layer 24, and training is unstable.
 </Callout>
 
 <Callout targetInteractive="residual-stack">
@@ -51,7 +51,7 @@ Three things to internalize.
 
 **The residual stream is the message that flows through the network.** Every sublayer reads from the residual stream and writes back into it. The model's final output for a token is the residual stream at the last layer, projected to vocab. The residual stream is *always* meaningful at every layer — the sublayers are *edits*, not *replacements*.
 
-**Without residuals, the depth limit is brutal.** In a 12-layer model without residuals, the gradient through the network is the product of 12 Jacobians. Most Jacobians have spectral norm slightly less than 1 (vanishing) or slightly more (exploding). Either way, the product is unusable. Residuals add a $+1$ to each Jacobian's diagonal, which the chain rule treats as "the gradient can also flow through unchanged". The result is a gradient that is at least 1 in magnitude (the residual path) plus the sublayer's contribution.
+**Without residuals, the depth limit is brutal.** In a 12-layer model without residuals, the gradient through the network is the product of 12 Jacobians. Spectral norms slightly less than 1 (the typical case for transformer sublayers) drive the product to zero — gradients vanish into the early layers. Spectral norms slightly above 1 explode it. Residuals add a $+1$ to each Jacobian's diagonal, which the chain rule treats as "the gradient can also flow through unchanged". The result is a gradient that is at least 1 in magnitude (the residual path) plus the sublayer's contribution.
 
 **Layernorm is the budget enforcer.** It re-centers each token's vector to zero mean and unit variance before every sublayer. This caps the magnitude of what the sublayer can read and write, so a single sublayer cannot blow up the residual stream. With layernorm, the model can stack 12, 24, 96 sublayers and still train.
 
