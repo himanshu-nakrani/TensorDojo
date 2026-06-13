@@ -1,0 +1,75 @@
+import { MathCode } from '@/components/lesson/MathCode';
+import { Callout } from '@/components/lesson/Callout';
+
+## Motivation
+
+The dot product tells you *how aligned* two vectors are. Often the question is more specific: of the full vector **a**, how much of it actually lies along **b**? That is the *projection* of **a** onto **b** — a single vector on the line spanned by **b**, with the rest of **a** left over as the *residual*.
+
+Projections are everywhere. In regression, the prediction is the projection of the target onto the column space of the features. In attention, the weighted sum $\sum_j \text{weight}_j V_j$ is a projection in disguise. In compression, low-rank approximations are projections onto a smaller subspace. The next step beyond the dot product is to ask: where, exactly, does this much of **a** sit on the line of **b**?
+
+## The formula
+
+For non-zero vectors $\mathbf{a}$ and $\mathbf{b}$:
+
+$$
+\operatorname{proj}_{\mathbf{b}} \mathbf{a} \;=\; \frac{\mathbf{a} \cdot \mathbf{b}}{\mathbf{b} \cdot \mathbf{b}} \, \mathbf{b}, \qquad
+\operatorname{res}_{\mathbf{b}} \mathbf{a} \;=\; \mathbf{a} - \operatorname{proj}_{\mathbf{b}} \mathbf{a}
+$$
+
+The scalar coefficient $\frac{\mathbf{a} \cdot \mathbf{b}}{\mathbf{b} \cdot \mathbf{b}}$ is the only place the two vectors meet. Once you have it, $\operatorname{proj}_{\mathbf{b}} \mathbf{a}$ is just that scalar times $\mathbf{b}$.
+
+<MathCode
+  math="\operatorname{proj}_{\mathbf{b}} \mathbf{a} = \frac{\mathbf{a} \cdot \mathbf{b}}{\|\mathbf{b}\|^2} \, \mathbf{b}"
+  code={`import numpy as np
+
+def projection(a, b):
+    return (a @ b) / (b @ b) * b
+
+a = np.array([1.0, 2.0, 3.0])
+b = np.array([1.0, 0.5, -0.2])
+projection(a, b)  # → array of the part of a that lies along b
+# residual = a - projection(a, b), perpendicular to b`}
+  caption="One dot product + one scalar multiply."
+/>
+
+## Try it
+
+The interactive on the right has two draggable vectors **a** and **b** and three more lines that appear on top:
+
+- the **projection** of **a** onto **b**, drawn as a dashed cyan arrow from the origin to a point on the line of **b**;
+- the **residual**, drawn as a dashed red arrow from that projection point to the tip of **a**;
+- an optional pair of **unit vectors** $\hat{\mathbf{a}}$ and $\hat{\mathbf{b}}$ (toggle on the right), shown as faint grey arrows that always have length 1.
+
+<Callout targetInteractive="projection-explorer">
+  Make **a** perpendicular to **b** by rotating **a** until it sits on the y-axis. The projection collapses to the origin and the residual becomes the full **a** — nothing of **a** lies along **b**. Now rotate **a** so it lies along **b**. The residual collapses to zero and the projection equals **a**.
+</Callout>
+
+## Reading the result
+
+Three things to internalize.
+
+1. **The projection has magnitude $\lVert \mathbf{a} \rVert \cos\theta$.** It is the shadow **a** casts on the line of **b**. When **a** is perpendicular to **b**, the shadow is zero. When **a** is parallel to **b**, the shadow is the full **a**.
+2. **The residual is always perpendicular to $\mathbf{b}$.** That is the whole point of the construction. The residual contains exactly the information in **a** that is *not* aligned with **b**.
+3. **On unit vectors, $\mathbf{a} \cdot \mathbf{b} = \cos\theta$.** Toggle the "show unit vectors" view and verify. With both arrows stretched to length 1, the dot product is purely a function of the angle. The component form ($\sum a_i b_i$) and the geometric form ($\|\mathbf{a}\|\|\mathbf{b}\|\cos\theta$) coincide.
+
+## Three experiments
+
+**1. Magnitude does not matter for direction.** Set $\mathbf{a} = (1.4, 0.0)$ and $\mathbf{b} = (1.0, 0.0)$. Now scale $\mathbf{a}$ to $(2.8, 0.0)$. The projection also doubles. The *ratio* $\mathbf{a} \cdot \mathbf{b} / \lVert\mathbf{a}\rVert$ — that is, $\lVert\mathbf{a}\rVert \cos\theta$ divided by $\lVert\mathbf{a}\rVert$ — does not change. Cosine similarity is what survives.
+
+**2. The residual is perpendicular, always.** Pick any $\mathbf{a}$ and $\mathbf{b}$. The dashed red arrow's tip-to-origin angle is exactly $90°$ from $\mathbf{b}$. If you tilt **b**, the residual arrow tilts with it to keep the perpendicularity. This is the visual proof of "$\mathbf{a} = \operatorname{proj} + \operatorname{res}$, with $\operatorname{proj} \parallel \mathbf{b}$ and $\operatorname{res} \perp \mathbf{b}$".
+
+**3. Cosine is a unit test for alignment.** Set $\mathbf{a} = (1.5, 0.0)$ and $\mathbf{b} = (1.0, 0.0)$. The dot product is $1.5$ but the cosine is $1.0$. Now make $\mathbf{b}$ twice as long. The dot product doubles to $3.0$ and the cosine stays at $1.0$. Cosine similarity is what tells you two vectors point the same way *regardless of how long they are*. That is exactly what the attention head needs.
+
+## A second look
+
+A list of six candidates ranked by raw dot product and by cosine similarity, side by side. Five of the candidates are fixed; one of them has a length slider.
+
+<Callout targetInteractive="candidate-cosine">
+  Drag the query, then move the c_R length slider. The raw dot product scales linearly with c_R's length — push it from $0.7$ to $1.4$ and the dot product doubles. The cosine similarity does not. That is the lesson in one line: cosine is the *direction* similarity, dot product is *direction times magnitude*.
+</Callout>
+
+This is the next step toward attention. The "candidate" pattern — a query, a list of keys, a single number per pair — is the same shape as the attention score row. The only thing that changes between "candidate rank by dot product" and "token attend to token" is the *length normalization* step. Cosine similarity is that step.
+
+## Recap
+
+The projection $\operatorname{proj}_{\mathbf{b}} \mathbf{a}$ extracts the part of **a** that lies along **b**. Its magnitude is $\lVert\mathbf{a}\rVert\cos\theta$. The residual is what is left over, and it is always perpendicular to **b**. On unit vectors, $\mathbf{a} \cdot \mathbf{b} = \cos\theta$ — a pure direction similarity, indifferent to magnitude. The dot product carries both pieces of information at once; cosine is the one that survives normalization. That distinction is what shows up in attention, where every row of $Q$ is dotted with every row of $K^\top$, and where dividing by the row's magnitude is what keeps one key from drowning the others.

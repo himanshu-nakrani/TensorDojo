@@ -4,13 +4,18 @@ import { useMemo, useState } from 'react';
 import { Slider } from '@/components/sim/primitives/Slider';
 import { NumberInput } from '@/components/sim/primitives/NumberInput';
 import { BarChart } from '@/components/sim/primitives/BarChart';
-import { argmax, softmax } from '@/lib/softmax';
+import { argmax, softmax } from '@/lib/math/softmax';
 
 const DEFAULT_SCORES: readonly number[] = [2.0, 1.0, 0.1, -0.5, 1.5];
 const SCORE_LABELS = ['s₁', 's₂', 's₃', 's₄', 's₅'] as const;
 const TEMP_MIN = 0.1;
 const TEMP_MAX = 3.0;
 const TEMP_STEP = 0.1;
+
+export interface SoftmaxPreset {
+  scores?: readonly number[];
+  temperature?: number;
+}
 
 function formatSum(values: readonly number[]): string {
   const sum = values.reduce((a, b) => a + b, 0);
@@ -21,10 +26,18 @@ function formatSum(values: readonly number[]): string {
  * Centerpiece interactive: edit five scores, drag a temperature slider,
  * watch the softmax distribution update live. The dominant bar is rendered
  * in the accent color; everything else is a dim neutral, by design.
+ *
+ * Accepts an optional `preset` to initialize state. The Workbench keys this
+ * component by preset version, so changing the preset forces a remount and
+ * the new values take effect.
  */
-export function SoftmaxExplorer() {
-  const [scores, setScores] = useState<number[]>([...DEFAULT_SCORES]);
-  const [temperature, setTemperature] = useState(1.0);
+export function SoftmaxExplorer({ preset }: { preset?: SoftmaxPreset }) {
+  const [scores, setScores] = useState<number[]>(() => [
+    ...(preset?.scores ?? DEFAULT_SCORES),
+  ]);
+  const [temperature, setTemperature] = useState<number>(
+    preset?.temperature ?? 1.0,
+  );
 
   const distribution = useMemo(
     () => softmax(scores, temperature),

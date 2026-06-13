@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation';
 import { LessonShell } from '@/components/lesson/LessonShell';
+import { Workbench } from '@/components/lesson/Workbench';
 import { getLesson, listSlugs } from '@/lib/lessons';
 
 export function generateStaticParams() {
@@ -16,6 +17,8 @@ export default async function LessonPage({ params }: PageProps) {
   if (!lesson) notFound();
 
   const Lesson = lesson.Component;
+  const interactives = lesson.interactives;
+  const defaultActive = interactives[0]?.id ?? '';
 
   return (
     <LessonShell
@@ -23,7 +26,11 @@ export default async function LessonPage({ params }: PageProps) {
       minutes={lesson.meta.minutes}
       summary={lesson.meta.summary}
     >
-      <Lesson />
+      <Workbench
+        interactives={interactives}
+        defaultActive={defaultActive}
+        prose={<Lesson />}
+      />
     </LessonShell>
   );
 }

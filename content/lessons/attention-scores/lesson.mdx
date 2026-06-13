@@ -1,0 +1,71 @@
+import { MathCode } from '@/components/lesson/MathCode';
+import { Callout } from '@/components/lesson/Callout';
+
+## Motivation
+
+A model has a query and a set of keys. The query is a vector representing "what I'm looking for." Each key is a vector representing "what I contain." For each (query, key) pair, the model needs a number that says "how well does this key answer this query?". That number is the **attention score** — a raw dot product, $Q \cdot K$.
+
+The score alone is not enough. A model's softmax in the next step will turn the scores into a probability distribution over the keys, allocating the query's attention. The transformed scores are the **attention weights** — non-negative, summing to one across each row.
+
+The previous lesson was the building block. This one is the next layer: the score matrix is the input, the weight matrix is the output, and softmax is the operator that connects them. The two are not the same thing; confusing them is the most common slip in attention code.
+
+## The formula
+
+For a row of $n$ query vectors $Q \in \mathbb{R}^{n \times d}$ and a row of $n$ key vectors $K \in \mathbb{R}^{n \times d}$:
+
+$$
+\text{scores} = Q K^\top \in \mathbb{R}^{n \times n}, \qquad
+\text{weights}_i = \text{softmax}(\text{scores}_i) \text{ per row}
+$$
+
+The score matrix is one dot product per (query, key) pair. The weight matrix is the row-wise softmax.
+
+<MathCode
+  math="\text{scores}_{ij} = Q_i \cdot K_j, \qquad \text{weights}_{ij} = \frac{e^{\text{scores}_{ij} / T}}{\sum_k e^{\text{scores}_{ik} / T}}"
+  code={`import numpy as np
+
+scores  = Q @ K.T                                    # (n, n) dot products
+weights = np.exp(scores) / np.exp(scores).sum(axis=-1, keepdims=True)
+
+# With a temperature:
+weights = np.exp(scores / T) / np.exp(scores / T).sum(axis=-1, keepdims=True)`}
+  caption="Scores are raw dot products. Weights are the row-wise softmax of the scores."
+/>
+
+## Try it
+
+Four tokens — *the cat sat down* — each with its own 2D query vector and 2D key vector. Eight vectors on one plane; drag any tip. The score matrix on the right is $Q \cdot K^\top$: a 4×4 grid of dot products, with a diverging colormap (teal for positive, muted red for negative). The weight matrix below it is the row-wise softmax, with a single-hue teal intensity.
+
+<Callout targetInteractive="attention-matrix">
+  Start with the defaults. Hover the score and weight matrices on the right — both highlight the same $(i, j)$ cell, so you can see which $Q$–$K$ pair produced which dot product. Then drag a $Q$ vector; watch the corresponding *row* of both matrices update live.
+</Callout>
+
+## Reading the result
+
+Read the matrices column by column. The score matrix's column $j$ is the dot product of every query with $K_j$. The weight matrix's column $j$ is how much of each query's attention is allocated to $K_j$ — and each row sums to one.
+
+Two facts to internalize. First, the score matrix can have any sign and any magnitude. The dot product has no built-in scale. Second, the weight matrix is always non-negative and each row sums to one. Softmax enforces that, no matter what the input scores look like.
+
+This is why a model can use raw attention scores as a "how aligned" signal in attention probing, but to actually *route* information, it needs the weights.
+
+## Three experiments
+
+**1. Orthogonal pairs.** Drag $Q_0$ so it is perpendicular to $K_0$. The cell $\text{scores}_{00}$ drops to zero; the cell $\text{weights}_{00}$ also drops — but it does not drop to zero, because the other scores in row 0 are also competing for the softmax mass. Now make $Q_0$ anti-aligned with $K_0$ (opposite direction). The score goes deeply negative; the weight drops close to zero. The score can go negative; the weight cannot.
+
+**2. Magnitude does not survive softmax.** Scale $K_0$ much larger than the other keys. The column 0 of the score matrix has a much larger entry than the rest, but the *row* of the weight matrix still sums to one — softmax normalizes regardless of input magnitude. This is the role of softmax: it is the bridge from "raw" to "shares of one".
+
+**3. Argmax is preserved (mostly).** Drag $K_0$ so it is exactly anti-aligned with $Q_0$ (dot product very negative). The weight in column 0 of $Q_0$'s row drops to near zero. The other weights rise to share the mass. The argmax of the row moves to whichever key has the highest *score* — not the highest magnitude. The temperature dial in the next interactive lets you control how sharply softmax picks the winner.
+
+## A second look
+
+The same matrix with a temperature slider on the softmax. The score matrix is unchanged (raw dot products, no temperature). The weight matrix sharpens as the temperature drops and flattens as it rises. At $T = 0.2$, the winner in each row takes nearly all the mass. At $T = 3.0$, the weights are nearly uniform across the row.
+
+<Callout targetInteractive="attention-temperature">
+  Drag the slider from $0.1$ to $3.0$ and back. The score matrix on the right does not change — temperature is a softmax parameter, not a dot-product parameter. The weight matrix is what sharpens.
+</Callout>
+
+The temperature dial is the same control you saw in the Softmax lesson, applied per row. Because the math is identical, the lesson's intuition transfers directly: low $T$ commits to the top match, high $T$ spreads attention broadly.
+
+## Recap
+
+For a row of queries and a row of keys, the attention score matrix $Q K^\top$ is one dot product per (query, key) pair. The weight matrix is the row-wise softmax of the score matrix. Scores can be any real number, with sign and magnitude both meaningful. Weights are non-negative and sum to one across each row — they are the *shares* of attention. The temperature dial controls how sharply the softmax picks a winner, not the dot products themselves. The next layer in a real model multiplies the weights by the value vectors $V$, but that is the next lesson.

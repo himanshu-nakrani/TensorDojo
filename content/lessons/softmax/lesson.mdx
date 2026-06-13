@@ -1,7 +1,5 @@
 import { MathCode } from '@/components/lesson/MathCode';
 import { Callout } from '@/components/lesson/Callout';
-import { SoftmaxExplorer } from '@/components/sim/SoftmaxExplorer';
-import { ScoreEditor } from '@/components/sim/ScoreEditor';
 
 ## Motivation
 
@@ -9,7 +7,7 @@ Models emit raw numbers. A classifier might score three candidate tokens at $+3.
 
 The next step almost always requires a *distribution*: a set of non-negative weights that sum to one. We need one to pick a token, to sample a move, to weight components of a mixture, to interpret an attention head. The conversion from raw scores to a probability distribution is the job of the **softmax function**, and it is small enough to hold in your head and wide enough to show up almost everywhere in deep learning.
 
-The only knob the user controls is **temperature**. Master that knob and you have the contrast control behind sampling, decoding, and attention.
+The only knob you control is **temperature**. Master that knob and you have the contrast control behind sampling, decoding, and attention.
 
 ## The formula
 
@@ -19,42 +17,36 @@ $$
 
 Each score is exponentiated (which is always positive) and then divided by the sum of the exponentiated scores. The result is non-negative, sums to one, and assigns more mass to larger inputs.
 
-The implementation has a subtlety that is the entire reason the function is *implementable* in floating point at all.
-
 <MathCode
   math="\operatorname{softmax}(x_i, T) = \frac{e^{\,x_i / T}}{\sum_j e^{\,x_j / T}}"
   code={`def softmax(x, T=1.0):
-    z = (x - x.max()) / T
+    z = (x - x.max()) / T   # subtract the max for stability
     e = np.exp(z)
     return e / e.sum()`}
-  caption="Numerically stable softmax in NumPy"
+  caption="Numerically stable softmax in NumPy — note the subtract-the-max line."
 />
-
-The `x - x.max()` step is not optional. If your scores are $[1000,\ 1001,\ 1002]$, the naive $e^{x_i}$ overflows. Subtracting the max gives $[0,\ 1,\ 2]$ — perfectly tame — and the ratios come out identical because dividing numerator and denominator by the same constant leaves the quotient unchanged.
 
 ## Try it
 
-The interactive below is the centerpiece. Five score inputs, one temperature slider, and a live distribution. Drag, type, watch.
+The interactive on the right is the centerpiece: five score inputs, one temperature slider, and a live distribution. Drag, type, watch.
 
-<SoftmaxExplorer />
-
-<Callout title="What's going on">
-  The **dominant bar** is the entry with the largest probability — it lights up in the accent color, everything else stays dim. Notice that the bar that wins can change as you drag the slider, even when the underlying scores do not.
+<Callout title="What's going on" targetInteractive="softmax-explorer">
+  The **dominant bar** — the entry with the largest probability — lights up in the accent color. Everything else stays dim. Notice that the winning bar can change as you drag the slider, even when the scores do not.
 </Callout>
 
 ## Reading the result
 
 Two facts to internalize.
 
-**Low temperature sharpens.** A small $T$ divides every score by a small number, so differences between scores are *amplified* by the exponential. The largest score wins almost all the mass and the rest are pushed toward zero. This is the regime used at decoding time when you want the model to commit to its top guess.
+**Low temperature sharpens.** A small $T$ divides every score by a small number, so differences between scores are *amplified* by the exponential. The largest score wins almost all the mass; the rest are pushed toward zero. This is the regime used at decoding time, when you want the model to commit to its top guess.
 
-**High temperature flattens.** A large $T$ shrinks the differences, and the softmax approaches a uniform distribution over the entries. This is the regime used when you want the model to explore — sample a less-likely token, mix among several reasonable moves, encourage diverse outputs.
+**High temperature flattens.** A large $T$ shrinks the differences, and the softmax approaches a uniform distribution over the entries. This is the regime used when you want to explore — sample a less-likely token, mix among several reasonable moves, encourage diverse outputs.
 
-The same function, the same formula, the only dial is how much contrast you want. $T = 1$ is the canonical definition; every other temperature is a deliberate choice about how peaked you want the distribution to be.
+The same function, the same formula, the only dial is how much contrast you want. $T = 1$ is the canonical definition; every other temperature is a deliberate choice about how peaked the distribution should be.
 
 ## Three experiments
 
-**1. The amplification effect.** Set $T$ to $0.2$. The largest score wins nearly all the mass. Now increase just one of the smaller scores by $1.0$ — say, raise the fourth input from $-0.5$ to $0.5$. Watch the entire distribution reshuffle: a small change in inputs, amplified by the exponential, causes a large change in outputs. This is the same math that makes a sharp distribution brittle.
+**1. The amplification effect.** Set $T$ to $0.2$. The largest score wins nearly all the mass. Now increase one of the smaller scores by $1.0$ — say, raise the fourth input from $-0.5$ to $0.5$. Watch the entire distribution reshuffle: a small change in inputs, amplified by the exponential, causes a large change in outputs. This is the same math that makes a sharp distribution brittle.
 
 **2. The slow start, fast finish.** Set $T$ to $3.0$. The five probabilities are within a few hundredths of each other. Now drag the slider slowly toward $0.1$. The bars barely move for the first half of the drag, then collapse to one almost-all-the-mass winner in the last fraction. The exponential compresses: most of the action happens at the bottom of the temperature range.
 
@@ -62,11 +54,11 @@ The same function, the same formula, the only dial is how much contrast you want
 
 ## A second look
 
-A smaller interactive that exercises the same pattern: edit a score, the distribution responds. Focus any cell and nudge with the arrow keys. Hold `Shift` for a 10× step.
+A smaller interactive that exercises the same pattern: edit a score, the distribution responds. Focus any cell in the workbench and nudge with the arrow keys. Hold `Shift` for a 10× step.
 
-<ScoreEditor />
-
-The temperature here is fixed at $T = 1.0$ — the point is to feel the score→probability mapping directly, without the extra dial. Try nudging the largest score down until it loses to its neighbour. Notice how the handoff is *not* smooth: the second-place bar does not just creep up. At some score value, the exponential weighting swings the winner in a single step.
+<Callout targetInteractive="score-editor">
+  The temperature here is fixed at $T = 1.0$ — the point is to feel the score→probability mapping directly, without the extra dial. Try nudging the largest score down until it loses to its neighbour. Notice how the handoff is not smooth: the second-place bar does not just creep up. At some score value, the exponential weighting swings the winner in a single step.
+</Callout>
 
 That is the same behaviour the temperature slider controls — the temperature is just a smooth way to walk through these handoffs, with the threshold of each handoff determined by the relative sizes of the scores.
 

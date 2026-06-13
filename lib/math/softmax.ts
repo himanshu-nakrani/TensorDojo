@@ -62,3 +62,11 @@ export function argmax(xs: readonly number[]): number {
   }
   return bestIdx;
 }
+
+/** Apply softmax row-wise to a 2D matrix. Rows may have different lengths. */
+export function softmaxRows(
+  rows: readonly (readonly number[])[],
+  temperature = 1,
+): number[][] {
+  return rows.map((r) => softmax(r, temperature));
+}

@@ -222,3 +222,22 @@
 .inline-math .katex {
   font-size: 1em;
 }
+
+/* ----- Workbench pulse ----- */
+/* Diagnosis flow triggers this on the active WorkbenchItem. */
+@keyframes pulse-ring {
+  0% {
+    box-shadow:
+      0 0 0 0 rgba(45, 212, 191, 0.45),
+      0 0 0 0 rgba(45, 212, 191, 0.18);
+  }
+  100% {
+    box-shadow:
+      0 0 0 10px rgba(45, 212, 191, 0),
+      0 0 0 18px rgba(45, 212, 191, 0);
+  }
+}
+.animate-pulse-ring {
+  animation: pulse-ring 600ms ease-out;
+}
+

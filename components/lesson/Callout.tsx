@@ -1,5 +1,8 @@
+'use client';
+
 import { ReactNode } from 'react';
 import clsx from 'clsx';
+import { useWorkbench } from './Workbench';
 
 interface CalloutProps {
   /** Small label rendered in the top-left, in monospace caps. */
@@ -8,20 +11,28 @@ interface CalloutProps {
   /** Visual variant. 'try' is the default and uses the accent. */
   variant?: 'try' | 'note';
   className?: string;
+  /**
+   * If set, the callout gets a "Open in workbench →" button. When clicked,
+   * the named interactive expands in the workbench, gets pulsed, and
+   * the page scrolls to it.
+   */
+  targetInteractive?: string;
 }
 
 /**
  * Inline callout used to draw the reader's eye to a specific instruction.
- * The accent is reserved for "things the user can manipulate"; a callout
- * is itself an instruction, which is the closest static analog, so this
- * is one of the few non-control elements that uses the accent.
+ * When `targetInteractive` is set, the callout becomes the bridge from
+ * prose to workbench: clicking the button expands and pulses the named
+ * interactive in the right column.
  */
 export function Callout({
   title = 'Try this',
   children,
   variant = 'try',
   className,
+  targetInteractive,
 }: CalloutProps) {
+  const workbench = useWorkbench();
   return (
     <aside
       className={clsx(
@@ -43,6 +54,15 @@ export function Callout({
       <div className="text-ink text-[0.95rem] leading-relaxed [&>p]:m-0">
         {children}
       </div>
+      {targetInteractive && (
+        <button
+          type="button"
+          onClick={() => workbench.focusInteractive(targetInteractive)}
+          className="mt-3 text-[11px] uppercase tracking-[0.18em] font-mono text-accent hover:text-accent-hover transition-colors"
+        >
+          Open in workbench →
+        </button>
+      )}
     </aside>
   );
 }

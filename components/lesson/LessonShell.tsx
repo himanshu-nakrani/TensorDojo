@@ -8,14 +8,14 @@ interface LessonShellProps {
 }
 
 /**
- * Page chrome for a single lesson. Renders the title block (within a
- * prose-width column) and a body container that can hold both prose-width
- * paragraphs and wider interactive cards via a `.lesson-wide` escape hatch.
+ * Page chrome for a single lesson. Renders the title block at the top;
+ * the two-column prose/workbench layout is the children's job (see
+ * <Workbench>).
  */
 export function LessonShell({ title, minutes, summary, children }: LessonShellProps) {
   return (
-    <article className="mx-auto px-6 sm:px-10 py-16 max-w-wide">
-      <header className="max-w-prose mb-12">
+    <article className="mx-auto px-6 sm:px-10 py-12 sm:py-16 max-w-[1320px]">
+      <header className="mb-10 max-w-prose">
         <div className="flex items-center gap-3 text-[11px] uppercase tracking-[0.18em] text-dim font-mono mb-5">
           <span>Lesson</span>
           <span className="text-border-strong">·</span>
@@ -28,7 +28,7 @@ export function LessonShell({ title, minutes, summary, children }: LessonShellPr
           {summary}
         </p>
       </header>
-      <div className="lesson-body max-w-prose">{children}</div>
+      {children}
     </article>
   );
 }

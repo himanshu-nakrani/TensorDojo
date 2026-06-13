@@ -2,20 +2,26 @@
 
 import { useMemo, useRef, useState, KeyboardEvent } from 'react';
 import { NumberInput } from '@/components/sim/primitives/NumberInput';
-import { argmax, softmax } from '@/lib/softmax';
+import { argmax, softmax } from '@/lib/math/softmax';
 
 const DEFAULT_SCORES: readonly number[] = [2.0, 1.0, 0.1, -0.5, 1.5];
 const SCORE_LABELS = ['s₁', 's₂', 's₃', 's₄', 's₅'] as const;
 const NUDGE_STEP = 0.1;
 const NUDGE_STEP_LARGE = 1.0;
 
+export interface ScoreEditorPreset {
+  scores?: readonly number[];
+}
+
 /**
  * A smaller, focused interactive: a column of editable scores whose softmax
  * distribution updates live. Tests that the score→distribution pattern
  * generalizes to a second widget. Arrow keys nudge the focused score.
  */
-export function ScoreEditor() {
-  const [scores, setScores] = useState<number[]>([...DEFAULT_SCORES]);
+export function ScoreEditor({ preset }: { preset?: ScoreEditorPreset }) {
+  const [scores, setScores] = useState<number[]>(() => [
+    ...(preset?.scores ?? DEFAULT_SCORES),
+  ]);
   const inputRefs = useRef<Array<HTMLInputElement | null>>([]);
 
   const distribution = useMemo(() => softmax(scores), [scores]);

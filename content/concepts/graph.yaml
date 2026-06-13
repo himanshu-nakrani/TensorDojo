@@ -1,0 +1,80 @@
+nodes:
+  # Foundational math
+  - id: vector
+    title: Vector
+  - id: vector-magnitude
+    title: Vector magnitude
+  - id: dot-product
+    title: Dot product
+  - id: cos-theta
+    title: Cosine similarity
+  - id: projection
+    title: Vector projection
+  - id: softmax
+    title: Softmax
+  - id: attention-score
+    title: Attention score
+  - id: attention-weight
+    title: Attention weight
+  - id: temperature
+    title: Temperature
+  - id: scaled-dot-product
+    title: Scaled dot product
+
+  # Lesson concept nodes
+  - id: dot-product-concept
+    title: "Dot product as alignment"
+    lesson: dot-product
+  - id: vector-projection-concept
+    title: "Vector projection and cosine similarity"
+    lesson: vector-projection
+  - id: softmax-concept
+    title: "Softmax: turning scores into a distribution"
+    lesson: softmax
+  - id: attention-scores-concept
+    title: "Attention scores: who attends to whom"
+    lesson: attention-scores
+  - id: scaled-attention-concept
+    title: "Why we scale attention by √d_k"
+    lesson: scaled-attention
+
+edges:
+  # Atomic prerequisite chain
+  - from: vector
+    to: vector-magnitude
+  - from: vector
+    to: dot-product
+  - from: vector-magnitude
+    to: cos-theta
+  - from: dot-product
+    to: cos-theta
+  - from: dot-product
+    to: projection
+  - from: cos-theta
+    to: projection
+  - from: dot-product
+    to: softmax
+  - from: softmax
+    to: temperature
+  - from: softmax
+    to: attention-score
+  - from: attention-score
+    to: attention-weight
+  - from: temperature
+    to: attention-weight
+  - from: attention-score
+    to: scaled-dot-product
+  - from: scaled-dot-product
+    to: attention-weight
+
+  # Lesson nodes
+  - from: dot-product
+    to: dot-product-concept
+  - from: projection
+    to: vector-projection-concept
+  - from: softmax
+    to: softmax-concept
+  - from: attention-score
+    to: attention-scores-concept
+  - from: scaled-dot-product
+    to: scaled-attention-concept

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { argmax, softmax } from './softmax';
+import { argmax, softmax, softmaxRows } from './softmax';
 
 const isClose = (a: number, b: number, tol = 1e-9) => Math.abs(a - b) < tol;
 
@@ -69,5 +69,39 @@ describe('softmax', () => {
 
   it('handles empty input', () => {
     expect(softmax([])).toEqual([]);
+  });
+});
+
+describe('softmaxRows', () => {
+  it('applies softmax to each row independently', () => {
+    const rows = [
+      [1, 2, 3],
+      [-1, 0, 1],
+      [10, 10, 10],
+    ];
+    const out = softmaxRows(rows);
+    expect(out.length).toBe(3);
+    // Row 0: matches single softmax result.
+    expect(isClose(out[0]![0] as number, 2.71828 / 30.1929, 1e-5)).toBe(true);
+    // Row 2: uniform.
+    for (const v of out[2]!) {
+      expect(isClose(v, 1 / 3, 1e-9)).toBe(true);
+    }
+    // Every row sums to 1.
+    for (const row of out) {
+      expect(isClose(row.reduce((a, b) => a + b, 0), 1, 1e-9)).toBe(true);
+    }
+  });
+
+  it('respects a shared temperature', () => {
+    // scores = [1, 2, 3] has argmax at index 2. With low T, that entry
+    // dominates the distribution.
+    const rows = [[1, 2, 3], [1, 2, 3]];
+    const out = softmaxRows(rows, 0.1);
+    for (const row of out) {
+      // Sharp — the largest entry (index 2) gets nearly all the mass.
+      expect(row[2] as number).toBeGreaterThan(0.99);
+      expect(row[0] as number).toBeLessThan(0.01);
+    }
   });
 });

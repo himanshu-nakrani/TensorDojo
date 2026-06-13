@@ -1,0 +1,70 @@
+import { MathCode } from '@/components/lesson/MathCode';
+import { Callout } from '@/components/lesson/Callout';
+
+## Motivation
+
+Most of the time we work with vectors, the question is not "what is this vector?" — it is "how does this vector relate to that one?" A word embedding wants to know which other embeddings point in the same direction. A query wants to know which keys in a retrieval index are aligned with it. A classifier wants to know which side of a decision boundary a sample falls on. The first move in all of these problems is the same: take two vectors, return a single number that says something useful about their relationship.
+
+The dot product is that number. It is the only bilinear operation between two vectors that is symmetric, positive-definite on self, and differentiable in every component. Three interpretations, one formula — pick whichever one matches the question you are asking.
+
+## The formula
+
+For two equal-length vectors $\mathbf{a} = (a_1, \ldots, a_n)$ and $\mathbf{b} = (b_1, \ldots, b_n)$:
+
+$$
+\mathbf{a} \cdot \mathbf{b} \;=\; \sum_{i=1}^{n} a_i b_i \;=\; \|\mathbf{a}\| \, \|\mathbf{b}\| \, \cos\theta
+$$
+
+Three things to notice.
+
+1. The component form is the implementation: multiply componentwise, sum the products. No square roots, no trig.
+2. The geometric form is the *meaning*: $\cos\theta$ is the alignment, and $\|\mathbf{a}\|\|\mathbf{b}\|$ scales it by how big both vectors are.
+3. The sign of the dot product is the sign of $\cos\theta$: positive when the angle is acute, zero when orthogonal, negative when obtuse.
+
+<MathCode
+  math="\mathbf{a} \cdot \mathbf{b} \;=\; \sum_{i} a_i b_i"
+  code={`def dot(a, b):
+    return sum(x * y for x, y in zip(a, b))
+
+# 2D example
+dot([1.5, 0.5], [1.0, 0.0])  # → 1.5`}
+  caption="The component form — the form you actually compute."
+/>
+
+## Try it
+
+Two vectors on a plane. Drag either tip. The four live readouts show the magnitude of each, the cosine of the angle between them, and the dot product. The signed bar below shows $\mathbf{a} \cdot \mathbf{b}$ on a fixed scale, with zero in the middle.
+
+<Callout targetInteractive="dot-explorer">
+  Start with the defaults. The two vectors point in different directions, neither aligned nor opposite. Now drag one tip so the two arrows point in the same direction — watch $\cos\theta$ climb to $1$ and the signed bar swing all the way right.
+</Callout>
+
+## Reading the result
+
+There are three knobs, and they are independent. The dot product is high when the vectors are aligned *and* both large. It is small (or zero) when they are orthogonal regardless of magnitude. It is negative when they are anti-aligned.
+
+A common trap: "the dot product measures the angle." It does not — it measures the *cosine* of the angle, scaled by magnitudes. With unit vectors, dot product and cosine coincide. With arbitrary vectors, the magnitudes matter.
+
+Another trap: "bigger vector, bigger dot product." Only if the direction is fixed. A long vector dotted with an orthogonal vector is still zero, no matter how long.
+
+## Three experiments
+
+**1. Alignment in isolation.** Start with the defaults. Rotate $\mathbf{a}$ so the two arrows are parallel. The bar swings fully right. Now rotate $\mathbf{a}$ until it is perpendicular to $\mathbf{b}$. The bar snaps to zero. The vectors have not changed magnitude; only the angle moved. This is the alignment knob in isolation.
+
+**2. Magnitude in isolation.** Set $\mathbf{a} = (0.5, 0)$ and $\mathbf{b} = (1.0, 0)$ — both on the $x$-axis, $\mathbf{b}$ longer. Note the dot product. Now scale $\mathbf{a}$ to $(2.0, 0)$ by dragging it further from the origin. The dot product quadrupled, even though the angle did not change. This is the magnitude knob in isolation.
+
+**3. Sign at the same magnitude.** Set $\mathbf{a} = (1.0, 0)$ and $\mathbf{b} = (1.0, 0)$ (aligned, positive). Now drag $\mathbf{b}$ to $(-1.0, 0)$. The angle has flipped to $\pi$, $\cos\theta = -1$, and the dot product is $-1$. Same magnitudes, opposite direction. The signed bar swings to the left.
+
+## A second look
+
+A query vector $\mathbf{q}$ that you drag, and five fixed candidate vectors. Each row in the list shows one candidate's label, its dot product with $\mathbf{q}$, and a signed bar. As you move $\mathbf{q}$, the list re-sorts in real time — the most aligned candidate climbs to the top.
+
+<Callout targetInteractive="candidate-sort">
+  Drag $\mathbf{q}$ to a position far from the origin. The list re-sorts by *signed* dot product: candidates in roughly the same direction as $\mathbf{q}$ climb, anti-aligned ones sink. The signed bar in each row tells you the sign and the magnitude at a glance.
+</Callout>
+
+This is the working pattern for the attention step in transformers. A query is a vector. A key is a vector. The attention score between them is the dot product. The next lesson is exactly this: a 4×4 grid of these dot products, one per (query, key) pair.
+
+## Recap
+
+The dot product $\mathbf{a} \cdot \mathbf{b}$ is a single number with two readings. Geometrically, it is $\|\mathbf{a}\|\|\mathbf{b}\|\cos\theta$ — the product of the magnitudes scaled by how aligned the two vectors are. Computationally, it is $\sum_i a_i b_i$ — multiply componentwise and sum. The sign tells you which side of perpendicular the pair sits on; the magnitude tells you how strongly aligned. Every time you see "similarity" between two vectors in deep learning, this is the operation underneath.
