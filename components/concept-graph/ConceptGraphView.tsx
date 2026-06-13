@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { Fragment, useMemo, useState } from 'react';
 import dagre from 'dagre';
 import Link from 'next/link';
 import clsx from 'clsx';
@@ -123,7 +123,7 @@ export function ConceptGraphView({ graph }: { graph: ConceptGraph }) {
             )}
           </g>
         );
-        if (!isLesson) return nodeContent;
+        if (!isLesson) return <Fragment key={n.id}>{nodeContent}</Fragment>;
         return (
           <Link key={n.id} href={`/lessons/${n.lesson}`}>
             {nodeContent}
