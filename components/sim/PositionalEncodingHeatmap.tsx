@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { Fragment, useMemo, useState } from 'react';
 import clsx from 'clsx';
 import { sinusoidalPE } from '@/lib/math/positional';
 
@@ -52,8 +52,8 @@ export function PositionalEncodingHeatmap({ preset }: { preset?: PositionalEncod
             ))}
             {/* Rows */}
             {pe.map((row, pos) => (
-              <>
-                <div key={`l${pos}`} className="text-[9px] text-dim font-mono text-center pr-1">{pos}</div>
+              <Fragment key={`row-${pos}`}>
+                <div className="text-[9px] text-dim font-mono text-center pr-1">{pos}</div>
                 {row.map((v, dim) => (
                   <div
                     key={`c${pos}-${dim}`}
@@ -66,7 +66,7 @@ export function PositionalEncodingHeatmap({ preset }: { preset?: PositionalEncod
                     title={`PE(${pos}, ${dim}) = ${v.toFixed(3)}`}
                   />
                 ))}
-              </>
+              </Fragment>
             ))}
           </div>
         </div>
