@@ -14,21 +14,22 @@ export default function NotFound() {
         Lost?
       </h1>
       <p className="text-[1.0625rem] text-muted leading-relaxed mb-10">
-        That URL doesn't match a lesson. The concept map shows the full graph;
-        the home page lists the 16 lessons in reading order.
+        That URL doesn't match a lesson. The home page lists the 16
+        lessons in reading order; the concept map shows how they
+        connect.
       </p>
       <div className="flex flex-wrap items-center gap-x-6 gap-y-3 text-[0.95rem]">
         <Link
-          href="/map"
+          href="/"
           className="text-accent hover:text-accent-hover transition-colors border-b border-accent-dim hover:border-accent"
         >
-          Open the concept map →
+          ← Home
         </Link>
         <Link
-          href="/"
+          href="/map"
           className="text-muted hover:text-ink transition-colors border-b border-border-strong hover:border-accent"
         >
-          Back to the home page
+          Concept map →
         </Link>
       </div>
     </main>

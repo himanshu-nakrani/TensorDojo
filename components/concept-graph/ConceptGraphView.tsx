@@ -1,404 +1,438 @@
 'use client';
 
-import { Fragment, useMemo } from 'react';
-import dagre from 'dagre';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import type { ConceptGraph, ConceptNode } from '@/lib/content/schemas';
-
-type PositionedNode = ConceptNode & {
-  x: number;
-  y: number;
-  trackId: string;
-};
-
-const NODE_W = 200;
-const NODE_H = 60;
-const TRACK_LABEL_H = 28;
-const TRACK_GAP = 56;
-const TRACK_HORIZONTAL_PAD = 32;
+import { getVisited, getLastVisited } from '@/lib/progress/visits';
+import type { TrackSection } from '@/lib/content/map-data';
 
 /**
- * Render the concept graph as an SVG. Nodes are grouped by track
- * (the same groups the home page uses) and each track is laid out
- * left-to-right with dagre. Tracks are stacked vertically; cross-
- * track edges are drawn faintly so the reader can see what feeds
- * what without the layout becoming illegible.
+ * The concept map is laid out as a single SVG canvas:
  *
- * Click a node with a `lesson` to navigate to that lesson.
+ *   - Each track is a column. Tracks are ordered left-to-right
+ *     by reading order, exactly as on the home page.
+ *   - Each lesson is a node positioned at (track column, slot
+ *     within track). The longest track sets the canvas height.
+ *   - In-track arrows are drawn vertically between consecutive
+ *     lessons.
+ *   - Cross-track prerequisite edges (from graph.yaml) are drawn
+ *     as curved SVG paths from the prerequisite lesson to the
+ *     dependent lesson. The curve clears node bounding boxes by
+ *     going outside the column.
+ *   - Visit state colors the node fill. The "resume" target
+ *     (most recently visited) gets an outline ring and a label.
+ *
+ * This is a deliberately static layout — no force-directed
+ * physics, no zooming, no panning. The grid is what makes the
+ * structure scannable. The lesson count is small enough
+ * (16 over 5 tracks) that a single screen at 1440 holds the whole
+ * map without scrolling.
  */
-export function ConceptGraphView({ graph }: { graph: ConceptGraph }) {
-  const positioned = useMemo(() => layoutByTrack(graph), [graph]);
+export function ConceptMapView({ sections }: { sections: TrackSection[] }) {
+  const [visited, setVisited] = useState<Set<string>>(() => new Set());
+  const [resumeSlug, setResumeSlug] = useState<string | null>(null);
 
-  if (positioned.nodes.length === 0) {
-    return (
-      <p className="text-muted font-mono text-sm">
-        No concepts yet. Add some to <code>content/concepts/graph.yaml</code>.
-      </p>
-    );
-  }
-
-  const { minX, minY, width, height } = positioned;
+  useEffect(() => {
+    const refresh = () => {
+      setVisited(new Set(Object.keys(getVisited())));
+      setResumeSlug(getLastVisited()?.slug ?? null);
+    };
+    refresh();
+    window.addEventListener('tld-visits-changed', refresh);
+    window.addEventListener('storage', refresh);
+    return () => {
+      window.removeEventListener('tld-visits-changed', refresh);
+      window.removeEventListener('storage', refresh);
+    };
+  }, []);
 
   return (
-    <svg
-      viewBox={`${minX} ${minY} ${width} ${height}`}
-      className="w-full h-auto"
-      role="img"
-      aria-label="Concept graph"
-    >
-      <defs>
-        <marker
-          id="arrow"
-          viewBox="0 0 10 10"
-          refX={9}
-          refY={5}
-          markerWidth={6}
-          markerHeight={6}
-          orient="auto-start-reverse"
-        >
-          <path d="M 0 0 L 10 5 L 0 10 z" fill="rgb(var(--fg-subtle))" />
-        </marker>
-        <marker
-          id="arrow-faint"
-          viewBox="0 0 10 10"
-          refX={9}
-          refY={5}
-          markerWidth={5}
-          markerHeight={5}
-          orient="auto-start-reverse"
-        >
-          <path d="M 0 0 L 10 5 L 0 10 z" fill="rgb(var(--border-strong))" />
-        </marker>
-      </defs>
-
-      {/* Track labels (left of each track row) */}
-      {positioned.tracks.map((track) => (
-        <g key={track.id}>
-          <text
-            x={minX + 8}
-            y={track.y + TRACK_LABEL_H - 8}
-            className="fill-dim font-mono"
-            fontSize={11}
-          >
-            {track.label}
-          </text>
-        </g>
-      ))}
-
-      {/* Edges — within-track drawn solid, cross-track drawn faint dashed */}
-      {graph.edges.map((e, i) => {
-        const from = positioned.nodes.find((n) => n.id === e.from);
-        const to = positioned.nodes.find((n) => n.id === e.to);
-        if (!from || !to) return null;
-        const crossTrack = from.trackId !== to.trackId;
-        const x1 = from.x + NODE_W;
-        const y1 = from.y + NODE_H / 2;
-        const x2 = to.x;
-        const y2 = to.y + NODE_H / 2;
-        // For cross-track edges, route them as a smooth bezier
-        // that exits the right side of the source track and
-        // enters the left side of the target track.
-        if (crossTrack) {
-          const midX = (x1 + x2) / 2;
-          return (
-            <path
-              key={i}
-              d={`M ${x1} ${y1} C ${midX} ${y1}, ${midX} ${y2}, ${x2} ${y2}`}
-              fill="none"
-              stroke="rgb(var(--border-strong))"
-              strokeWidth={0.8}
-              strokeDasharray="3 3"
-              markerEnd="url(#arrow-faint)"
-              opacity={0.5}
-            />
-          );
-        }
-        return (
-          <line
-            key={i}
-            x1={x1}
-            y1={y1}
-            x2={x2}
-            y2={y2}
-            stroke="rgb(var(--border-strong))"
-            strokeWidth={1}
-            markerEnd="url(#arrow)"
-          />
-        );
-      })}
-
-      {/* Nodes */}
-      {positioned.nodes.map((n) => {
-        const isLesson = !!n.lesson;
-        const nodeContent = (
-          <g transform={`translate(${n.x}, ${n.y})`}>
-            <rect
-              width={NODE_W}
-              height={NODE_H}
-              rx={8}
-              fill="rgb(var(--bg-elevated))"
-              stroke={isLesson ? 'rgb(var(--border))' : 'rgb(var(--bg-code))'}
-              strokeWidth={1}
-            />
-            <text
-              x={NODE_W / 2}
-              y={isLesson ? 24 : 36}
-              textAnchor="middle"
-              className="fill-ink font-mono"
-              fontSize={11}
-              style={{ fontSize: 11 }}
-            >
-              {n.title.length > 28 ? n.title.slice(0, 26) + '…' : n.title}
-            </text>
-            {isLesson && (
-              <text
-                x={NODE_W / 2}
-                y={46}
-                textAnchor="middle"
-                className="fill-dim font-mono"
-                fontSize={9}
-                style={{ fontSize: 9 }}
-              >
-                lesson
-              </text>
-            )}
-          </g>
-        );
-        if (!isLesson) return <Fragment key={n.id}>{nodeContent}</Fragment>;
-        return (
-          <Link key={n.id} href={`/lessons/${n.lesson}`}>
-            {nodeContent}
-          </Link>
-        );
-      })}
-    </svg>
+    <div className="space-y-8">
+      <MapCanvas
+        sections={sections}
+        visited={visited}
+        resumeSlug={resumeSlug}
+      />
+      <Legend hasResume={resumeSlug !== null} />
+    </div>
   );
 }
 
-interface TrackLayout {
-  id: string;
-  label: string;
-  y: number;
-}
-
-interface LayoutResult {
-  nodes: PositionedNode[];
-  tracks: TrackLayout[];
-  minX: number;
-  minY: number;
-  width: number;
-  height: number;
-}
-
 /**
- * Per-track LR layout. Each track gets its own dagre sub-layout;
- * tracks are stacked vertically with a fixed gap. Cross-track
- * edges are preserved in the returned nodes (with their trackId)
- * but the SVG renders them separately.
- *
- * Edges whose endpoints are both in the same track bucket are
- * passed to dagre so it can build the LR ranks. Edges that cross
- * tracks are deferred to the SVG (drawn as faint bezier curves).
+ * Layout constants. The map is responsive via the wrapping
+ * `[mask-image]`-free SVG with `preserveAspectRatio`; the
+ * pixel values below are the *design grid*, not absolute
+ * screen positions.
  */
-function layoutByTrack(graph: ConceptGraph): LayoutResult {
-  // Bucket nodes by track id. Nodes not in any track bucket go
-  // into a "misc" track rendered at the bottom.
-  const trackBuckets = new Map<string, ConceptNode[]>();
-  trackBuckets.set('misc', []);
-  for (const t of TRACK_DEFS) trackBuckets.set(t.id, []);
-  for (const node of graph.nodes) {
-    const id = nodeTrackId(node.id) ?? 'misc';
-    const bucket = trackBuckets.get(id) ?? trackBuckets.get('misc')!;
-    bucket.push(node);
-  }
+const NODE_W = 200;
+const NODE_H = 88;
+const COL_GAP = 56;
+const ROW_GAP = 28;
+const HEADER_H = 44;
+const PADDING_X = 24;
+const PADDING_Y = 24;
 
-  // Group edges: within-track (passed to dagre) vs cross-track
-  // (deferred to SVG). Also filter out edges whose endpoints
-  // don't exist in the graph.
-  const nodeIds = new Set(graph.nodes.map((n) => n.id));
-  const withinTrackEdges: Array<[string, string, string]> = []; // [from, to, trackId]
-  for (const e of graph.edges) {
-    if (!nodeIds.has(e.from) || !nodeIds.has(e.to)) continue;
-    const fromTrack = nodeTrackId(e.from);
-    const toTrack = nodeTrackId(e.to);
-    if (fromTrack !== undefined && fromTrack === toTrack) {
-      withinTrackEdges.push([e.from, e.to, fromTrack]);
-    }
-  }
-
-  const positioned: PositionedNode[] = [];
-  let yCursor = 0;
-  const tracks: TrackLayout[] = [];
-
-  for (const t of TRACK_DEFS) {
-    const bucket = trackBuckets.get(t.id) ?? [];
-    if (bucket.length === 0) continue;
-    const trackEdges = withinTrackEdges
-      .filter((e) => e[2] === t.id)
-      .map(([from, to]) => ({ from, to }));
-    const { nodes } = layoutTrackLR(bucket, t.id, trackEdges);
-    for (const n of nodes) {
-      positioned.push({ ...n, x: n.x, y: n.y + yCursor });
-    }
-    tracks.push({ id: t.id, label: t.label, y: yCursor });
-    yCursor += NODE_H + TRACK_GAP;
-  }
-
-  // Any remaining misc nodes go on a final track.
-  const misc = trackBuckets.get('misc') ?? [];
-  if (misc.length > 0) {
-    const { nodes } = layoutTrackLR(misc, 'misc', []);
-    for (const n of nodes) {
-      positioned.push({ ...n, x: n.x, y: n.y + yCursor });
-    }
-    tracks.push({ id: 'misc', label: 'Other', y: yCursor });
-  }
-
-  if (positioned.length === 0) {
-    return {
-      nodes: [],
-      tracks: [],
-      minX: 0,
-      minY: 0,
-      width: 0,
-      height: 0,
-    };
-  }
-
-  // Normalize positions so the leftmost node starts at TRACK_HORIZONTAL_PAD
-  // and the track label gutter (the longest label width) is reserved.
-  const allXs = positioned.map((n) => n.x);
-  const minNodeX = Math.min(...allXs);
-  const labelGutter = longestLabelWidth(TRACK_DEFS.map((t) => t.label)) + 16;
-  const shiftX = TRACK_HORIZONTAL_PAD + labelGutter - minNodeX;
-  for (const n of positioned) n.x += shiftX;
-
-  const allX2 = positioned.map((n) => n.x + NODE_W);
-  const allY2 = positioned.map((n) => n.y + NODE_H);
-  const minX = 0;
-  const minY = -TRACK_LABEL_H;
-  const width = Math.max(...allX2) - minX + TRACK_HORIZONTAL_PAD;
-  const height = Math.max(...allY2) - minY + TRACK_GAP;
-
-  return { nodes: positioned, tracks, minX, minY, width, height };
+interface PositionedLesson {
+  slug: string;
+  title: string;
+  minutes: number;
+  concepts: string[];
+  trackId: string;
+  /** Column index in the grid (0-based, left to right). */
+  col: number;
+  /** Row index within the track column (0-based, top to bottom). */
+  row: number;
+  /** Center x. */
+  cx: number;
+  /** Center y. */
+  cy: number;
 }
 
-function layoutTrackLR(
-  nodes: readonly ConceptNode[],
-  trackId: string,
-  edges: ReadonlyArray<{ from: string; to: string }>,
-): {
-  nodes: PositionedNode[];
-  width: number;
-} {
-  const g = new dagre.graphlib.Graph({ directed: true });
-  g.setGraph({
-    rankdir: 'LR',
-    nodesep: 24,
-    ranksep: 36,
-    marginx: 8,
-    marginy: 8,
+interface CrossEdge {
+  from: PositionedLesson;
+  to: PositionedLesson;
+  fromTrackLabel: string;
+}
+
+function MapCanvas({
+  sections,
+  visited,
+  resumeSlug,
+}: {
+  sections: TrackSection[];
+  visited: Set<string>;
+  resumeSlug: string | null;
+}) {
+  // 1. Position every lesson in the grid.
+  const positioned: PositionedLesson[] = [];
+  const bySlug = new Map<string, PositionedLesson>();
+  sections.forEach((section, col) => {
+    section.lessons.forEach((lesson, row) => {
+      const cx = PADDING_X + col * (NODE_W + COL_GAP) + NODE_W / 2;
+      const cy = PADDING_Y + HEADER_H + row * (NODE_H + ROW_GAP) + NODE_H / 2;
+      const p: PositionedLesson = {
+        slug: lesson.slug,
+        title: lesson.title,
+        minutes: lesson.minutes,
+        concepts: lesson.concepts,
+        trackId: section.id,
+        col,
+        row,
+        cx,
+        cy,
+      };
+      positioned.push(p);
+      bySlug.set(lesson.slug, p);
+    });
   });
-  g.setDefaultEdgeLabel(() => ({}));
-  for (const n of nodes) {
-    g.setNode(n.id, { width: NODE_W, height: NODE_H });
-  }
-  for (const e of edges) {
-    g.setEdge(e.from, e.to);
-  }
-  dagre.layout(g);
-  const positioned: PositionedNode[] = nodes.map((n) => {
-    const pos = g.node(n.id);
-    return {
-      ...n,
-      x: pos.x - NODE_W / 2,
-      y: pos.y - NODE_H / 2,
-      trackId,
-    };
+
+  // 2. Collect cross-track edges, lifting them from each destination
+  //    lesson's crossTrackPrereqs.
+  const crossEdges: CrossEdge[] = [];
+  sections.forEach((section) => {
+    section.lessons.forEach((lesson) => {
+      for (const pre of lesson.crossTrackPrereqs) {
+        const from = bySlug.get(pre.from);
+        const to = bySlug.get(pre.to);
+        if (!from || !to) continue;
+        crossEdges.push({ from, to, fromTrackLabel: pre.fromTrackLabel });
+      }
+    });
   });
-  const allX2 = positioned.map((n) => n.x + NODE_W);
-  const width = Math.max(...allX2) - Math.min(...positioned.map((n) => n.x));
-  return { nodes: positioned, width };
+
+  // 3. Canvas dimensions.
+  const cols = sections.length;
+  const maxRows = Math.max(...sections.map((s) => s.lessons.length));
+  const width = PADDING_X * 2 + cols * NODE_W + (cols - 1) * COL_GAP;
+  const height =
+    PADDING_Y * 2 + HEADER_H + maxRows * NODE_H + (maxRows - 1) * ROW_GAP;
+
+  return (
+    <div className="overflow-x-auto">
+      <div
+        className="relative mx-auto"
+        style={{ width: `${width}px`, maxWidth: '100%' }}
+      >
+        {/* SVG layer: track-column backdrops, in-track arrows,
+            cross-track arcs. Sits behind the HTML lesson nodes
+            (which carry interactivity). */}
+        <svg
+          viewBox={`0 0 ${width} ${height}`}
+          width={width}
+          height={height}
+          className="block w-full h-auto"
+          aria-hidden="true"
+        >
+          <defs>
+            <marker
+              id="arrow-in-track"
+              viewBox="0 0 10 10"
+              refX="9"
+              refY="5"
+              markerWidth="6"
+              markerHeight="6"
+              orient="auto-start-reverse"
+            >
+              <path
+                d="M 0 0 L 10 5 L 0 10 z"
+                className="fill-fg-subtle"
+              />
+            </marker>
+            <marker
+              id="arrow-cross-track"
+              viewBox="0 0 10 10"
+              refX="9"
+              refY="5"
+              markerWidth="6"
+              markerHeight="6"
+              orient="auto-start-reverse"
+            >
+              <path
+                d="M 0 0 L 10 5 L 0 10 z"
+                className="fill-accent/70"
+              />
+            </marker>
+          </defs>
+
+          {/* Track column backdrops. A faint vertical band behind
+              each track makes the grouping legible without
+              competing with the nodes. */}
+          {sections.map((section, col) => {
+            const x =
+              PADDING_X + col * (NODE_W + COL_GAP) - COL_GAP / 4;
+            const w = NODE_W + COL_GAP / 2;
+            return (
+              <rect
+                key={section.id}
+                x={x}
+                y={PADDING_Y}
+                width={w}
+                height={height - PADDING_Y * 2}
+                rx={12}
+                className="fill-bg fill-opacity-50"
+              />
+            );
+          })}
+
+          {/* In-track arrows: vertical line between consecutive
+              lessons. */}
+          {sections.flatMap((section, col) =>
+            section.lessons.slice(0, -1).map((lesson, row) => {
+              const x =
+                PADDING_X + col * (NODE_W + COL_GAP) + NODE_W / 2;
+              const y1 =
+                PADDING_Y + HEADER_H + row * (NODE_H + ROW_GAP) + NODE_H;
+              const y2 = y1 + ROW_GAP - 4;
+              return (
+                <line
+                  key={`${section.id}-${lesson.slug}-arrow`}
+                  x1={x}
+                  y1={y1}
+                  x2={x}
+                  y2={y2}
+                  className="stroke-fg-subtle"
+                  strokeWidth={1.5}
+                  markerEnd="url(#arrow-in-track)"
+                />
+              );
+            }),
+          )}
+
+          {/* Cross-track edges as cubic Bézier arcs from the bottom
+              of the source node to the top of the destination
+              node. The control points pull the curve out of the
+              column band so it doesn't overlap nodes. */}
+          {crossEdges.map((e) => {
+            const sx = e.from.cx;
+            const sy = e.from.cy + NODE_H / 2;
+            const tx = e.to.cx;
+            const ty = e.to.cy - NODE_H / 2;
+            // Control point distance scales with column gap so the
+            // arc clears node boxes.
+            const dx = tx - sx;
+            const dy = ty - sy;
+            const k = Math.max(40, Math.min(120, Math.abs(dy) / 2));
+            const c1x = sx + Math.sign(dx) * 8;
+            const c1y = sy + k;
+            const c2x = tx - Math.sign(dx) * 8;
+            const c2y = ty - k;
+            return (
+              <path
+                key={`${e.from.slug}->${e.to.slug}`}
+                d={`M ${sx} ${sy} C ${c1x} ${c1y}, ${c2x} ${c2y}, ${tx} ${ty}`}
+                className="stroke-accent/60"
+                strokeWidth={1.25}
+                fill="none"
+                strokeDasharray="3 3"
+                markerEnd="url(#arrow-cross-track)"
+              />
+            );
+          })}
+        </svg>
+
+        {/* HTML layer: track headers + lesson nodes, absolutely
+            positioned over the SVG. Keeping the nodes as HTML
+            (not SVG <foreignObject>) means real focus styles, real
+            <Link> behavior, real text wrapping. */}
+        <div className="absolute inset-0">
+          {sections.map((section, col) => {
+            const x = PADDING_X + col * (NODE_W + COL_GAP);
+            return (
+              <div
+                key={section.id}
+                className="absolute"
+                style={{
+                  left: `${x}px`,
+                  top: `${PADDING_Y}px`,
+                  width: `${NODE_W}px`,
+                }}
+              >
+                <h2 className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono leading-snug">
+                  {section.label}
+                </h2>
+                <div className="text-[10px] text-fg-subtle font-mono mt-0.5">
+                  {section.lessons.length} lesson
+                  {section.lessons.length === 1 ? '' : 's'}
+                </div>
+              </div>
+            );
+          })}
+
+          {positioned.map((lesson) => {
+            const isVisited = visited.has(lesson.slug);
+            const isResume = resumeSlug === lesson.slug;
+            const left = lesson.cx - NODE_W / 2;
+            const top = lesson.cy - NODE_H / 2;
+            return (
+              <LessonNode
+                key={lesson.slug}
+                lesson={lesson}
+                left={left}
+                top={top}
+                visited={isVisited}
+                resume={isResume}
+              />
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
 }
 
-function longestLabelWidth(labels: readonly string[]): number {
-  // Approximate monospace width: 6.5px per char at 11px font-size.
-  return Math.max(0, ...labels.map((l) => l.length * 6.5));
+function LessonNode({
+  lesson,
+  left,
+  top,
+  visited,
+  resume,
+}: {
+  lesson: PositionedLesson;
+  left: number;
+  top: number;
+  visited: boolean;
+  resume: boolean;
+}) {
+  return (
+    <Link
+      href={`/lessons/${lesson.slug}`}
+      aria-label={`Open lesson: ${lesson.title}${
+        visited ? ' (visited)' : ''
+      }${resume ? ' — resume here' : ''}`}
+      data-visited={visited ? 'true' : 'false'}
+      data-resume={resume ? 'true' : 'false'}
+      className={[
+        'focus-ring group absolute block rounded-lg border bg-bg-elevated p-3 transition-colors card-surface',
+        resume
+          ? 'border-accent ring-2 ring-accent/30 hover:bg-bg-elevated-hover'
+          : visited
+            ? 'border-accent/40 hover:border-accent hover:bg-bg-elevated-hover'
+            : 'border-border hover:border-accent hover:bg-bg-elevated-hover',
+      ].join(' ')}
+      style={{
+        left: `${left}px`,
+        top: `${top}px`,
+        width: `${NODE_W}px`,
+        height: `${NODE_H}px`,
+      }}
+    >
+      {resume && (
+        <div
+          className="absolute -top-2.5 left-3 text-[9px] uppercase tracking-[0.18em] font-mono px-1.5 py-0.5 rounded bg-accent text-accent-fg"
+          aria-hidden="true"
+        >
+          Resume
+        </div>
+      )}
+      <div className="flex items-start justify-between gap-2 h-full">
+        <h3 className="text-[0.825rem] font-semibold text-ink leading-snug tracking-[-0.005em] line-clamp-3">
+          {lesson.title}
+        </h3>
+        <span
+          aria-hidden="true"
+          className={
+            visited
+              ? 'inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-accent mt-1'
+              : 'inline-block h-1.5 w-1.5 shrink-0 rounded-full border border-border-strong mt-1'
+          }
+          title={visited ? 'Visited' : 'Not yet visited'}
+        />
+      </div>
+      <div className="absolute bottom-2 left-3 right-3 flex items-center justify-between text-[9px] font-mono text-fg-subtle pointer-events-none">
+        <span>{lesson.minutes} min</span>
+        {lesson.concepts.length > 0 && (
+          <span title={lesson.concepts.join(', ')} className="truncate ml-2">
+            {lesson.concepts.length} concept
+            {lesson.concepts.length === 1 ? '' : 's'}
+          </span>
+        )}
+      </div>
+    </Link>
+  );
 }
 
-/**
- * Map a concept id to a track id. The mapping is hand-written to
- * match the home page groups; it does not pull from the lesson
- * registry (which would create a circular import at build time
- * for /map, since the registry imports lesson components).
- */
-function nodeTrackId(conceptId: string): string | undefined {
-  const id = conceptId;
-  if (
-    id === 'vector' ||
-    id === 'vector-magnitude' ||
-    id === 'dot-product' ||
-    id === 'cos-theta' ||
-    id === 'projection' ||
-    id === 'dot-product-concept' ||
-    id === 'vector-projection-concept'
-  ) {
-    return 'foundations';
-  }
-  if (
-    id === 'softmax' ||
-    id === 'attention-score' ||
-    id === 'attention-weight' ||
-    id === 'temperature' ||
-    id === 'scaled-dot-product' ||
-    id === 'causal-mask' ||
-    id === 'attention-output' ||
-    id === 'softmax-concept' ||
-    id === 'attention-scores-concept' ||
-    id === 'attention-output-concept' ||
-    id === 'scaled-attention-concept' ||
-    id === 'causal-mask-concept'
-  ) {
-    return 'pick-what-matters';
-  }
-  if (
-    id === 'token-embedding' ||
-    id === 'positional-encoding' ||
-    id === 'token-embeddings-concept' ||
-    id === 'positional-encoding-concept'
-  ) {
-    return 'tokens-as-inputs';
-  }
-  if (
-    id === 'multi-head' ||
-    id === 'residual' ||
-    id === 'layer-norm' ||
-    id === 'feed-forward' ||
-    id === 'gelu' ||
-    id === 'multi-head-attention-concept' ||
-    id === 'residuals-layernorm-concept' ||
-    id === 'feed-forward-concept' ||
-    id === 'transformer-block'
-  ) {
-    return 'transformer-block';
-  }
-  if (
-    id === 'decoding-strategy' ||
-    id === 'cross-entropy' ||
-    id === 'gradient-descent' ||
-    id === 'sampling-decoding-concept' ||
-    id === 'cross-entropy-concept' ||
-    id === 'gradient-descent-concept'
-  ) {
-    return 'decoding-and-learning';
-  }
-  return undefined;
+function Legend({ hasResume }: { hasResume: boolean }) {
+  return (
+    <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-[10px] font-mono text-fg-subtle pt-4 border-t border-border">
+      <span className="uppercase tracking-[0.18em] text-dim">Legend</span>
+      <span className="inline-flex items-center gap-1.5">
+        <span aria-hidden="true" className="inline-block h-1.5 w-1.5 rounded-full bg-accent" />
+        visited
+      </span>
+      <span className="inline-flex items-center gap-1.5">
+        <span
+          aria-hidden="true"
+          className="inline-block h-1.5 w-1.5 rounded-full border border-border-strong"
+        />
+        unvisited
+      </span>
+      <span className="inline-flex items-center gap-1.5">
+        <svg width="22" height="6" aria-hidden="true">
+          <line x1="0" y1="3" x2="20" y2="3" className="stroke-fg-subtle" strokeWidth="1.5" />
+        </svg>
+        next in track
+      </span>
+      <span className="inline-flex items-center gap-1.5">
+        <svg width="22" height="6" aria-hidden="true">
+          <line
+            x1="0"
+            y1="3"
+            x2="20"
+            y2="3"
+            className="stroke-accent/60"
+            strokeWidth="1.25"
+            strokeDasharray="3 3"
+          />
+        </svg>
+        cross-track prerequisite
+      </span>
+      {hasResume && (
+        <span className="inline-flex items-center gap-1.5">
+          <span className="inline-block px-1 py-0.5 rounded bg-accent text-accent-fg uppercase tracking-[0.18em]">
+            Resume
+          </span>
+          where you left off
+        </span>
+      )}
+    </div>
+  );
 }
-
-const TRACK_DEFS: readonly { id: string; label: string }[] = [
-  { id: 'foundations', label: 'Foundations' },
-  { id: 'pick-what-matters', label: 'Picking what matters' },
-  { id: 'tokens-as-inputs', label: 'Tokens as inputs' },
-  { id: 'transformer-block', label: 'The block' },
-  { id: 'decoding-and-learning', label: 'Decoding + learning' },
-];

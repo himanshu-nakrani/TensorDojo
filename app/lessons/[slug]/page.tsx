@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import { LessonShell } from '@/components/lesson/LessonShell';
 import { Workbench } from '@/components/lesson/Workbench';
 import { PrevNext } from '@/components/lesson/PrevNext';
+import { VisitTracker } from '@/components/lesson/VisitTracker';
 import { getLessonManifest } from '@/lib/lesson-manifest';
 import { listSlugs, mdxLessonLoaders } from '@/lib/lessons';
 
@@ -45,6 +46,7 @@ export default async function LessonPage({ params }: PageProps) {
       minutes={manifest.meta.minutes}
       summary={manifest.meta.summary}
     >
+      <VisitTracker slug={slug} />
       <Workbench
         interactives={interactives}
         defaultActive={defaultActive}

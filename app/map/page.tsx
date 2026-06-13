@@ -1,16 +1,45 @@
-import { ConceptGraphView } from '@/components/concept-graph/ConceptGraphView';
+import Link from 'next/link';
+import { ConceptMapView } from '@/components/concept-graph/ConceptGraphView';
 import { loadConceptGraph } from '@/lib/content/loaders';
+import { listLessonMeta } from '@/lib/lessons-meta';
+import { buildTrackSections } from '@/lib/content/map-data';
 
 export const metadata = {
-  title: 'Concept map',
-  description: 'The prerequisite graph for the Foundations module.',
+  title: 'Concept map — AI Learning Lab',
+  description:
+    'The five tracks of the Foundations module, with prerequisite edges and visit state.',
 };
 
+/**
+ * Track-grouped concept map. Each track is a row of lessons in
+ * reading order. Cross-track prerequisite edges (from graph.yaml)
+ * are surfaced as small annotations on the destination lesson node,
+ * not as full graph crossings.
+ *
+ * Data prep happens at build time (SSG). Visit state (visited /
+ * unvisited pill, Resume CTA) is hydrated client-side.
+ */
 export default function MapPage() {
   const graph = loadConceptGraph();
+  const lessons = listLessonMeta();
+  const lessonMeta: Record<string, { title: string; minutes: number }> = {};
+  for (const l of lessons) {
+    lessonMeta[l.meta.slug] = {
+      title: l.meta.title,
+      minutes: l.meta.minutes,
+    };
+  }
+  const sections = buildTrackSections(graph, lessonMeta);
+
   return (
-    <main className="mx-auto px-6 sm:px-10 py-12 sm:py-16 max-w-[1200px]">
+    <main className="mx-auto px-6 sm:px-10 py-12 sm:py-16 max-w-[1400px]">
       <header className="mb-10 max-w-prose">
+        <Link
+          href="/"
+          className="text-[11px] text-muted hover:text-ink transition-colors font-mono inline-block mb-6"
+        >
+          ← Home
+        </Link>
         <div className="text-[11px] uppercase tracking-[0.18em] text-dim font-mono mb-3">
           Concept map
         </div>
@@ -18,21 +47,16 @@ export default function MapPage() {
           How the pieces connect
         </h1>
         <p className="text-[1rem] text-muted leading-relaxed">
-          A directed graph of the concepts the lessons build on. Click any
-          node tagged "lesson" to open that lesson. Atomic concepts (no
-          lesson tag) are the building blocks the lessons teach. Arrows go
-          from prerequisite to dependent.
+          Five tracks, left to right, in reading order. Solid arrows
+          mark the next lesson within a track; dashed arcs mark a
+          prerequisite from another track. If you've started reading,
+          your last lesson is highlighted as the resume point.
         </p>
       </header>
 
-      <div className="rounded-xl border border-border bg-surface p-4 sm:p-6">
-        <ConceptGraphView graph={graph} />
+      <div className="rounded-xl border border-border bg-bg-elevated p-4 sm:p-6 card-surface">
+        <ConceptMapView sections={sections} />
       </div>
-
-      <p className="mt-6 text-[12px] text-dim font-mono">
-        Render: dagre TB layout · {graph.nodes.length} nodes ·{' '}
-        {graph.edges.length} edges.
-      </p>
     </main>
   );
 }

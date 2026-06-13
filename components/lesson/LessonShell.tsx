@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { ReactNode } from 'react';
 
 interface LessonShellProps {
@@ -11,10 +12,18 @@ interface LessonShellProps {
  * Page chrome for a single lesson. Renders the title block at the top;
  * the two-column prose/workbench layout is the children's job (see
  * <Workbench>).
+ *
+ * The top of the shell carries a single back-link to the home page.
  */
 export function LessonShell({ title, minutes, summary, children }: LessonShellProps) {
   return (
     <article className="mx-auto px-6 sm:px-10 py-12 sm:py-16 max-w-[1320px]">
+      <Link
+        href="/"
+        className="text-[11px] text-muted hover:text-ink transition-colors font-mono inline-block mb-6"
+      >
+        ← Home
+      </Link>
       <header className="mb-10 max-w-prose">
         <div className="flex items-center gap-3 text-[11px] uppercase tracking-[0.18em] text-dim font-mono mb-5">
           <span>Lesson</span>
