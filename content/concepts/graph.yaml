@@ -20,6 +20,8 @@ nodes:
     title: Temperature
   - id: scaled-dot-product
     title: Scaled dot product
+  - id: attention-output
+    title: Attention output
   - id: token-embedding
     title: Token embedding
   - id: positional-encoding
@@ -32,6 +34,16 @@ nodes:
     title: Residual connection
   - id: layer-norm
     title: Layer normalization
+  - id: feed-forward
+    title: Feed-forward network
+  - id: gelu
+    title: GELU activation
+  - id: decoding-strategy
+    title: Decoding strategy
+  - id: cross-entropy
+    title: Cross-entropy loss
+  - id: gradient-descent
+    title: Gradient descent
 
   # Lesson concept nodes
   - id: dot-product-concept
@@ -46,6 +58,9 @@ nodes:
   - id: attention-scores-concept
     title: "Attention scores: who attends to whom"
     lesson: attention-scores
+  - id: attention-output-concept
+    title: "Attention output: the weighted sum of values"
+    lesson: attention-output
   - id: scaled-attention-concept
     title: "Why we scale attention by √d_k"
     lesson: scaled-attention
@@ -64,9 +79,21 @@ nodes:
   - id: residuals-layernorm-concept
     title: "Residual connections + layer normalization"
     lesson: residuals-layernorm
+  - id: feed-forward-concept
+    title: "Feed-forward network: per-token rewriting"
+    lesson: feed-forward
   - id: transformer-block
     title: "The transformer block: putting it all together"
     lesson: transformer-block
+  - id: sampling-decoding-concept
+    title: "Sampling and decoding: from logits to a token"
+    lesson: sampling-decoding
+  - id: cross-entropy-concept
+    title: "Cross-entropy: how the model knows it was wrong"
+    lesson: cross-entropy
+  - id: gradient-descent-concept
+    title: "Gradient descent: walking the loss downhill"
+    lesson: gradient-descent
 
 edges:
   # Atomic prerequisite chain
@@ -96,10 +123,8 @@ edges:
     to: scaled-dot-product
   - from: scaled-dot-product
     to: attention-weight
-  - from: token-embedding
-    to: attention-score
-  - from: token-embedding
-    to: positional-encoding
+  - from: attention-weight
+    to: attention-output
   - from: attention-score
     to: causal-mask
   - from: causal-mask
@@ -114,24 +139,40 @@ edges:
     to: layer-norm
   - from: layer-norm
     to: attention-weight
+  - from: feed-forward
+    to: gelu
+  - from: token-embedding
+    to: attention-score
+  - from: token-embedding
+    to: positional-encoding
+  - from: cross-entropy
+    to: softmax
+  - from: gradient-descent
+    to: cross-entropy
 
-  # Capstone edges — only the six atomic concepts whose lessons are
-  # the *direct* prerequisite lessons of the capstone. The other four
-  # (dot-product, softmax, attention-score, attention-weight,
-  # scaled-dot-product, temperature) are transitively implied and not
-  # drawn, to keep the map readable at the cost of strict
-  # completeness.
+  # Capstone edges (block): only the 6 atom concepts whose
+  # lessons are the *direct* prerequisite lessons of the block.
   - from: multi-head
     to: transformer-block
   - from: residual
     to: transformer-block
   - from: layer-norm
     to: transformer-block
+  - from: feed-forward
+    to: transformer-block
   - from: causal-mask
     to: transformer-block
   - from: positional-encoding
     to: transformer-block
   - from: token-embedding
+    to: transformer-block
+
+  # Sampling + decoding: prerequisite edges into the lesson.
+  - from: softmax
+    to: sampling-decoding-concept
+  - from: decoding-strategy
+    to: sampling-decoding-concept
+  - from: attention-output
     to: transformer-block
 
   # Lesson concept nodes
@@ -143,6 +184,8 @@ edges:
     to: softmax-concept
   - from: attention-score
     to: attention-scores-concept
+  - from: attention-output
+    to: attention-output-concept
   - from: scaled-dot-product
     to: scaled-attention-concept
   - from: token-embedding
@@ -155,11 +198,21 @@ edges:
     to: multi-head-attention-concept
   - from: residual
     to: residuals-layernorm-concept
+  - from: feed-forward
+    to: feed-forward-concept
+  - from: decoding-strategy
+    to: sampling-decoding-concept
+  - from: cross-entropy
+    to: cross-entropy-concept
+  - from: gradient-descent
+    to: gradient-descent-concept
   - from: multi-head
     to: transformer-block
   - from: residual
     to: transformer-block
   - from: layer-norm
+    to: transformer-block
+  - from: feed-forward
     to: transformer-block
   - from: causal-mask
     to: transformer-block

@@ -2,13 +2,20 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { TRACKS } from '@/lib/lessons';
-import { listLessonManifest } from '@/lib/lesson-manifest';
+import { TRACKS, listLessonMeta } from '@/lib/lessons-meta';
 
 export function LessonCardList() {
-  const lessons = listLessonManifest();
+  const lessons = listLessonMeta();
   const [byTrack, setByTrack] = useState(
-    () => new Map(TRACKS.map((t) => [t.id, t.slugs.map((slug) => lessons.find((l) => l.meta.slug === slug)!).filter(Boolean)])),
+    () =>
+      new Map(
+        TRACKS.map((t) => [
+          t.id,
+          t.slugs
+            .map((slug) => lessons.find((l) => l.meta.slug === slug)!)
+            .filter(Boolean),
+        ]),
+      ),
   );
 
   return (

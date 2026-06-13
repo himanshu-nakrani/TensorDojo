@@ -264,4 +264,4 @@ docker run --rm -v $(pwd):/app lesson-lint:latest
 
 - [Design Spec](../design-spec.md) — Product requirements and UX
 - [Technical Spec](../technical-spec.md) — Architecture and implementation details
-- [Simulation Components](../../frontend/packages/sim-components/README.md) — Reusable React components
+- [Simulation Components](../../components/sim/README.md) — Reusable React components in this repo

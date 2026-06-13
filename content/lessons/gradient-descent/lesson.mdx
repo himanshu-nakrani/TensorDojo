@@ -1,0 +1,82 @@
+import { MathCode } from '@/components/lesson/MathCode';
+import { Callout } from '@/components/lesson/Callout';
+
+## Knowing the loss is one thing. How does the model *reduce* it?
+
+The previous lesson showed that the cross-entropy loss for one example is $-\log p_t$ — a single number that says how wrong the model was. The piece the model needs to *learn* is a way to reduce that number across the full training set. That piece is **gradient descent**.
+
+The intuition: from any point on a 2D loss surface, the gradient (a vector of partial derivatives) points in the direction of steepest ascent. Walk in the *opposite* direction, in steps proportional to the gradient, and you walk downhill. Repeat, and you find a minimum.
+
+This lesson is *concept-level only* — no backprop, no chain rule, no training loop. Just: the gradient says which way is down, and gradient descent walks down it.
+
+## The formula
+
+For a parameter vector $\boldsymbol{\theta} \in \mathbb{R}^n$ and a loss function $L(\boldsymbol{\theta})$, the gradient-descent update is:
+
+$$
+\boldsymbol{\theta}_{t+1} \;=\; \boldsymbol{\theta}_t \;-\; \eta \, \nabla L(\boldsymbol{\theta}_t)
+$$
+
+$\eta$ is the **learning rate** — the size of each step. The negative gradient is the descent direction; $\eta$ scales how far to step in that direction per iteration.
+
+<MathCode
+  math="\theta_{t+1} = \theta_t - \eta \, \nabla L(\theta_t)"
+  code={`def gradient_descent_step(theta, grad, eta):
+    # theta:  current parameter vector
+    # grad:  gradient at theta (same shape as theta)
+    # eta:   learning rate
+    return theta - eta * grad
+
+# Toy 2D example: minimize L(theta) = theta[0]**2 + theta[1]**2
+theta = np.array([1.0, 1.0])
+eta = 0.1
+for t in range(50):
+    grad = 2 * theta                     # dL/dtheta
+    theta = theta - eta * grad
+    # → theta converges to (0, 0) — the minimum`}
+  caption="One step. The negative gradient is the descent direction; η is the step size. Iterate."
+/>
+
+<Callout title="Why the negative gradient?" targetInteractive="gradient-descent-explorer">
+  The gradient $\nabla L$ is defined as the direction of *steepest ascent* — moving in the direction of $\nabla L$ *increases* the loss. To *decrease* it, you move in the *opposite* direction: $-\nabla L$. The update $\theta_{t+1} = \theta_t - \eta \nabla L$ is the canonical formula. (Some texts write the formula with $+ \eta \nabla L$ and assume $\nabla L$ already points downhill — but the convention here is that the gradient points uphill, so we subtract.)
+</Callout>
+
+## Try it
+
+The centerpiece shows a 2D loss surface with two minima (at $(\pm 1, 0)$) and a saddle ridge along $x = 0$. Pick a starting point, set a learning rate, and watch the trajectory.
+
+<Callout targetInteractive="gradient-descent-explorer">
+  Pick the "Converges" preset. Small $\eta = 0.05$, starting from $(0.5, 0.5)$, 40 steps. The trajectory walks straight into the $(1, 0)$ minimum. The end-loss is near 0.
+</Callout>
+
+<Callout targetInteractive="gradient-descent-explorer">
+  Switch to the "Oscillates" preset. Same start, $\eta = 0.5$. The trajectory bounces back and forth across the basin, getting smaller with each bounce but never settling. This is the "too large" failure mode: $\eta$ is big enough that each step overshoots the minimum, so the next step is forced to compensate in the opposite direction.
+</Callout>
+
+<Callout targetInteractive="gradient-descent-explorer">
+  Switch to the "Diverges" preset. $\eta = 1.5$. The trajectory explodes off the surface — each step is so large that the next step is even larger, and the parameter values race toward $\pm \infty$. The end-loss is enormous.
+</Callout>
+
+## Reading the result
+
+Three things to internalize.
+
+**The learning rate $\eta$ is the only knob.** Too small and the descent crawls; you'll see the loss barely move over hundreds of steps. Too large and it oscillates or diverges. The right $\eta$ is "just right" — small enough to land at the minimum, large enough to get there in a tractable number of steps. In practice, finding this $\eta$ is its own discipline (learning-rate schedules, Adam, line search) and is the subject of follow-up work beyond this lesson.
+
+**The gradient is computed at the *current* point.** Each step uses $\nabla L(\theta_t)$, not $\nabla L(\theta_0)$. The descent re-evaluates the local slope at every step. That's why gradient descent can navigate a non-convex landscape (with multiple minima) — the direction changes as the position changes.
+
+**Gradient descent finds *a* minimum, not *the* minimum.** The "Converges" preset walks into the $(1, 0)$ basin; from the saddle at $(0, 0)$, the initial slope points to $x > 0$, so the descent picks the right minimum. From a different starting point, the same surface would land in $(-1, 0)$ instead. The toy landscape here has two minima; the descent finds whichever one the start point leads to.
+
+## A second look
+
+Three preset starting points and $\eta$ values are pre-tuned so the reader can see all three failure modes in one screen without having to find them:
+
+- **Converges**: $\eta = 0.05$ from $(0.5, 0.5)$ — small step, lands at minimum.
+- **Oscillates**: $\eta = 0.5$ from $(0.5, 0.5)$ — step overshoots, never settles.
+- **Diverges**: $\eta = 1.5$ from $(0, 0.5)$ — step explodes off the surface.
+
+Tune $\eta$ between presets to see the boundary between "converges with some bouncing" and "diverges immediately." The "right" $\eta$ depends on the local curvature of the surface — a steeper minimum needs a smaller $\eta$ to settle in.
+
+## Recap
+
+Three takeaways. **Gradient descent walks downhill on a loss surface** by taking steps of size $\eta$ in the direction of $-\nabla L$. **The learning rate is the only knob**, and its value determines whether the descent converges, oscillates, or diverges. **The descent finds a local minimum, not a global one** — the start point determines which basin the trajectory lands in. This is the conceptual core of training. The full machinery — backprop, optimizers, learning-rate schedules, batch updates — is the engineering that turns this single idea into a working training loop. The chain ends here.

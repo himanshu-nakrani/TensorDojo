@@ -24,6 +24,13 @@ export interface InteractiveEntry {
   id: string;
   title: string;
   description?: string;
+  /**
+   * One-line caption shown under the figure, answering "what am I
+   * looking at" + "what should I try first." This is the prose
+   * anchor the reader is meant to glance at when the figure is
+   * open in the workbench.
+   */
+  caption?: string;
   /** The React component that renders the interactive. */
   Component: ComponentType;
   /**
@@ -238,6 +245,7 @@ function Item({
       id={entry.id}
       title={entry.title}
       description={entry.description}
+      caption={entry.caption}
       isActive={isActive}
       onActivate={() => focusInteractive(entry.id)}
       pulseKey={pulse?.id === entry.id ? pulse.version : null}

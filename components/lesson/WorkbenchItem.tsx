@@ -13,6 +13,7 @@ interface WorkbenchItemProps {
   id: string;
   title: string;
   description?: string;
+  caption?: string;
   isActive: boolean;
   onActivate: () => void;
   /** Bumping this triggers a 600ms pulse animation on the item. */
@@ -27,7 +28,16 @@ interface WorkbenchItemProps {
  */
 export const WorkbenchItem = forwardRef<HTMLDivElement, WorkbenchItemProps>(
   function WorkbenchItem(
-    { id, title, description, isActive, onActivate, pulseKey, children },
+    {
+      id,
+      title,
+      description,
+      caption,
+      isActive,
+      onActivate,
+      pulseKey,
+      children,
+    },
     ref,
   ) {
     const [pulsing, setPulsing] = useState(false);
@@ -90,6 +100,11 @@ export const WorkbenchItem = forwardRef<HTMLDivElement, WorkbenchItemProps>(
         {isActive && (
           <div className="px-5 pb-5 pt-1 border-t border-border">
             {children}
+            {caption && (
+              <p className="mt-4 text-[11px] text-dim font-mono leading-relaxed border-t border-border pt-3">
+                {caption}
+              </p>
+            )}
           </div>
         )}
       </div>

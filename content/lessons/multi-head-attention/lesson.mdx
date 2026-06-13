@@ -12,14 +12,14 @@ The trick: run several attention computations in parallel, each with its own lea
 Given $Q, K, V$ each of shape $[n, d_{\text{model}}]$, split $d_{\text{model}}$ into $h$ heads of size $d_k = d_{\text{model}} / h$:
 
 $$
-\text{head}_h = \operatorname{softmax}\!\left(\frac{Q_h K_h^\top}{\sqrt{d_k}} + M\right) V_h, \qquad
+\text{head}_i = \operatorname{softmax}\!\left(\frac{Q_i K_i^\top}{\sqrt{d_k}} + M\right) V_i, \qquad
 \operatorname{output} = \operatorname{concat}(\text{head}_1, \ldots, \text{head}_h) \cdot W_{\text{out}}
 $$
 
-Each head has its own learned $W_h^Q, W_h^K, W_h^V \in \mathbb{R}^{d_{\text{model}} \times d_k}$ that project the shared input into a head-specific subspace. The $W_{\text{out}}$ projection mixes the head outputs back into $d_{\text{model}}$.
+Each head $i \in \{1, \ldots, h\}$ has its own learned $W_i^Q, W_i^K, W_i^V \in \mathbb{R}^{d_{\text{model}} \times d_k}$ that project the shared input into a head-specific subspace. The $W_{\text{out}}$ projection mixes the head outputs back into $d_{\text{model}}$.
 
 <MathCode
-  math="\text{head}_h = \operatorname{softmax}\!\left(\frac{Q W_h^Q (K W_h^K)^\top}{\sqrt{d_k}}\right) V W_h^V"
+  math="\text{head}_i = \operatorname{softmax}\!\left(\frac{Q W_i^Q (K W_i^K)^\top}{\sqrt{d_k}}\right) V W_i^V"
   code={`# h = d_model / d_k heads in parallel
 heads = [softmax(Q @ Wq_h @ K @ Wk_h.T / sqrt(d_k)) @ V @ Wv_h
          for h in range(num_heads)]
@@ -59,4 +59,4 @@ A side-by-side: same sentence, different number of heads.
 
 ## Recap
 
-Multi-head attention is $h$ small attentions in parallel, each with its own learned Q, K, V projection. Cost stays roughly constant; the model gets $h$ independent views of the same sequence. In real implementations, the projections are concatenated into one big matrix to keep the implementation a single matmul. The next lesson addresses the question: once you have a stack of these attention blocks (plus feed-forward MLPs), how do you make it 12 layers deep without gradients vanishing?
+Three takeaways. **Multi-head attention is $h$ small attentions in parallel, each with its own learned $W_i^Q, W_i^K, W_i^V$ projection.** Total parameter count is roughly constant — the projections are small and there are $h$ of them. **Different heads learn different "questions" about the same input**: in a trained model, one head might attend to the previous token, another to a syntactic head, another to a long-range coreferent. Training discovers useful decompositions; the architecture leaves the room. **The output projection $W_{\text{out}}$ mixes the head results back into $d_{\text{model}}$** — without it, the next layer would have no way to use the $h$ separate streams as a single vector. Stacking $h$-head blocks deep introduces a new problem the architecture has not yet solved — vanishing gradients — which the next lesson fixes with residuals and layer norm.

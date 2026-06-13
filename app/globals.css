@@ -24,6 +24,11 @@
 .slider:focus {
   outline: none;
 }
+.slider:focus-visible {
+  outline: 2px solid #2dd4bf;
+  outline-offset: 4px;
+  border-radius: 2px;
+}
 
 /* WebKit / Blink */
 .slider::-webkit-slider-runnable-track {
@@ -105,6 +110,42 @@
   outline: none;
   border-color: #2dd4bf;
   box-shadow: 0 0 0 2px rgba(45, 212, 191, 0.15);
+}
+.number-input:focus-visible {
+  outline: 2px solid #2dd4bf;
+  outline-offset: 1px;
+}
+
+/* ----- Universal :focus-visible ring ----- */
+/* Used by interactive elements (buttons, links, toggles) that
+   suppressed their default outline. A 2px teal ring at +2px
+   offset is visible against any background. */
+.focus-ring:focus-visible {
+  outline: 2px solid #2dd4bf;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Lesson body links & lesson cards inherit a visible focus ring
+   (Tailwind focus-visible: utilities can also be applied per
+   element). */
+.lesson-body a:focus-visible {
+  outline: 2px solid #2dd4bf;
+  outline-offset: 2px;
+}
+
+/* Screen-reader-only utility (Tailwind includes `sr-only`, but a
+   project-level alias is safer for grep). */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 /* ----- Lesson body (prose) ----- */

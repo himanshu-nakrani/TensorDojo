@@ -51,7 +51,7 @@ export function PrevNext({ slug }: PrevNextProps) {
         {prevMeta ? (
           <Link
             href={`/lessons/${prevMeta.slug}`}
-            className="group flex items-center gap-2 text-muted hover:text-accent transition-colors focus-visible:outline-none focus-visible:text-accent min-w-0"
+            className="group flex items-center gap-2 text-muted hover:text-accent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg focus-visible:text-accent min-w-0 rounded-sm"
           >
             <span
               aria-hidden="true"
@@ -70,7 +70,7 @@ export function PrevNext({ slug }: PrevNextProps) {
         {nextMeta ? (
           <Link
             href={`/lessons/${nextMeta.slug}`}
-            className="group flex items-center gap-2 text-muted hover:text-accent transition-colors focus-visible:outline-none focus-visible:text-accent min-w-0 text-right"
+            className="group flex items-center gap-2 text-muted hover:text-accent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg focus-visible:text-accent min-w-0 rounded-sm text-right"
           >
             <span className="truncate">
               <span className="text-[10px] uppercase tracking-[0.18em] text-dim block">Next</span>

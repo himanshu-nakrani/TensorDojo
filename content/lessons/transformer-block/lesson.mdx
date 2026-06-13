@@ -60,6 +60,6 @@ Three things to internalize.
 
 ## The architecture is finished
 
-The block you just saw — six lines, four pieces, two residuals — is the block that sits inside every modern transformer. Stack $N$ of them, embed at the bottom, project to vocabulary at the top, and the architecture is complete. Nothing else gets added; deeper or wider models are more of the same block, not a different block. What is missing from this lesson is not architectural — it is *learning*: the weights here are constants, and turning them into learned weights is the subject of training (loss, backprop, optimizers), not architecture.
+The block you just saw — six lines, four pieces, two residuals — is the block that sits inside every modern transformer. Stack $N$ of them, embed at the bottom, project to vocabulary at the top, and the architecture is complete. Nothing else gets added; deeper or wider models are more of the same block, not a different block. What the architecture produces, given a prefix of text, is a probability distribution over the next token. The next lesson is the question the reader has been waiting for: how does that distribution become a single output token?
 
 The pieces compose. Once they do, the architecture is done.

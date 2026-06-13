@@ -6,40 +6,21 @@
  * with W1 ∈ R^{d × d_ff}, W2 ∈ R^{d_ff × d}.
  *
  * Convention: d_ff = 4 * d (Vaswani et al., 2017). The FFN is applied
- * to each token independently — there is no cross-token interaction here.
- * Attention is the cross-token step; the FFN is the per-token "thinking"
- * step.
+ * to each token independently — there is no cross-token interaction
+ * here. Attention is the cross-token step; the FFN is the per-token
+ * "thinking" step.
+ *
+ * The `gelu` activation lives in `./gelu` (its own module, with its
+ * own test file). The ReLU vs GELU comparison is exercised by the
+ * feed-forward lesson's centerpiece.
  */
 
 import { matMul } from './linalg';
+import { gelu } from './gelu';
 
-/**
- * Error function approximation (Abramowitz & Stegun 7.1.26).
- * Max error ~1.5e-7, more than enough for the lesson's GELU values.
- */
-function erf(x: number): number {
-  // Constants for the rational approximation.
-  const sign = x < 0 ? -1 : 1;
-  const ax = Math.abs(x);
-  const a1 = 0.254829592;
-  const a2 = -0.284496736;
-  const a3 = 1.421413741;
-  const a4 = -1.453152027;
-  const a5 = 1.061405429;
-  const p = 0.3275911;
-  const t = 1 / (1 + p * ax);
-  const y =
-    1 -
-    ((((a5 * t + a4) * t + a3) * t + a2) * t + a1) *
-      t *
-      Math.exp(-ax * ax);
-  return sign * y;
-}
-
-/** Exact GELU activation. */
-export function gelu(x: number): number {
-  return 0.5 * x * (1 + erf(x / Math.SQRT2));
-}
+// Re-export so existing call-sites (ffn.test.ts, BlockPipeline, the
+// transformer-block module) don't need to change their imports.
+export { gelu } from './gelu';
 
 export interface FFNInput {
   /** Token activations of shape [T, d]. */
@@ -92,8 +73,7 @@ export function ffn(input: FFNInput): number[][] {
 
   for (let t = 0; t < T; t += 1) {
     const xt = x[t]!;
-    // hidden = gelu(xt @ W1 + b1)   (xt is 1×d, W1 is d×d_ff, hidden is 1×d_ff)
-    // xt @ W1 is implemented as a single row of matMul: matMul([xt], W1) returns 1×d_ff.
+    // hidden = gelu(xt @ W1 + b1)
     const xtRow: number[][] = [xt as number[]];
     const linear1 = matMul(xtRow, W1);
     for (let k = 0; k < dFf; k += 1) {

@@ -92,17 +92,29 @@ describe('cosTheta', () => {
   });
 
   it('nearestNeighbors returns top-k indices by cosine similarity', () => {
-    const vectors = [
-      [1, 0],   // 0: same direction
-      [0.9, 0.1], // 1: nearly same
-      [0, 1],   // 2: orthogonal
-      [-1, 0],  // 3: opposite
-1,   // 4: same as 0
+    // 5 vectors of varying alignment with the query [1, 0]:
+    //   0: same direction, sim = 1
+    //   1: nearly same, sim ≈ 0.99
+    //   2: nearly same (less so), sim ≈ 0.95
+    //   3: orthogonal, sim = 0
+    //   4: opposite, sim = -1
+    const vectors: ReadonlyArray<readonly number[]> = [
+      [1, 0],
+      [0.9, 0.1],
+      [0.7, 0.2],
+      [0, 1],
+      [-1, 0],
     ];
-    const top2 = nearestNeighbors([1, 0], vectors, 2);
-    expect(top2).toContain(0);
-    expect(top2).toContain(1);
-    expect(top2).not.toContain(3); // opposite direction
+    const top3 = nearestNeighbors([1, 0], vectors, 3);
+    // The first three vectors are all in the "same direction" half;
+    // the exact order between 0, 1, 2 is determined by the stable
+    // sort. We assert membership rather than order.
+    expect(top3.length).toBe(3);
+    expect(top3).toContain(0);
+    expect(top3).toContain(1);
+    expect(top3).toContain(2);
+    expect(top3).not.toContain(3); // orthogonal
+    expect(top3).not.toContain(4); // opposite
   });
 
   it('nearestNeighbors returns empty array for empty input', () => {
