@@ -1,0 +1,224 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* KaTeX color override — let math inherit the page's text color. */
+.katex {
+  color: inherit;
+  font-size: 1.05em;
+}
+.katex-display {
+  margin: 1.5rem 0 !important;
+}
+
+/* ----- Slider ----- */
+.slider {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  height: 24px;
+  cursor: pointer;
+  padding: 0;
+  margin: 0;
+}
+.slider:focus {
+  outline: none;
+}
+
+/* WebKit / Blink */
+.slider::-webkit-slider-runnable-track {
+  height: 4px;
+  border-radius: 2px;
+  background: linear-gradient(
+    to right,
+    #2dd4bf 0%,
+    #2dd4bf var(--fill, 0%),
+    #1f242a var(--fill, 0%),
+    #1f242a 100%
+  );
+}
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 16px;
+  width: 16px;
+  border-radius: 50%;
+  background: #2dd4bf;
+  margin-top: -6px;
+  border: 3px solid #0b0d10;
+  box-shadow: 0 0 0 1px #2dd4bf;
+  transition: transform 120ms ease-out, box-shadow 120ms ease-out;
+}
+.slider:hover::-webkit-slider-thumb {
+  transform: scale(1.12);
+}
+.slider:focus-visible::-webkit-slider-thumb {
+  box-shadow: 0 0 0 1px #0b0d10, 0 0 0 4px #2dd4bf;
+  transform: scale(1.12);
+}
+
+/* Firefox */
+.slider::-moz-range-track {
+  height: 4px;
+  border-radius: 2px;
+  background: #1f242a;
+}
+.slider::-moz-range-progress {
+  height: 4px;
+  border-radius: 2px;
+  background: #2dd4bf;
+}
+.slider::-moz-range-thumb {
+  height: 12px;
+  width: 12px;
+  border-radius: 50%;
+  background: #2dd4bf;
+  border: 3px solid #0b0d10;
+  box-shadow: 0 0 0 1px #2dd4bf;
+  cursor: pointer;
+}
+.slider::-moz-range-thumb:hover {
+  transform: scale(1.12);
+}
+
+/* ----- Number input ----- */
+.number-input {
+  background: #14181d;
+  border: 1px solid #1f242a;
+  color: #e5e7eb;
+  border-radius: 4px;
+  padding: 6px 8px;
+  font-size: 0.875rem;
+  text-align: center;
+  transition: border-color 120ms ease-out, box-shadow 120ms ease-out;
+  -moz-appearance: textfield;
+}
+.number-input::-webkit-outer-spin-button,
+.number-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.number-input:hover {
+  border-color: #2a323b;
+}
+.number-input:focus {
+  outline: none;
+  border-color: #2dd4bf;
+  box-shadow: 0 0 0 2px rgba(45, 212, 191, 0.15);
+}
+
+/* ----- Lesson body (prose) ----- */
+.lesson-body {
+  color: #d4d4d8;
+  font-size: 1.0625rem;
+  line-height: 1.75;
+}
+.lesson-body > * + * {
+  margin-top: 1.25rem;
+}
+.lesson-body h2 {
+  font-size: 1.625rem;
+  font-weight: 600;
+  color: #e5e7eb;
+  letter-spacing: -0.01em;
+  line-height: 1.25;
+  margin-top: 3rem;
+  margin-bottom: 0.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #1f242a;
+}
+.lesson-body h2:first-child {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: 0;
+}
+.lesson-body h3 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #e5e7eb;
+  margin-top: 1.5rem;
+  margin-bottom: 0.25rem;
+}
+.lesson-body p {
+  margin: 0;
+}
+.lesson-body strong {
+  color: #e5e7eb;
+  font-weight: 600;
+}
+.lesson-body em {
+  font-style: italic;
+}
+.lesson-body a {
+  color: #2dd4bf;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(45, 212, 191, 0.3);
+  transition: border-color 120ms;
+}
+.lesson-body a:hover {
+  border-bottom-color: #2dd4bf;
+}
+.lesson-body code {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.875em;
+  background: #14181d;
+  border: 1px solid #1f242a;
+  border-radius: 3px;
+  padding: 1px 5px;
+  color: #e5e7eb;
+}
+.lesson-body pre {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  background: #14181d;
+  border: 1px solid #1f242a;
+  border-radius: 6px;
+  padding: 14px 16px;
+  overflow-x: auto;
+  font-size: 0.8125rem;
+  line-height: 1.65;
+  color: #e5e7eb;
+  margin: 0;
+}
+.lesson-body pre code {
+  background: transparent;
+  border: 0;
+  padding: 0;
+  font-size: inherit;
+  color: inherit;
+}
+.lesson-body kbd {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.75rem;
+  background: #14181d;
+  border: 1px solid #2a323b;
+  border-bottom-width: 2px;
+  border-radius: 3px;
+  padding: 1px 5px;
+  color: #e5e7eb;
+}
+.lesson-body ol,
+.lesson-body ul {
+  padding-left: 1.5rem;
+  margin: 0;
+}
+.lesson-body ol > li + li,
+.lesson-body ul > li + li {
+  margin-top: 0.75rem;
+}
+.lesson-body ol > li::marker {
+  color: #6b7280;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.85em;
+}
+.lesson-body blockquote {
+  border-left: 2px solid #2a323b;
+  padding-left: 1rem;
+  color: #9ca3af;
+  font-style: italic;
+  margin: 0;
+}
+
+/* Inline math inside prose should pick up ink color. */
+.inline-math .katex {
+  font-size: 1em;
+}
