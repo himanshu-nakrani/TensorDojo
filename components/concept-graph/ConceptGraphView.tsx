@@ -56,7 +56,7 @@ export function ConceptGraphView({ graph }: { graph: ConceptGraph }) {
           markerHeight={6}
           orient="auto-start-reverse"
         >
-          <path d="M 0 0 L 10 5 L 0 10 z" fill="#6B7280" />
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="rgb(var(--fg-subtle))" />
         </marker>
         <marker
           id="arrow-faint"
@@ -67,7 +67,7 @@ export function ConceptGraphView({ graph }: { graph: ConceptGraph }) {
           markerHeight={5}
           orient="auto-start-reverse"
         >
-          <path d="M 0 0 L 10 5 L 0 10 z" fill="#3A424B" />
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="rgb(var(--border-strong))" />
         </marker>
       </defs>
 
@@ -105,7 +105,7 @@ export function ConceptGraphView({ graph }: { graph: ConceptGraph }) {
               key={i}
               d={`M ${x1} ${y1} C ${midX} ${y1}, ${midX} ${y2}, ${x2} ${y2}`}
               fill="none"
-              stroke="#2A323B"
+              stroke="rgb(var(--border-strong))"
               strokeWidth={0.8}
               strokeDasharray="3 3"
               markerEnd="url(#arrow-faint)"
@@ -120,7 +120,7 @@ export function ConceptGraphView({ graph }: { graph: ConceptGraph }) {
             y1={y1}
             x2={x2}
             y2={y2}
-            stroke="#2A323B"
+            stroke="rgb(var(--border-strong))"
             strokeWidth={1}
             markerEnd="url(#arrow)"
           />
@@ -136,8 +136,8 @@ export function ConceptGraphView({ graph }: { graph: ConceptGraph }) {
               width={NODE_W}
               height={NODE_H}
               rx={8}
-              fill="#14181D"
-              stroke={isLesson ? '#1F242A' : '#1A1F25'}
+              fill="rgb(var(--bg-elevated))"
+              stroke={isLesson ? 'rgb(var(--border))' : 'rgb(var(--bg-code))'}
               strokeWidth={1}
             />
             <text

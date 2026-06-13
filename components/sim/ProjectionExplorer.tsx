@@ -62,7 +62,7 @@ export function ProjectionExplorer({ preset }: { preset?: ProjectionExplorerPres
   };
 
   return (
-    <div className="rounded-xl border border-border bg-surface p-6 sm:p-8 shadow-[0_1px_0_rgba(255,255,255,0.02)_inset]">
+    <div className="rounded-xl border border-border bg-surface p-6 sm:p-8 card-surface">
       <div className="flex items-baseline justify-between mb-5">
         <h3 className="text-[11px] uppercase tracking-[0.18em] text-dim font-mono">
           Projection Explorer
@@ -114,7 +114,7 @@ export function ProjectionExplorer({ preset }: { preset?: ProjectionExplorerPres
                     y1={oy}
                     x2={px}
                     y2={py}
-                    stroke="#2DD4BF"
+                    stroke="rgb(var(--accent))"
                     strokeWidth={1.2}
                     strokeDasharray="3 2"
                     vectorEffect="non-scaling-stroke"
@@ -126,7 +126,7 @@ export function ProjectionExplorer({ preset }: { preset?: ProjectionExplorerPres
                     y1={py}
                     x2={ax}
                     y2={ay}
-                    stroke="#F87171"
+                    stroke="rgb(var(--negative))"
                     strokeWidth={1.2}
                     strokeDasharray="3 2"
                     vectorEffect="non-scaling-stroke"
@@ -140,7 +140,7 @@ export function ProjectionExplorer({ preset }: { preset?: ProjectionExplorerPres
                         y1={oy}
                         x2={toScreen(aUnit[0], aUnit[1])[0]}
                         y2={toScreen(aUnit[0], aUnit[1])[1]}
-                        stroke="#A1A1AA"
+                        stroke="rgb(var(--fg-muted))"
                         strokeWidth={0.8}
                         strokeDasharray="1 2"
                         vectorEffect="non-scaling-stroke"
@@ -150,7 +150,7 @@ export function ProjectionExplorer({ preset }: { preset?: ProjectionExplorerPres
                         y1={oy}
                         x2={toScreen(bUnit[0], bUnit[1])[0]}
                         y2={toScreen(bUnit[0], bUnit[1])[1]}
-                        stroke="#A1A1AA"
+                        stroke="rgb(var(--fg-muted))"
                         strokeWidth={0.8}
                         strokeDasharray="1 2"
                         vectorEffect="non-scaling-stroke"

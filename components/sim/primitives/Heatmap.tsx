@@ -36,26 +36,35 @@ interface HeatmapProps {
   ariaLabel?: string;
 }
 
-/** Map |v| / max (∈ [0,1]) to a teal fill with CSS variable. */
-function accentFill(t: number): string {
-  // t in [0, 1] — opacity rises with magnitude.
-  const op = Math.max(0.05, Math.min(1, t));
-  return `rgba(45, 212, 191, ${op.toFixed(3)})`;
+/**
+ * Map |v| / max (∈ [0,1]) to a teal fill. The fill is the theme accent
+ * at varying opacity; opacity is floored at 0.12 so the cell stays
+ * visibly darker than the page background in both themes. (On a
+ * light bg, a 5% tint of teal disappears entirely into the off-
+ * white; the floor prevents that. The visual relationship between
+ * low-magnitude and high-magnitude cells is preserved.)
+ *
+ * Opacities are rounded to 4 decimal places; React's server vs
+ * client number-stringification can differ at the float64 boundary
+ * (e.g. 0.22180066171300147 vs 0.22180066171300142), which would
+ * trip a hydration mismatch on the cell's opacity attribute.
+ */
+function accentOpacity(t: number): number {
+  return round4(Math.max(0.12, Math.min(1, t)));
 }
 
-/** Diverging: positive teal, negative muted red, 0 transparent. */
-function divergingFill(v: number, maxAbs: number): string {
-  if (maxAbs === 0) return 'transparent';
-  const t = v / maxAbs; // ∈ [-1, 1]
-  const intensity = Math.min(1, Math.abs(t) * 0.95 + 0.08);
-  if (t > 0) {
-    return `rgba(45, 212, 191, ${intensity.toFixed(3)})`;
-  }
-  if (t < 0) {
-    // Muted red — same lightness band as accent, opposite hue.
-    return `rgba(248, 113, 113, ${intensity.toFixed(3)})`;
-  }
-  return 'transparent';
+/**
+ * Diverging: positive teal, negative red, 0 transparent. The intensity
+ * floor (0.15) is the smallest tint that still reads against the
+ * background in both themes.
+ */
+function divergingIntensity(t: number): number {
+  if (t === 0) return 0;
+  return round4(Math.min(1, Math.abs(t) * 0.9 + 0.15));
+}
+
+function round4(n: number): number {
+  return Math.round(n * 1e4) / 1e4;
 }
 
 export function Heatmap({
@@ -138,11 +147,19 @@ export function Heatmap({
         row.map((v, j) => {
           const x = labelGutter + j * cellSize;
           const y = colLabelHeight + i * cellSize;
-          const fill =
-            colormap === 'diverging'
-              ? divergingFill(v, maxAbs)
-              : accentFill(Math.abs(v) / max);
           const isHi = highlight && highlight.row === i && highlight.col === j;
+          // Colormap -> fill (theme var) + opacity (computed).
+          let cellFill: string;
+          let cellOpacity: number;
+          if (colormap === 'diverging') {
+            const t = maxAbs === 0 ? 0 : v / maxAbs;
+            const intensity = divergingIntensity(t);
+            cellFill = t >= 0 ? 'rgb(var(--accent))' : 'rgb(var(--negative))';
+            cellOpacity = intensity;
+          } else {
+            cellFill = 'rgb(var(--accent))';
+            cellOpacity = accentOpacity(Math.abs(v) / max);
+          }
           return (
             <g key={`${i}-${j}`}>
               <rect
@@ -151,12 +168,13 @@ export function Heatmap({
                 width={cellSize - (compact ? 1 : 2)}
                 height={cellSize - (compact ? 1 : 2)}
                 rx={compact ? 1 : 3}
-                fill={fill}
+                fill={cellFill}
+                opacity={cellOpacity}
                 className={clsx(
                   'transition-all duration-200 ease-out',
                   isHi && 'stroke-accent-hover',
                 )}
-                stroke={isHi ? '#5EEAD4' : 'transparent'}
+                stroke={isHi ? 'rgb(var(--accent-hover))' : 'transparent'}
                 strokeWidth={isHi ? 1.5 : 0}
                 vectorEffect="non-scaling-stroke"
               />
@@ -168,7 +186,7 @@ export function Heatmap({
                   className="fill-ink font-mono pointer-events-none"
                   fontSize={11}
                   style={{ paintOrder: 'stroke' }}
-                  stroke="#0B0D10"
+                  stroke="rgb(var(--cell-halo))"
                   strokeWidth={2.5}
                   strokeLinejoin="round"
                 >

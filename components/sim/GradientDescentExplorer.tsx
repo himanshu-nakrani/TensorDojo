@@ -42,10 +42,18 @@ const PRESETS: readonly Preset[] = [
 ];
 
 function toScreenX(x: number): number {
-  return ((x - X_RANGE[0]) / (X_RANGE[1] - X_RANGE[0])) * PLOT_W;
+  // Non-finite values (NaN, ±Infinity) happen when the trajectory
+  // diverges with a too-large η. Clamp into the plot range so the
+  // rendered geometry stays valid SVG; the diverged indicator on
+  // the readout column carries the rest of the story.
+  const clamped =
+    Number.isFinite(x) ? Math.max(X_RANGE[0], Math.min(X_RANGE[1], x)) : X_RANGE[0];
+  return ((clamped - X_RANGE[0]) / (X_RANGE[1] - X_RANGE[0])) * PLOT_W;
 }
 function toScreenY(y: number): number {
-  return PLOT_H - ((y - Y_RANGE[0]) / (Y_RANGE[1] - Y_RANGE[0])) * PLOT_H;
+  const clamped =
+    Number.isFinite(y) ? Math.max(Y_RANGE[0], Math.min(Y_RANGE[1], y)) : Y_RANGE[0];
+  return PLOT_H - ((clamped - Y_RANGE[0]) / (Y_RANGE[1] - Y_RANGE[0])) * PLOT_H;
 }
 
 /**
@@ -102,13 +110,28 @@ export function GradientDescentExplorer() {
   }, []);
 
   // Color the surface cells. Low loss → teal; high loss → red.
-  const cellColor = (v: number): string => {
+  // The fill is a theme token; opacity is computed per cell. Because
+  // both --accent and --negative resolve to the same hex in the dark
+  // theme as the original rgba constants, dark mode appearance is
+  // preserved. In light mode the tokens resolve to teal-700 / red-700
+  // so the cells read against the warm off-white.
+  //
+  // Opacities are rounded to 4 decimal places. Without this, React's
+  // server vs client number-stringification can differ at the
+  // float64-repr boundary (e.g. 0.22180066171300147 vs
+  // 0.22180066171300142) and trip a hydration mismatch on the cell
+  // opacity attribute. 4dp is far below the perceptual threshold for
+  // a 0-1 opacity.
+  const round4 = (n: number): number => Math.round(n * 1e4) / 1e4;
+  const cellStyle = (
+    v: number,
+  ): { fill: string; opacity: number } => {
     if (v > surface.max * 0.6) {
       const t = Math.min(1, v / surface.max);
-      return `rgba(248, 113, 113, ${(t * 0.7).toFixed(2)})`;
+      return { fill: 'rgb(var(--negative))', opacity: round4(t * 0.7) };
     }
     const t = Math.max(0, 1 - v / (surface.max * 0.5));
-    return `rgba(45, 212, 191, ${(t * 0.4).toFixed(2)})`;
+    return { fill: 'rgb(var(--accent))', opacity: round4(t * 0.4) };
   };
 
   const end = runResult.trajectory[runResult.trajectory.length - 1]!;
@@ -117,7 +140,7 @@ export function GradientDescentExplorer() {
   const diverged = runResult.divergedAt !== null;
 
   return (
-    <div className="rounded-xl border border-border bg-surface p-6 sm:p-8 shadow-[0_1px_0_rgba(255,255,255,0.02)_inset]">
+    <div className="rounded-xl border border-border bg-surface p-6 sm:p-8 card-surface">
       <div className="flex items-baseline justify-between mb-5">
         <h3 className="text-[11px] uppercase tracking-[0.18em] text-dim font-mono">
           Gradient descent
@@ -165,24 +188,31 @@ export function GradientDescentExplorer() {
           >
             {/* Surface cells */}
             {surface.grid.map((row, i) =>
-              row.map((v, j) => (
-                <rect
-                  key={`c${i}-${j}`}
-                  x={toScreenX(X_RANGE[0] + (j / (surface.NX - 1)) * (X_RANGE[1] - X_RANGE[0]))}
-                  y={toScreenY(Y_RANGE[0] + (i / (surface.NY - 1)) * (Y_RANGE[1] - Y_RANGE[0]))}
-                  width={PLOT_W / (surface.NX - 1) + 0.5}
-                  height={PLOT_H / (surface.NY - 1) + 0.5}
-                  fill={cellColor(v)}
-                />
-              )),
+              row.map((v, j) => {
+                const s = cellStyle(v);
+                return (
+                  <rect
+                    key={`c${i}-${j}`}
+                    x={toScreenX(X_RANGE[0] + (j / (surface.NX - 1)) * (X_RANGE[1] - X_RANGE[0]))}
+                    y={toScreenY(Y_RANGE[0] + (i / (surface.NY - 1)) * (Y_RANGE[1] - Y_RANGE[0]))}
+                    width={PLOT_W / (surface.NX - 1) + 0.5}
+                    height={PLOT_H / (surface.NY - 1) + 0.5}
+                    fill={s.fill}
+                    opacity={s.opacity}
+                  />
+                );
+              }),
             )}
-            {/* Trajectory */}
+            {/* Trajectory. Filter out non-finite points so a diverged
+                trajectory doesn't try to draw lines through the entire
+                plot via "Infinity,Infinity" SVG points. */}
             <polyline
               points={runResult.trajectory
+                .filter(([x, y]) => Number.isFinite(x) && Number.isFinite(y))
                 .map(([x, y]) => `${toScreenX(x).toFixed(1)},${toScreenY(y).toFixed(1)}`)
                 .join(' ')}
               fill="none"
-              stroke="#0B0D10"
+              stroke="rgb(var(--bg))"
               strokeWidth={1.5}
               opacity={0.7}
             />
@@ -191,8 +221,8 @@ export function GradientDescentExplorer() {
               cx={toScreenX(start[0])}
               cy={toScreenY(start[1])}
               r={5}
-              fill="#0B0D10"
-              stroke="#2DD4BF"
+              fill="rgb(var(--bg))"
+              stroke="rgb(var(--accent))"
               strokeWidth={2}
             />
             {/* End */}
@@ -200,8 +230,8 @@ export function GradientDescentExplorer() {
               cx={toScreenX(end[0])}
               cy={toScreenY(end[1])}
               r={5}
-              fill="#2DD4BF"
-              stroke="#0B0D10"
+              fill="rgb(var(--accent))"
+              stroke="rgb(var(--bg))"
               strokeWidth={2}
             />
             {/* Axes */}
@@ -210,7 +240,7 @@ export function GradientDescentExplorer() {
               y1={0}
               x2={toScreenX(0)}
               y2={PLOT_H}
-              stroke="#1F242A"
+              stroke="rgb(var(--border))"
               strokeWidth={1}
             />
             <line
@@ -218,7 +248,7 @@ export function GradientDescentExplorer() {
               y1={toScreenY(0)}
               x2={PLOT_W}
               y2={toScreenY(0)}
-              stroke="#1F242A"
+              stroke="rgb(var(--border))"
               strokeWidth={1}
             />
             {/* Axis labels */}
@@ -283,30 +313,34 @@ export function GradientDescentExplorer() {
           <div className="pt-3 border-t border-border space-y-1">
             <div className="flex items-baseline justify-between">
               <span className="text-dim">Start loss</span>
-              <span className="text-ink tabular-nums">{startLoss.toFixed(3)}</span>
+              <span className="text-ink tabular-nums">
+                {Number.isFinite(startLoss) ? startLoss.toFixed(3) : '—'}
+              </span>
             </div>
             <div className="flex items-baseline justify-between">
               <span className="text-dim">End loss</span>
               <span
                 className={
                   diverged
-                    ? 'text-[#F87171] tabular-nums'
-                    : endLoss < startLoss
+                    ? 'text-[rgb(var(--negative))] tabular-nums'
+                    : Number.isFinite(endLoss) && endLoss < startLoss
                       ? 'text-accent tabular-nums'
                       : 'text-ink tabular-nums'
                 }
               >
-                {endLoss.toFixed(3)}
+                {Number.isFinite(endLoss) ? endLoss.toFixed(3) : '∞'}
               </span>
             </div>
             <div className="flex items-baseline justify-between">
               <span className="text-dim">End point</span>
               <span className="text-ink tabular-nums">
-                ({end[0].toFixed(2)}, {end[1].toFixed(2)})
+                {Number.isFinite(end[0]) && Number.isFinite(end[1])
+                  ? `(${end[0].toFixed(2)}, ${end[1].toFixed(2)})`
+                  : 'off-plot'}
               </span>
             </div>
             {diverged && (
-              <p className="text-[10px] text-[#F87171] mt-1">
+              <p className="text-[10px] text-[rgb(var(--negative))] mt-1">
                 Diverged at step {runResult.divergedAt}.
               </p>
             )}

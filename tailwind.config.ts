@@ -6,23 +6,35 @@ const config: Config = {
     './components/**/*.{ts,tsx}',
     './content/**/*.{md,mdx}',
   ],
+  darkMode: 'class',
   theme: {
     extend: {
       colors: {
-        bg: '#0B0D10',
-        surface: '#14181D',
-        'surface-2': '#1A1F25',
-        border: '#1F242A',
-        'border-strong': '#2A323B',
-        ink: '#E5E7EB',
-        muted: '#9CA3AF',
-        dim: '#6B7280',
-        'accent-soft': 'rgba(45, 212, 191, 0.16)',
+        // Surfaces — all read from CSS custom properties stored as
+        // bare RGB channels in app/globals.css. The `<alpha-value>`
+        // placeholder is replaced by Tailwind when the user writes
+        // e.g. `bg-bg/40`. See tailwind docs on "Using CSS variables".
+        bg: 'rgb(var(--bg) / <alpha-value>)',
+        surface: 'rgb(var(--bg-elevated) / <alpha-value>)',
+        'surface-2': 'rgb(var(--bg-code) / <alpha-value>)',
+        // Lines
+        border: 'rgb(var(--border) / <alpha-value>)',
+        'border-strong': 'rgb(var(--border-strong) / <alpha-value>)',
+        // Text
+        ink: 'rgb(var(--fg) / <alpha-value>)',
+        muted: 'rgb(var(--fg-muted) / <alpha-value>)',
+        dim: 'rgb(var(--fg-subtle) / <alpha-value>)',
+        // Accent (manipulable only — design-spec §8). DEFAULT/hover/fg
+        // are channel-based so the alpha modifier works; soft/faint/dim
+        // are pre-baked rgba because they describe a specific visual
+        // rather than a themed color at a particular alpha.
         accent: {
-          DEFAULT: '#2DD4BF',
-          hover: '#5EEAD4',
-          dim: 'rgba(45, 212, 191, 0.28)',
-          faint: 'rgba(45, 212, 191, 0.10)',
+          DEFAULT: 'rgb(var(--accent) / <alpha-value>)',
+          hover: 'rgb(var(--accent-hover) / <alpha-value>)',
+          fg: 'rgb(var(--accent-fg) / <alpha-value>)',
+          dim: 'var(--accent-dim)',
+          faint: 'var(--accent-faint)',
+          soft: 'var(--accent-soft)',
         },
       },
       fontFamily: {

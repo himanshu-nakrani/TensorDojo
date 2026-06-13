@@ -128,7 +128,7 @@ function SignedBar({ value, max }: { value: number; max: number }) {
       <div
         className={clsx(
           'absolute inset-y-0 transition-all duration-200 ease-out',
-          positive ? 'bg-accent' : 'bg-[rgba(248,113,113,0.7)]',
+          positive ? 'bg-accent' : 'bg-[var(--negative-bg)]',
         )}
         style={
           positive

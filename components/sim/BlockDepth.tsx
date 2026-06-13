@@ -146,7 +146,7 @@ export function BlockDepth() {
   }, [sentence, depth, useRes1, useRes2, useLN1, useLN2]);
 
   return (
-    <div className="rounded-xl border border-border bg-surface p-6 sm:p-8 shadow-[0_1px_0_rgba(255,255,255,0.02)_inset]">
+    <div className="rounded-xl border border-border bg-surface p-6 sm:p-8 card-surface">
       <div className="flex items-baseline justify-between mb-5">
         <h3 className="text-[11px] uppercase tracking-[0.18em] text-dim font-mono">
           Block depth

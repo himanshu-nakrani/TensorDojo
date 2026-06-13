@@ -32,7 +32,7 @@ export function PositionalEncodingHeatmap({ preset }: { preset?: PositionalEncod
   }, [pe, a, b]);
 
   return (
-    <div className="rounded-xl border border-border bg-surface p-6 sm:p-8 shadow-[0_1px_0_rgba(255,255,255,0.02)_inset]">
+    <div className="rounded-xl border border-border bg-surface p-6 sm:p-8 card-surface">
       <div className="flex items-baseline justify-between mb-5">
         <h3 className="text-[11px] uppercase tracking-[0.18em] text-dim font-mono">
           Positional encoding
@@ -59,9 +59,12 @@ export function PositionalEncodingHeatmap({ preset }: { preset?: PositionalEncod
                     key={`c${pos}-${dim}`}
                     className="aspect-square rounded-sm"
                     style={{
-                      background: v > 0
-                        ? `rgba(45, 212, 191, ${Math.min(1, Math.abs(v) * 0.9).toFixed(2)})`
-                        : `rgba(248, 113, 113, ${Math.min(1, Math.abs(v) * 0.7).toFixed(2)})`,
+                      background: v > 0 ? 'rgb(var(--accent))' : 'rgb(var(--negative))',
+                      // Round to 4dp to avoid a SSR/CSR float64-repr
+                      // mismatch on the opacity attribute.
+                      opacity: Math.round(
+                        Math.min(1, Math.abs(v) * (v > 0 ? 0.9 : 0.7)) * 1e4,
+                      ) / 1e4,
                     }}
                     title={`PE(${pos}, ${dim}) = ${v.toFixed(3)}`}
                   />

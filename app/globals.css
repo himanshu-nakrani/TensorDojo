@@ -2,7 +2,110 @@
 @tailwind components;
 @tailwind utilities;
 
-/* KaTeX color override — let math inherit the page's text color. */
+/* ===========================================================================
+   THEME TOKENS
+
+   Two palettes: light is the default on :root; dark overrides via .dark on
+   <html>. Every Tailwind color in tailwind.config.ts reads through one of
+   these tokens as `rgb(var(--token) / <alpha-value>)`, so `bg-bg`, `text-ink`,
+   `border-border`, and even `bg-bg/40` all theme-swap automatically.
+
+   Tokens are stored as bare RGB triplets (space-separated channels) so the
+   Tailwind alpha modifier can build a translucent color. Inline styles and
+   SVG attributes that need the same color wrap the variable in `rgb()`,
+   e.g. `fill="rgb(var(--accent))"`.
+
+   A handful of tokens are kept as full rgba values because they bake in a
+   specific opacity that doesn't make sense to expose to Tailwind
+   (--accent-soft, --accent-faint, --accent-dim, --negative-bg, etc.).
+   =========================================================================== */
+
+:root {
+  /* Surfaces */
+  --bg: 251 250 248;              /* warm off-white page background */
+  --bg-elevated: 255 255 255;     /* card / workbench surface */
+  --bg-code: 244 241 236;         /* code block fill (slightly warmer) */
+
+  /* Text */
+  --fg: 26 24 21;
+  --fg-muted: 74 71 66;
+  --fg-subtle: 111 108 104;       /* eyebrows, hints — AA on --bg */
+
+  /* Lines */
+  --border: 230 226 219;
+  --border-strong: 207 201 191;
+
+  /* The single accent (design-spec §8) — manipulated things only. */
+  --accent: 15 118 110;           /* teal-700; 5.25:1 on --bg */
+  --accent-hover: 17 94 89;       /* teal-800 */
+  --accent-fg: 255 255 255;       /* text/icon on accent surfaces */
+
+  /* Charting tokens */
+  --grid: 236 232 225;
+  --positive: 15 118 110;
+  --negative: 185 28 28;          /* red-700; AA on --bg */
+
+  /* Pre-baked translucent variants — kept as full rgba because they
+     describe a specific visual, not a "themed color at 30%". */
+  --accent-soft: rgba(15, 118, 110, 0.10);
+  --accent-faint: rgba(15, 118, 110, 0.06);
+  --accent-dim: rgba(15, 118, 110, 0.32);
+
+  /* Hover state for the elevated surface. */
+  --bg-elevated-hover: 244 241 236;
+
+  /* Glow color for the focus ring on inputs. */
+  --accent-shadow: rgba(15, 118, 110, 0.18);
+
+  /* Pre-baked negative bar bg (the "wrong answer" red with built-in alpha). */
+  --negative-bg: rgba(185, 28, 28, 0.7);
+
+  /* Subtle top-edge highlight on elevated cards. The dark theme
+     uses a faint white inset to suggest light from above; light
+     theme uses a faint black inset for the same suggestion. */
+  --shadow-inset: inset 0 1px 0 rgba(31, 26, 22, 0.04);
+
+  /* Heatmap cell-number halo — matches --bg so text reads on any
+     cell tint. Inline-styled as `rgb(var(--cell-halo))`. */
+  --cell-halo: 251 250 248;
+}
+
+:root.dark {
+  --bg: 11 13 16;
+  --bg-elevated: 20 24 29;
+  --bg-code: 20 24 29;
+
+  --fg: 229 231 235;
+  --fg-muted: 156 163 175;
+  --fg-subtle: 107 114 128;
+
+  --border: 31 36 42;
+  --border-strong: 42 50 59;
+
+  --accent: 45 212 191;
+  --accent-hover: 94 234 212;
+  --accent-fg: 11 13 16;
+
+  --grid: 31 36 42;
+  --positive: 45 212 191;
+  --negative: 248 113 113;
+
+  --accent-soft: rgba(45, 212, 191, 0.16);
+  --accent-faint: rgba(45, 212, 191, 0.10);
+  --accent-dim: rgba(45, 212, 191, 0.28);
+
+  --bg-elevated-hover: 26 31 37;
+  --accent-shadow: rgba(45, 212, 191, 0.15);
+
+  --negative-bg: rgba(248, 113, 113, 0.7);
+  --shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.02);
+
+  --cell-halo: 11 13 16;
+}
+
+/* ===========================================================================
+   KaTeX — let math inherit the page's text color.
+   =========================================================================== */
 .katex {
   color: inherit;
   font-size: 1.05em;
@@ -11,7 +114,16 @@
   margin: 1.5rem 0 !important;
 }
 
-/* ----- Slider ----- */
+/* Selection — same accent on both themes. */
+::selection {
+  background: rgb(var(--accent));
+  color: rgb(var(--accent-fg));
+}
+
+/* ===========================================================================
+   Slider (themed via tokens). The .slider element is rendered by the
+   Slider primitive with a CSS custom property --fill set inline.
+   =========================================================================== */
 .slider {
   -webkit-appearance: none;
   appearance: none;
@@ -25,21 +137,21 @@
   outline: none;
 }
 .slider:focus-visible {
-  outline: 2px solid #2dd4bf;
+  outline: 2px solid rgb(var(--accent));
   outline-offset: 4px;
   border-radius: 2px;
 }
 
-/* WebKit / Blink */
+/* WebKit / Blink — fill to var(--fill), unfilled in --border-strong. */
 .slider::-webkit-slider-runnable-track {
   height: 4px;
   border-radius: 2px;
   background: linear-gradient(
     to right,
-    #2dd4bf 0%,
-    #2dd4bf var(--fill, 0%),
-    #1f242a var(--fill, 0%),
-    #1f242a 100%
+    rgb(var(--accent)) 0%,
+    rgb(var(--accent)) var(--fill, 0%),
+    rgb(var(--border-strong)) var(--fill, 0%),
+    rgb(var(--border-strong)) 100%
   );
 }
 .slider::-webkit-slider-thumb {
@@ -48,17 +160,19 @@
   height: 16px;
   width: 16px;
   border-radius: 50%;
-  background: #2dd4bf;
+  background: rgb(var(--accent));
   margin-top: -6px;
-  border: 3px solid #0b0d10;
-  box-shadow: 0 0 0 1px #2dd4bf;
+  border: 3px solid rgb(var(--bg));
+  box-shadow: 0 0 0 1px rgb(var(--accent));
   transition: transform 120ms ease-out, box-shadow 120ms ease-out;
 }
 .slider:hover::-webkit-slider-thumb {
   transform: scale(1.12);
 }
 .slider:focus-visible::-webkit-slider-thumb {
-  box-shadow: 0 0 0 1px #0b0d10, 0 0 0 4px #2dd4bf;
+  box-shadow:
+    0 0 0 1px rgb(var(--bg)),
+    0 0 0 4px rgb(var(--accent));
   transform: scale(1.12);
 }
 
@@ -66,31 +180,33 @@
 .slider::-moz-range-track {
   height: 4px;
   border-radius: 2px;
-  background: #1f242a;
+  background: rgb(var(--border-strong));
 }
 .slider::-moz-range-progress {
   height: 4px;
   border-radius: 2px;
-  background: #2dd4bf;
+  background: rgb(var(--accent));
 }
 .slider::-moz-range-thumb {
   height: 12px;
   width: 12px;
   border-radius: 50%;
-  background: #2dd4bf;
-  border: 3px solid #0b0d10;
-  box-shadow: 0 0 0 1px #2dd4bf;
+  background: rgb(var(--accent));
+  border: 3px solid rgb(var(--bg));
+  box-shadow: 0 0 0 1px rgb(var(--accent));
   cursor: pointer;
 }
 .slider::-moz-range-thumb:hover {
   transform: scale(1.12);
 }
 
-/* ----- Number input ----- */
+/* ===========================================================================
+   Number input
+   =========================================================================== */
 .number-input {
-  background: #14181d;
-  border: 1px solid #1f242a;
-  color: #e5e7eb;
+  background: rgb(var(--bg-code));
+  border: 1px solid rgb(var(--border));
+  color: rgb(var(--fg));
   border-radius: 4px;
   padding: 6px 8px;
   font-size: 0.875rem;
@@ -104,38 +220,32 @@
   margin: 0;
 }
 .number-input:hover {
-  border-color: #2a323b;
+  border-color: rgb(var(--border-strong));
 }
 .number-input:focus {
   outline: none;
-  border-color: #2dd4bf;
-  box-shadow: 0 0 0 2px rgba(45, 212, 191, 0.15);
+  border-color: rgb(var(--accent));
+  box-shadow: 0 0 0 2px var(--accent-shadow);
 }
 .number-input:focus-visible {
-  outline: 2px solid #2dd4bf;
+  outline: 2px solid rgb(var(--accent));
   outline-offset: 1px;
 }
 
-/* ----- Universal :focus-visible ring ----- */
-/* Used by interactive elements (buttons, links, toggles) that
-   suppressed their default outline. A 2px teal ring at +2px
-   offset is visible against any background. */
+/* ===========================================================================
+   Universal :focus-visible ring
+   =========================================================================== */
 .focus-ring:focus-visible {
-  outline: 2px solid #2dd4bf;
+  outline: 2px solid rgb(var(--accent));
   outline-offset: 2px;
   border-radius: 4px;
 }
-
-/* Lesson body links & lesson cards inherit a visible focus ring
-   (Tailwind focus-visible: utilities can also be applied per
-   element). */
 .lesson-body a:focus-visible {
-  outline: 2px solid #2dd4bf;
+  outline: 2px solid rgb(var(--accent));
   outline-offset: 2px;
 }
 
-/* Screen-reader-only utility (Tailwind includes `sr-only`, but a
-   project-level alias is safer for grep). */
+/* Screen-reader-only utility. */
 .sr-only {
   position: absolute;
   width: 1px;
@@ -148,9 +258,11 @@
   border: 0;
 }
 
-/* ----- Lesson body (prose) ----- */
+/* ===========================================================================
+   Lesson body (prose)
+   =========================================================================== */
 .lesson-body {
-  color: #d4d4d8;
+  color: rgb(var(--fg-muted));
   font-size: 1.0625rem;
   line-height: 1.75;
 }
@@ -160,13 +272,13 @@
 .lesson-body h2 {
   font-size: 1.625rem;
   font-weight: 600;
-  color: #e5e7eb;
+  color: rgb(var(--fg));
   letter-spacing: -0.01em;
   line-height: 1.25;
   margin-top: 3rem;
   margin-bottom: 0.5rem;
   padding-top: 1.5rem;
-  border-top: 1px solid #1f242a;
+  border-top: 1px solid rgb(var(--border));
 }
 .lesson-body h2:first-child {
   margin-top: 0;
@@ -176,7 +288,7 @@
 .lesson-body h3 {
   font-size: 1.125rem;
   font-weight: 600;
-  color: #e5e7eb;
+  color: rgb(var(--fg));
   margin-top: 1.5rem;
   margin-bottom: 0.25rem;
 }
@@ -184,40 +296,40 @@
   margin: 0;
 }
 .lesson-body strong {
-  color: #e5e7eb;
+  color: rgb(var(--fg));
   font-weight: 600;
 }
 .lesson-body em {
   font-style: italic;
 }
 .lesson-body a {
-  color: #2dd4bf;
+  color: rgb(var(--accent));
   text-decoration: none;
-  border-bottom: 1px solid rgba(45, 212, 191, 0.3);
+  border-bottom: 1px solid var(--accent-dim);
   transition: border-color 120ms;
 }
 .lesson-body a:hover {
-  border-bottom-color: #2dd4bf;
+  border-bottom-color: rgb(var(--accent));
 }
 .lesson-body code {
   font-family: var(--font-mono), ui-monospace, monospace;
   font-size: 0.875em;
-  background: #14181d;
-  border: 1px solid #1f242a;
+  background: rgb(var(--bg-code));
+  border: 1px solid rgb(var(--border));
   border-radius: 3px;
   padding: 1px 5px;
-  color: #e5e7eb;
+  color: rgb(var(--fg));
 }
 .lesson-body pre {
   font-family: var(--font-mono), ui-monospace, monospace;
-  background: #14181d;
-  border: 1px solid #1f242a;
+  background: rgb(var(--bg-code));
+  border: 1px solid rgb(var(--border));
   border-radius: 6px;
   padding: 14px 16px;
   overflow-x: auto;
   font-size: 0.8125rem;
   line-height: 1.65;
-  color: #e5e7eb;
+  color: rgb(var(--fg));
   margin: 0;
 }
 .lesson-body pre code {
@@ -230,12 +342,12 @@
 .lesson-body kbd {
   font-family: var(--font-mono), ui-monospace, monospace;
   font-size: 0.75rem;
-  background: #14181d;
-  border: 1px solid #2a323b;
+  background: rgb(var(--bg-code));
+  border: 1px solid rgb(var(--border-strong));
   border-bottom-width: 2px;
   border-radius: 3px;
   padding: 1px 5px;
-  color: #e5e7eb;
+  color: rgb(var(--fg));
 }
 .lesson-body ol,
 .lesson-body ul {
@@ -247,14 +359,14 @@
   margin-top: 0.75rem;
 }
 .lesson-body ol > li::marker {
-  color: #6b7280;
+  color: rgb(var(--fg-subtle));
   font-family: var(--font-mono), ui-monospace, monospace;
   font-size: 0.85em;
 }
 .lesson-body blockquote {
-  border-left: 2px solid #2a323b;
+  border-left: 2px solid rgb(var(--border-strong));
   padding-left: 1rem;
-  color: #9ca3af;
+  color: rgb(var(--fg-muted));
   font-style: italic;
   margin: 0;
 }
@@ -264,21 +376,39 @@
   font-size: 1em;
 }
 
-/* ----- Workbench pulse ----- */
-/* Diagnosis flow triggers this on the active WorkbenchItem. */
+/* ===========================================================================
+   Workbench pulse (the diagnosis flow triggers this).
+   =========================================================================== */
 @keyframes pulse-ring {
   0% {
     box-shadow:
-      0 0 0 0 rgba(45, 212, 191, 0.45),
-      0 0 0 0 rgba(45, 212, 191, 0.18);
+      0 0 0 0 var(--accent-shadow),
+      0 0 0 0 var(--accent-soft);
   }
   100% {
     box-shadow:
-      0 0 0 10px rgba(45, 212, 191, 0),
-      0 0 0 18px rgba(45, 212, 191, 0);
+      0 0 0 10px transparent,
+      0 0 0 18px transparent;
   }
 }
 .animate-pulse-ring {
   animation: pulse-ring 600ms ease-out;
 }
 
+/* ===========================================================================
+   Card surface (a small inset highlight on elevated cards).
+   Use the .card-surface utility anywhere a sim card wants the
+   top-edge highlight. Token resolves per theme.
+   =========================================================================== */
+.card-surface {
+  box-shadow: var(--shadow-inset);
+}
+
+/* ===========================================================================
+   Theme switch — skip transitions on every element so a class swap doesn't
+   cascade a 200ms color tween across the whole page.
+   =========================================================================== */
+.theme-switching,
+.theme-switching * {
+  transition: none !important;
+}

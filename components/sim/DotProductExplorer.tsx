@@ -67,7 +67,7 @@ export function DotProductExplorer({ preset }: { preset?: DotProductPreset }) {
   const widthPct = Math.abs(barFrac) * half;
 
   return (
-    <div className="rounded-xl border border-border bg-surface p-6 sm:p-8 shadow-[0_1px_0_rgba(255,255,255,0.02)_inset]">
+    <div className="rounded-xl border border-border bg-surface p-6 sm:p-8 card-surface">
       <div className="flex items-baseline justify-between mb-5">
         <h3 className="text-[11px] uppercase tracking-[0.18em] text-dim font-mono">
           Dot Product Explorer
@@ -114,7 +114,7 @@ export function DotProductExplorer({ preset }: { preset?: DotProductPreset }) {
           <div
             className={clsx(
               'absolute inset-y-0 transition-all duration-200 ease-out',
-              isPositive ? 'bg-accent' : 'bg-[rgba(248,113,113,0.7)]',
+              isPositive ? 'bg-accent' : 'bg-[var(--negative-bg)]',
             )}
             style={
               isPositive

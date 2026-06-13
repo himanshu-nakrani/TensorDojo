@@ -171,7 +171,7 @@ export function ResidualStackExplorer({ preset }: { preset?: ResidualStackExplor
   const plotH = HEIGHT - 2 * PAD;
 
   return (
-    <div className="rounded-xl border border-border bg-surface p-6 sm:p-8 shadow-[0_1px_0_rgba(255,255,255,0.02)_inset]">
+    <div className="rounded-xl border border-border bg-surface p-6 sm:p-8 card-surface">
       <div className="flex items-baseline justify-between mb-5">
         <h3 className="text-[11px] uppercase tracking-[0.18em] text-dim font-mono">
           Residual + LayerNorm
@@ -187,13 +187,13 @@ export function ResidualStackExplorer({ preset }: { preset?: ResidualStackExplor
           <div className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono mb-2">
             Per-layer activation ‖x‖
           </div>
-          <PlotLine data={actNorms} width={WIDTH} height={HEIGHT} pad={PAD} color="#2DD4BF" />
+          <PlotLine data={actNorms} width={WIDTH} height={HEIGHT} pad={PAD} color="rgb(var(--accent))" />
         </div>
         <div>
           <div className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono mb-2">
             Per-layer gradient ‖∂L/∂x‖
           </div>
-          <PlotLine data={gradNormsArray} width={WIDTH} height={HEIGHT} pad={PAD} color="#F87171" />
+          <PlotLine data={gradNormsArray} width={WIDTH} height={HEIGHT} pad={PAD} color="rgb(var(--negative))" />
         </div>
       </div>
 

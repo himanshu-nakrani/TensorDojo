@@ -76,7 +76,7 @@ export function ScalingHistogram({ preset }: { preset?: ScalingHistogramPreset }
   const barW = bins.counts.length > 0 ? plotW / bins.counts.length - barGap : 0;
 
   return (
-    <div className="rounded-xl border border-border bg-surface p-6 sm:p-8 shadow-[0_1px_0_rgba(255,255,255,0.02)_inset]">
+    <div className="rounded-xl border border-border bg-surface p-6 sm:p-8 card-surface">
       <div className="flex items-baseline justify-between mb-5">
         <h3 className="text-[11px] uppercase tracking-[0.18em] text-dim font-mono">
           Why we scale attention

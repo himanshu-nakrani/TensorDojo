@@ -41,7 +41,7 @@ export function CausalMaskExplorer({ preset }: { preset?: CausalMaskExplorerPres
   const weights = useMemo(() => softmaxRows(maskedScores), [maskedScores]);
 
   return (
-    <div className="rounded-xl border border-border bg-surface p-6 sm:p-8 shadow-[0_1px_0_rgba(255,255,255,0.02)_inset]">
+    <div className="rounded-xl border border-border bg-surface p-6 sm:p-8 card-surface">
       <div className="flex items-baseline justify-between mb-5">
         <h3 className="text-[11px] uppercase tracking-[0.18em] text-dim font-mono">
           Causal mask
@@ -93,7 +93,7 @@ export function CausalMaskExplorer({ preset }: { preset?: CausalMaskExplorerPres
                           y1={i * 56 + 14}
                           x2={24 + j * 56 + 42}
                           y2={i * 56 + 42}
-                          stroke="#71717A"
+                          stroke="rgb(var(--fg-subtle))"
                           strokeWidth={2}
                           vectorEffect="non-scaling-stroke"
                         />
@@ -102,7 +102,7 @@ export function CausalMaskExplorer({ preset }: { preset?: CausalMaskExplorerPres
                           y1={i * 56 + 14}
                           x2={24 + j * 56 + 14}
                           y2={i * 56 + 42}
-                          stroke="#71717A"
+                          stroke="rgb(var(--fg-subtle))"
                           strokeWidth={2}
                           vectorEffect="non-scaling-stroke"
                         />

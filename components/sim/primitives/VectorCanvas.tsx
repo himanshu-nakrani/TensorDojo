@@ -222,11 +222,12 @@ export function VectorCanvas({
                 'transition-all duration-150 ease-out pointer-events-none',
                 'fill-accent',
               )}
-              stroke={isDragging ? '#0B0D10' : 'transparent'}
+              stroke={isDragging ? 'rgb(var(--bg))' : 'transparent'}
               strokeWidth={1}
               vectorEffect="non-scaling-stroke"
             />
-            {/* Label */}
+            {/* Label — drawn with a halo (--cell-halo = page bg) so it
+                reads against any background. */}
             <text
               x={tx + labelDx}
               y={ty - 3}
@@ -234,7 +235,7 @@ export function VectorCanvas({
               className="fill-ink font-mono"
               fontSize={11}
               style={{ fontSize: 11, paintOrder: 'stroke' }}
-              stroke="#0B0D10"
+              stroke="rgb(var(--bg-elevated))"
               strokeWidth={3}
               strokeLinejoin="round"
             >

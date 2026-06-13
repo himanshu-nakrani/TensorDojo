@@ -66,7 +66,7 @@ export function CrossEntropyCurve() {
           y1={HEIGHT - PAD}
           x2={WIDTH - PAD}
           y2={HEIGHT - PAD}
-          stroke="#2A323B"
+          stroke="rgb(var(--border-strong))"
           strokeWidth={1}
         />
         <line
@@ -74,14 +74,14 @@ export function CrossEntropyCurve() {
           y1={PAD}
           x2={PAD}
           y2={HEIGHT - PAD}
-          stroke="#2A323B"
+          stroke="rgb(var(--border-strong))"
           strokeWidth={1}
         />
         {/* Loss curve */}
         <path
           d={pathD}
           fill="none"
-          stroke="#2DD4BF"
+          stroke="rgb(var(--accent))"
           strokeWidth={2}
           vectorEffect="non-scaling-stroke"
         />
@@ -90,8 +90,8 @@ export function CrossEntropyCurve() {
           cx={cx}
           cy={cy}
           r={5}
-          fill="#5EEAD4"
-          stroke="#0B0D10"
+          fill="rgb(var(--accent-hover))"
+          stroke="rgb(var(--bg))"
           strokeWidth={2}
           vectorEffect="non-scaling-stroke"
         />

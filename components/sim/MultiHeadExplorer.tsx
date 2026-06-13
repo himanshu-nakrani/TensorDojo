@@ -55,7 +55,7 @@ export function MultiHeadExplorer({ preset }: { preset?: MultiHeadExplorerPreset
   }, [n, h, dK, qAngles, kAngles]);
 
   return (
-    <div className="rounded-xl border border-border bg-surface p-6 sm:p-8 shadow-[0_1px_0_rgba(255,255,255,0.02)_inset]">
+    <div className="rounded-xl border border-border bg-surface p-6 sm:p-8 card-surface">
       <div className="flex items-baseline justify-between mb-5">
         <h3 className="text-[11px] uppercase tracking-[0.18em] text-dim font-mono">
           Multi-head attention
@@ -81,7 +81,13 @@ export function MultiHeadExplorer({ preset }: { preset?: MultiHeadExplorerPreset
                         <div
                           key={`${head}-${i}-${j}`}
                           className="aspect-square rounded-sm"
-                          style={{ background: `rgba(45, 212, 191, ${Math.min(1, v * 0.9).toFixed(2)})` }}
+                          style={{
+                            background: `rgb(var(--accent))`,
+                            // Round to 4dp to avoid a SSR/CSR float64-repr
+                            // mismatch on the opacity attribute.
+                            opacity:
+                              Math.round(Math.min(1, v * 0.9) * 1e4) / 1e4,
+                          }}
                           title={`w[${i}][${j}] = ${v.toFixed(2)}`}
                         />
                       )),

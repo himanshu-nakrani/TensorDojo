@@ -56,7 +56,7 @@ export function LayerNormViz() {
   };
 
   return (
-    <div className="rounded-xl border border-border bg-surface p-6 sm:p-8 shadow-[0_1px_0_rgba(255,255,255,0.02)_inset]">
+    <div className="rounded-xl border border-border bg-surface p-6 sm:p-8 card-surface">
       <div className="flex items-baseline justify-between mb-5">
         <h3 className="text-[11px] uppercase tracking-[0.18em] text-dim font-mono">
           LayerNorm: same direction, different scale
@@ -72,7 +72,7 @@ export function LayerNormViz() {
                 <line x1={0} y1={plotH / 2} x2={plotW} y2={plotH / 2} className="text-border" stroke="currentColor" strokeWidth={1} vectorEffect="non-scaling-stroke" />
                 <line x1={plotW / 2} y1={0} x2={plotW / 2} y2={plotH} className="text-border" stroke="currentColor" strokeWidth={1} vectorEffect="non-scaling-stroke" />
                 <g transform={`translate(${plotW / 2}, ${plotH / 2})`}>
-                  {drawArrow(x, '#A1A1AA')}
+                  {drawArrow(x, 'rgb(var(--fg-muted))')}
                 </g>
               </svg>
               <div className="text-[10px] text-dim font-mono text-center">
@@ -85,7 +85,7 @@ export function LayerNormViz() {
                 <line x1={0} y1={plotH / 2} x2={plotW} y2={plotH / 2} className="text-border" stroke="currentColor" strokeWidth={1} vectorEffect="non-scaling-stroke" />
                 <line x1={plotW / 2} y1={0} x2={plotW / 2} y2={plotH} className="text-border" stroke="currentColor" strokeWidth={1} vectorEffect="non-scaling-stroke" />
                 <g transform={`translate(${plotW / 2}, ${plotH / 2})`}>
-                  {drawArrow(y, '#2DD4BF')}
+                  {drawArrow(y, 'rgb(var(--accent))')}
                 </g>
               </svg>
               <div className="text-[10px] text-dim font-mono text-center">
