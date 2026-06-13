@@ -21,10 +21,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const { slug } = await params;
   const manifest = getLessonManifest(slug);
   if (!manifest) {
-    return { title: 'AI Learning Lab' };
+    return { title: 'TensorDojo' };
   }
   return {
-    title: `${manifest.meta.title} — AI Learning Lab`,
+    title: `${manifest.meta.title} — TensorDojo`,
     description: manifest.meta.summary,
   };
 }

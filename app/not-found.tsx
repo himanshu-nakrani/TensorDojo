@@ -1,7 +1,7 @@
 import Link from 'next/link';
 
 export const metadata = {
-  title: 'Lost — AI Learning Lab',
+  title: 'Lost — TensorDojo',
 };
 
 export default function NotFound() {

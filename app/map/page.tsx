@@ -5,7 +5,7 @@ import { listLessonMeta } from '@/lib/lessons-meta';
 import { buildTrackSections } from '@/lib/content/map-data';
 
 export const metadata = {
-  title: 'Concept map — AI Learning Lab',
+  title: 'Concept map — TensorDojo',
   description:
     'The five tracks of the Foundations module, with prerequisite edges and visit state.',
 };

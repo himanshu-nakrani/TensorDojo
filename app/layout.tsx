@@ -16,7 +16,7 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'AI Learning Lab',
+  title: 'TensorDojo',
   description:
     'Learn AI engineering by manipulating, implementing, and deploying every concept.',
 };
