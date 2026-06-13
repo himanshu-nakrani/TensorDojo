@@ -23,6 +23,8 @@ import { meta as multiHeadAttentionMeta } from '@/content/lessons/multi-head-att
 import { interactives as multiHeadAttentionInteractives } from '@/content/lessons/multi-head-attention/interactives';
 import { meta as residualsLayernormMeta } from '@/content/lessons/residuals-layernorm/meta';
 import { interactives as residualsLayernormInteractives } from '@/content/lessons/residuals-layernorm/interactives';
+import { meta as transformerBlockMeta } from '@/content/lessons/transformer-block/meta';
+import { interactives as transformerBlockInteractives } from '@/content/lessons/transformer-block/interactives';
 import type { InteractiveEntry } from '@/components/lesson/Workbench';
 
 export interface LessonManifestEntry {
@@ -76,6 +78,10 @@ const manifest: readonly LessonManifestEntry[] = [
   {
     meta: residualsLayernormMeta,
     interactives: residualsLayernormInteractives,
+  },
+  {
+    meta: transformerBlockMeta,
+    interactives: transformerBlockInteractives,
   },
 ];
 

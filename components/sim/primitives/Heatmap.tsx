@@ -25,6 +25,14 @@ interface HeatmapProps {
   highlight?: { row: number; col: number };
   /** Cell side in pixels. Default 56. */
   cellSize?: number;
+  /**
+   * Compact mode for inline mini-heatmaps (e.g. 8-dim × 4-token
+   * vector previews in the transformer block pipeline). Drops the
+   * label gutter when no labels are present, hides in-cell numbers,
+   * and tightens the cell border radius. Caller is responsible for
+   * sizing with `cellSize` (12-18px works well).
+   */
+  compact?: boolean;
   ariaLabel?: string;
 }
 
@@ -59,6 +67,7 @@ export function Heatmap({
   precision = 2,
   highlight,
   cellSize = 56,
+  compact = false,
   ariaLabel,
 }: HeatmapProps) {
   const titleId = useId();
@@ -72,11 +81,15 @@ export function Heatmap({
       : 0;
   const max = Math.max(0.001, ...allValues);
 
-  // Layout: leave room for labels.
-  const labelGutter = 64;
-  const colLabelHeight = colLabels ? 24 : 0;
+  // Layout: leave room for labels. In compact mode (or when no
+  // labels are present) drop the gutter so the heatmap sits flush.
+  const wantLabels = !compact && (rowLabels !== undefined || colLabels !== undefined);
+  const labelGutter = wantLabels ? 64 : 0;
+  const colLabelHeight = colLabels && !compact ? 24 : 0;
   const width = labelGutter + cols * cellSize;
   const height = colLabelHeight + rows * cellSize;
+  // In compact mode, hide in-cell numbers (unreadable at small size).
+  const drawValues = !compact && showValues;
 
   return (
     <svg
@@ -133,11 +146,11 @@ export function Heatmap({
           return (
             <g key={`${i}-${j}`}>
               <rect
-                x={x + 1}
-                y={y + 1}
-                width={cellSize - 2}
-                height={cellSize - 2}
-                rx={3}
+                x={x + (compact ? 0 : 1)}
+                y={y + (compact ? 0 : 1)}
+                width={cellSize - (compact ? 1 : 2)}
+                height={cellSize - (compact ? 1 : 2)}
+                rx={compact ? 1 : 3}
                 fill={fill}
                 className={clsx(
                   'transition-all duration-200 ease-out',
@@ -147,7 +160,7 @@ export function Heatmap({
                 strokeWidth={isHi ? 1.5 : 0}
                 vectorEffect="non-scaling-stroke"
               />
-              {showValues && (
+              {drawValues && (
                 <text
                   x={x + cellSize / 2}
                   y={y + cellSize / 2 + 4}
@@ -162,7 +175,7 @@ export function Heatmap({
                   {v.toFixed(precision)}
                 </text>
               )}
-              {showValues && (
+              {drawValues && (
                 <text
                   x={x + cellSize / 2}
                   y={y + cellSize / 2 + 4}

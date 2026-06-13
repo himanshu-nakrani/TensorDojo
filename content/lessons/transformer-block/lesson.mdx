@@ -1,0 +1,65 @@
+import { MathCode } from '@/components/lesson/MathCode';
+import { Callout } from '@/components/lesson/Callout';
+
+## How do all the pieces actually fit together?
+
+You've built attention, masking, embeddings, positional encoding, layer normalization, residuals, and the feed-forward network — each in its own lesson, each with its own interactive. The block is six lines of code. The question this lesson answers is the one you've been working toward: when you put them all on one page, what do they actually do?
+
+The transformer block is six lines. Take the input, normalize it, attend, add the attention back, normalize that, run a small MLP, add the MLP back, return. Every line is a piece you have already met. The whole point of the prerequisite chain is that nothing here is new.
+
+## The block, in code
+
+<MathCode
+  math="\begin{aligned}
+a   &= \operatorname{MultiHeadAttention}(\operatorname{LN}(x), \text{mask}=\text{causal}) \\
+h   &= x + a \\
+f   &= \operatorname{FFN}(\operatorname{LN}(h)) \\
+\text{out} &= h + f
+\end{aligned}"
+  code={`def block(x, ln_gamma, ln_beta, W_qkv, W_o, W_ff1, W_ff2, mask):
+    h = layernorm(x, ln_gamma, ln_beta)             # pre-norm 1
+    a = multi_head_attention(h, W_qkv, W_o, mask)  # cross-token step
+    x = x + a                                        # residual 1
+    h = layernorm(x, ln_gamma, ln_beta)             # pre-norm 2
+    f = feed_forward(h, W_ff1, W_ff2)               # per-token step
+    return x + f                                     # residual 2`}
+  caption="The block, top to bottom. Pre-norm is the modern convention: layernorm before the sublayer, residual after. Six lines, four lines of math."
+/>
+
+The math on the left and the code on the right are the same algorithm. We are using **pre-norm** — the layernorm sits *before* the sublayer, not after. This is the modern convention (used in GPT-2, LLaMA, and most current codebases) because it is numerically stable at depth: the residual stream stays close to the input distribution, and gradients flow through the residual paths without having to be re-normalized at every layer. If you read the original 2017 paper you will see post-norm, and the difference is small for a few layers but matters at 24, 96, 200. The reader who goes on to read a real codebase will see this form.
+
+## Try it
+
+<Callout targetInteractive="block-pipeline">
+  Pick the sentence "the cat saw the" and head 1. The four-row data flow on the right lights up: the attention-weight matrix shows each token attending to position 0 — the article "the" pulls every word toward itself. Now switch to head 2. The pattern is different: the third token ("saw") attends to position 1 ("cat"), the second token attends to position 1, and so on. One sentence, four different attention stories, one block.
+</Callout>
+
+<Callout targetInteractive="block-pipeline">
+  With the same sentence, drag the "Block depth" slider from 1 to 6. The four-row data flow collapses to a stacked view: at depth 1 the output is the post-residual-2 vector, at depth 2 it is what block 1's output becomes after a second block, and so on. The right panel shows the cosine similarity of each block's output to the original input embedding. With every toggle on, the drift is gentle — the residual stream is doing its job, keeping the representation anchored.
+</Callout>
+
+<Callout targetInteractive="block-pipeline">
+  Now turn residual 1 *off* and run the depth slider to 6. The cosine column in the depth view goes to zero (or below) by block 3. The residual stream has been replaced by the attention output of every block, and the original "the cat saw the" geometry is gone by the second layer. This is the catastrophe the residual was invented to prevent.
+</Callout>
+
+## Reading the result
+
+Three things to internalize.
+
+**Pre-norm keeps deep stacks trainable.** LayerNorm sits between the residual stream and every sublayer. Without it, the residual stream drifts in scale as the sublayers compose: activations can grow, gradients can shrink, and by layer 12 the model has either saturated or vanished. With layernorm, every sublayer reads from a re-centered, re-scaled input and writes to the same shape; the residual stream stays close to its starting distribution. The cost is one extra per-token normalization per sublayer — the savings come from depth.
+
+**The residual after attention matters more than you'd think.** Drop it and the block becomes a stack of pure transformations: the output of layer $i$ is just whatever the FFN of layer $i-1$ produced. There is no "starting point" for the next layer to refer back to. With it, every layer's output is the *sum* of the input and a learned delta — the model can choose to write nothing (delta = 0, identity), a small correction, or a large rewrite. The +1 in the Jacobian is the entire reason transformers can be 96 layers deep.
+
+**A stack of N blocks is a stack of N edits, not replacements.** The residual stream at depth $N$ is the sum of the input embedding and $2N$ sublayer outputs (two per block, attention and FFN). Each sublayer reads the current stream and proposes a small edit. Over depth, the stream accumulates evidence: which word this token refers to, what role it plays in the sentence, what comes next. The final layer's residual stream is the model's "thought" about the input — and in a language model, the projection from that stream to vocabulary is the next-token prediction.
+
+## A second look
+
+<Callout targetInteractive="block-depth">
+  With residual and layernorm on, push the block-depth slider to 6 and watch the right-side drift column. The cosine similarity of each block's output to the input embedding stays close to 1 — the residual stream is doing its job. Now flip residual 1 off. The same column drops to 0 by block 3; the stream has lost its anchor. This is what "the residual stream is the message" means in practice: a small architectural choice (skip connection or not) is the difference between a 96-layer model that trains and a 6-layer model that does not.
+</Callout>
+
+## The architecture is finished
+
+The block you just saw — six lines, four pieces, two residuals — is the block that sits inside every modern transformer. Stack $N$ of them, embed at the bottom, project to vocabulary at the top, and the architecture is complete. Nothing else gets added; deeper or wider models are more of the same block, not a different block. What is missing from this lesson is not architectural — it is *learning*: the weights here are constants, and turning them into learned weights is the subject of training (loss, backprop, optimizers), not architecture.
+
+The pieces compose. Once they do, the architecture is done.

@@ -24,6 +24,7 @@ import * as PositionalEncodingLesson from '@/content/lessons/positional-encoding
 import * as CausalMaskLesson from '@/content/lessons/causal-mask/lesson.mdx';
 import * as MultiHeadAttentionLesson from '@/content/lessons/multi-head-attention/lesson.mdx';
 import * as ResidualsLayernormLesson from '@/content/lessons/residuals-layernorm/lesson.mdx';
+import * as TransformerBlockLesson from '@/content/lessons/transformer-block/lesson.mdx';
 
 const components: Record<string, React.ComponentType> = {
   [getLessonManifest('dot-product')?.meta.slug ?? '']: DotProductLesson.default,
@@ -44,6 +45,8 @@ const components: Record<string, React.ComponentType> = {
     MultiHeadAttentionLesson.default,
   [getLessonManifest('residuals-layernorm')?.meta.slug ?? '']:
     ResidualsLayernormLesson.default,
+  [getLessonManifest('transformer-block')?.meta.slug ?? '']:
+    TransformerBlockLesson.default,
 };
 
 function buildEntry(manifest: LessonManifestEntry): LessonEntry {
@@ -99,8 +102,8 @@ export const TRACKS: readonly LessonTrack[] = [
   },
   {
     id: 'transformer-block',
-    label: 'Building the transformer block',
-    slugs: ['multi-head-attention', 'residuals-layernorm'],
+    label: 'The whole thing',
+    slugs: ['transformer-block'],
   },
 ];
 

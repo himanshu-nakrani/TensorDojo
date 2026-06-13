@@ -64,6 +64,9 @@ nodes:
   - id: residuals-layernorm-concept
     title: "Residual connections + layer normalization"
     lesson: residuals-layernorm
+  - id: transformer-block
+    title: "The transformer block: putting it all together"
+    lesson: transformer-block
 
 edges:
   # Atomic prerequisite chain
@@ -112,6 +115,25 @@ edges:
   - from: layer-norm
     to: attention-weight
 
+  # Capstone edges — only the six atomic concepts whose lessons are
+  # the *direct* prerequisite lessons of the capstone. The other four
+  # (dot-product, softmax, attention-score, attention-weight,
+  # scaled-dot-product, temperature) are transitively implied and not
+  # drawn, to keep the map readable at the cost of strict
+  # completeness.
+  - from: multi-head
+    to: transformer-block
+  - from: residual
+    to: transformer-block
+  - from: layer-norm
+    to: transformer-block
+  - from: causal-mask
+    to: transformer-block
+  - from: positional-encoding
+    to: transformer-block
+  - from: token-embedding
+    to: transformer-block
+
   # Lesson concept nodes
   - from: dot-product
     to: dot-product-concept
@@ -133,3 +155,15 @@ edges:
     to: multi-head-attention-concept
   - from: residual
     to: residuals-layernorm-concept
+  - from: multi-head
+    to: transformer-block
+  - from: residual
+    to: transformer-block
+  - from: layer-norm
+    to: transformer-block
+  - from: causal-mask
+    to: transformer-block
+  - from: positional-encoding
+    to: transformer-block
+  - from: token-embedding
+    to: transformer-block
