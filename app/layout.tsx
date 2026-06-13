@@ -32,8 +32,10 @@ const themeBootstrapScript = `
 (function() {
   try {
     var ls = localStorage.getItem('tld-theme');
-    var sysDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-    var dark = ls ? ls === 'dark' : (sysDark || true);
+    var sysLight = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
+    // Explicit choice wins; otherwise honor the OS preference, defaulting
+    // to dark unless the system explicitly asks for light.
+    var dark = ls ? ls === 'dark' : !sysLight;
     if (dark) document.documentElement.classList.add('dark');
   } catch (e) {}
 })();

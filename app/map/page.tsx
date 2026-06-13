@@ -54,7 +54,7 @@ export default function MapPage() {
         </p>
       </header>
 
-      <div className="rounded-xl border border-border bg-bg-elevated p-4 sm:p-6 card-surface">
+      <div className="rounded-xl border border-border bg-surface p-4 sm:p-6 card-surface">
         <ConceptMapView sections={sections} />
       </div>
     </main>

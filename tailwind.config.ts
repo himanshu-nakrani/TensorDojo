@@ -16,6 +16,7 @@ const config: Config = {
         // e.g. `bg-bg/40`. See tailwind docs on "Using CSS variables".
         bg: 'rgb(var(--bg) / <alpha-value>)',
         surface: 'rgb(var(--bg-elevated) / <alpha-value>)',
+        'surface-hover': 'rgb(var(--bg-elevated-hover) / <alpha-value>)',
         'surface-2': 'rgb(var(--bg-code) / <alpha-value>)',
         // Lines
         border: 'rgb(var(--border) / <alpha-value>)',

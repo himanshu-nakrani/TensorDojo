@@ -19,11 +19,14 @@ function resolveInitialTheme(): Theme {
   } catch {
     /* localStorage blocked (private mode, etc.) */
   }
+  // Honor the OS preference, defaulting to dark unless the system
+  // explicitly asks for light — same precedence as the inline
+  // bootstrap script in app/layout.tsx.
   if (
     typeof window.matchMedia === 'function' &&
-    window.matchMedia('(prefers-color-scheme: dark)').matches
+    window.matchMedia('(prefers-color-scheme: light)').matches
   ) {
-    return 'dark';
+    return 'light';
   }
   return 'dark';
 }

@@ -174,7 +174,7 @@ function MapCanvas({
             >
               <path
                 d="M 0 0 L 10 5 L 0 10 z"
-                className="fill-fg-subtle"
+                className="fill-dim"
               />
             </marker>
             <marker
@@ -229,7 +229,7 @@ function MapCanvas({
                   y1={y1}
                   x2={x}
                   y2={y2}
-                  className="stroke-fg-subtle"
+                  className="stroke-dim"
                   strokeWidth={1.5}
                   markerEnd="url(#arrow-in-track)"
                 />
@@ -289,7 +289,7 @@ function MapCanvas({
                 <h2 className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono leading-snug">
                   {section.label}
                 </h2>
-                <div className="text-[10px] text-fg-subtle font-mono mt-0.5">
+                <div className="text-[10px] text-dim font-mono mt-0.5">
                   {section.lessons.length} lesson
                   {section.lessons.length === 1 ? '' : 's'}
                 </div>
@@ -341,12 +341,12 @@ function LessonNode({
       data-visited={visited ? 'true' : 'false'}
       data-resume={resume ? 'true' : 'false'}
       className={[
-        'focus-ring group absolute block rounded-lg border bg-bg-elevated p-3 transition-colors card-surface',
+        'focus-ring group absolute block rounded-lg border bg-surface p-3 transition-colors card-surface',
         resume
-          ? 'border-accent ring-2 ring-accent/30 hover:bg-bg-elevated-hover'
+          ? 'border-accent ring-2 ring-accent/30 hover:bg-surface-hover'
           : visited
-            ? 'border-accent/40 hover:border-accent hover:bg-bg-elevated-hover'
-            : 'border-border hover:border-accent hover:bg-bg-elevated-hover',
+            ? 'border-accent/40 hover:border-accent hover:bg-surface-hover'
+            : 'border-border hover:border-accent hover:bg-surface-hover',
       ].join(' ')}
       style={{
         left: `${left}px`,
@@ -377,7 +377,7 @@ function LessonNode({
           title={visited ? 'Visited' : 'Not yet visited'}
         />
       </div>
-      <div className="absolute bottom-2 left-3 right-3 flex items-center justify-between text-[9px] font-mono text-fg-subtle pointer-events-none">
+      <div className="absolute bottom-2 left-3 right-3 flex items-center justify-between text-[9px] font-mono text-dim pointer-events-none">
         <span>{lesson.minutes} min</span>
         {lesson.concepts.length > 0 && (
           <span title={lesson.concepts.join(', ')} className="truncate ml-2">
@@ -392,7 +392,7 @@ function LessonNode({
 
 function Legend({ hasResume }: { hasResume: boolean }) {
   return (
-    <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-[10px] font-mono text-fg-subtle pt-4 border-t border-border">
+    <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-[10px] font-mono text-dim pt-4 border-t border-border">
       <span className="uppercase tracking-[0.18em] text-dim">Legend</span>
       <span className="inline-flex items-center gap-1.5">
         <span aria-hidden="true" className="inline-block h-1.5 w-1.5 rounded-full bg-accent" />
@@ -407,7 +407,7 @@ function Legend({ hasResume }: { hasResume: boolean }) {
       </span>
       <span className="inline-flex items-center gap-1.5">
         <svg width="22" height="6" aria-hidden="true">
-          <line x1="0" y1="3" x2="20" y2="3" className="stroke-fg-subtle" strokeWidth="1.5" />
+          <line x1="0" y1="3" x2="20" y2="3" className="stroke-dim" strokeWidth="1.5" />
         </svg>
         next in track
       </span>
