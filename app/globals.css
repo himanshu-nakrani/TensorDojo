@@ -45,6 +45,16 @@
   --positive: 15 118 110;
   --negative: 185 28 28;          /* red-700; AA on --bg */
 
+  /* Categorical series colors — used by sims that need to plot
+     multiple lines that are NOT ordered or signed (e.g. three
+     optimizer traces, four batch-size traces). Distinct from
+     --accent/--positive/--negative; chosen to be perceptually
+     distinguishable and theme-aware. */
+  --series-1: 15 118 110;         /* teal — same hue as accent in light */
+  --series-2: 217 119 6;          /* amber-600 */
+  --series-3: 124 58 237;         /* violet-600 */
+  --series-4: 14 116 144;         /* cyan-700 */
+
   /* Pre-baked translucent variants — kept as full rgba because they
      describe a specific visual, not a "themed color at 30%". */
   --accent-soft: rgba(15, 118, 110, 0.10);
@@ -77,7 +87,7 @@
 
   --fg: 229 231 235;
   --fg-muted: 156 163 175;
-  --fg-subtle: 107 114 128;
+  --fg-subtle: 148 163 184;       /* slate-400; ≈5.5:1 on --bg (was 4.02:1) */
 
   --border: 31 36 42;
   --border-strong: 42 50 59;
@@ -89,6 +99,11 @@
   --grid: 31 36 42;
   --positive: 45 212 191;
   --negative: 248 113 113;
+
+  --series-1: 45 212 191;         /* teal */
+  --series-2: 251 191 36;         /* amber-400 */
+  --series-3: 167 139 250;        /* violet-400 */
+  --series-4: 56 189 248;         /* sky-400 */
 
   --accent-soft: rgba(45, 212, 191, 0.16);
   --accent-faint: rgba(45, 212, 191, 0.10);

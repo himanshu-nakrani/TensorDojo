@@ -1,0 +1,87 @@
+import { MathCode } from '@/components/lesson/MathCode';
+import { Callout } from '@/components/lesson/Callout';
+
+## The SGD step is one equation: θ ← θ − η · g. Are there better equations?
+
+The previous two lessons wrote a single optimizer step: $\theta \leftarrow \theta - \eta \cdot g$. With a careful learning rate, that step makes progress on toy problems. On real loss surfaces, the step has two failure modes the toy didn't expose:
+
+1. **Narrow valleys.** A loss surface shaped like a long narrow valley (steep in one direction, shallow in the perpendicular direction) makes SGD oscillate across the valley walls. Each step is a bit too large in the steep direction, so the next step has to compensate in the opposite direction, and progress down the valley is slow.
+
+2. **Plateaus and ravines.** Long plateaus of low gradient followed by sharp drops make SGD crawl through the plateau (the gradient is small, the steps are small) and then over-shoot the drop (the gradient suddenly gets large).
+
+**Momentum** carries a running velocity (an exponential moving average of past gradients) and steps along the velocity, not the gradient. This smooths the path through noisy gradients and accelerates through plateaus. **Adam** adds a per-parameter adaptive step size: parameters that consistently receive large gradients get smaller steps; parameters that consistently receive small gradients get larger steps. Most modern training uses Adam by default.
+
+## The formulas
+
+**SGD (recap, for contrast):**
+$$
+\theta_{t+1} \;=\; \theta_t - \eta \cdot g_t
+$$
+
+**SGD with momentum** (Polyak, "heavy ball"):
+$$
+v_{t+1} \;=\; \beta \cdot v_t + g_t, \qquad \theta_{t+1} \;=\; \theta_t - \eta \cdot v_{t+1}
+$$
+
+The velocity $v$ is the exponential moving average of past gradients. $\beta = 0.9$ is the conventional default — $v$ keeps roughly the last 10 gradients' worth of history. The step direction is $v$, not the current gradient; this smooths out per-step noise and lets the optimizer maintain direction through plateaus.
+
+**Adam** (Kingma & Ba, 2014):
+$$
+m_{t+1} \;=\; \beta_1 \cdot m_t + (1 - \beta_1) \cdot g_t \\
+v_{t+1} \;=\; \beta_2 \cdot v_t + (1 - \beta_2) \cdot g_t^2 \\
+\hat{m}_{t+1} \;=\; m_{t+1} / (1 - \beta_1^{t+1}) \\
+\hat{v}_{t+1} \;=\; v_{t+1} / (1 - \beta_2^{t+1}) \\
+\theta_{t+1} \;=\; \theta_t - \eta \cdot \hat{m}_{t+1} / (\sqrt{\hat{v}_{t+1}} + \epsilon)
+$$
+
+The two running averages $m$ and $v$ estimate the first and second moments of the gradient. The bias-correction $\hat{m}, \hat{v}$ matters at the start of training when $m$ and $v$ are still small (initialized at zero); without it, the first few steps would be biased small. The step is the bias-corrected mean divided by the bias-corrected standard deviation — approximately $\eta \cdot \text{sign}(g)$ per parameter.
+
+<MathCode
+  math="\theta_{t+1} = \theta_t - \eta \cdot \frac{\hat{m}_{t+1}}{\sqrt{\hat{v}_{t+1}} + \epsilon}"
+  code={`# Adam, the conventional defaults.
+
+def adam_step(theta, g, m, v, t, eta=1e-3, beta1=0.9, beta2=0.999, eps=1e-8):
+    m = beta1 * m + (1 - beta1) * g                # first moment
+    v = beta2 * v + (1 - beta2) * g * g            # second moment
+    m_hat = m / (1 - beta1 ** (t + 1))             # bias correction
+    v_hat = v / (1 - beta2 ** (t + 1))
+    theta = theta - eta * m_hat / (v_hat ** 0.5 + eps)
+    return theta, m, v`}
+  caption="Adam: maintain per-parameter running first and second moments of the gradient. The step is the bias-corrected mean divided by the bias-corrected standard deviation."
+/>
+
+<Callout title="Why momentum at all?" targetInteractive="optimizer-race">
+  The velocity $v$ carries information across the noisy mini-batch steps. On a 10-step running average, the noise averages out and the underlying direction is revealed. The valley case: a small gradient in the valley direction plus a large oscillating gradient in the perpendicular direction averages to "go down the valley" if the oscillation is symmetric.
+</Callout>
+
+## Try it
+
+The centerpiece is a 2D loss surface with a long narrow valley — the pathological case for plain SGD. Three optimizers (SGD, SGD+momentum, Adam) run from the same starting point and leave colored traces.
+
+<Callout targetInteractive="optimizer-race">
+  Look at the SGD trace. It oscillates across the narrow valley: every step overshoots the valley floor in the steep direction and has to come back the other way, then overshoots again. The trajectory is a zigzag whose perpendicular drift is wasted motion.
+</Callout>
+
+<Callout targetInteractive="optimizer-race">
+  Look at the SGD+momentum trace. The oscillations in the steep direction cancel out across steps (the velocity averages them), and the trajectory makes clean progress down the valley.
+</Callout>
+
+<Callout targetInteractive="optimizer-race">
+  Look at the Adam trace. Adam adapts the per-dimension step size: the steep direction (large gradient) gets a small step; the gentle direction (small gradient) gets a large step. The trajectory goes straight down the valley floor without oscillating. The final loss is several orders of magnitude smaller than SGD or momentum.
+</Callout>
+
+<Callout title="The β slider" targetInteractive="momentum-sweep">
+  Open the secondary widget. Crank β from 0 to 0.99. β=0 reduces to plain SGD (the oscillations are back). β=0.9 is the conventional default — the trajectory cuts through the valley. β=0.99 is *too* much momentum: the trajectory overshoots the minimum, then has to come back.
+</Callout>
+
+## Reading the result
+
+**Momentum is a low-pass filter on the gradient signal.** The per-step gradient is noisy (especially at small batch sizes); the running velocity averages it out. On smooth loss surfaces the velocity is essentially the gradient; on noisy or oscillating ones, the velocity reveals the underlying direction the per-step gradient is hiding.
+
+**Adam is approximately per-parameter sign descent with a global step size.** The ratio $\hat{m} / (\sqrt{\hat{v}} + \epsilon)$ is close to $\text{sign}(g)$ — the *direction* of the gradient, not the magnitude. The global LR scales that direction. This is why Adam is robust to gradient scale: a parameter that always gets gradients of magnitude 1000 has the same step size as a parameter that always gets gradients of magnitude 0.001, after a few warmup steps when $m$ and $v$ have caught up. Plain SGD would treat the first parameter as a thousand times more important than the second.
+
+**The conventional defaults are good defaults, not arbitrary ones.** $\beta_1 = 0.9$ and $\beta_2 = 0.999$ correspond to "remember roughly the last 10 gradients" and "remember roughly the last 1000 gradients" — about 10× the first-moment window. You usually don't need to tune them; tune the LR first.
+
+## Recap
+
+Three takeaways. **SGD with momentum is plain SGD with a low-pass filter on the gradient**: the running velocity smooths per-step noise and reveals the underlying direction. **Adam is approximately per-parameter sign descent**: the step is $\eta \cdot \text{sign}(g)$ for each parameter, after bias correction, which makes it robust to gradient scale. **Most modern training uses Adam by default**; the conventional $\beta_1 = 0.9$, $\beta_2 = 0.999$ work well across most problems — tune the LR first. The next question: should the LR be constant, or should it change over the course of training?

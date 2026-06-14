@@ -8,10 +8,9 @@
  * is independent of the other ten.
  */
 import {
-  getLessonManifest,
-  listLessonManifest,
+  getLessonMeta,
   listLessonSlugs,
-  type LessonManifestEntry,
+  type LessonMeta,
 } from '@/lib/lesson-manifest';
 import {
   prevNext as lightPrevNext,
@@ -20,45 +19,40 @@ import {
   type LessonTrack,
 } from '@/lib/lessons-meta';
 
-export interface LessonEntry extends LessonManifestEntry {
+export interface LessonEntry {
+  meta: LessonMeta;
   /** Compiled MDX component for the lesson prose. */
   Component: React.ComponentType;
 }
 
-function buildEntry(manifest: LessonManifestEntry): LessonEntry {
-  throw new Error(
-    'lib/lessons: buildEntry is no longer wired to a static MDX map. ' +
-      'The lesson page route now uses dynamic MDX imports via ' +
-      'mdxLessonLoaders; do not call buildEntry from anywhere.',
-  );
-}
-
-const registry: Record<string, LessonEntry> = Object.fromEntries(
-  listLessonManifest().map((m) => [
-    m.meta.slug,
-    {
-      ...m,
-      // Placeholder Component; the lesson page route resolves the
-      // real MDX module via mdxLessonLoaders. Existing callers
-      // that read lesson.Component will get this stub and fail
-      // loudly — there are none after the page-route refactor.
-      Component: (() => {
-        throw new Error(
-          'lesson.Component is no longer statically imported; use mdxLessonLoaders',
-        );
-      }) as React.ComponentType,
-    },
-  ]),
-);
-
+/**
+ * Look up a lesson's prev/next and its MDX component.
+ * The MDX component is loaded dynamically; the meta comes from
+ * the manifest registry. Returns `undefined` if the slug is
+ * unknown.
+ */
 export function getLesson(slug: string): LessonEntry | undefined {
-  return registry[slug];
+  const meta = getLessonMeta(slug);
+  if (!meta) return undefined;
+  return {
+    meta,
+    // Placeholder; the page route resolves the real MDX module
+    // via mdxLessonLoaders. Callers reading lesson.Component
+    // will get this stub and fail loudly — the only consumer
+    // (PrevNext) reads .meta only.
+    Component: (() => {
+      throw new Error(
+        'lesson.Component is no longer statically imported; use mdxLessonLoaders',
+      );
+    }) as React.ComponentType,
+  };
 }
 
 export function listLessons(): LessonEntry[] {
-  return Object.values(registry).sort(
-    (a, b) => a.meta.order - b.meta.order,
-  );
+  return listLessonSlugs()
+    .map((slug) => getLesson(slug))
+    .filter((l): l is LessonEntry => l !== undefined)
+    .sort((a, b) => a.meta.order - b.meta.order);
 }
 
 export function listSlugs(): string[] {
@@ -86,7 +80,7 @@ export const prevNext = lightPrevNext;
 
 /**
  * Dynamic MDX loaders. Each lesson's compiled MDX module is
- * loaded via `import()` from the lesson page route, so the 11
+ * loaded via `import()` from the lesson page route, so the 21
  * lessons do not share a single fat chunk.
  *
  * The keys MUST match `LessonMeta.slug`. The values are the
@@ -104,8 +98,7 @@ export const mdxLessonLoaders: Readonly<
     import('@/content/lessons/attention-scores/lesson.mdx'),
   'attention-output': () =>
     import('@/content/lessons/attention-output/lesson.mdx'),
-  'scaled-attention': () =>
-    import('@/content/lessons/scaled-attention/lesson.mdx'),
+  'scaled-attention': () => import('@/content/lessons/scaled-attention/lesson.mdx'),
   'token-embeddings': () =>
     import('@/content/lessons/token-embeddings/lesson.mdx'),
   'positional-encoding': () =>
@@ -120,8 +113,14 @@ export const mdxLessonLoaders: Readonly<
     import('@/content/lessons/transformer-block/lesson.mdx'),
   'sampling-decoding': () =>
     import('@/content/lessons/sampling-decoding/lesson.mdx'),
-  'cross-entropy': () =>
-    import('@/content/lessons/cross-entropy/lesson.mdx'),
+  'cross-entropy': () => import('@/content/lessons/cross-entropy/lesson.mdx'),
   'gradient-descent': () =>
     import('@/content/lessons/gradient-descent/lesson.mdx'),
+  backpropagation: () =>
+    import('@/content/lessons/backpropagation/lesson.mdx'),
+  sgd: () => import('@/content/lessons/sgd/lesson.mdx'),
+  optimizers: () => import('@/content/lessons/optimizers/lesson.mdx'),
+  'lr-schedules': () => import('@/content/lessons/lr-schedules/lesson.mdx'),
+  'training-end-to-end': () =>
+    import('@/content/lessons/training-end-to-end/lesson.mdx'),
 };

@@ -4,16 +4,16 @@
 > move, change, and watch respond. Drag a slider, edit a number, read a
 > result.
 
-Sixteen articles with embedded interactive figures, organized as five
-tracks that build up from the dot product to a full transformer block
-to gradient descent. No videos, no quizzes (yet), no backend. The
+Twenty-one articles with embedded interactive figures, organized as six
+tracks that build up from the dot product to backpropagation to a
+trained tiny classifier. No videos, no quizzes (yet), no backend. The
 companion `design-spec.md` and `technical-spec.md` describe the longer
 arc — notebooks, the sync engine, the AI tutor — that this build is
 the foundation for.
 
 ## What's live
 
-Sixteen lessons across five tracks, in reading order:
+Twenty-one lessons across six tracks, in reading order:
 
 **Foundations of similarity**
 1. Dot product as alignment
@@ -41,7 +41,14 @@ Sixteen lessons across five tracks, in reading order:
 15. Cross-entropy: how the model knows it was wrong
 16. Gradient descent: walking the loss downhill
 
-A `/map` page renders the five tracks as columns on a single canvas.
+**How models learn**
+17. Backpropagation: chain rule for the whole network
+18. Stochastic gradient descent: training with batches
+19. Optimizers: SGD, momentum, Adam
+20. Learning-rate schedules: how aggressively to step, over time
+21. Training a tiny model, end to end
+
+A `/map` page renders the six tracks as columns on a single canvas.
 Lessons within a track are linked by short vertical arrows;
 cross-track prerequisites are drawn as dashed accent arcs. The lesson
 you most recently visited is highlighted as the resume point — visit
@@ -63,8 +70,11 @@ bars, the resume lesson on the map. Static content never uses it.
 - `useState` / `useReducer` only — no state library
 - `zod` validates lesson metadata at build time
 
-Sixteen lessons, 145 tests, ~110 kB first-load JS on the home page,
-~147 kB on a lesson route. No backend yet.
+Twenty-one lessons, 229 tests, ~112 kB first-load JS on the home page,
+~159 kB on a lesson route (52.7 kB page + 103 kB shared; the heavy
+centerpieces — BlockPipeline, TrainingEndToEnd, OptimizerRace — are
+in lazy chunks, so the largest individual lesson chunk is well under
+the brief's 25 kB target). No backend yet.
 
 ## Quick start
 
@@ -92,7 +102,7 @@ Requires Node 18+ and pnpm 9+.
 
 ## How to add the next lesson
 
-This is the pattern used for all sixteen live lessons — no
+This is the pattern used for all twenty-one live lessons — no
 speculation.
 
 1. **Create the folder** `content/lessons/<slug>/` with three files:
@@ -163,7 +173,7 @@ TensorDojo/
 │   ├── sim/                       # Interactive figures (one per lesson)
 │   │   ├── primitives/            # VectorCanvas, Heatmap, BarChart,
 │   │   │                          # Slider, NumberInput
-│   │   └── …                      # 24 lesson-specific composers
+│   │   └── …                      # 32 lesson-specific composers
 │   ├── concept-graph/             # ConceptGraphView (SVG 2D map)
 │   ├── home/                      # LessonCardList for the landing
 │   └── theme/                     # ThemeToggle
@@ -174,7 +184,7 @@ TensorDojo/
 │   │   └── lesson.mdx
 │   └── concepts/graph.yaml
 ├── lib/
-│   ├── math/                      # 14 modules: softmax, linalg, attention,
+│   ├── math/                      # 19 modules: softmax, linalg, attention,
 │   │                              # multihead, layernorm, ffn, gelu, mask,
 │   │                              # positional, random, sampling,
 │   │                              # cross-entropy, gradient-descent,
@@ -226,7 +236,7 @@ slider value columns so digit changes don't reflow the row.
 
 ## Navigation model
 
-- **Home** (`/`) — five track groups, each lesson a card. Two
+- **Home** (`/`) — six track groups, each lesson a card. Two
   forward links to `/map`.
 - **Lesson** (`/lessons/<slug>`) — two-column layout: prose on the
   left, an interactive workbench on the right with the lesson's
@@ -235,7 +245,7 @@ slider value columns so digit changes don't reflow the row.
   a new track. Keyboard ←/→ navigate prev/next when no input is
   focused. After 10 s on the page, the lesson is marked visited in
   `localStorage`.
-- **Map** (`/map`) — five tracks as columns of a single SVG canvas.
+- **Map** (`/map`) — six tracks as columns of a single SVG canvas.
   In-track arrows are short verticals; cross-track prerequisites
   are dashed accent arcs. The most recently visited lesson is
   highlighted with an accent ring and a "Resume" pill.

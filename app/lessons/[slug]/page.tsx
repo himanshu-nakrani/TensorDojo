@@ -4,7 +4,10 @@ import { LessonShell } from '@/components/lesson/LessonShell';
 import { Workbench } from '@/components/lesson/Workbench';
 import { PrevNext } from '@/components/lesson/PrevNext';
 import { VisitTracker } from '@/components/lesson/VisitTracker';
-import { getLessonManifest } from '@/lib/lesson-manifest';
+import {
+  getLessonMeta,
+  loadLessonInteractives,
+} from '@/lib/lesson-manifest';
 import { listSlugs, mdxLessonLoaders } from '@/lib/lessons';
 
 export function generateStaticParams() {
@@ -19,32 +22,34 @@ export const dynamicParams = false;
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
-  const manifest = getLessonManifest(slug);
-  if (!manifest) {
+  const meta = getLessonMeta(slug);
+  if (!meta) {
     return { title: 'AI Learning Lab' };
   }
   return {
-    title: `${manifest.meta.title} — AI Learning Lab`,
-    description: manifest.meta.summary,
+    title: `${meta.title} — AI Learning Lab`,
+    description: meta.summary,
   };
 }
 
 export default async function LessonPage({ params }: PageProps) {
   const { slug } = await params;
-  const manifest = getLessonManifest(slug);
-  if (!manifest) notFound();
+  const meta = getLessonMeta(slug);
+  if (!meta) notFound();
   const loader = mdxLessonLoaders[slug];
   if (!loader) notFound();
-  const mod = await loader();
+  const [mod, interactives] = await Promise.all([
+    loader(),
+    loadLessonInteractives(slug),
+  ]);
   const Lesson = mod.default;
-  const interactives = manifest.interactives;
   const defaultActive = interactives[0]?.id ?? '';
 
   return (
     <LessonShell
-      title={manifest.meta.title}
-      minutes={manifest.meta.minutes}
-      summary={manifest.meta.summary}
+      title={meta.title}
+      minutes={meta.minutes}
+      summary={meta.summary}
     >
       <VisitTracker slug={slug} />
       <Workbench

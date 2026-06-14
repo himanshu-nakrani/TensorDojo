@@ -7,8 +7,6 @@ The previous lesson closed the architecture: stack $N$ transformer blocks, embed
 
 The four most common rules are **greedy decoding**, **temperature sampling**, **top-k sampling**, and **top-p (nucleus) sampling**. They differ in how much of the distribution they keep, and how much of the model's uncertainty they let through.
 
-This lesson is where the softmax temperature from the softmax lesson reappears — applied now to the *output* of the model, not to a hidden layer.
-
 ## The formula
 
 Given the model's output logits $\mathbf{z} = (z_0, z_1, \ldots, z_{V-1})$:
@@ -36,7 +34,6 @@ def temperature_sample(logits, T=1.0, rng=np.random):
 
 def topk_sample(logits, k=5, T=1.0, rng=np.random):
     probs = softmax(logits, T)
-    # Keep top k; zero the rest; renormalize.
     cutoff = np.sort(probs)[-k]
     kept = np.where(probs >= cutoff, probs, 0)
     kept /= kept.sum()
@@ -46,7 +43,6 @@ def topp_sample(logits, p=0.9, T=1.0, rng=np.random):
     probs = softmax(logits, T)
     sorted_idx = np.argsort(-probs)
     cumsum = np.cumsum(probs[sorted_idx])
-    # Smallest set whose cumulative ≥ p.
     n_keep = int(np.searchsorted(cumsum, p)) + 1
     kept = np.zeros_like(probs)
     kept[sorted_idx[:n_keep]] = probs[sorted_idx[:n_keep]]
@@ -56,19 +52,19 @@ def topp_sample(logits, p=0.9, T=1.0, rng=np.random):
 />
 
 <Callout title="The temperature is the same temperature" targetInteractive="sampling-decoding-explorer">
-  The temperature $T$ that appears here is the same $T$ from the softmax lesson — it's the same operation, applied to a different vector. In the softmax lesson the input was a small vector of arbitrary scores; here the input is the model's output logits. Same function, different role. The lesson's connection: every softmax temperature in a model — hidden attention weights, output head, anywhere — is doing the same thing.
+  The temperature $T$ that appears here is the same $T$ from the softmax lesson — it's the same operation, applied to a different vector. The lesson's connection: every softmax temperature in a model — hidden attention weights, output head, anywhere — is doing the same thing.
 </Callout>
 
 ## Try it
 
-The vocabulary in the centerpiece is 12 plausible next-tokens after "The cat sat on the ___". The model's logits (fixed, hand-tuned) put "mat" as the most likely, with a few near-tied alternatives.
+The vocabulary in the centerpiece is 12 plausible next-tokens after "The cat sat on the ___\". The model's logits (fixed, hand-tuned) put "mat" as the most likely, with a few near-tied alternatives.
 
 <Callout targetInteractive="sampling-decoding-explorer">
   Pick "Greedy". The effective distribution is a one-hot at "mat" (the highest logit). Every sample returns "mat". This is what the model would say if it played it safe every time — boring, predictable, but always the top guess.
 </Callout>
 
 <Callout title="What to watch for" targetInteractive="sampling-decoding-explorer">
-  Switch to "Temperature" with $T = 0.5$. The bars sharpen — "mat" gets even more mass, the tail collapses. Try $T = 2.0$: the bars flatten — "dog", "on", "the", "mat" all get non-trivial mass. At $T \to \infty$ the distribution approaches uniform, and the model would sample any of the 12 tokens equally. Same logits, three different sampling behaviors.
+  Switch to "Temperature" with $T = 0.5$. The bars sharpen — "mat" gets even more mass, the tail collapses. Try $T = 2.0$: the bars flatten — "dog", "on", "the", "mat" all get non-trivial mass. At $T \to \infty$ the distribution approaches uniform. Same logits, three different sampling behaviors.
 </Callout>
 
 <Callout targetInteractive="sampling-decoding-explorer">
@@ -76,21 +72,19 @@ The vocabulary in the centerpiece is 12 plausible next-tokens after "The cat sat
 </Callout>
 
 <Callout targetInteractive="sampling-decoding-explorer">
-  Switch to "Top-p" with $p = 0.5$. The nucleus is small — it includes only the entries needed to cover 50% of the mass, which here is just "mat". Try $p = 0.9$: the nucleus grows to include "mat", "on", "dog", "the" — the entries that together cover 90% of the probability. Unlike top-k, the nucleus size adapts to the distribution.
+  Switch to "Top-p" with $p = 0.5$. The nucleus is small — it includes only the entries needed to cover 50% of the mass, which here is just "mat". Try $p = 0.9$: the nucleus grows to include "mat", "on", "dog", "the" — the entries that together cover 90% of the probability.
 </Callout>
 
 ## Reading the result
 
-Three things to internalize.
+**The strategy is *separate* from the model.** The model produces logits; the strategy decides how to interpret them. The same logits can produce wildly different output streams depending on whether you greedy-decode, sample with low temperature, or use a top-p nucleus.
 
-**The strategy is *separate* from the model.** The model produces logits; the strategy decides how to interpret them. The same logits can produce wildly different output streams depending on whether you greedy-decode, sample with low temperature, or use a top-p nucleus. This is why decoding is its own design choice in production systems — the right answer depends on the task.
+**Temperature trades off coherence and variety.** $T \to 0$ makes the model deterministic (always picks the top logit). $T \to \infty$ makes it uniform (samples from the full vocabulary). Most real systems use a temperature in between, often $T \approx 0.7$ to $1.0$, with the exact value tuned for the use case.
 
-**Temperature trades off coherence and variety.** $T \to 0$ makes the model deterministic (always picks the top logit, the same token every time). $T \to \infty$ makes it uniform (samples from the full vocabulary, completely undirected). Most real systems use a temperature in between, often $T \approx 0.7$ to $1.0$, with the exact value tuned for the use case.
-
-**Top-k and top-p are ways to *bound* the sampling.** Even at $T = 1$, sampling from a 50,000-token vocabulary can produce rare and surprising tokens. Top-k and top-p cut off the long tail: top-k by absolute count, top-p by cumulative mass. They make sampling more predictable without flattening the distribution as much as high temperature would.
+**Top-k and top-p are ways to *bound* the sampling.** Even at $T = 1$, sampling from a 50,000-token vocabulary can produce rare and surprising tokens. Top-k and top-p cut off the long tail: top-k by absolute count, top-p by cumulative mass.
 
 <Callout title="Why strategies exist at all" targetInteractive="sampling-decoding-explorer">
-  Click "Sample 100 times" with Greedy. You get 100 of the same token. Click with Temperature at $T = 1$ and 100 samples. You get a mix — most "mat", some "dog", a few "on". Click with Top-k at $k = 1$ (greedy again, for comparison) and 100 samples. The empirical distribution should match the displayed bars — that's the strategy's *promise*, made visible: the bars say "this is the distribution I'm sampling from", and 100 samples give you an empirical histogram that converges to it.
+  Click "Sample 100 times" with Greedy. You get 100 of the same token. Click with Temperature at $T = 1$ and 100 samples. You get a mix — most "mat", some "dog", a few "on". The empirical distribution should match the displayed bars — that's the strategy's *promise*, made visible.
 </Callout>
 
 ## A second look
@@ -99,4 +93,4 @@ A side-by-side comparison is the cleanest way to see what each strategy does to 
 
 ## Recap
 
-Three takeaways. **Decoding is the rule that turns logits into a single output token.** Greedy picks the top logit (deterministic, predictable). Temperature samples from a softened distribution ($T < 1$ sharpens, $T > 1$ flattens — the same temperature from the softmax lesson). Top-k and top-p bound the sampling to the most likely entries, making the model's output more coherent without flattening it as much as high temperature would. **The model and the strategy are independent.** The same model can be sampled with any strategy; the choice depends on the use case. **In production, temperature is almost always between 0 and 1, with top-p or top-k applied** to bound the long tail. The next lesson asks: knowing the loss for one prediction, how does the model actually *reduce* it?
+Three takeaways. **Decoding is the rule that turns logits into a single output token.** Greedy picks the top logit (deterministic). Temperature samples from a softened distribution ($T < 1$ sharpens, $T > 1$ flattens — the same temperature from the softmax lesson). Top-k and top-p bound the sampling to the most likely entries. **The model and the strategy are independent.** The same model can be sampled with any strategy; the choice depends on the use case. **In production, temperature is almost always between 0 and 1, with top-p or top-k applied** to bound the long tail. The next lesson asks: knowing the loss for one prediction, how does the model actually *reduce* it?

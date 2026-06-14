@@ -44,6 +44,20 @@ nodes:
     title: Cross-entropy loss
   - id: gradient-descent
     title: Gradient descent
+  - id: chain-rule
+    title: Chain rule (backpropagation)
+  - id: mini-batch
+    title: Mini-batch gradient
+  - id: momentum
+    title: Momentum
+  - id: adam
+    title: Adam optimizer
+  - id: warmup
+    title: Warmup
+  - id: cosine-decay
+    title: Cosine learning-rate decay
+  - id: training-loop
+    title: Training loop
 
   # Lesson concept nodes
   - id: dot-product-concept
@@ -94,6 +108,21 @@ nodes:
   - id: gradient-descent-concept
     title: "Gradient descent: walking the loss downhill"
     lesson: gradient-descent
+  - id: backpropagation-concept
+    title: "Backpropagation: chain rule for the whole network"
+    lesson: backpropagation
+  - id: sgd-concept
+    title: "Stochastic gradient descent: training with batches"
+    lesson: sgd
+  - id: optimizers-concept
+    title: "Optimizers: SGD, momentum, Adam"
+    lesson: optimizers
+  - id: lr-schedules-concept
+    title: "Learning-rate schedules: how aggressively to step, over time"
+    lesson: lr-schedules
+  - id: training-end-to-end-concept
+    title: "Training a tiny model, end to end"
+    lesson: training-end-to-end
 
 edges:
   # Atomic prerequisite chain
@@ -206,6 +235,20 @@ edges:
     to: cross-entropy-concept
   - from: gradient-descent
     to: gradient-descent-concept
+  - from: chain-rule
+    to: backpropagation-concept
+  - from: mini-batch
+    to: sgd-concept
+  - from: momentum
+    to: optimizers-concept
+  - from: adam
+    to: optimizers-concept
+  - from: warmup
+    to: lr-schedules-concept
+  - from: cosine-decay
+    to: lr-schedules-concept
+  - from: training-loop
+    to: training-end-to-end-concept
   - from: multi-head
     to: transformer-block
   - from: residual

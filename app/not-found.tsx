@@ -14,7 +14,7 @@ export default function NotFound() {
         Lost?
       </h1>
       <p className="text-[1.0625rem] text-muted leading-relaxed mb-10">
-        That URL doesn't match a lesson. The home page lists the 16
+        That URL doesn&apos;t match a lesson. The home page lists the 21
         lessons in reading order; the concept map shows how they
         connect.
       </p>

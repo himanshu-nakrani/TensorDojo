@@ -24,7 +24,7 @@ import type { TrackSection } from '@/lib/content/map-data';
  * This is a deliberately static layout — no force-directed
  * physics, no zooming, no panning. The grid is what makes the
  * structure scannable. The lesson count is small enough
- * (16 over 5 tracks) that a single screen at 1440 holds the whole
+ * (21 over 6 tracks) that a single screen at 1440 holds the whole
  * map without scrolling.
  */
 export function ConceptMapView({ sections }: { sections: TrackSection[] }) {
@@ -62,10 +62,16 @@ export function ConceptMapView({ sections }: { sections: TrackSection[] }) {
  * `[mask-image]`-free SVG with `preserveAspectRatio`; the
  * pixel values below are the *design grid*, not absolute
  * screen positions.
+ *
+ * At six columns × NODE_W + 5 × COL_GAP + 2 × PADDING_X we
+ * need to fit inside 1440 px. With NODE_W=170 and COL_GAP=36
+ * the canvas is 6*170 + 5*36 + 48 = 1248 px — comfortably
+ * under 1440 with margin for the side gutters. (Was 200 /
+ * 56 for the 5-track layout.)
  */
-const NODE_W = 200;
+const NODE_W = 170;
 const NODE_H = 88;
-const COL_GAP = 56;
+const COL_GAP = 36;
 const ROW_GAP = 28;
 const HEADER_H = 44;
 const PADDING_X = 24;

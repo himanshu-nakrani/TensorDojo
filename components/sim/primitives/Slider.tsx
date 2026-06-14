@@ -10,6 +10,14 @@ interface SliderProps {
   onChange: (value: number) => void;
   formatValue?: (value: number) => string;
   ariaLabel?: string;
+  /**
+   * Min-width for the value column. Defaults to 6ch which fits
+   * any value up to ~6 characters in tabular-nums (e.g. "5.00e-3").
+   * Pass a longer `valueMinWidth` for sliders whose format is
+   * known to be wider (e.g. percentage or exponential with
+   * 7+ characters).
+   */
+  valueMinWidth?: string;
 }
 
 export function Slider({
@@ -20,6 +28,7 @@ export function Slider({
   onChange,
   formatValue,
   ariaLabel,
+  valueMinWidth = '6ch',
 }: SliderProps) {
   const id = useId();
   const fill = max === min ? 0 : ((value - min) / (max - min)) * 100;
@@ -42,7 +51,10 @@ export function Slider({
         className="slider flex-1 min-w-0"
         style={{ ['--fill' as string]: `${fill}%` }}
       />
-      <span className="font-mono text-sm text-ink min-w-[4ch] text-right tabular-nums">
+      <span
+        className="font-mono text-sm text-ink text-right tabular-nums"
+        style={{ minWidth: valueMinWidth }}
+      >
         {display}
       </span>
     </div>

@@ -27,6 +27,11 @@ import { meta as transformerBlockMeta } from '@/content/lessons/transformer-bloc
 import { meta as samplingDecodingMeta } from '@/content/lessons/sampling-decoding/meta';
 import { meta as crossEntropyMeta } from '@/content/lessons/cross-entropy/meta';
 import { meta as gradientDescentMeta } from '@/content/lessons/gradient-descent/meta';
+import { meta as backpropagationMeta } from '@/content/lessons/backpropagation/meta';
+import { meta as sgdMeta } from '@/content/lessons/sgd/meta';
+import { meta as optimizersMeta } from '@/content/lessons/optimizers/meta';
+import { meta as lrSchedulesMeta } from '@/content/lessons/lr-schedules/meta';
+import { meta as trainingEndToEndMeta } from '@/content/lessons/training-end-to-end/meta';
 
 export interface LessonMetaEntry {
   meta: {
@@ -55,6 +60,11 @@ const manifest: readonly LessonMetaEntry[] = [
   { meta: samplingDecodingMeta },
   { meta: crossEntropyMeta },
   { meta: gradientDescentMeta },
+  { meta: backpropagationMeta },
+  { meta: sgdMeta },
+  { meta: optimizersMeta },
+  { meta: lrSchedulesMeta },
+  { meta: trainingEndToEndMeta },
 ];
 
 export function listLessonMeta(): readonly LessonMetaEntry[] {
@@ -116,6 +126,17 @@ export const TRACKS: readonly LessonTrack[] = [
     id: 'decoding-and-learning',
     label: 'What the model says, and how it learns',
     slugs: ['sampling-decoding', 'cross-entropy', 'gradient-descent'],
+  },
+  {
+    id: 'training',
+    label: 'How models learn',
+    slugs: [
+      'backpropagation',
+      'sgd',
+      'optimizers',
+      'lr-schedules',
+      'training-end-to-end',
+    ],
   },
 ];
 
