@@ -69,7 +69,7 @@ export function SoftmaxExplorer({ preset }: { preset?: SoftmaxPreset }) {
         <button
           type="button"
           onClick={reset}
-          className="text-[11px] uppercase tracking-[0.18em] font-mono text-muted hover:text-ink transition-colors"
+          className="text-[11px] uppercase tracking-[0.18em] font-mono text-muted hover:text-ink focus-ring transition-colors"
         >
           Reset
         </button>

@@ -34,7 +34,7 @@ export function AttentionTemperature({ preset }: { preset?: AttentionTemperature
         <button
           type="button"
           onClick={() => setTemperature(1.0)}
-          className="text-[11px] uppercase tracking-[0.18em] font-mono text-muted hover:text-ink transition-colors"
+          className="text-[11px] uppercase tracking-[0.18em] font-mono text-muted hover:text-ink focus-ring transition-colors"
         >
           Reset
         </button>

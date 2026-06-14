@@ -143,7 +143,7 @@ export function SamplingDecodingExplorer() {
             setEmpirical(sample100());
             setSeed((s) => s + 1);
           }}
-          className="text-[11px] uppercase tracking-[0.18em] font-mono text-accent hover:text-accent-hover transition-colors border border-accent px-2 py-0.5 rounded"
+          className="focus-ring text-[11px] uppercase tracking-[0.18em] font-mono text-accent hover:text-accent-hover transition-colors border border-accent px-2 py-0.5 rounded"
         >
           Sample 100 times
         </button>
@@ -173,7 +173,7 @@ export function SamplingDecodingExplorer() {
             type="button"
             onClick={() => setStrategy(s.id)}
             className={
-              'text-[10px] uppercase tracking-[0.18em] font-mono px-2 py-0.5 rounded border transition-colors ' +
+              'text-[10px] uppercase tracking-[0.18em] font-mono px-2 py-0.5 rounded border focus-ring transition-colors ' +
               (strategy === s.id
                 ? 'border-accent text-accent'
                 : 'border-border text-muted hover:text-ink')
@@ -304,7 +304,7 @@ export function SamplingDecodingExplorer() {
               `Sampled: "${NEXT_TOKEN_CANDIDATES[idx]}" (strategy = ${strategy})`,
             );
           }}
-          className="text-accent hover:text-accent-hover transition-colors"
+          className="focus-ring text-accent hover:text-accent-hover transition-colors"
         >
           Sample once →
         </button>

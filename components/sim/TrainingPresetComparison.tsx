@@ -74,7 +74,7 @@ export function TrainingPresetComparison() {
             setTimeout(run, 0);
           }}
           disabled={running}
-          className="text-[11px] uppercase tracking-[0.18em] font-mono text-muted hover:text-ink transition-colors disabled:opacity-40"
+          className="text-[11px] uppercase tracking-[0.18em] font-mono text-muted hover:text-ink focus-ring transition-colors disabled:opacity-40"
         >
           {running ? 'Running…' : 'Re-run'}
         </button>

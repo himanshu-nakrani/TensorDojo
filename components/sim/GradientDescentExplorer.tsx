@@ -148,7 +148,7 @@ export function GradientDescentExplorer() {
         <button
           type="button"
           onClick={() => setSeed((s) => s + 1)}
-          className="text-[11px] uppercase tracking-[0.18em] font-mono text-muted hover:text-ink transition-colors"
+          className="text-[11px] uppercase tracking-[0.18em] font-mono text-muted hover:text-ink focus-ring transition-colors"
         >
           Step
         </button>
@@ -165,7 +165,7 @@ export function GradientDescentExplorer() {
             type="button"
             onClick={() => setPreset(p.id)}
             className={
-              'text-[10px] uppercase tracking-[0.18em] font-mono px-2 py-0.5 rounded border transition-colors ' +
+              'text-[10px] uppercase tracking-[0.18em] font-mono px-2 py-0.5 rounded border focus-ring transition-colors ' +
               (presetId === p.id
                 ? 'border-accent text-accent'
                 : 'border-border text-muted hover:text-ink')

@@ -87,7 +87,7 @@ export function ScalingHistogram({ preset }: { preset?: ScalingHistogramPreset }
             setDK(16);
             setScale(false);
           }}
-          className="text-[11px] uppercase tracking-[0.18em] font-mono text-muted hover:text-ink transition-colors"
+          className="text-[11px] uppercase tracking-[0.18em] font-mono text-muted hover:text-ink focus-ring transition-colors"
         >
           Reset
         </button>
@@ -189,7 +189,7 @@ export function ScalingHistogram({ preset }: { preset?: ScalingHistogramPreset }
                   type="button"
                   onClick={() => setDK(d)}
                   className={clsx(
-                    'px-2.5 py-1 rounded font-mono text-[11px] tabular-nums transition-colors',
+                    'px-2.5 py-1 rounded font-mono text-[11px] tabular-nums focus-ring transition-colors',
                     d === dK
                       ? 'bg-accent text-bg'
                       : 'bg-bg/40 text-muted hover:text-ink border border-border',
@@ -214,7 +214,7 @@ export function ScalingHistogram({ preset }: { preset?: ScalingHistogramPreset }
               type="button"
               onClick={() => setScale((s) => !s)}
               className={clsx(
-                'text-[11px] uppercase tracking-[0.18em] font-mono px-3 py-1.5 rounded border transition-colors',
+                'text-[11px] uppercase tracking-[0.18em] font-mono px-3 py-1.5 rounded border focus-ring transition-colors',
                 scale
                   ? 'border-accent text-accent bg-accent-faint'
                   : 'border-border text-muted hover:text-ink',

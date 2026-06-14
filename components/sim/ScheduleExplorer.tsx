@@ -144,7 +144,7 @@ export function ScheduleExplorer() {
                   type="button"
                   onClick={() => setSchedule(s.value)}
                   className={
-                    'text-[10px] uppercase tracking-[0.18em] font-mono py-1 rounded border transition-colors ' +
+                    'text-[10px] uppercase tracking-[0.18em] font-mono py-1 rounded border focus-ring transition-colors ' +
                     (schedule === s.value
                       ? 'border-accent text-accent'
                       : 'border-border text-muted hover:text-ink')

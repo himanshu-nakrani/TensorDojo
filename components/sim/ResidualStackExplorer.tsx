@@ -231,7 +231,7 @@ function Toggle({
       type="button"
       onClick={() => onChange(!on)}
       className={clsx(
-        'text-[10px] uppercase tracking-[0.18em] font-mono px-2 py-0.5 rounded border transition-colors',
+        'text-[10px] uppercase tracking-[0.18em] font-mono px-2 py-0.5 rounded border focus-ring transition-colors',
         on
           ? 'border-accent text-accent'
           : 'border-border text-muted hover:text-ink',

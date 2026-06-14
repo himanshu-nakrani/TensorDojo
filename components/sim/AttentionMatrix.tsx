@@ -106,7 +106,7 @@ export function AttentionMatrix({ preset }: { preset?: AttentionMatrixPreset }) 
             setQ(DEFAULT_Q.map(([x, y]) => [x, y] as [number, number]));
             setK(DEFAULT_K.map(([x, y]) => [x, y] as [number, number]));
           }}
-          className="text-[11px] uppercase tracking-[0.18em] font-mono text-muted hover:text-ink transition-colors"
+          className="text-[11px] uppercase tracking-[0.18em] font-mono text-muted hover:text-ink focus-ring transition-colors"
         >
           Reset
         </button>
@@ -139,7 +139,7 @@ export function AttentionMatrix({ preset }: { preset?: AttentionMatrixPreset }) 
                 type="button"
                 onClick={() => setShowMath((s) => !s)}
                 className={clsx(
-                  'text-[10px] uppercase tracking-[0.18em] font-mono px-2 py-0.5 rounded border transition-colors',
+                  'text-[10px] uppercase tracking-[0.18em] font-mono px-2 py-0.5 rounded border focus-ring transition-colors',
                   showMath
                     ? 'border-accent text-accent'
                     : 'border-border text-muted hover:text-ink',

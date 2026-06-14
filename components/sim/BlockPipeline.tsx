@@ -445,7 +445,7 @@ function Controls(props: ControlsProps) {
             type="button"
             onClick={() => props.setHeadIdx(h)}
             className={clsx(
-              'text-[10px] uppercase tracking-[0.18em] font-mono px-2 py-0.5 rounded border transition-colors',
+              'text-[10px] uppercase tracking-[0.18em] font-mono px-2 py-0.5 rounded border focus-ring transition-colors',
               props.headIdx === h
                 ? 'border-accent text-accent'
                 : 'border-border text-muted hover:text-ink',
@@ -459,7 +459,7 @@ function Controls(props: ControlsProps) {
           type="button"
           onClick={() => props.setShowAllHeads(!props.showAllHeads)}
           className={clsx(
-            'text-[10px] uppercase tracking-[0.18em] font-mono px-2 py-0.5 rounded border transition-colors',
+            'text-[10px] uppercase tracking-[0.18em] font-mono px-2 py-0.5 rounded border focus-ring transition-colors',
             props.showAllHeads
               ? 'border-accent text-accent'
               : 'border-border text-muted hover:text-ink',
@@ -530,7 +530,7 @@ function Toggle({
       type="button"
       onClick={() => onChange(!on)}
       className={clsx(
-        'text-[10px] uppercase tracking-[0.18em] font-mono px-2 py-0.5 rounded border transition-colors',
+        'text-[10px] uppercase tracking-[0.18em] font-mono px-2 py-0.5 rounded border focus-ring transition-colors',
         on
           ? 'border-accent text-accent'
           : 'border-border text-muted hover:text-ink',
@@ -905,8 +905,8 @@ function DepthView({
             {drift.map((c, b) => (
               <div key={b} className="flex items-center justify-between gap-2">
                 <span className="text-dim">block {b + 1}</span>
-                <span className={clsx('tabular-nums', c < 0.5 ? 'text-amber-300' : 'text-ink')}>
-                  {c.toFixed(3)}
+                <span className={clsx('tabular-nums', c < 0.5 ? 'text-[rgb(var(--negative))]' : 'text-ink')}>
+                  {c < 0.5 && '↓ '}{c.toFixed(3)}
                 </span>
               </div>
             ))}
@@ -917,7 +917,7 @@ function DepthView({
             it drifts toward 0 (or negative).
           </div>
           {(!toggles.useRes1 || !toggles.useRes2) && (
-            <div className="mt-2 text-[10px] text-amber-300 font-mono leading-relaxed">
+            <div className="mt-2 text-[10px] text-[rgb(var(--negative))] font-mono leading-relaxed">
               ⚠ a residual is off — drift accelerates with depth.
             </div>
           )}

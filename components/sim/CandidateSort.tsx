@@ -71,7 +71,7 @@ export function CandidateSort({ preset }: { preset?: CandidateSortPreset }) {
         <button
           type="button"
           onClick={() => setQuery([...DEFAULT_QUERY])}
-          className="text-[11px] uppercase tracking-[0.18em] font-mono text-muted hover:text-ink transition-colors"
+          className="text-[11px] uppercase tracking-[0.18em] font-mono text-muted hover:text-ink focus-ring transition-colors"
         >
           Reset
         </button>

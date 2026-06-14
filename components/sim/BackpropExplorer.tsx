@@ -225,7 +225,7 @@ export function BackpropExplorer() {
             type="button"
             onClick={() => setShowBackward((b) => !b)}
             className={
-              'text-[10px] uppercase tracking-[0.18em] font-mono px-2 py-0.5 rounded border transition-colors ' +
+              'text-[10px] uppercase tracking-[0.18em] font-mono px-2 py-0.5 rounded border focus-ring transition-colors ' +
               (showBackward
                 ? 'border-accent text-accent'
                 : 'border-border text-muted hover:text-ink')
@@ -237,7 +237,7 @@ export function BackpropExplorer() {
           <button
             type="button"
             onClick={onRandomize}
-            className="text-[11px] uppercase tracking-[0.18em] font-mono text-muted hover:text-ink transition-colors"
+            className="text-[11px] uppercase tracking-[0.18em] font-mono text-muted hover:text-ink focus-ring transition-colors"
           >
             Re-init
           </button>

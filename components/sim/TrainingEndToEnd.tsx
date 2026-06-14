@@ -160,7 +160,7 @@ export function TrainingEndToEnd() {
                   type="button"
                   onClick={() => setOptimizer(o)}
                   className={
-                    'text-[10px] uppercase tracking-[0.18em] font-mono py-1 rounded border transition-colors ' +
+                    'text-[10px] uppercase tracking-[0.18em] font-mono py-1 rounded border focus-ring transition-colors ' +
                     (optimizer === o
                       ? 'border-accent text-accent'
                       : 'border-border text-muted hover:text-ink')
@@ -183,7 +183,7 @@ export function TrainingEndToEnd() {
                   type="button"
                   onClick={() => setSchedule(s)}
                   className={
-                    'text-[10px] uppercase tracking-[0.18em] font-mono py-1 rounded border transition-colors ' +
+                    'text-[10px] uppercase tracking-[0.18em] font-mono py-1 rounded border focus-ring transition-colors ' +
                     (schedule === s
                       ? 'border-accent text-accent'
                       : 'border-border text-muted hover:text-ink')
@@ -236,7 +236,7 @@ export function TrainingEndToEnd() {
               type="button"
               onClick={onTrain}
               disabled={!train}
-              className="w-full text-[11px] uppercase tracking-[0.18em] font-mono py-2 rounded border border-accent text-accent hover:bg-accent-soft transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+              className="focus-ring w-full text-[11px] uppercase tracking-[0.18em] font-mono py-2 rounded border border-accent text-accent hover:bg-accent-soft transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
             >
               {progress && !progress.finished ? 'Training…' : 'Train'}
             </button>
@@ -293,7 +293,7 @@ function PresetButton({
     <button
       type="button"
       onClick={onClick}
-      className="text-[10px] uppercase tracking-[0.18em] font-mono px-2 py-0.5 rounded border border-border text-muted hover:text-ink hover:border-accent transition-colors"
+      className="focus-ring text-[10px] uppercase tracking-[0.18em] font-mono px-2 py-0.5 rounded border border-border text-muted hover:text-ink hover:border-accent transition-colors"
     >
       {labels[id]}
     </button>

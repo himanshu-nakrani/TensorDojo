@@ -115,7 +115,7 @@ export function OptimizerRace() {
         <button
           type="button"
           onClick={() => setSeed((s) => s + 1)}
-          className="text-[11px] uppercase tracking-[0.18em] font-mono text-muted hover:text-ink transition-colors"
+          className="text-[11px] uppercase tracking-[0.18em] font-mono text-muted hover:text-ink focus-ring transition-colors"
         >
           Re-run
         </button>

@@ -91,7 +91,7 @@ export function SGDBatchExplorer() {
         <button
           type="button"
           onClick={() => setStep((s) => s + 1)}
-          className="text-[11px] uppercase tracking-[0.18em] font-mono text-muted hover:text-ink transition-colors"
+          className="text-[11px] uppercase tracking-[0.18em] font-mono text-muted hover:text-ink focus-ring transition-colors"
         >
           Re-run
         </button>
@@ -151,7 +151,7 @@ export function SGDBatchExplorer() {
                   type="button"
                   onClick={() => setBatchSize(bp.value)}
                   className={
-                    'text-[10px] uppercase tracking-[0.18em] font-mono py-1 rounded border transition-colors ' +
+                    'text-[10px] uppercase tracking-[0.18em] font-mono py-1 rounded border focus-ring transition-colors ' +
                     (batchSize === bp.value
                       ? 'border-accent text-accent'
                       : 'border-border text-muted hover:text-ink')
@@ -354,7 +354,7 @@ export function SGDVarianceHistogram() {
                   type="button"
                   onClick={() => setBatchSize(n)}
                   className={
-                    'text-[10px] uppercase tracking-[0.18em] font-mono py-1 rounded border transition-colors ' +
+                    'text-[10px] uppercase tracking-[0.18em] font-mono py-1 rounded border focus-ring transition-colors ' +
                     (batchSize === n
                       ? 'border-accent text-accent'
                       : 'border-border text-muted hover:text-ink')

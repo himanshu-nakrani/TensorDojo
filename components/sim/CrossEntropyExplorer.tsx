@@ -81,7 +81,7 @@ export function CrossEntropyExplorer() {
         <button
           type="button"
           onClick={reset}
-          className="text-[11px] uppercase tracking-[0.18em] font-mono text-muted hover:text-ink transition-colors"
+          className="text-[11px] uppercase tracking-[0.18em] font-mono text-muted hover:text-ink focus-ring transition-colors"
         >
           Reset
         </button>
@@ -101,7 +101,7 @@ export function CrossEntropyExplorer() {
                   type="button"
                   onClick={() => setTrueIndex(i)}
                   className={
-                    'w-16 text-left text-[12px] font-mono py-1 px-2 rounded border transition-colors ' +
+                    'w-16 text-left text-[12px] font-mono py-1 px-2 rounded border focus-ring transition-colors ' +
                     (isTrue
                       ? 'border-accent text-accent bg-accent-faint'
                       : 'border-border text-muted hover:text-ink hover:border-border-strong')

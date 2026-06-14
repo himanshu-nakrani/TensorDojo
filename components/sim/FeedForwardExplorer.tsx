@@ -136,7 +136,7 @@ export function FeedForwardExplorer() {
             type="button"
             onClick={() => setTokenId(t.id)}
             className={
-              'text-[10px] uppercase tracking-[0.18em] font-mono px-2 py-0.5 rounded border transition-colors ' +
+              'text-[10px] uppercase tracking-[0.18em] font-mono px-2 py-0.5 rounded border focus-ring transition-colors ' +
               (tokenId === t.id
                 ? 'border-accent text-accent'
                 : 'border-border text-muted hover:text-ink')
@@ -185,7 +185,7 @@ export function FeedForwardExplorer() {
             type="button"
             onClick={() => setActivation(a.id)}
             className={
-              'text-[10px] uppercase tracking-[0.18em] font-mono px-2 py-0.5 rounded border transition-colors ' +
+              'text-[10px] uppercase tracking-[0.18em] font-mono px-2 py-0.5 rounded border focus-ring transition-colors ' +
               (activation === a.id
                 ? 'border-accent text-accent'
                 : 'border-border text-muted hover:text-ink')

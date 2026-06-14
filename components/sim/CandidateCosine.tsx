@@ -130,7 +130,7 @@ export function CandidateCosine({ preset }: { preset?: CandidateCosinePreset }) 
             setQ([...DEFAULT_Q] as [number, number]);
             setResizableLen(DEFAULT_RESIZABLE_LEN);
           }}
-          className="text-[11px] uppercase tracking-[0.18em] font-mono text-muted hover:text-ink transition-colors"
+          className="text-[11px] uppercase tracking-[0.18em] font-mono text-muted hover:text-ink focus-ring transition-colors"
         >
           Reset
         </button>

@@ -181,7 +181,7 @@ export function BackpropCrossSection() {
                   type="button"
                   onClick={() => setChoice(c)}
                   className={
-                    'text-[10px] uppercase tracking-[0.18em] font-mono py-1 rounded border transition-colors ' +
+                    'text-[10px] uppercase tracking-[0.18em] font-mono py-1 rounded border focus-ring transition-colors ' +
                     (choice.label === c.label
                       ? 'border-accent text-accent'
                       : 'border-border text-muted hover:text-ink')

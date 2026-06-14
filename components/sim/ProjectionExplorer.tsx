@@ -72,7 +72,7 @@ export function ProjectionExplorer({ preset }: { preset?: ProjectionExplorerPres
             type="button"
             onClick={() => setShowUnit((s) => !s)}
             className={clsx(
-              'text-[10px] uppercase tracking-[0.18em] font-mono px-2 py-0.5 rounded border transition-colors',
+              'text-[10px] uppercase tracking-[0.18em] font-mono px-2 py-0.5 rounded border focus-ring transition-colors',
               showUnit
                 ? 'border-accent text-accent'
                 : 'border-border text-muted hover:text-ink',
@@ -87,7 +87,7 @@ export function ProjectionExplorer({ preset }: { preset?: ProjectionExplorerPres
               setA([...DEFAULT_A] as [number, number]);
               setB([...DEFAULT_B] as [number, number]);
             }}
-            className="text-[11px] uppercase tracking-[0.18em] font-mono text-muted hover:text-ink transition-colors"
+            className="text-[11px] uppercase tracking-[0.18em] font-mono text-muted hover:text-ink focus-ring transition-colors"
           >
             Reset
           </button>
@@ -101,7 +101,7 @@ export function ProjectionExplorer({ preset }: { preset?: ProjectionExplorerPres
             onChange={setVector}
             height={340}
             showGrid
-            ariaLabel="2D plane with vectors a and b. Drag either tip. Dashed cyan shows the projection of a onto b; dashed red shows the residual."
+            ariaLabel="2D plane with vectors a and b. Drag either tip. Dashed teal shows the projection of a onto b; dashed red shows the residual."
             overlay={(toScreen) => {
               const [ox, oy] = toScreen(0, 0);
               const [px, py] = toScreen(proj[0]!, proj[1]!);
@@ -179,10 +179,10 @@ export function ProjectionExplorer({ preset }: { preset?: ProjectionExplorerPres
           <div className="pt-3 border-t border-border text-[10px] text-dim leading-relaxed">
             <div>
               <span className="inline-block w-3 h-px align-middle bg-accent mr-1" />
-              cyan dashed = projection of a onto b
+              teal dashed = projection of a onto b
             </div>
             <div className="mt-1">
-              <span className="inline-block w-3 h-px align-middle bg-red-400 mr-1" />
+              <span className="inline-block w-3 h-px align-middle bg-[rgb(var(--negative))] mr-1" />
               red dashed = residual (perpendicular to b)
             </div>
           </div>

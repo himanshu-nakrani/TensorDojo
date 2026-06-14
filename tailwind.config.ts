@@ -24,6 +24,13 @@ const config: Config = {
         ink: 'rgb(var(--fg) / <alpha-value>)',
         muted: 'rgb(var(--fg-muted) / <alpha-value>)',
         dim: 'rgb(var(--fg-subtle) / <alpha-value>)',
+        // Aliases that mirror the CSS var name (--fg, --fg-muted,
+        // --fg-subtle). Same colors as ink/muted/dim; the alias lets
+        // code that reads the var literally also work as a Tailwind
+        // class (text-fg-subtle, fill-fg-subtle, etc.).
+        'fg-subtle': 'rgb(var(--fg-subtle) / <alpha-value>)',
+        'fg-muted': 'rgb(var(--fg-muted) / <alpha-value>)',
+        fg: 'rgb(var(--fg) / <alpha-value>)',
         // Accent (manipulable only — design-spec §8). DEFAULT/hover/fg
         // are channel-based so the alpha modifier works; soft/faint/dim
         // are pre-baked rgba because they describe a specific visual
