@@ -32,6 +32,11 @@ import { meta as sgdMeta } from '@/content/lessons/sgd/meta';
 import { meta as optimizersMeta } from '@/content/lessons/optimizers/meta';
 import { meta as lrSchedulesMeta } from '@/content/lessons/lr-schedules/meta';
 import { meta as trainingEndToEndMeta } from '@/content/lessons/training-end-to-end/meta';
+import { meta as overfittingMeta } from '@/content/lessons/overfitting/meta';
+import { meta as weightDecayMeta } from '@/content/lessons/weight-decay/meta';
+import { meta as dropoutMeta } from '@/content/lessons/dropout/meta';
+import { meta as batchNormMeta } from '@/content/lessons/batch-norm/meta';
+import { meta as earlyStoppingAugmentationMeta } from '@/content/lessons/early-stopping-augmentation/meta';
 
 export interface LessonMetaEntry {
   meta: {
@@ -65,6 +70,11 @@ const manifest: readonly LessonMetaEntry[] = [
   { meta: optimizersMeta },
   { meta: lrSchedulesMeta },
   { meta: trainingEndToEndMeta },
+  { meta: overfittingMeta },
+  { meta: weightDecayMeta },
+  { meta: dropoutMeta },
+  { meta: batchNormMeta },
+  { meta: earlyStoppingAugmentationMeta },
 ];
 
 export function listLessonMeta(): readonly LessonMetaEntry[] {
@@ -136,6 +146,17 @@ export const TRACKS: readonly LessonTrack[] = [
       'optimizers',
       'lr-schedules',
       'training-end-to-end',
+    ],
+  },
+  {
+    id: 'regularization',
+    label: 'How models don\'t memorize',
+    slugs: [
+      'overfitting',
+      'weight-decay',
+      'dropout',
+      'batch-norm',
+      'early-stopping-augmentation',
     ],
   },
 ];

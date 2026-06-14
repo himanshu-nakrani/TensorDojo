@@ -1,0 +1,77 @@
+import { MathCode } from '@/components/lesson/MathCode';
+import { Callout } from '@/components/lesson/Callout';
+
+## Layernorm normalizes each token's vector independently. What if we normalized across the batch instead?
+
+The transformer block normalizes per-token (layernorm) — each token's vector is independently centered and scaled. The previous block's lesson. This lesson is the contrast: *batch* normalization, the older approach that dominated the conv/CNN era. The math is the same — subtract the mean, divide by the std, apply a learned scale and shift — but the statistics are computed *across the N examples in the mini-batch* instead of *across the feature dimension of a single example*.
+
+The result is a regularizer that keeps the activations on a consistent scale across training. Without it, the activation distributions drift; with it, they stay anchored.
+
+## The formula
+
+For a batch $\mathcal{B}$ of $N$ examples, each with $F$ features, batch normalization at training time computes
+
+$$
+\mu_f = \frac{1}{N} \sum_{n} x_{n,f}, \quad
+\sigma^2_f = \frac{1}{N} \sum_{n} (x_{n,f} - \mu_f)^2, \quad
+\hat{x}_{n,f} = \frac{x_{n,f} - \mu_f}{\sqrt{\sigma^2_f + \varepsilon}}
+$$
+
+per feature $f$, then applies a *learned* per-feature scale $\gamma_f$ and shift $\beta_f$:
+
+$$
+y_{n,f} = \gamma_f \hat{x}_{n,f} + \beta_f
+$$
+
+<MathCode
+  math="\hat{x}_{n,f} = \frac{x_{n,f} - \mu_f}{\sqrt{\sigma^2_f + \varepsilon}}, \quad y_{n,f} = \gamma_f \hat{x}_{n,f} + \beta_f"
+  code={`def batch_norm_forward(x, gamma, beta, eps=1e-5, momentum=0.1):
+    # x: shape (N, F). Compute per-feature mean and variance.
+    mu    = x.mean(axis=0)                # shape (F,)
+    var   = x.var(axis=0)                 # shape (F,)
+    x_hat = (x - mu) / np.sqrt(var + eps)  # normalize
+    y     = gamma * x_hat + beta          # scale + shift
+    # Update running stats for inference.
+    running_mu    = (1 - momentum) * running_mu    + momentum * mu
+    running_var   = (1 - momentum) * running_var   + momentum * var
+    return y`}
+  caption="Forward pass, training mode. The learned γ and β are initialized to (1, 0) so the layer is the identity at init; training adjusts them as needed. The running statistics are accumulated with momentum (default 0.1) and used at inference."
+/>
+
+At inference, no batch is available — instead, the model uses the *running* averages $\mu_{\text{running}}, \sigma^2_{\text{running}}$ accumulated during training:
+
+$$
+\hat{x}_{n,f} = \frac{x_{n,f} - \mu_{\text{running},\,f}}{\sqrt{\sigma^2_{\text{running},\,f} + \varepsilon}}, \quad y_{n,f} = \gamma_f \hat{x}_{n,f} + \beta_f
+$$
+
+The distinction between *batch statistics at training* and *running statistics at inference* is the source of one of the most famous production bugs in deep learning (more below).
+
+## Try it
+
+<Callout targetInteractive="batch-norm-explorer">
+  Toggle batch-norm on and off. Both runs start from the same init. The test-loss curve (top) shows batch-norm reaches a lower loss in fewer steps; the per-layer activation-norm chart (bottom) shows *why* — without batch-norm the activation norm grows without bound as training progresses, with batch-norm it is anchored.
+</Callout>
+
+<Callout targetInteractive="batch-norm-explorer">
+  Toggle off and watch the per-layer norm chart climb. The optimizer is trying to fit the data and the only way to do so is to push activations higher and higher — until the loss surface becomes pathological. Toggle on and the norm is anchored, the optimizer stays in a well-conditioned regime, and the test loss bottoms at a lower value.
+</Callout>
+
+## The training-vs-inference footgun
+
+The classic batch-norm bug: at inference, call the BN module with `training=True` instead of `training=False`. The module then uses the per-batch statistics of *your one inference example* — which means per-feature variance 0, normalization 0, output = $\beta$. The model is effectively outputting the learned bias, with no information from the input.
+
+<Callout targetInteractive="batch-norm-train-vs-inference">
+  Switch the batch size to 1, look at the training-mode output: it's a constant vector (the bias). The inference-mode output (using running stats) is the right answer. Every modern framework has a `model.eval()` / `model.train()` toggle; the lesson is to *always* call `eval()` before deployment.
+</Callout>
+
+## Why transformers use layernorm, not batchnorm
+
+The fundamental issue: batch statistics require a batch. In an autoregressive language model at inference time, you run one example at a time (autoregressive decoding) — there is no batch to take statistics over. Layernorm computes its statistics *per-example* (across the feature dimension), which works for any batch size including 1. Modern transformers use layernorm; the conv/CNN era used batchnorm because convs process fixed-size batches. The lesson is the contrast: both work in their respective regimes, and the footgun pattern (training vs inference) is the same in both.
+
+<Callout title="What the math module tests">
+  The math module's `lib/math/batchnorm.ts` exposes both forward (training) and forward (inference) separately, with a test that pins down the running-stats update rule and a test that demonstrates the footgun: a batch of 1 with the training-mode forward yields the bias β.
+</Callout>
+
+## Recap
+
+Three takeaways. **Batch normalization normalizes each feature across the batch** — per-feature mean and std, then a learned per-feature scale γ and shift β. **It keeps activations on a consistent scale across training**, which lets the optimizer stay in a well-conditioned regime. **At inference, always use the running statistics**, never the per-batch statistics — the footgun of accidentally calling BN in training mode at deployment is a real production bug. The next lesson: the last two regularizers, and they're both *free*. Early stopping uses the validation set; data augmentation uses the data pipeline.

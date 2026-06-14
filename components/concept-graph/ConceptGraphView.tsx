@@ -63,13 +63,14 @@ export function ConceptMapView({ sections }: { sections: TrackSection[] }) {
  * pixel values below are the *design grid*, not absolute
  * screen positions.
  *
- * At six columns × NODE_W + 5 × COL_GAP + 2 × PADDING_X we
- * need to fit inside 1440 px. With NODE_W=170 and COL_GAP=36
- * the canvas is 6*170 + 5*36 + 48 = 1248 px — comfortably
- * under 1440 with margin for the side gutters. (Was 200 /
- * 56 for the 5-track layout.)
+ * At seven columns × NODE_W + 6 × COL_GAP + 2 × PADDING_X we
+ * need to fit inside 1440 px. With NODE_W=155 and COL_GAP=36
+ * the canvas is 7*155 + 6*36 + 48 = 1349 px — comfortably
+ * under 1440 with margin for the side gutters. The map page
+ * also widens its max-w to 1500 px and uses px-4 / sm:px-6
+ * gutter so the canvas sits flush on a 1440 viewport.
  */
-const NODE_W = 170;
+const NODE_W = 155;
 const NODE_H = 88;
 const COL_GAP = 36;
 const ROW_GAP = 28;

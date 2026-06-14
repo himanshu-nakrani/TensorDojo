@@ -1,0 +1,66 @@
+import { MathCode } from '@/components/lesson/MathCode';
+import { Callout } from '@/components/lesson/Callout';
+
+## A single neural network is one model. What if every training step you used a slightly different model?
+
+The previous two lessons attacked overfitting by *constraining* the model — fewer parameters (smaller polynomial degree) or smaller weights (L2 decay). Dropout takes a different tack: it leaves the model alone but multiplies the network's *structure* at every training step. The result is the same — a model that doesn't overfit — but the mechanism is combinatorial.
+
+## The idea
+
+At each training step, sample a fresh **dropout mask** $m \sim \text{Bernoulli}(1-p)^d$ (one entry per neuron in the layer) and elementwise multiply:
+
+$$
+\mathbf{h}_{\text{out}} = \mathbf{m} \odot \mathbf{h}_{\text{in}}
+$$
+
+Every "dropped" neuron (mask entry 0) contributes nothing to the next layer's activations; every "kept" neuron (mask entry 1) passes through unchanged. The mask is resampled at every step, so the network never sees the same sub-network twice.
+
+The effect on the *trained* network is dramatic: no single neuron can rely on any other. If a particular feature is what makes the model right, the *other* neurons that depend on it have to be able to do without it (because at any step they might be dropped). The result is a network whose individual features are less correlated — none of them is doing the whole job.
+
+## The math
+
+Two equivalent ways to write dropout.
+
+<MathCode
+  math="\mathbf{y} = \mathbf{m} \odot \mathbf{x}, \quad m_i \sim \text{Bernoulli}(1-p)"
+  code={`# Naive dropout
+mask = (torch.rand_like(x) > p).float()
+y = mask * x`}
+  caption="Naive form: zero out a random subset. Expected activation: (1−p) · x. Inference: no mask, expected activation x. Mismatch — the network sees systematically smaller inputs at training than at inference."
+/>
+
+<MathCode
+  math="\mathbf{y} = \frac{\mathbf{m} \odot \mathbf{x}}{1-p}, \quad m_i \sim \text{Bernoulli}(1-p)"
+  code={`# Inverted dropout (every modern library)
+mask = (torch.rand_like(x) > p).float()
+y = mask * x / (1 - p)`}
+  caption="Inverted form: scale the kept activations up by 1/(1−p) at training. Expected activation: x. Inference: no mask, expected activation x. Match — no rescaling needed at deployment."
+/>
+
+The two forms differ only by a constant factor $(1-p)$ in expectation. The lesson's secondary widget walks through the arithmetic — with $p=0.3$, the inversion scale is $1/0.7 \approx 1.43$.
+
+## Try it
+
+<Callout targetInteractive="dropout-explorer">
+  Default $p=0.3$ — a modern standard. The two training runs start from the same init: dropout-off (dashed gray test loss) and dropout-on (solid teal test loss). Dropout-on is noisier per step (each step uses a different mask) but reaches a lower test loss. The diagram below the chart shows one snapshot of the active sub-network — a few neurons in the hidden layers faded out.
+</Callout>
+
+<Callout title="Why a different sub-network each step" targetInteractive="dropout-explorer">
+  If the mask were fixed across steps, the dropped neurons would never train — they would always be zero on the way in. The point of dropout is that *every* neuron sometimes sees the input and sometimes doesn't, so every weight gets gradient updates on some fraction of the steps. A network with $d$ hidden neurons and dropout $p$ sees $2^d$ distinct sub-networks across training, each with a different dropped subset.
+</Callout>
+
+<Callout targetInteractive="dropout-inference">
+  Visit $p = 0.1, 0.3, 0.5$ and watch the inversion scale climb. The naive form (training E[y] = (1−p) · x) and the inverted form (training E[y] = x) are listed side by side; the mismatch column is the thing every modern library's "inverted dropout" implementation is fixing.
+</Callout>
+
+## An ensemble in disguise
+
+There's a useful alternate framing. A network with $d$ hidden neurons has $2^d$ possible dropout masks, each producing a different sub-network. Training with dropout = training an *ensemble* of $2^d$ smaller networks, where each sub-network's predictions are averaged at inference (because each weight is the average of the weight across the $2^d$ sub-networks that included it). The empirical claim — verified on many problems — is that this ensemble generalizes better than any one of the sub-networks would on its own.
+
+<Callout title="Inverted dropout is what every library does" targetInteractive="dropout-inference">
+  PyTorch (`nn.Dropout`), JAX/Flax, and TensorFlow (`tf.keras.layers.Dropout`) all implement *inverted* dropout by default. At training they scale the kept activations by 1/(1−p); at inference they multiply by 1 (i.e. dropout is off). You can write either form by hand — but every time you reach for raw dropout, you're using the inverted version.
+</Callout>
+
+## Recap
+
+Three takeaways. **Dropout randomly zeros out a fraction $p$ of neurons at every training step**, forcing the network to spread its representation across all of them. **Inverted dropout scales the kept activations by $1/(1-p)$ at training** so the expected value matches the no-mask case at inference — the convention every modern library follows. **The combination of L2 weight decay and dropout is the default regularization recipe** for most models; tune $p$ and $\lambda$ together, with $p \in [0.1, 0.5]$ and $\lambda$ matched to the optimizer. The next lesson: a different kind of regularization that touches neither the loss nor the network's connectivity, but the *activations themselves*. That is batch normalization.

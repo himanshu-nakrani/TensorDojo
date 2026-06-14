@@ -7,7 +7,7 @@ import { buildTrackSections } from '@/lib/content/map-data';
 export const metadata = {
   title: 'Concept map — AI Learning Lab',
   description:
-    'The six tracks of AI Learning Lab, with prerequisite edges and visit state.',
+    'The seven tracks of AI Learning Lab, with prerequisite edges and visit state.',
 };
 
 /**
@@ -32,7 +32,7 @@ export default function MapPage() {
   const sections = buildTrackSections(graph, lessonMeta);
 
   return (
-    <main className="mx-auto px-6 sm:px-10 py-12 sm:py-16 max-w-[1400px]">
+    <main className="mx-auto px-4 sm:px-6 py-12 sm:py-16 max-w-[1500px]">
       <header className="mb-10 max-w-prose">
         <Link
           href="/"
@@ -47,7 +47,7 @@ export default function MapPage() {
           How the pieces connect
         </h1>
         <p className="text-[1rem] text-muted leading-relaxed">
-          Six tracks, left to right, in reading order. Solid arrows
+          Seven tracks, left to right, in reading order. Solid arrows
           mark the next lesson within a track; dashed arcs mark a
           prerequisite from another track. If you've started reading,
           your last lesson is highlighted as the resume point.

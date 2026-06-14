@@ -1,0 +1,76 @@
+import { MathCode } from '@/components/lesson/MathCode';
+import { Callout } from '@/components/lesson/Callout';
+
+## If big weights mean the model is memorizing noise, what if we just... made big weights expensive?
+
+The previous lesson ended on a cliffhanger: the gap between training and test loss grows when the model has too much capacity for the data. The reader's instinct is "make the model smaller." The math module on this site already lets you do that with a closed-form polynomial fit at the right degree. But the modern approach is different: keep the model the same, and *change the loss function* so that big weights are penalized.
+
+The trick is one line.
+
+## The formula
+
+For a model with weights $\mathbf{w}$ and per-example loss $L(\mathbf{w}; x)$, the L2-regularized loss is
+
+$$
+L_{\text{reg}}(\mathbf{w}; x) = L(\mathbf{w}; x) + \lambda \|\mathbf{w}\|^2
+$$
+
+where $\lambda \ge 0$ is the **weight-decay coefficient**. The gradient of the regularized loss is
+
+$$
+\nabla L_{\text{reg}} = \nabla L + 2\lambda \mathbf{w}
+$$
+
+so the SGD update becomes
+
+$$
+\mathbf{w} \leftarrow \mathbf{w} - \eta (\nabla L + 2\lambda \mathbf{w}) = (1 - 2\eta\lambda) \mathbf{w} - \eta \nabla L
+$$
+
+The $2\lambda \mathbf{w}$ term shrinks every weight by a fixed factor $(1 - 2\eta\lambda)$ per step, regardless of what the data says. *Big weights are pulled toward zero unless the data evidence pushes them away.*
+
+<MathCode
+  math="\mathbf{w} \leftarrow (1 - 2\eta\lambda)\,\mathbf{w} - \eta\,\nabla L(\mathbf{w};\,x)"
+  code={`# Naive L2 in the loss: an extra term in the gradient.
+for step in range(num_steps):
+    g = loss_grad(model, x)         # ∇L
+    g += 2 * lambda_ * model.weights  # +2λw
+    model.weights -= lr * g`}
+  caption="The naive form: just add the weight penalty to the gradient. Modern libraries use AdamW (next section) which decouples the decay from the gradient."
+/>
+
+For a polynomial fit, the closed-form L2 version is the *regularized normal equations*
+
+$$
+(X^\top X + \lambda I)\,\mathbf{w} = X^\top \mathbf{y}
+$$
+
+(with the convention that the bias term is *not* regularized — see the math module for the precise form). The ridge $\lambda I$ keeps the system well-conditioned for high-degree polynomials, which is the case where the unregularized $X^\top X$ is rank-deficient.
+
+## Try it
+
+<Callout targetInteractive="weight-decay-explorer">
+  Start at $\lambda = 0$. The degree-12 fit is the overfitting baseline from the previous lesson — the curve weaves through every training point. Now push $\lambda$ up. The curve smooths out: high-frequency wobbles disappear because their coefficients shrink. The bar chart below the curve shows each coefficient's current magnitude — the higher-order ones (w₅ and up) collapse first.
+</Callout>
+
+<Callout targetInteractive="weight-decay-sweep">
+  Visit three or four $\lambda$ values. The loss-vs-$\lambda$ trace records every choice. The classic U-shape: too-small λ → still overfits; right-sized λ → test-loss minimum; too-large λ → both losses climb (the under-fitting regime, where every weight is pulled so close to zero that the model can't fit anything).
+</Callout>
+
+## AdamW: the modern decoupled form
+
+The naive form above adds $\lambda \|\mathbf{w}\|^2$ to the loss. With Adam (which adapts the per-parameter step size by dividing by an estimate of the gradient magnitude), this couples the decay to the Adam denominator — large historical gradients *shrink* the effective decay. Loshchilov & Hutter (2019) showed that a *decoupled* form is simpler and works better:
+
+$$
+\mathbf{w} \leftarrow \mathbf{w} - \eta \big( \mathbf{g} + \lambda \mathbf{w} \big)
+$$
+
+Every modern transformer (BERT, GPT, LLaMA) trains with AdamW. The bias term is conventionally excluded — biases are not "capacity" the way weights are.
+
+<Callout title="Why the math module splits them">
+  The two forms (L2-in-loss vs decoupled) are different updates under Adam. The math module's `lib/math/regularization.ts` exposes both, with tests that pin down the exact update rules so the lesson and the centerpiece agree.
+</Callout>
+
+## Recap
+
+Three takeaways. **L2 weight decay adds $\lambda\|\mathbf{w}\|^2$ to the loss**, equivalent to a per-step shrinkage of every weight by a fixed factor. **It trades fit for simplicity** — λ=0 is the unregularized baseline; as λ grows, test loss bottoms at a sweet spot before climbing again as the model under-fits. **AdamW uses the decoupled form** ($w \leftarrow w - \eta(g + \lambda w)$) — every modern transformer trains this way, and the bias is excluded by convention. The next lesson: a different kind of regularization that doesn't touch the loss at all, but instead touches the *network* at every training step. That is dropout.

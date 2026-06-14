@@ -39,6 +39,11 @@ import { meta as sgdMeta } from '@/content/lessons/sgd/meta';
 import { meta as optimizersMeta } from '@/content/lessons/optimizers/meta';
 import { meta as lrSchedulesMeta } from '@/content/lessons/lr-schedules/meta';
 import { meta as trainingEndToEndMeta } from '@/content/lessons/training-end-to-end/meta';
+import { meta as overfittingMeta } from '@/content/lessons/overfitting/meta';
+import { meta as weightDecayMeta } from '@/content/lessons/weight-decay/meta';
+import { meta as dropoutMeta } from '@/content/lessons/dropout/meta';
+import { meta as batchNormMeta } from '@/content/lessons/batch-norm/meta';
+import { meta as earlyStoppingAugmentationMeta } from '@/content/lessons/early-stopping-augmentation/meta';
 
 export interface LessonMeta {
   slug: string;
@@ -70,6 +75,11 @@ const metaBySlug: Readonly<Record<string, LessonMeta>> = {
   'optimizers': optimizersMeta,
   'lr-schedules': lrSchedulesMeta,
   'training-end-to-end': trainingEndToEndMeta,
+  overfitting: overfittingMeta,
+  'weight-decay': weightDecayMeta,
+  dropout: dropoutMeta,
+  'batch-norm': batchNormMeta,
+  'early-stopping-augmentation': earlyStoppingAugmentationMeta,
 };
 
 /** Map of slug → dynamic importer for the per-lesson interactives. */
@@ -158,6 +168,28 @@ const interactivesLoaders: Readonly<Record<string, () => Promise<{
     })),
   'training-end-to-end': () =>
     import('@/content/lessons/training-end-to-end/interactives').then((m) => ({
+      interactives: m.interactives,
+    })),
+  overfitting: () =>
+    import('@/content/lessons/overfitting/interactives').then((m) => ({
+      interactives: m.interactives,
+    })),
+  'weight-decay': () =>
+    import('@/content/lessons/weight-decay/interactives').then((m) => ({
+      interactives: m.interactives,
+    })),
+  dropout: () =>
+    import('@/content/lessons/dropout/interactives').then((m) => ({
+      interactives: m.interactives,
+    })),
+  'batch-norm': () =>
+    import('@/content/lessons/batch-norm/interactives').then((m) => ({
+      interactives: m.interactives,
+    })),
+  'early-stopping-augmentation': () =>
+    import(
+      '@/content/lessons/early-stopping-augmentation/interactives'
+    ).then((m) => ({
       interactives: m.interactives,
     })),
 };

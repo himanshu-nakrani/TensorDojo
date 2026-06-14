@@ -1,0 +1,59 @@
+import { MathCode } from '@/components/lesson/MathCode';
+import { Callout } from '@/components/lesson/Callout';
+
+## Training loss going down is good. So why does test loss eventually go up?
+
+The previous lessons taught the full training pipeline: backprop, mini-batches, optimizers, schedules, the whole loop. With every knob set sensibly, the training loss falls and the test accuracy climbs. But the *test* curve eventually reverses — and the gap between train and test loss is **overfitting**.
+
+The intuition: a model with enough parameters can fit any set of points *exactly*. Zero training loss is a thing. But the same model may be fitting high-frequency noise rather than the underlying signal — the noise is the only thing in the training set that *isn't* the underlying function, and the model dutifully memorizes it. The training set says "fit this"; the model says "yes, all of it." Then on a held-out test point, the noise is different, and the model's fit of the noise doesn't transfer.
+
+## Capacity, in one polynomial
+
+A polynomial of degree $d$ has $d+1$ coefficients. $d$ controls the model's *capacity* — how many wiggles it can produce. We can make capacity the slider and watch what happens to train and test loss at the same time.
+
+For a fixed dataset (20 points, $y = \sin(2x) + \varepsilon$, with deterministic noise), the closed-form least-squares polynomial fit is
+
+<MathCode
+  math="\mathbf{w}^\star = (X^\top X)^{-1} X^\top \mathbf{y}"
+  code={`import numpy as np
+
+def poly_fit(xs, ys, degree):
+    # Build the (n, degree+1) design matrix of monomial evaluations.
+    X = np.vander(xs, degree + 1, increasing=True)
+    return np.linalg.solve(X.T @ X, X.T @ ys)`}
+  caption="Closed-form polynomial fit. The design matrix X has rows [1, x, x², ..., x^d]. The least-squares solution w* minimizes the sum of squared residuals."
+/>
+
+The fit on the first 14 points is the training set; the last 6 are the test. The point of the lesson is what happens to *both* losses as $d$ grows.
+
+<Callout targetInteractive="overfitting-explorer">
+  Drag the polynomial degree from 1 to 15. At $d=1$ the fit is a flat line and both losses are big (under-fit). As $d$ climbs the fit weaves closer to the data; training loss falls. Test loss falls too — until around $d=4$ or $5$, where it bottoms and starts climbing back. Training loss keeps falling. The two curves diverge. The gap *is* overfitting.
+</Callout>
+
+## Reading the result
+
+Three properties to internalize.
+
+**The training loss is monotone non-increasing in $d$.** A higher-degree polynomial *contains* every lower-degree polynomial as a special case, so the best fit at $d+1$ is at least as good as the best fit at $d$ on the same training set. Strictly decreasing if the new column adds information.
+
+**The test loss is U-shaped in $d$.** Too low = the model can't capture the true function (under-fit). Too high = the model fits noise that doesn't transfer (over-fit). The sweet spot is the smallest $d$ that captures the true shape — for this lesson, around $d=4$, which is the actual complexity of $\sin(2x)$ on $[-1, 1]$.
+
+**The fit itself looks "right" even when it's wrong.** A degree-15 polynomial threading through 14 noisy training points looks *plausible* — the curve passes near every circle. The problem isn't visible in the training view; it only shows up on the held-out test set. This is why "looks good" is not the right evaluation. The test set is the only honest measurement.
+
+<Callout targetInteractive="overfitting-explorer">
+  Pick $d=12$ (the default) and look at the bottom panel: the teal train curve is still falling; the red test curve is already rising. Then drag down to $d=4$ — the test curve dips to its minimum, the train curve plateaus, and the two curves meet.
+</Callout>
+
+## A second look
+
+The degree slider is one way to add capacity. The *training-set size* is another: more data, less overfitting, at the same model complexity.
+
+<Callout targetInteractive="overfitting-data-size">
+  Keep the high-variance degree-12 fit; drag the training-set size from 4 to 14. The recorded trace shows test loss falling as $n$ grows. With very small $n$ the test loss is large (a degree-12 fit on 4 points is just memorization); with $n$ close to the test set size the gap closes.
+</Callout>
+
+The lesson generalizes: a smaller-capacity model trained on more data, or a higher-capacity model trained on more data — *data is the universal regularizer*. The model's job is to use it well.
+
+## Recap
+
+Three takeaways. **Overfitting is the gap between training and test loss** — the model fits signal on training, but its noise fit doesn't transfer. **Capacity matters**: a polynomial of degree $d$ has $d+1$ coefficients; push $d$ too high and the noise becomes memorizable. **The test set is the only honest measurement** — the training loss is monotone non-increasing in capacity, so it can always be made small. The test loss is U-shaped, and the right capacity is the smallest one that captures the true shape. The natural next question: if capacity is the problem, what if we *penalize* it directly? That is weight decay.

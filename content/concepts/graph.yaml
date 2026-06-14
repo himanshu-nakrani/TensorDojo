@@ -59,6 +59,20 @@ nodes:
   - id: training-loop
     title: Training loop
 
+  # Regularization module
+  - id: overfitting
+    title: Overfitting
+  - id: weight-decay
+    title: L2 weight decay
+  - id: dropout
+    title: Dropout
+  - id: batch-norm
+    title: Batch normalization
+  - id: early-stopping
+    title: Early stopping
+  - id: data-augmentation
+    title: Data augmentation
+
   # Lesson concept nodes
   - id: dot-product-concept
     title: "Dot product as alignment"
@@ -123,6 +137,21 @@ nodes:
   - id: training-end-to-end-concept
     title: "Training a tiny model, end to end"
     lesson: training-end-to-end
+  - id: overfitting-concept
+    title: "Overfitting: when the model memorizes the data"
+    lesson: overfitting
+  - id: weight-decay-concept
+    title: "L2 weight decay: penalizing big weights"
+    lesson: weight-decay
+  - id: dropout-concept
+    title: "Dropout: training an ensemble for free"
+    lesson: dropout
+  - id: batch-norm-concept
+    title: "Batch normalization: stabilizing activations"
+    lesson: batch-norm
+  - id: early-stopping-augmentation-concept
+    title: "Early stopping + data augmentation"
+    lesson: early-stopping-augmentation
 
 edges:
   # Atomic prerequisite chain
@@ -263,3 +292,41 @@ edges:
     to: transformer-block
   - from: token-embedding
     to: transformer-block
+
+  # Regularization module edges
+  - from: cross-entropy
+    to: overfitting
+  - from: gradient-descent
+    to: overfitting
+  - from: overfitting
+    to: overfitting-concept
+  - from: overfitting
+    to: weight-decay
+  - from: sgd-concept
+    to: weight-decay
+  - from: optimizers-concept
+    to: weight-decay
+  - from: weight-decay
+    to: weight-decay-concept
+  - from: backpropagation-concept
+    to: dropout
+  - from: overfitting
+    to: dropout
+  - from: dropout
+    to: dropout-concept
+  - from: layer-norm
+    to: batch-norm
+  - from: sgd-concept
+    to: batch-norm
+  - from: batch-norm
+    to: batch-norm-concept
+  - from: cross-entropy
+    to: early-stopping
+  - from: overfitting
+    to: early-stopping
+  - from: early-stopping
+    to: early-stopping-augmentation-concept
+  - from: data-augmentation
+    to: early-stopping-augmentation-concept
+  - from: overfitting
+    to: data-augmentation

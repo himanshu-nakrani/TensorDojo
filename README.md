@@ -1,19 +1,19 @@
 # AI Learning Lab
+# AI Learning Lab
 
 > **Learn AI by manipulating it.** Every concept is something you can
 > move, change, and watch respond. Drag a slider, edit a number, read a
-> result.
+result.
 
-Twenty-one articles with embedded interactive figures, organized as six
+Twenty-six articles with embedded interactive figures, organized as seven
 tracks that build up from the dot product to backpropagation to a
-trained tiny classifier. No videos, no quizzes (yet), no backend. The
-companion `design-spec.md` and `technical-spec.md` describe the longer
-arc — notebooks, the sync engine, the AI tutor — that this build is
-the foundation for.
-
+trained, regularized tiny classifier. No videos, no quizzes (yet), no
+backend. The companion `design-spec.md` and `technical-spec.md`
+describe the longer arc — notebooks, the sync engine, the AI tutor —
+that this build is the foundation for.
 ## What's live
 
-Twenty-one lessons across six tracks, in reading order:
+Twenty-six lessons across seven tracks, in reading order:
 
 **Foundations of similarity**
 1. Dot product as alignment
@@ -48,7 +48,14 @@ Twenty-one lessons across six tracks, in reading order:
 20. Learning-rate schedules: how aggressively to step, over time
 21. Training a tiny model, end to end
 
-A `/map` page renders the six tracks as columns on a single canvas.
+**How models don't memorize**
+22. Overfitting: when the model memorizes the data
+23. L2 weight decay: penalizing big weights
+24. Dropout: training an ensemble for free
+25. Batch normalization: stabilizing activations during training
+26. Early stopping + data augmentation: cheap regularization that just works
+
+A `/map` page renders the seven tracks as columns on a single canvas.
 Lessons within a track are linked by short vertical arrows;
 cross-track prerequisites are drawn as dashed accent arcs. The lesson
 you most recently visited is highlighted as the resume point — visit
@@ -70,11 +77,12 @@ bars, the resume lesson on the map. Static content never uses it.
 - `useState` / `useReducer` only — no state library
 - `zod` validates lesson metadata at build time
 
-Twenty-one lessons, 229 tests, ~112 kB first-load JS on the home page,
+Twenty-six lessons, 294 tests, ~112 kB first-load JS on the home page,
 ~159 kB on a lesson route (52.7 kB page + 103 kB shared; the heavy
-centerpieces — BlockPipeline, TrainingEndToEnd, OptimizerRace — are
-in lazy chunks, so the largest individual lesson chunk is well under
-the brief's 25 kB target). No backend yet.
+centerpieces — BlockPipeline, TrainingEndToEnd, OptimizerRace,
+OverfittingExplorer, BatchNormExplorer, EarlyStoppingAugmentationExplorer —
+are in lazy chunks, so the largest individual lesson chunk is well
+under the brief's 25 kB target). No backend yet.
 
 ## Quick start
 
@@ -245,7 +253,7 @@ slider value columns so digit changes don't reflow the row.
   a new track. Keyboard ←/→ navigate prev/next when no input is
   focused. After 10 s on the page, the lesson is marked visited in
   `localStorage`.
-- **Map** (`/map`) — six tracks as columns of a single SVG canvas.
+- **Map** (`/map`) — seven tracks as columns of a single SVG canvas.
   In-track arrows are short verticals; cross-track prerequisites
   are dashed accent arcs. The most recently visited lesson is
   highlighted with an accent ring and a "Resume" pill.
