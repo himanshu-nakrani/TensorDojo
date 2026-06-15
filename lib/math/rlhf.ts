@@ -44,13 +44,11 @@ export function dpoLoss(
 /**
  * Gradient of dpoLoss with respect to `logits` (length K).
  * Closed-form via chain rule on σ:
- *   Let Δ = logits[y+] - logits[y-] - logitsRef[y+] + logitsRef[y-]  (β-free ratio)
- *   dL/dΔ = σ(Δ) - 1   (evaluated at the unscaled log-ratio Δ)
- *   dΔ/d logits[y+] =  1  →  dL/d logits[y+] = β · (σ(Δ) - 1)   (≤ 0)
- *   dΔ/d logits[y-] = -1  →  dL/d logits[y-] = β · (1 - σ(Δ))   (≥ 0)
+ *   z = β · Δ,  where Δ = logits[y+] - logits[y-] - logitsRef[y+] + logitsRef[y-]
+ *   dL/dz = σ(z) - 1
+ *   dz/d logits[y+] =  β  →  dL/d logits[y+] = β · (σ(β·Δ) - 1)   (≤ 0)
+ *   dz/d logits[y-] = -β  →  dL/d logits[y-] = β · (1 - σ(β·Δ))   (≥ 0)
  *   all other entries = 0
- *
- * The gradient is β-linear: doubling β doubles every entry.
  */
 export function dpoGradient(
   logits: readonly number[],
@@ -59,19 +57,18 @@ export function dpoGradient(
   dispreferredIdx: number,
   beta: number,
 ): number[] {
-  // Unscaled log-ratio (β excluded so the gradient scales linearly with β).
   const delta =
     (logits[preferredIdx] as number) -
     (logits[dispreferredIdx] as number) -
     (logitsRef[preferredIdx] as number) +
     (logitsRef[dispreferredIdx] as number);
 
-  const sigDelta = sigmoid(delta);        // σ(Δ)
-  const dLdDelta = sigDelta - 1;          // ≤ 0
+  const z = beta * delta;
+  const sigmaZ = sigmoid(z);              // σ(β·Δ)
 
   const grad = new Array<number>(logits.length).fill(0);
-  grad[preferredIdx]    = beta * dLdDelta;   // ≤ 0: pushes preferred logit up
-  grad[dispreferredIdx] = -beta * dLdDelta;  // ≥ 0: pushes dispreferred logit down
+  grad[preferredIdx]    = beta * (sigmaZ - 1);    // ≤ 0: pushes preferred logit up
+  grad[dispreferredIdx] = -beta * (sigmaZ - 1);   // ≥ 0: pushes dispreferred logit down
 
   return grad;
 }

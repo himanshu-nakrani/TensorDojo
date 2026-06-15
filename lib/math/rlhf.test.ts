@@ -71,13 +71,23 @@ describe('dpoGradient', () => {
     }
   });
 
-  it('β scales the gradient linearly', () => {
+  it('analytic gradient matches numerical at β = 2 (non-trivial point)', () => {
     const logits = [0.3, -0.1, 0.5, 0.0];
     const ref = [0.0, 0.0, 0.0, 0.0];
-    const g1 = dpoGradient(logits, ref, 0, 2, 1.0);
-    const g2 = dpoGradient(logits, ref, 0, 2, 2.0);
-    expect(g2[0]).toBeCloseTo(2 * g1[0]!, 6);
-    expect(g2[2]).toBeCloseTo(2 * g1[2]!, 6);
+    const beta = 2.0;
+    const analytical = dpoGradient(logits, ref, 0, 2, beta);
+    const eps = 1e-5;
+    for (let i = 0; i < logits.length; i += 1) {
+      const lo = [...logits]; lo[i] = lo[i]! - eps;
+      const hi = [...logits]; hi[i] = hi[i]! + eps;
+      const numerical = (dpoLoss(hi, ref, 0, 2, beta) - dpoLoss(lo, ref, 0, 2, beta)) / (2 * eps);
+      expect(analytical[i]).toBeCloseTo(numerical, 4);
+    }
+  });
+
+  it('β = 0 produces zero gradient (no preference signal)', () => {
+    const g = dpoGradient([0.3, -0.1, 0.5, 0.0], [0, 0, 0, 0], 0, 2, 0.0);
+    for (const v of g) expect(v).toBeCloseTo(0, 10);
   });
 
   it('returns a vector of length K', () => {
