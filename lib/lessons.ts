@@ -129,4 +129,6 @@ export const mdxLessonLoaders: Readonly<
   'batch-norm': () => import('@/content/lessons/batch-norm/lesson.mdx'),
   'early-stopping-augmentation': () =>
     import('@/content/lessons/early-stopping-augmentation/lesson.mdx'),
+  'pretraining-vs-finetuning': () =>
+    import('@/content/lessons/pretraining-vs-finetuning/lesson.mdx'),
 };

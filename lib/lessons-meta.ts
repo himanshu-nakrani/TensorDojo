@@ -37,6 +37,7 @@ import { meta as weightDecayMeta } from '@/content/lessons/weight-decay/meta';
 import { meta as dropoutMeta } from '@/content/lessons/dropout/meta';
 import { meta as batchNormMeta } from '@/content/lessons/batch-norm/meta';
 import { meta as earlyStoppingAugmentationMeta } from '@/content/lessons/early-stopping-augmentation/meta';
+import { meta as pretrainingVsFinetuningMeta } from '@/content/lessons/pretraining-vs-finetuning/meta';
 
 export interface LessonMetaEntry {
   meta: {
@@ -75,6 +76,7 @@ const manifest: readonly LessonMetaEntry[] = [
   { meta: dropoutMeta },
   { meta: batchNormMeta },
   { meta: earlyStoppingAugmentationMeta },
+  { meta: pretrainingVsFinetuningMeta },
 ];
 
 export function listLessonMeta(): readonly LessonMetaEntry[] {
@@ -162,7 +164,7 @@ export const TRACKS: readonly LessonTrack[] = [
   {
     id: 'fine-tuning',
     label: 'Adapting models to new tasks',
-    slugs: [],
+    slugs: ['pretraining-vs-finetuning'],
   },
 ];
 

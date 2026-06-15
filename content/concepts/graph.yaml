@@ -73,6 +73,12 @@ nodes:
   - id: data-augmentation
     title: Data augmentation
 
+  # Fine-tuning module
+  - id: pretraining
+    title: Pretraining
+  - id: fine-tuning
+    title: Fine-tuning
+
   # Lesson concept nodes
   - id: dot-product-concept
     title: "Dot product as alignment"
@@ -152,6 +158,9 @@ nodes:
   - id: early-stopping-augmentation-concept
     title: "Early stopping + data augmentation"
     lesson: early-stopping-augmentation
+  - id: pretraining-vs-finetuning-concept
+    title: "Pretraining vs fine-tuning"
+    lesson: pretraining-vs-finetuning
 
 edges:
   # Atomic prerequisite chain
@@ -330,3 +339,15 @@ edges:
     to: early-stopping-augmentation-concept
   - from: overfitting
     to: data-augmentation
+
+  # Fine-tuning module edges
+  - from: gradient-descent
+    to: pretraining
+  - from: pretraining
+    to: fine-tuning
+  - from: training-loop
+    to: fine-tuning
+  - from: pretraining
+    to: pretraining-vs-finetuning-concept
+  - from: fine-tuning
+    to: pretraining-vs-finetuning-concept

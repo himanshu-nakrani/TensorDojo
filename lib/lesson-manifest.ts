@@ -44,6 +44,7 @@ import { meta as weightDecayMeta } from '@/content/lessons/weight-decay/meta';
 import { meta as dropoutMeta } from '@/content/lessons/dropout/meta';
 import { meta as batchNormMeta } from '@/content/lessons/batch-norm/meta';
 import { meta as earlyStoppingAugmentationMeta } from '@/content/lessons/early-stopping-augmentation/meta';
+import { meta as pretrainingVsFinetuningMeta } from '@/content/lessons/pretraining-vs-finetuning/meta';
 
 export interface LessonMeta {
   slug: string;
@@ -80,6 +81,7 @@ const metaBySlug: Readonly<Record<string, LessonMeta>> = {
   dropout: dropoutMeta,
   'batch-norm': batchNormMeta,
   'early-stopping-augmentation': earlyStoppingAugmentationMeta,
+  'pretraining-vs-finetuning': pretrainingVsFinetuningMeta,
 };
 
 /** Map of slug → dynamic importer for the per-lesson interactives. */
@@ -190,6 +192,10 @@ const interactivesLoaders: Readonly<Record<string, () => Promise<{
     import(
       '@/content/lessons/early-stopping-augmentation/interactives'
     ).then((m) => ({
+      interactives: m.interactives,
+    })),
+  'pretraining-vs-finetuning': () =>
+    import('@/content/lessons/pretraining-vs-finetuning/interactives').then((m) => ({
       interactives: m.interactives,
     })),
 };
