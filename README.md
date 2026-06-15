@@ -5,15 +5,15 @@
 > move, change, and watch respond. Drag a slider, edit a number, read a
 result.
 
-Twenty-six articles with embedded interactive figures, organized as seven
+Thirty-one articles with embedded interactive figures, organized as eight
 tracks that build up from the dot product to backpropagation to a
-trained, regularized tiny classifier. No videos, no quizzes (yet), no
+trained, regularized, fine-tuned tiny classifier. No videos, no quizzes (yet), no
 backend. The companion `design-spec.md` and `technical-spec.md`
 describe the longer arc — notebooks, the sync engine, the AI tutor —
 that this build is the foundation for.
 ## What's live
 
-Twenty-six lessons across seven tracks, in reading order:
+Thirty-one lessons across eight tracks, in reading order:
 
 **Foundations of similarity**
 1. Dot product as alignment
@@ -55,7 +55,14 @@ Twenty-six lessons across seven tracks, in reading order:
 25. Batch normalization: stabilizing activations during training
 26. Early stopping + data augmentation: cheap regularization that just works
 
-A `/map` page renders the seven tracks as columns on a single canvas.
+**Adapting models to new tasks**
+27. Pretraining vs fine-tuning
+28. Freezing vs full fine-tuning
+29. Catastrophic forgetting
+30. LoRA: low-rank adaptation
+31. Instruction tuning & RLHF intuition
+
+A `/map` page renders the eight tracks as columns on a single canvas.
 Lessons within a track are linked by short vertical arrows;
 cross-track prerequisites are drawn as dashed accent arcs. The lesson
 you most recently visited is highlighted as the resume point — visit
@@ -77,10 +84,11 @@ bars, the resume lesson on the map. Static content never uses it.
 - `useState` / `useReducer` only — no state library
 - `zod` validates lesson metadata at build time
 
-Twenty-six lessons, 294 tests, ~112 kB first-load JS on the home page,
-~159 kB on a lesson route (52.7 kB page + 103 kB shared; the heavy
+Thirty-one lessons, 333 tests, ~114 kB first-load JS on the home page,
+~130 kB on a lesson route (26 kB page + 104 kB shared; the heavy
 centerpieces — BlockPipeline, TrainingEndToEnd, OptimizerRace,
-OverfittingExplorer, BatchNormExplorer, EarlyStoppingAugmentationExplorer —
+OverfittingExplorer, BatchNormExplorer, EarlyStoppingAugmentationExplorer,
+SequentialTaskTrainer —
 are in lazy chunks, so the largest individual lesson chunk is well
 under the brief's 25 kB target). No backend yet.
 
@@ -110,7 +118,7 @@ Requires Node 18+ and pnpm 9+.
 
 ## How to add the next lesson
 
-This is the pattern used for all twenty-one live lessons — no
+This is the pattern used for all thirty-one live lessons — no
 speculation.
 
 1. **Create the folder** `content/lessons/<slug>/` with three files:
@@ -181,7 +189,7 @@ TensorDojo/
 │   ├── sim/                       # Interactive figures (one per lesson)
 │   │   ├── primitives/            # VectorCanvas, Heatmap, BarChart,
 │   │   │                          # Slider, NumberInput
-│   │   └── …                      # 32 lesson-specific composers
+│   │   └── …                      # 52 lesson-specific composers
 │   ├── concept-graph/             # ConceptGraphView (SVG 2D map)
 │   ├── home/                      # LessonCardList for the landing
 │   └── theme/                     # ThemeToggle
@@ -192,7 +200,7 @@ TensorDojo/
 │   │   └── lesson.mdx
 │   └── concepts/graph.yaml
 ├── lib/
-│   ├── math/                      # 19 modules: softmax, linalg, attention,
+│   ├── math/                      # 30 modules: softmax, linalg, attention,
 │   │                              # multihead, layernorm, ffn, gelu, mask,
 │   │                              # positional, random, sampling,
 │   │                              # cross-entropy, gradient-descent,
@@ -253,7 +261,7 @@ slider value columns so digit changes don't reflow the row.
   a new track. Keyboard ←/→ navigate prev/next when no input is
   focused. After 10 s on the page, the lesson is marked visited in
   `localStorage`.
-- **Map** (`/map`) — seven tracks as columns of a single SVG canvas.
+- **Map** (`/map`) — eight tracks as columns of a single SVG canvas.
   In-track arrows are short verticals; cross-track prerequisites
   are dashed accent arcs. The most recently visited lesson is
   highlighted with an accent ring and a "Resume" pill.
