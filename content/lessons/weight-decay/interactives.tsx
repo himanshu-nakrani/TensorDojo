@@ -1,6 +1,17 @@
-import { WeightDecayExplorer } from '@/components/sim/WeightDecayExplorer';
-import { WeightDecaySweep } from '@/components/sim/WeightDecaySweep';
+'use client';
+import dynamic from 'next/dynamic';
+import { InteractiveSkeleton } from '@/components/lesson/InteractiveSkeleton';
 import type { InteractiveEntry } from '@/components/lesson/Workbench';
+
+const WeightDecayExplorer = dynamic(
+  () => import('@/components/sim/WeightDecayExplorer').then((m) => m.WeightDecayExplorer),
+  { loading: () => <InteractiveSkeleton />, ssr: false },
+);
+
+const WeightDecaySweep = dynamic(
+  () => import('@/components/sim/WeightDecaySweep').then((m) => m.WeightDecaySweep),
+  { loading: () => <InteractiveSkeleton />, ssr: false },
+);
 
 export const interactives: readonly InteractiveEntry[] = [
   {

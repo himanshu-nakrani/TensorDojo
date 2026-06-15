@@ -1,6 +1,17 @@
-import { DropoutExplorer } from '@/components/sim/DropoutExplorer';
-import { DropoutInference } from '@/components/sim/DropoutInference';
+'use client';
+import dynamic from 'next/dynamic';
+import { InteractiveSkeleton } from '@/components/lesson/InteractiveSkeleton';
 import type { InteractiveEntry } from '@/components/lesson/Workbench';
+
+const DropoutExplorer = dynamic(
+  () => import('@/components/sim/DropoutExplorer').then((m) => m.DropoutExplorer),
+  { loading: () => <InteractiveSkeleton />, ssr: false },
+);
+
+const DropoutInference = dynamic(
+  () => import('@/components/sim/DropoutInference').then((m) => m.DropoutInference),
+  { loading: () => <InteractiveSkeleton />, ssr: false },
+);
 
 export const interactives: readonly InteractiveEntry[] = [
   {

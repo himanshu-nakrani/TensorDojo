@@ -1,6 +1,17 @@
-import { TrainingEndToEnd } from '@/components/sim/TrainingEndToEnd';
-import { TrainingPresetComparison } from '@/components/sim/TrainingPresetComparison';
+'use client';
+import dynamic from 'next/dynamic';
+import { InteractiveSkeleton } from '@/components/lesson/InteractiveSkeleton';
 import type { InteractiveEntry } from '@/components/lesson/Workbench';
+
+const TrainingEndToEnd = dynamic(
+  () => import('@/components/sim/TrainingEndToEnd').then((m) => m.TrainingEndToEnd),
+  { loading: () => <InteractiveSkeleton />, ssr: false },
+);
+
+const TrainingPresetComparison = dynamic(
+  () => import('@/components/sim/TrainingPresetComparison').then((m) => m.TrainingPresetComparison),
+  { loading: () => <InteractiveSkeleton />, ssr: false },
+);
 
 export const interactives: readonly InteractiveEntry[] = [
   {

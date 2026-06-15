@@ -1,6 +1,17 @@
-import { EmbeddingPlane } from '@/components/sim/EmbeddingPlane';
-import { EmbeddingDimensionSlider } from '@/components/sim/EmbeddingDimensionSlider';
+'use client';
+import dynamic from 'next/dynamic';
+import { InteractiveSkeleton } from '@/components/lesson/InteractiveSkeleton';
 import type { InteractiveEntry } from '@/components/lesson/Workbench';
+
+const EmbeddingPlane = dynamic(
+  () => import('@/components/sim/EmbeddingPlane').then((m) => m.EmbeddingPlane),
+  { loading: () => <InteractiveSkeleton />, ssr: false },
+);
+
+const EmbeddingDimensionSlider = dynamic(
+  () => import('@/components/sim/EmbeddingDimensionSlider').then((m) => m.EmbeddingDimensionSlider),
+  { loading: () => <InteractiveSkeleton />, ssr: false },
+);
 
 export const interactives: readonly InteractiveEntry[] = [
   {

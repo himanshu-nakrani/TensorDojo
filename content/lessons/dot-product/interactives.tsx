@@ -1,6 +1,17 @@
-import { DotProductExplorer } from '@/components/sim/DotProductExplorer';
-import { CandidateSort } from '@/components/sim/CandidateSort';
+'use client';
+import dynamic from 'next/dynamic';
+import { InteractiveSkeleton } from '@/components/lesson/InteractiveSkeleton';
 import type { InteractiveEntry } from '@/components/lesson/Workbench';
+
+const DotProductExplorer = dynamic(
+  () => import('@/components/sim/DotProductExplorer').then((m) => m.DotProductExplorer),
+  { loading: () => <InteractiveSkeleton />, ssr: false },
+);
+
+const CandidateSort = dynamic(
+  () => import('@/components/sim/CandidateSort').then((m) => m.CandidateSort),
+  { loading: () => <InteractiveSkeleton />, ssr: false },
+);
 
 export const interactives: readonly InteractiveEntry[] = [
   {

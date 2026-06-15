@@ -1,5 +1,12 @@
-import { CausalMaskExplorer } from '@/components/sim/CausalMaskExplorer';
+'use client';
+import dynamic from 'next/dynamic';
+import { InteractiveSkeleton } from '@/components/lesson/InteractiveSkeleton';
 import type { InteractiveEntry } from '@/components/lesson/Workbench';
+
+const CausalMaskExplorer = dynamic(
+  () => import('@/components/sim/CausalMaskExplorer').then((m) => m.CausalMaskExplorer),
+  { loading: () => <InteractiveSkeleton />, ssr: false },
+);
 
 export const interactives: readonly InteractiveEntry[] = [
   {

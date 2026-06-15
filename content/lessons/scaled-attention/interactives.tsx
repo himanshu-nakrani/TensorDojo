@@ -1,6 +1,17 @@
-import { ScalingHistogram } from '@/components/sim/ScalingHistogram';
-import { AttentionMatrix } from '@/components/sim/AttentionMatrix';
+'use client';
+import dynamic from 'next/dynamic';
+import { InteractiveSkeleton } from '@/components/lesson/InteractiveSkeleton';
 import type { InteractiveEntry } from '@/components/lesson/Workbench';
+
+const ScalingHistogram = dynamic(
+  () => import('@/components/sim/ScalingHistogram').then((m) => m.ScalingHistogram),
+  { loading: () => <InteractiveSkeleton />, ssr: false },
+);
+
+const AttentionMatrix = dynamic(
+  () => import('@/components/sim/AttentionMatrix').then((m) => m.AttentionMatrix),
+  { loading: () => <InteractiveSkeleton />, ssr: false },
+);
 
 export const interactives: readonly InteractiveEntry[] = [
   {

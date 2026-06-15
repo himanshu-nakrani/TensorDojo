@@ -1,5 +1,12 @@
-import { EarlyStoppingAugmentationExplorer } from '@/components/sim/EarlyStoppingAugmentationExplorer';
+'use client';
+import dynamic from 'next/dynamic';
+import { InteractiveSkeleton } from '@/components/lesson/InteractiveSkeleton';
 import type { InteractiveEntry } from '@/components/lesson/Workbench';
+
+const EarlyStoppingAugmentationExplorer = dynamic(
+  () => import('@/components/sim/EarlyStoppingAugmentationExplorer').then((m) => m.EarlyStoppingAugmentationExplorer),
+  { loading: () => <InteractiveSkeleton />, ssr: false },
+);
 
 export const interactives: readonly InteractiveEntry[] = [
   {

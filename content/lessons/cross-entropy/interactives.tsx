@@ -1,6 +1,17 @@
-import { CrossEntropyExplorer } from '@/components/sim/CrossEntropyExplorer';
-import { CrossEntropyCurve } from '@/components/sim/CrossEntropyCurve';
+'use client';
+import dynamic from 'next/dynamic';
+import { InteractiveSkeleton } from '@/components/lesson/InteractiveSkeleton';
 import type { InteractiveEntry } from '@/components/lesson/Workbench';
+
+const CrossEntropyExplorer = dynamic(
+  () => import('@/components/sim/CrossEntropyExplorer').then((m) => m.CrossEntropyExplorer),
+  { loading: () => <InteractiveSkeleton />, ssr: false },
+);
+
+const CrossEntropyCurve = dynamic(
+  () => import('@/components/sim/CrossEntropyCurve').then((m) => m.CrossEntropyCurve),
+  { loading: () => <InteractiveSkeleton />, ssr: false },
+);
 
 export const interactives: readonly InteractiveEntry[] = [
   {

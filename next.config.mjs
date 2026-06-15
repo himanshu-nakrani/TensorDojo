@@ -1,6 +1,7 @@
 import createMDX from '@next/mdx';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
+import BundleAnalyzer from '@next/bundle-analyzer';
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -16,4 +17,8 @@ const withMDX = createMDX({
   },
 });
 
-export default withMDX(nextConfig);
+const withBundleAnalyzer = BundleAnalyzer({
+  enabled: process.env.ANALYZE === 'true',
+});
+
+export default withBundleAnalyzer(withMDX(nextConfig));

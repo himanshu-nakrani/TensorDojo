@@ -1,6 +1,17 @@
-import { PositionalEncodingHeatmap } from '@/components/sim/PositionalEncodingHeatmap';
-import { PositionalSineWave } from '@/components/sim/PositionalSineWave';
+'use client';
+import dynamic from 'next/dynamic';
+import { InteractiveSkeleton } from '@/components/lesson/InteractiveSkeleton';
 import type { InteractiveEntry } from '@/components/lesson/Workbench';
+
+const PositionalEncodingHeatmap = dynamic(
+  () => import('@/components/sim/PositionalEncodingHeatmap').then((m) => m.PositionalEncodingHeatmap),
+  { loading: () => <InteractiveSkeleton />, ssr: false },
+);
+
+const PositionalSineWave = dynamic(
+  () => import('@/components/sim/PositionalSineWave').then((m) => m.PositionalSineWave),
+  { loading: () => <InteractiveSkeleton />, ssr: false },
+);
 
 export const interactives: readonly InteractiveEntry[] = [
   {

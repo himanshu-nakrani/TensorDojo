@@ -1,5 +1,12 @@
-import { GradientDescentExplorer } from '@/components/sim/GradientDescentExplorer';
+'use client';
+import dynamic from 'next/dynamic';
+import { InteractiveSkeleton } from '@/components/lesson/InteractiveSkeleton';
 import type { InteractiveEntry } from '@/components/lesson/Workbench';
+
+const GradientDescentExplorer = dynamic(
+  () => import('@/components/sim/GradientDescentExplorer').then((m) => m.GradientDescentExplorer),
+  { loading: () => <InteractiveSkeleton />, ssr: false },
+);
 
 export const interactives: readonly InteractiveEntry[] = [
   {

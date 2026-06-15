@@ -1,5 +1,17 @@
-import { SGDBatchExplorer, SGDVarianceHistogram } from '@/components/sim/SGDBatchExplorer';
+'use client';
+import dynamic from 'next/dynamic';
+import { InteractiveSkeleton } from '@/components/lesson/InteractiveSkeleton';
 import type { InteractiveEntry } from '@/components/lesson/Workbench';
+
+const SGDBatchExplorer = dynamic(
+  () => import('@/components/sim/SGDBatchExplorer').then((m) => m.SGDBatchExplorer),
+  { loading: () => <InteractiveSkeleton />, ssr: false },
+);
+
+const SGDVarianceHistogram = dynamic(
+  () => import('@/components/sim/SGDBatchExplorer').then((m) => m.SGDVarianceHistogram),
+  { loading: () => <InteractiveSkeleton />, ssr: false },
+);
 
 export const interactives: readonly InteractiveEntry[] = [
   {

@@ -1,6 +1,17 @@
-import { AttentionMatrix } from '@/components/sim/AttentionMatrix';
-import { AttentionTemperature } from '@/components/sim/AttentionTemperature';
+'use client';
+import dynamic from 'next/dynamic';
+import { InteractiveSkeleton } from '@/components/lesson/InteractiveSkeleton';
 import type { InteractiveEntry } from '@/components/lesson/Workbench';
+
+const AttentionMatrix = dynamic(
+  () => import('@/components/sim/AttentionMatrix').then((m) => m.AttentionMatrix),
+  { loading: () => <InteractiveSkeleton />, ssr: false },
+);
+
+const AttentionTemperature = dynamic(
+  () => import('@/components/sim/AttentionTemperature').then((m) => m.AttentionTemperature),
+  { loading: () => <InteractiveSkeleton />, ssr: false },
+);
 
 export const interactives: readonly InteractiveEntry[] = [
   {

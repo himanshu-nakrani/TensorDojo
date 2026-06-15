@@ -1,6 +1,17 @@
-import { ProjectionExplorer } from '@/components/sim/ProjectionExplorer';
-import { CandidateCosine } from '@/components/sim/CandidateCosine';
+'use client';
+import dynamic from 'next/dynamic';
+import { InteractiveSkeleton } from '@/components/lesson/InteractiveSkeleton';
 import type { InteractiveEntry } from '@/components/lesson/Workbench';
+
+const ProjectionExplorer = dynamic(
+  () => import('@/components/sim/ProjectionExplorer').then((m) => m.ProjectionExplorer),
+  { loading: () => <InteractiveSkeleton />, ssr: false },
+);
+
+const CandidateCosine = dynamic(
+  () => import('@/components/sim/CandidateCosine').then((m) => m.CandidateCosine),
+  { loading: () => <InteractiveSkeleton />, ssr: false },
+);
 
 export const interactives: readonly InteractiveEntry[] = [
   {

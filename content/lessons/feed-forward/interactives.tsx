@@ -1,6 +1,17 @@
-import { FeedForwardExplorer } from '@/components/sim/FeedForwardExplorer';
-import { FFNParameterCount } from '@/components/sim/FFNParameterCount';
+'use client';
+import dynamic from 'next/dynamic';
+import { InteractiveSkeleton } from '@/components/lesson/InteractiveSkeleton';
 import type { InteractiveEntry } from '@/components/lesson/Workbench';
+
+const FeedForwardExplorer = dynamic(
+  () => import('@/components/sim/FeedForwardExplorer').then((m) => m.FeedForwardExplorer),
+  { loading: () => <InteractiveSkeleton />, ssr: false },
+);
+
+const FFNParameterCount = dynamic(
+  () => import('@/components/sim/FFNParameterCount').then((m) => m.FFNParameterCount),
+  { loading: () => <InteractiveSkeleton />, ssr: false },
+);
 
 export const interactives: readonly InteractiveEntry[] = [
   {

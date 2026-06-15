@@ -1,6 +1,17 @@
-import { BlockPipeline } from '@/components/sim/BlockPipeline';
-import { BlockDepth } from '@/components/sim/BlockDepth';
+'use client';
+import dynamic from 'next/dynamic';
+import { InteractiveSkeleton } from '@/components/lesson/InteractiveSkeleton';
 import type { InteractiveEntry } from '@/components/lesson/Workbench';
+
+const BlockPipeline = dynamic(
+  () => import('@/components/sim/BlockPipeline').then((m) => m.BlockPipeline),
+  { loading: () => <InteractiveSkeleton />, ssr: false },
+);
+
+const BlockDepth = dynamic(
+  () => import('@/components/sim/BlockDepth').then((m) => m.BlockDepth),
+  { loading: () => <InteractiveSkeleton />, ssr: false },
+);
 
 export const interactives: readonly InteractiveEntry[] = [
   {

@@ -1,6 +1,17 @@
-import { BatchNormExplorer } from '@/components/sim/BatchNormExplorer';
-import { BatchNormTrainVsInference } from '@/components/sim/BatchNormTrainVsInference';
+'use client';
+import dynamic from 'next/dynamic';
+import { InteractiveSkeleton } from '@/components/lesson/InteractiveSkeleton';
 import type { InteractiveEntry } from '@/components/lesson/Workbench';
+
+const BatchNormExplorer = dynamic(
+  () => import('@/components/sim/BatchNormExplorer').then((m) => m.BatchNormExplorer),
+  { loading: () => <InteractiveSkeleton />, ssr: false },
+);
+
+const BatchNormTrainVsInference = dynamic(
+  () => import('@/components/sim/BatchNormTrainVsInference').then((m) => m.BatchNormTrainVsInference),
+  { loading: () => <InteractiveSkeleton />, ssr: false },
+);
 
 export const interactives: readonly InteractiveEntry[] = [
   {

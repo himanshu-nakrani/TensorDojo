@@ -1,6 +1,17 @@
-import { BackpropCrossSection } from '@/components/sim/BackpropCrossSection';
-import { BackpropExplorer } from '@/components/sim/BackpropExplorer';
+'use client';
+import dynamic from 'next/dynamic';
+import { InteractiveSkeleton } from '@/components/lesson/InteractiveSkeleton';
 import type { InteractiveEntry } from '@/components/lesson/Workbench';
+
+const BackpropCrossSection = dynamic(
+  () => import('@/components/sim/BackpropCrossSection').then((m) => m.BackpropCrossSection),
+  { loading: () => <InteractiveSkeleton />, ssr: false },
+);
+
+const BackpropExplorer = dynamic(
+  () => import('@/components/sim/BackpropExplorer').then((m) => m.BackpropExplorer),
+  { loading: () => <InteractiveSkeleton />, ssr: false },
+);
 
 export const interactives: readonly InteractiveEntry[] = [
   {

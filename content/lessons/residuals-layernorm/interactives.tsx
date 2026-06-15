@@ -1,6 +1,17 @@
-import { ResidualStackExplorer } from '@/components/sim/ResidualStackExplorer';
-import { LayerNormViz } from '@/components/sim/LayerNormViz';
+'use client';
+import dynamic from 'next/dynamic';
+import { InteractiveSkeleton } from '@/components/lesson/InteractiveSkeleton';
 import type { InteractiveEntry } from '@/components/lesson/Workbench';
+
+const ResidualStackExplorer = dynamic(
+  () => import('@/components/sim/ResidualStackExplorer').then((m) => m.ResidualStackExplorer),
+  { loading: () => <InteractiveSkeleton />, ssr: false },
+);
+
+const LayerNormViz = dynamic(
+  () => import('@/components/sim/LayerNormViz').then((m) => m.LayerNormViz),
+  { loading: () => <InteractiveSkeleton />, ssr: false },
+);
 
 export const interactives: readonly InteractiveEntry[] = [
   {

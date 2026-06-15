@@ -1,5 +1,12 @@
-import { AttentionOutputExplorer } from '@/components/sim/AttentionOutputExplorer';
+'use client';
+import dynamic from 'next/dynamic';
+import { InteractiveSkeleton } from '@/components/lesson/InteractiveSkeleton';
 import type { InteractiveEntry } from '@/components/lesson/Workbench';
+
+const AttentionOutputExplorer = dynamic(
+  () => import('@/components/sim/AttentionOutputExplorer').then((m) => m.AttentionOutputExplorer),
+  { loading: () => <InteractiveSkeleton />, ssr: false },
+);
 
 export const interactives: readonly InteractiveEntry[] = [
   {

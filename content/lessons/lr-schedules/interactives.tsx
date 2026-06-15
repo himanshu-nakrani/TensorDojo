@@ -1,5 +1,17 @@
-import { ScheduleComparison, ScheduleExplorer } from '@/components/sim/ScheduleExplorer';
+'use client';
+import dynamic from 'next/dynamic';
+import { InteractiveSkeleton } from '@/components/lesson/InteractiveSkeleton';
 import type { InteractiveEntry } from '@/components/lesson/Workbench';
+
+const ScheduleExplorer = dynamic(
+  () => import('@/components/sim/ScheduleExplorer').then((m) => m.ScheduleExplorer),
+  { loading: () => <InteractiveSkeleton />, ssr: false },
+);
+
+const ScheduleComparison = dynamic(
+  () => import('@/components/sim/ScheduleExplorer').then((m) => m.ScheduleComparison),
+  { loading: () => <InteractiveSkeleton />, ssr: false },
+);
 
 export const interactives: readonly InteractiveEntry[] = [
   {

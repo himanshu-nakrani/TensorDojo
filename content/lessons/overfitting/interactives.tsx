@@ -1,6 +1,17 @@
-import { OverfittingExplorer } from '@/components/sim/OverfittingExplorer';
-import { OverfittingDataSize } from '@/components/sim/OverfittingDataSize';
+'use client';
+import dynamic from 'next/dynamic';
+import { InteractiveSkeleton } from '@/components/lesson/InteractiveSkeleton';
 import type { InteractiveEntry } from '@/components/lesson/Workbench';
+
+const OverfittingExplorer = dynamic(
+  () => import('@/components/sim/OverfittingExplorer').then((m) => m.OverfittingExplorer),
+  { loading: () => <InteractiveSkeleton />, ssr: false },
+);
+
+const OverfittingDataSize = dynamic(
+  () => import('@/components/sim/OverfittingDataSize').then((m) => m.OverfittingDataSize),
+  { loading: () => <InteractiveSkeleton />, ssr: false },
+);
 
 export const interactives: readonly InteractiveEntry[] = [
   {

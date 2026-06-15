@@ -1,6 +1,17 @@
-import { SoftmaxExplorer } from '@/components/sim/SoftmaxExplorer';
-import { ScoreEditor } from '@/components/sim/ScoreEditor';
+'use client';
+import dynamic from 'next/dynamic';
+import { InteractiveSkeleton } from '@/components/lesson/InteractiveSkeleton';
 import type { InteractiveEntry } from '@/components/lesson/Workbench';
+
+const SoftmaxExplorer = dynamic(
+  () => import('@/components/sim/SoftmaxExplorer').then((m) => m.SoftmaxExplorer),
+  { loading: () => <InteractiveSkeleton />, ssr: false },
+);
+
+const ScoreEditor = dynamic(
+  () => import('@/components/sim/ScoreEditor').then((m) => m.ScoreEditor),
+  { loading: () => <InteractiveSkeleton />, ssr: false },
+);
 
 export const interactives: readonly InteractiveEntry[] = [
   {

@@ -1,5 +1,12 @@
-import { MultiHeadExplorer } from '@/components/sim/MultiHeadExplorer';
+'use client';
+import dynamic from 'next/dynamic';
+import { InteractiveSkeleton } from '@/components/lesson/InteractiveSkeleton';
 import type { InteractiveEntry } from '@/components/lesson/Workbench';
+
+const MultiHeadExplorer = dynamic(
+  () => import('@/components/sim/MultiHeadExplorer').then((m) => m.MultiHeadExplorer),
+  { loading: () => <InteractiveSkeleton />, ssr: false },
+);
 
 export const interactives: readonly InteractiveEntry[] = [
   {

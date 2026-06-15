@@ -1,5 +1,17 @@
-import { MomentumSweep, OptimizerRace } from '@/components/sim/OptimizerRace';
+'use client';
+import dynamic from 'next/dynamic';
+import { InteractiveSkeleton } from '@/components/lesson/InteractiveSkeleton';
 import type { InteractiveEntry } from '@/components/lesson/Workbench';
+
+const OptimizerRace = dynamic(
+  () => import('@/components/sim/OptimizerRace').then((m) => m.OptimizerRace),
+  { loading: () => <InteractiveSkeleton />, ssr: false },
+);
+
+const MomentumSweep = dynamic(
+  () => import('@/components/sim/OptimizerRace').then((m) => m.MomentumSweep),
+  { loading: () => <InteractiveSkeleton />, ssr: false },
+);
 
 export const interactives: readonly InteractiveEntry[] = [
   {

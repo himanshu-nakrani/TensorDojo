@@ -1,5 +1,12 @@
-import { SamplingDecodingExplorer } from '@/components/sim/SamplingDecodingExplorer';
+'use client';
+import dynamic from 'next/dynamic';
+import { InteractiveSkeleton } from '@/components/lesson/InteractiveSkeleton';
 import type { InteractiveEntry } from '@/components/lesson/Workbench';
+
+const SamplingDecodingExplorer = dynamic(
+  () => import('@/components/sim/SamplingDecodingExplorer').then((m) => m.SamplingDecodingExplorer),
+  { loading: () => <InteractiveSkeleton />, ssr: false },
+);
 
 export const interactives: readonly InteractiveEntry[] = [
   {
