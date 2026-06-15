@@ -78,6 +78,8 @@ nodes:
     title: Pretraining
   - id: fine-tuning
     title: Fine-tuning
+  - id: layer-freezing
+    title: Layer freezing
 
   # Lesson concept nodes
   - id: dot-product-concept
@@ -161,6 +163,9 @@ nodes:
   - id: pretraining-vs-finetuning-concept
     title: "Pretraining vs fine-tuning"
     lesson: pretraining-vs-finetuning
+  - id: freezing-vs-full-finetuning-concept
+    title: "Freezing vs full fine-tuning"
+    lesson: freezing-vs-full-finetuning
 
 edges:
   # Atomic prerequisite chain
@@ -351,3 +356,11 @@ edges:
     to: pretraining-vs-finetuning-concept
   - from: fine-tuning
     to: pretraining-vs-finetuning-concept
+  - from: fine-tuning
+    to: layer-freezing
+  - from: chain-rule
+    to: layer-freezing
+  - from: pretraining-vs-finetuning-concept
+    to: freezing-vs-full-finetuning-concept
+  - from: layer-freezing
+    to: freezing-vs-full-finetuning-concept

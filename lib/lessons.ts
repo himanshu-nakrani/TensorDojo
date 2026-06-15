@@ -131,4 +131,6 @@ export const mdxLessonLoaders: Readonly<
     import('@/content/lessons/early-stopping-augmentation/lesson.mdx'),
   'pretraining-vs-finetuning': () =>
     import('@/content/lessons/pretraining-vs-finetuning/lesson.mdx'),
+  'freezing-vs-full-finetuning': () =>
+    import('@/content/lessons/freezing-vs-full-finetuning/lesson.mdx'),
 };

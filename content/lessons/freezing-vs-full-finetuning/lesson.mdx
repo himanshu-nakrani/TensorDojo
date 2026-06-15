@@ -1,0 +1,66 @@
+import { MathCode } from '@/components/lesson/MathCode';
+import { Callout } from '@/components/lesson/Callout';
+
+## When you fine-tune, do you have to update every weight?
+
+The last lesson said fine-tuning is gradient descent from a pretrained checkpoint — same optimizer, same update rule, only the starting point changes. But that raises a question: which parts of the network actually need to change?
+
+Think about what pretraining did. It ran thousands of gradient steps on a related task and built up a feature extractor — a set of early-layer weights that map raw inputs into a representation that carves the input space along useful seams. For 2D points, the early layers learned to detect curved boundaries, radial distances, angular patterns. That knowledge is baked into the weights.
+
+Now you have a new task. The labels are different, but the input space is the same. The features the pretrained extractor computes are *still useful* — they describe the same geometry. What's different is what you do with those features at the end: the head needs to learn a new mapping from features to the new labels.
+
+If the feature extractor is already good, you don't have to retrain it. You can *freeze* it — lock those weights in place — and only update the head. The pretrained extractor transfers intact. Only the task-specific part changes.
+
+## The gradient mask
+
+Each gradient-descent step applies an update `θ ← θ - η ∇L(θ)`. "Freezing" a layer means: for the parameters in that layer, multiply the gradient by zero. Conceptually you can think of it as a per-layer mask `m_ℓ ∈ {0,1}`:
+
+`θ_ℓ ← θ_ℓ - η m_ℓ ∇_ℓ L`
+
+When `m_ℓ = 0`, the layer's parameters are *immortal* — they keep whatever values the pretrained checkpoint gave them, step after step. When `m_ℓ = 1`, the layer trains normally, updating at every step.
+
+The total number of parameters that *move* is just the count across all unfrozen layers. With three layers and only the last one unfrozen, you might be updating 20% of the parameters and leaving 80% frozen at their pretrained values. The gradient computation still touches the frozen layers — you need their activations and, if you want to train the later layers, their Jacobians — but the update step skips them.
+
+In practice, modern deep-learning libraries implement this with `requires_grad=False` flags. The math is a gradient mask; the code is a boolean on each parameter tensor.
+
+<MathCode
+  math="\theta_\ell \;\leftarrow\; \theta_\ell - \eta\,m_\ell\,\nabla_\ell L(\theta)\qquad m_\ell \in \{0, 1\}"
+  code={`# A freeze mask is just multiplying the gradient slice by 0 or 1.
+mask = {1: 0, 2: 1, 3: 1}  # freeze layer 1
+for step in range(num_steps):
+    g = loss_grad(model)             # full gradient
+    for layer in model.layers:
+        g[layer] *= mask[layer.id]   # zero out frozen slices
+    model.weights -= lr * g`}
+  caption="Mechanically: compute the full gradient, then zero out the slice for any frozen layer. Standard libraries do this with parameter groups + requires_grad=False; the math is the same."
+/>
+
+## Try it
+
+<Callout targetInteractive="layer-freeze-explorer">
+  Toggle layer 1's freeze and train. The loss curve still descends — most of the adaptation happens in the last layer. Now freeze the last layer too: the curve flattens. The feature extractor alone isn't enough — something has to learn the target labels.
+</Callout>
+
+<Callout targetInteractive="params-vs-accuracy-table">
+  Look at all 8 configurations at once. The accuracy bar doesn't fall off a cliff as you freeze more layers — it degrades gracefully until you freeze everything. The elbow is the practical sweet spot: freeze the early layers, train the head.
+</Callout>
+
+## Why this works
+
+The feature extractor learned general structure during pretraining — for the toy task, "what 2D points look like in radial coordinates." That representation is *task-agnostic*: the same features are useful for the swirl task as for the concentric arcs task. What's different between the two tasks is the *mapping from features to labels* — and that's exactly what the last layer encodes.
+
+By freezing the early layers you preserve the part that already knew what to do. You train only the part that needs to learn something new. The frozen layers act as a fixed feature pipeline — reliable, already validated, effectively free.
+
+This asymmetry — general features in the early layers, task-specific routing in the late layers — holds well beyond toy problems. In vision models, the early layers detect edges and textures; the late layers make category decisions. In language models, the early layers encode grammar and syntax; the late layers encode task-specific patterns. Freezing the early layers in fine-tuning is cheap because those layers were doing the hard part of feature discovery — and they already did it.
+
+The practical payoff: fewer parameters updated means less memory, fewer optimizer states, faster training steps, and less risk of overwriting useful representations. Freezing is not a workaround — it's a principled choice.
+
+## Recap
+
+**Fine-tuning doesn't have to update every weight** — a per-layer mask freezes the gradient on chosen layers, leaving those parameters at their pretrained values.
+
+**The feature extractor (early layers) is the most transferable; the head is the most task-specific.** Pretraining bakes general features into the early weights; the head has to learn the new task's label mapping.
+
+**Freezing trades a small accuracy hit for a large parameter saving.** This is the conceptual seed of LoRA, two lessons ahead.
+
+But fine-tuning isn't always benign. What if updating the late layers wipes out what the model already knew?
