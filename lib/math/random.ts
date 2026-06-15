@@ -10,7 +10,7 @@ import { dot } from './linalg';
  * Mulberry32 — a tiny 32-bit PRNG with a seed. ~5 ns per call, more
  * than enough for a few thousand samples per render.
  */
-function mulberry32(seed: number): () => number {
+export function mulberry32(seed: number): () => number {
   let s = seed >>> 0;
   return function () {
     s = (s + 0x6d2b79f5) >>> 0;

@@ -16,30 +16,14 @@ import {
   defaultInitParams,
   type LabeledExample,
 } from './training';
+import { mulberry32 } from './random';
 
-// ---------------------------------------------------------------------------
-// Mulberry32 PRNG (same pattern used throughout this codebase)
-// ---------------------------------------------------------------------------
-
-function makePrng(seed: number): () => number {
-  let s = (seed + 1) >>> 0;
-  return (): number => {
-    s = (s + 0x6d2b79f5) >>> 0;
-    let t = s;
-    t = Math.imul(t ^ (t >>> 15), t | 1);
-    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
-}
-
-// ---------------------------------------------------------------------------
 // Concentric-arcs data generator (private — not exported)
 // 3 classes defined by radius bands: r < 0.4, 0.4 ≤ r < 0.8, 0.8 ≤ r < 1.2
 // Samples are drawn uniformly in angle and with Gaussian-ish radius noise.
-// ---------------------------------------------------------------------------
 
 function concentricArcsDataset(seed: number, n = 200): LabeledExample[] {
-  const rand = makePrng(seed);
+  const rand = mulberry32(seed);
 
   // Box-Muller for Gaussian noise
   const randGauss = (): number => {
@@ -64,16 +48,9 @@ function concentricArcsDataset(seed: number, n = 200): LabeledExample[] {
   return out;
 }
 
-// ---------------------------------------------------------------------------
-// Public API
-// ---------------------------------------------------------------------------
-
 /**
  * Train a small MLP on the concentric-arcs task starting from a
  * seed-derived random init. Returns the final parameter vector.
- *
- * The generator is exposed so callers can verify determinism and, if
- * needed, regenerate with a different seed for ablations.
  */
 export function generatePretrainedParams(seed: number): number[] {
   const dataset = concentricArcsDataset(seed);
@@ -93,18 +70,13 @@ export function generatePretrainedParams(seed: number): number[] {
   return result.finalParams;
 }
 
-// ---------------------------------------------------------------------------
-// Baked constant — computed once at module-load, memoised via closure.
-// ---------------------------------------------------------------------------
-
 const _baked: number[] = generatePretrainedParams(42);
 
-/** Frozen pre-trained weights (length === N_PARAMS). */
-export const PRETRAINED_PARAMS: readonly number[] = Object.freeze(_baked);
-
-// Sanity guard (tree-shaken in prod if N_PARAMS is a constant expression).
 if (_baked.length !== N_PARAMS) {
   throw new Error(
     `pretrain-init: expected ${N_PARAMS} params but got ${_baked.length}`,
   );
 }
+
+/** Frozen pre-trained weights (length === N_PARAMS). */
+export const PRETRAINED_PARAMS: readonly number[] = Object.freeze(_baked);
