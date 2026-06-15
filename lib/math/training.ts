@@ -32,6 +32,7 @@ import {
   linearDecay,
   warmupCosine,
 } from './schedules';
+import { applyFreezeMask, type FreezeMask } from './freeze-mask';
 
 // ---------------------------------------------------------------------------
 // Tiny model: 2D input → 8-hidden (ReLU) → 8-hidden (ReLU) → 3 (softmax).
@@ -500,6 +501,89 @@ export function train(config: TrainConfig): TrainResult {
     // Gradient of CE on the batch = mean of per-example gradients.
     const perEx = batch.map((e) => backwardOneAnalytic(p, e.x, e.label));
     const grad = vScale(vSum(perEx), 1 / batch.length);
+    // LR.
+    const lr = lrForStep(t, config.schedule, total, config.peakLr, warmup);
+    // Optimizer step.
+    if (config.optimizer === 'sgd') {
+      const r = sgdStep(p, grad, lr, sgdState);
+      p = r.params;
+      sgdState = r.state;
+    } else if (config.optimizer === 'momentum') {
+      const r = sgdMomentumStep(p, grad, lr, config.beta ?? 0.9, momentumState);
+      p = r.params;
+      momentumState = r.state;
+    } else {
+      const r = adamStep(p, grad, lr, 0.9, 0.999, 1e-8, adamState);
+      p = r.params;
+      adamState = r.state;
+    }
+    // Loss / accuracy.
+    const l = batchLoss(p, config.dataset);
+    if (!Number.isFinite(l) || l > 1e6) {
+      diverged = true;
+      if (divergedAt === null) divergedAt = t + 1;
+    }
+    losses.push(l);
+    if (config.testSet && config.testSet.length > 0) {
+      testAcc.push(batchAccuracy(p, config.testSet));
+    }
+  }
+  return { losses, testAcc, finalParams: p, diverged, divergedAt };
+}
+
+/**
+ * Like `train`, but applies a per-layer freeze mask to the gradient before
+ * each optimizer step. Frozen layers receive a zero gradient so their
+ * parameters are never updated.
+ */
+export function trainWithFreezeMask(
+  config: TrainConfig & { freezeMask: FreezeMask },
+): TrainResult {
+  if (config.numSteps < 0 || !Number.isInteger(config.numSteps)) {
+    throw new Error(
+      `training.trainWithFreezeMask: numSteps must be a non-negative integer (got ${config.numSteps})`,
+    );
+  }
+  if (config.dataset.length === 0) {
+    throw new Error('training.trainWithFreezeMask: dataset must be non-empty');
+  }
+  if (config.batchSize <= 0) {
+    throw new Error(
+      `training.trainWithFreezeMask: batchSize must be positive (got ${config.batchSize})`,
+    );
+  }
+  const losses: number[] = [];
+  const testAcc: number[] = [];
+  let p = config.initParams.slice();
+  losses.push(batchLoss(p, config.dataset));
+  if (config.testSet && config.testSet.length > 0) {
+    testAcc.push(batchAccuracy(p, config.testSet));
+  }
+  // Optimizer state.
+  let sgdState: { kind: 'sgd' } = { kind: 'sgd' };
+  let momentumState: { kind: 'momentum'; velocity: number[] } = {
+    kind: 'momentum',
+    velocity: new Array(N_PARAMS).fill(0),
+  };
+  let adamState: { kind: 'adam'; m: number[]; v: number[]; t: number } = {
+    kind: 'adam',
+    m: new Array(N_PARAMS).fill(0),
+    v: new Array(N_PARAMS).fill(0),
+    t: 0,
+  };
+  let diverged = false;
+  let divergedAt: number | null = null;
+  const total = Math.max(1, config.numSteps);
+  const warmup = config.warmupSteps ?? Math.floor(total * 0.05);
+  const seed = config.seed ?? 0;
+  for (let t = 0; t < config.numSteps; t += 1) {
+    // Sample a batch.
+    const indices = sampleIndices(config.dataset.length, config.batchSize, seed + t);
+    const batch = indices.map((i) => config.dataset[i]!);
+    // Gradient of CE on the batch = mean of per-example gradients.
+    const perEx = batch.map((e) => backwardOneAnalytic(p, e.x, e.label));
+    // Apply freeze mask: zero out the gradient for frozen layers.
+    const grad = applyFreezeMask(vScale(vSum(perEx), 1 / batch.length), config.freezeMask);
     // LR.
     const lr = lrForStep(t, config.schedule, total, config.peakLr, warmup);
     // Optimizer step.

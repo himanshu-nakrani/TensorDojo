@@ -16,6 +16,7 @@ import {
   syntheticClassification,
   train,
   trainTestSplit,
+  trainWithFreezeMask,
   type LabeledExample,
   type Params,
 } from './training';
@@ -260,5 +261,26 @@ describe('batchLoss / batchAccuracy on a small batch', () => {
     ];
     expect(batchAccuracy(flat, batch)).toBeCloseTo(1 / 3, 5);
     expect(batchLoss(p, batch)).toBeGreaterThan(0);
+  });
+});
+
+describe('trainWithFreezeMask', () => {
+  it('freezing all layers leaves the parameters unchanged after training', () => {
+    const dataset = syntheticClassification(0);
+    const init = defaultInitParams(0);
+    const result = trainWithFreezeMask({
+      initParams: init,
+      dataset,
+      optimizer: 'sgd',
+      schedule: 'constant',
+      peakLr: 0.1,
+      batchSize: 16,
+      numSteps: 10,
+      seed: 0,
+      freezeMask: { layer1: true, layer2: true, layer3: true },
+    });
+    for (let i = 0; i < init.length; i += 1) {
+      expect(result.finalParams[i]).toBeCloseTo(init[i]!, 8);
+    }
   });
 });
