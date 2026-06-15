@@ -47,6 +47,7 @@ import { meta as earlyStoppingAugmentationMeta } from '@/content/lessons/early-s
 import { meta as pretrainingVsFinetuningMeta } from '@/content/lessons/pretraining-vs-finetuning/meta';
 import { meta as freezingVsFullFinetuningMeta } from '@/content/lessons/freezing-vs-full-finetuning/meta';
 import { meta as catastrophicForgettingMeta } from '@/content/lessons/catastrophic-forgetting/meta';
+import { meta as loraMeta } from '@/content/lessons/lora/meta';
 
 export interface LessonMeta {
   slug: string;
@@ -86,6 +87,7 @@ const metaBySlug: Readonly<Record<string, LessonMeta>> = {
   'pretraining-vs-finetuning': pretrainingVsFinetuningMeta,
   'freezing-vs-full-finetuning': freezingVsFullFinetuningMeta,
   'catastrophic-forgetting': catastrophicForgettingMeta,
+  'lora': loraMeta,
 };
 
 /** Map of slug → dynamic importer for the per-lesson interactives. */
@@ -208,6 +210,10 @@ const interactivesLoaders: Readonly<Record<string, () => Promise<{
     })),
   'catastrophic-forgetting': () =>
     import('@/content/lessons/catastrophic-forgetting/interactives').then((m) => ({
+      interactives: m.interactives,
+    })),
+  'lora': () =>
+    import('@/content/lessons/lora/interactives').then((m) => ({
       interactives: m.interactives,
     })),
 };

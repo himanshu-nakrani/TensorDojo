@@ -40,6 +40,7 @@ import { meta as earlyStoppingAugmentationMeta } from '@/content/lessons/early-s
 import { meta as pretrainingVsFinetuningMeta } from '@/content/lessons/pretraining-vs-finetuning/meta';
 import { meta as freezingVsFullFinetuningMeta } from '@/content/lessons/freezing-vs-full-finetuning/meta';
 import { meta as catastrophicForgettingMeta } from '@/content/lessons/catastrophic-forgetting/meta';
+import { meta as loraMeta } from '@/content/lessons/lora/meta';
 
 export interface LessonMetaEntry {
   meta: {
@@ -81,6 +82,7 @@ const manifest: readonly LessonMetaEntry[] = [
   { meta: pretrainingVsFinetuningMeta },
   { meta: freezingVsFullFinetuningMeta },
   { meta: catastrophicForgettingMeta },
+  { meta: loraMeta },
 ];
 
 export function listLessonMeta(): readonly LessonMetaEntry[] {
@@ -168,7 +170,7 @@ export const TRACKS: readonly LessonTrack[] = [
   {
     id: 'fine-tuning',
     label: 'Adapting models to new tasks',
-    slugs: ['pretraining-vs-finetuning', 'freezing-vs-full-finetuning', 'catastrophic-forgetting'],
+    slugs: ['pretraining-vs-finetuning', 'freezing-vs-full-finetuning', 'catastrophic-forgetting', 'lora'],
   },
 ];
 

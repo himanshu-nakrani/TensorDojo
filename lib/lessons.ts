@@ -135,4 +135,5 @@ export const mdxLessonLoaders: Readonly<
     import('@/content/lessons/freezing-vs-full-finetuning/lesson.mdx'),
   'catastrophic-forgetting': () =>
     import('@/content/lessons/catastrophic-forgetting/lesson.mdx'),
+  'lora': () => import('@/content/lessons/lora/lesson.mdx'),
 };

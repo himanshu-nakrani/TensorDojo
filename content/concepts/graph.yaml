@@ -82,6 +82,10 @@ nodes:
     title: Layer freezing
   - id: catastrophic-forgetting
     title: Catastrophic forgetting
+  - id: lora
+    title: LoRA
+  - id: low-rank-update
+    title: Low-rank update
 
   # Lesson concept nodes
   - id: dot-product-concept
@@ -171,6 +175,9 @@ nodes:
   - id: catastrophic-forgetting-concept
     title: "Catastrophic forgetting"
     lesson: catastrophic-forgetting
+  - id: lora-concept
+    title: "LoRA: low-rank adaptation"
+    lesson: lora
 
 edges:
   # Atomic prerequisite chain
@@ -379,3 +386,11 @@ edges:
     to: catastrophic-forgetting-concept
   - from: catastrophic-forgetting
     to: catastrophic-forgetting-concept
+  - from: fine-tuning
+    to: low-rank-update
+  - from: low-rank-update
+    to: lora
+  - from: catastrophic-forgetting-concept
+    to: lora-concept
+  - from: lora
+    to: lora-concept

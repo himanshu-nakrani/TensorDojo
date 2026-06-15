@@ -1,0 +1,57 @@
+import { MathCode } from '@/components/lesson/MathCode';
+import { Callout } from '@/components/lesson/Callout';
+
+## What if the fine-tuning update is low-rank?
+
+The previous lesson showed that catastrophic forgetting is the default behavior when you fine-tune sequentially: the new task's gradient has no way to know it's overwriting structure the model needed for the old task. The freezing lesson showed one response — don't touch most layers at all. LoRA is a third angle.
+
+The idea is not to restrict *which* parameters get updated, but to restrict the *shape* of the update. Specifically: insist that the change to each weight matrix has low rank. This might sound like an arbitrary constraint, but the motivation is empirical. When researchers measured the rank of the actual ΔW that emerges from full fine-tuning on real LLMs, they found it was often surprisingly low. Most of the meaningful change lived in a small number of singular directions — the vast majority of the update's apparent degrees of freedom were noise or redundancy. LoRA bakes that observation in as a hard constraint before training begins.
+
+The practical consequence is immediate: instead of training all m·n entries of a weight matrix, you train two small factors whose product has bounded rank. The original weights stay frozen. The number of trainable parameters drops by orders of magnitude.
+
+## The factorization
+
+For a weight matrix W ∈ ℝ^(m×n), the LoRA update is W ← W + ΔW = W + A·B, where A ∈ ℝ^(m×r), B ∈ ℝ^(r×n), and r ≪ min(m, n). Only A and B are trained. W stays frozen throughout.
+
+The parameter count makes the savings concrete. The full update has m·n parameters. The LoRA update has (m + n)·r parameters. For an 8×8 matrix and r=2, that's 32 parameters instead of 64 — half the budget. For a 4096×4096 attention matrix and r=8, that's 65,536 parameters instead of 16,777,216 — under 0.4% of the original. The frozen W contributes nothing to the gradient; every backward pass touches only A and B.
+
+At initialization, A is typically drawn from a small Gaussian and B is set to zero — which means the LoRA update starts at ΔW = A·B = 0, so the model's forward pass at step 0 is identical to the pretrained model. The fine-tuning signal builds up the factorization from scratch, without disrupting what the pretrained weights encode.
+
+<MathCode
+  math="W \;\leftarrow\; W \;+\; A B,\qquad A \in \mathbb{R}^{m \times r},\; B \in \mathbb{R}^{r \times n},\; r \ll \min(m, n)"
+  code={`# LoRA forward pass: never materialize A·B; multiply against x directly.
+# This is where the compute savings come from at inference time.
+def forward(x, W, A, B):
+    return W @ x + A @ (B @ x)   # = (W + A B) x, but cheaper`}
+  caption="At inference, you can either compute (W + A·B) once and use it as a single matrix, or keep them separate and pay the (m + n)·r cost per call. The choice depends on whether the batch is small (separate is cheaper) or large (fused is cheaper)."
+/>
+
+## Try it
+
+<Callout targetInteractive="lora-reconstruction">
+  Drag the rank slider. At r=1, the reconstruction is one rank-1 component — a clean directional pattern. At r=2, two components stack. At r=3, the residual collapses — the target was rank-3 by construction. The 'params used' counter shows how the budget grows linearly in r, while the residual drops sharply at first and then flattens.
+</Callout>
+
+## The parameter budget
+
+The LoRA budget is (m + n) · r. The full-update budget is m · n. The crossover — the rank at which LoRA stops being parameter-efficient — happens at r = m·n / (m + n).
+
+For an 8×8 matrix, that crossover is r = 64 / 16 = 4. At r ≤ 4 you're using fewer parameters than the full matrix; at r > 4 you're paying more. For a 4096×4096 attention matrix, the crossover is r = 16,777,216 / 8,192 = 2,048. Real LoRA configs use r in {4, 8, 16, 32}, which sits far below either crossover.
+
+The empirical question is whether r=8 on a 4096×4096 matrix gives enough capacity to express a useful fine-tuning update. The original LoRA paper showed that for typical instruction fine-tuning and domain adaptation, the answer is usually yes — surprisingly often the rank-8 update matches full fine-tuning's downstream accuracy, suggesting the meaningful signal really does live in a low-rank subspace.
+
+The budget also makes a different kind of tradeoff visible. Freezing (lesson 28) lets you train a subset of layers fully. LoRA lets you update every layer, but restricts each update to a low-rank space. Which is better depends on the task: if the fine-tuning change is concentrated in a few layers, freezing is more direct; if it's distributed across all layers but each layer's change is simple, LoRA is more efficient.
+
+<Callout targetInteractive="lora-finetune-loss">
+  Switch to the gradient-descent fit. Drag the rank slider. At low ranks, the loss curve plateaus above zero — the factor pair can't represent the target exactly. At r=3, the loss reaches zero. The takeaway: gradient descent on the LoRA factors is just gradient descent — it has its own optimization landscape, and it doesn't always reach the SVD-optimal factorization, but for clean low-rank targets it usually gets close.
+</Callout>
+
+## Recap
+
+**The empirical fact:** fine-tuning's weight update is often low-rank — most of the meaningful change lives in a few singular directions. The rest is noise that full fine-tuning is forced to pay for anyway.
+
+**The constraint:** parametrize ΔW as A·B with r ≪ min(m, n). The full weight matrix W stays frozen; only A and B are trained. At initialization, B = 0, so the model starts from the pretrained weights and builds the update from scratch.
+
+**The budget:** (m + n) · r parameters instead of m · n. At r = 8 on a 4096×4096 matrix, that's under 0.4% of the original. The savings hold across all layers simultaneously, so the total trainable-parameter count for a LoRA fine-tune is a small fraction of the full model — even when every weight matrix gets a LoRA pair.
+
+One more step before this module closes. Fine-tuning so far has assumed a label. But what if your training signal is a *preference* — this output is better than that one? Same gradient descent, different loss. Next: instruction tuning and RLHF.
