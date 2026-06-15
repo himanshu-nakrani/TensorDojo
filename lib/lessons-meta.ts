@@ -159,6 +159,11 @@ export const TRACKS: readonly LessonTrack[] = [
       'early-stopping-augmentation',
     ],
   },
+  {
+    id: 'fine-tuning',
+    label: 'Adapting models to new tasks',
+    slugs: [],
+  },
 ];
 
 /**
