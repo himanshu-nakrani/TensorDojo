@@ -80,6 +80,8 @@ nodes:
     title: Fine-tuning
   - id: layer-freezing
     title: Layer freezing
+  - id: catastrophic-forgetting
+    title: Catastrophic forgetting
 
   # Lesson concept nodes
   - id: dot-product-concept
@@ -166,6 +168,9 @@ nodes:
   - id: freezing-vs-full-finetuning-concept
     title: "Freezing vs full fine-tuning"
     lesson: freezing-vs-full-finetuning
+  - id: catastrophic-forgetting-concept
+    title: "Catastrophic forgetting"
+    lesson: catastrophic-forgetting
 
 edges:
   # Atomic prerequisite chain
@@ -364,3 +369,13 @@ edges:
     to: freezing-vs-full-finetuning-concept
   - from: layer-freezing
     to: freezing-vs-full-finetuning-concept
+  - from: fine-tuning
+    to: catastrophic-forgetting
+  - from: sgd-concept
+    to: catastrophic-forgetting
+  - from: optimizers-concept
+    to: catastrophic-forgetting
+  - from: freezing-vs-full-finetuning-concept
+    to: catastrophic-forgetting-concept
+  - from: catastrophic-forgetting
+    to: catastrophic-forgetting-concept

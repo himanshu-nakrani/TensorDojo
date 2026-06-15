@@ -1,0 +1,69 @@
+import { MathCode } from '@/components/lesson/MathCode';
+import { Callout } from '@/components/lesson/Callout';
+
+## If fine-tuning is just more training, what happens to what the model already knew?
+
+The lessons so far have shown fine-tuning as a benign continuation: pretraining gives a good starting point, fine-tuning adapts it to the target task. But continuing to train *does* change weights. Every gradient step is a small overwrite — the optimizer moves the parameters toward a configuration that's better for the current loss, and away from whatever they were before.
+
+Most of the time that overwriting is harmless. The pretrained weights were close to useful already; the fine-tuning steps push them the rest of the way to the target task. The structure the early layers built up — the curved-boundary intuition, the radial-distance sensitivity — mostly survives, because the target task needs it too.
+
+But what if the new task is sufficiently different from the old one? The model's weights are shared between both tasks. There's no separate "task A memory" and "task B memory" — there's one parameter vector, and it serves all purposes. If phase B's gradient pushes that vector toward a configuration that's good for B, nothing in the standard training loop prevents it from being bad for A. The losses are bracketed; the parameters are shared. Whatever gets erased, gets erased.
+
+This is catastrophic forgetting. It isn't a rare failure mode — it's the default behavior of sequential gradient descent on two incompatible tasks. Understanding it requires only understanding the update rule.
+
+## A two-task experiment
+
+The setup: the same small MLP from previous lessons, with two-dimensional inputs and three-class outputs. What changes is the *labeling* of the data.
+
+Task A labels the 2D point cloud with three-class "pie-slice" boundaries — a particular partition of the plane. Task B relabels the same points with a different partition: the mapping from points to class indices is permuted. The decision boundaries are different; the input space, data distribution, and architecture are identical. Both tasks are solvable by the same network; they just require different solutions in parameter space.
+
+Training from random init on task A reaches about 90% accuracy. Training from random init on task B also reaches about 90% accuracy. The two tasks are equally learnable.
+
+Now train on A and *then* switch to B, continuing to optimize with the same learning rate. After a few hundred steps on A, accuracy is high. Then phase B starts. Task B's accuracy climbs toward 90%. But task A's accuracy collapses — not gradually, but fast. By the time the model is competent on B, it may have nearly lost A entirely.
+
+## The update rule is the whole explanation
+
+There is no new mechanism to explain the collapse. The SGD update is:
+
+<MathCode
+  math="\theta \;\leftarrow\; \theta - \eta\,\nabla_{\theta} L_{\text{B}}(\theta)\qquad\text{(no term for task A)}"
+  code={`# During phase B, the loss is over task-B examples only.
+# Nothing in this step preserves what was learned on task A.
+for step in range(steps_B):
+    batch = sample(task_B)
+    g = loss_grad(model, batch)
+    model.weights -= lr_B * g`}
+  caption="The standard SGD update. The whole problem is that nothing in this loop knows about task A — so any structure in the weights that mattered for A can be freely overwritten."
+/>
+
+The gradient is computed on the current task's batch. It points in the direction that most reduces task B's loss. That direction is determined entirely by task B's data; task A contributes nothing to it. If the weights that encoded task A's decision boundaries happen to lie along that gradient direction, they get overwritten. The optimizer has no way to know they were important.
+
+## Try it
+
+<Callout targetInteractive="sequential-task-trainer">
+  Click Train. The first half of the curve is phase A — accuracy on task A climbs to about 90% and stays there. The vertical line marks the switch to task B. As task B's accuracy rises, task A's collapses. The whole thing happens in a hundred steps. That's catastrophic forgetting.
+</Callout>
+
+## Why it happens
+
+The mechanism is structural, not algorithmic — there's no bug. The MLP has a finite number of weights and they're shared between the two tasks. When phase B's gradient pushes those weights toward a configuration that's good for B, it doesn't care if that configuration is bad for A. The optimizer is doing exactly what you asked: minimizing the current loss as fast as possible.
+
+Two conditions make the collapse severe. First, the learning rate is large enough that a few hundred phase-B steps can move the weights to a substantially different region of parameter space. A large step along the task-B gradient is also a large step away from the task-A solution — if the two solutions aren't in the same neighborhood, a few steps at a high LR gets you from one to the other. Second, the exposure is sequential. Task A never gets a corrective gradient signal during phase B, so the optimizer never learns that overwriting A is costly. There's no pressure to stay near A's basin; there's only pressure to reach B's.
+
+Lower either condition and the collapse softens. Lower the LR and the steps are too small to escape task A's basin in 100 steps — B improves slowly, but A doesn't collapse. Break the sequential structure by interleaving A samples into phase B, and every gradient step sees both tasks — the optimizer now pays a cost for configurations that are bad for A, and it navigates toward configurations that are acceptable for both.
+
+Lower both conditions and the forgetting disappears.
+
+<Callout targetInteractive="mitigation-toggles">
+  Toggle the phase-B learning rate down. The collapse softens — small steps in B don't move the weights far enough to destroy A. Toggle on interleaving. Now every batch during phase B includes some task A samples, so the gradient *does* see both tasks, and a configuration that's good for B but bad for A pays a cost. The forgetting disappears.
+</Callout>
+
+## Recap
+
+**Catastrophic forgetting is a structural property of fine-tuning** — the parameters are shared, the new task's gradient doesn't know about the old task. Continuing to train on a new task can freely overwrite the structure that made the network good at the old one.
+
+**The conditions are sequential exposure and a high learning rate** — both are needed for a severe collapse; reducing either softens it. A low LR keeps the optimizer near the original basin; interleaving keeps the gradient honest about both tasks.
+
+**Mitigations are mechanical** — interleave or lower the LR. Both work; together they're robust. Neither requires changing the architecture or the optimizer; they only change what the loss sees.
+
+Another approach is to *not* update every weight. If the update itself lives in a low-rank subspace, the original weights are mostly preserved by construction. That's the trick behind LoRA, next lesson.
