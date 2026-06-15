@@ -1,0 +1,52 @@
+import { MathCode } from '@/components/lesson/MathCode';
+import { Callout } from '@/components/lesson/Callout';
+
+## What if the model already knew something useful?
+
+Every training run in this module so far has started from random weights. The model initializes to noise and gradient descent hauls it toward something useful, one step at a time. That's fine — and it's the honest story of what learning is.
+
+But most real-world models don't start from noise. They start from a *checkpoint*: a parameter vector that someone already trained on a related task, on a dataset orders of magnitude larger than what you have. You inherit that work. Your gradient steps don't have to re-discover general structure from scratch; they only have to adjust the parts that are specific to your target.
+
+That's pretraining and fine-tuning. Pretraining is someone else's long training run on a related problem. Fine-tuning is your short run on top of it. The two are *mechanically identical* — the same optimizer, the same gradient loop, the same loss function. The only thing that changes is the starting point.
+
+## What pretraining gives you
+
+Think of the small MLP that's been running throughout this module: two-dimensional inputs, two hidden layers, a three-class output. You can split it conceptually into two pieces.
+
+The *feature extractor* — the early layers — maps the raw input into some internal representation. A well-trained model doesn't just memorize labels; it builds a representation that carves the input space at its joints. For 2D points, that means learning which directions and curves in the plane matter. Those features are *general*: the same curved-boundary intuition that helps on a swirl problem also helps on a concentric-arcs problem. The weights that implement it are reusable.
+
+The *head* — the last layer or two — takes that representation and produces a prediction for the target task. The head is specific. What was useful for distinguishing three concentric rings is different from what's useful for the three-lobed swirl. The head has to be relearned.
+
+Pretraining on a related task trains the feature extractor. Fine-tuning on the target task re-uses those features and adapts the head. The more related the pretraining task, the more of the extractor transfers intact.
+
+<MathCode
+  math="\theta_{\text{init}} \leftarrow \theta_{\text{pretrained}}\;,\quad \text{then}\;\;\theta \leftarrow \theta - \eta \nabla L_{\text{target}}(\theta)"
+  code={`# Same gradient-descent loop as before — only the starting point changes.
+model.weights = load_pretrained_checkpoint()
+for step in range(num_steps):
+    g = loss_grad(model, target_data[step % len(target_data)])
+    model.weights -= lr * g`}
+  caption="The mechanics of fine-tuning are identical to training from scratch — same gradient, same optimizer. The only difference is the initial weights."
+/>
+
+## Try it
+
+<Callout targetInteractive="pretrain-vs-scratch">
+  Click Train. Two MLPs descend the loss curve side-by-side on the same swirl data. The pretrained one starts lower — its feature extractor is already useful — and reaches a lower minimum. The from-scratch run descends from a higher starting point and converges more slowly.
+</Callout>
+
+<Callout targetInteractive="data-size-slider">
+  Now ask: where does the gap live? Drag the dataset-size slider from 8 up to 256. At small N the gap is huge — pretrained reaches near-zero loss while scratch barely moves. At large N the two converge: enough data, and the scratch model can learn the features itself.
+</Callout>
+
+## Why the gap is small at large N
+
+The intuition is informational. A gradient-descent training run extracts signal from the data it sees. With 256 examples spread across a 2D feature space, there's enough signal to figure out the curved structure of the problem from scratch. The model discovers the feature representation on its own.
+
+With 8 examples, there isn't. Eight scattered points don't pin down the decision boundaries. The gradient is noisy and the coverage is thin. Given that uncertainty, what the model *starts* from dominates what it ends up with. A scratch model starts from noise and stays close to noise. A pretrained model starts from a representation that already knows something about 2D geometry — and that head start is decisive.
+
+This is why transfer learning is most valuable in the data-scarce regime. If you have millions of labeled examples for your target task, scratch training will find the right features eventually. If you have dozens, you're almost certainly better off starting from a related checkpoint.
+
+## Recap
+
+Three takeaways. **Pretraining bakes general features into the early layers of a network**, and those features transfer to related target tasks — the more related, the more transfers. **Fine-tuning is the same gradient-descent loop** — same optimizer, same update rule — only the initial weights change. **The benefit is biggest when target data is scarce** — at large target-N, scratch training eventually discovers the features on its own, and the gap closes. Next lesson: when you do fine-tune, do you have to update *all* the weights, or can you freeze the early layers and only train the head?
