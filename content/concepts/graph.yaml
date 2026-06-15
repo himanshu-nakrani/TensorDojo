@@ -86,6 +86,12 @@ nodes:
     title: LoRA
   - id: low-rank-update
     title: Low-rank update
+  - id: dpo-loss
+    title: DPO loss
+  - id: reward-model
+    title: Reward model
+  - id: preference-data
+    title: Preference data
 
   # Lesson concept nodes
   - id: dot-product-concept
@@ -178,6 +184,9 @@ nodes:
   - id: lora-concept
     title: "LoRA: low-rank adaptation"
     lesson: lora
+  - id: instruction-tuning-rlhf-concept
+    title: "Instruction tuning & RLHF intuition"
+    lesson: instruction-tuning-rlhf
 
 edges:
   # Atomic prerequisite chain
@@ -394,3 +403,17 @@ edges:
     to: lora-concept
   - from: lora
     to: lora-concept
+  - from: softmax
+    to: dpo-loss
+  - from: cross-entropy
+    to: dpo-loss
+  - from: preference-data
+    to: dpo-loss
+  - from: preference-data
+    to: reward-model
+  - from: lora-concept
+    to: instruction-tuning-rlhf-concept
+  - from: dpo-loss
+    to: instruction-tuning-rlhf-concept
+  - from: reward-model
+    to: instruction-tuning-rlhf-concept

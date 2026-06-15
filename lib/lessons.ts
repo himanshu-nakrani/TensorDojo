@@ -136,4 +136,5 @@ export const mdxLessonLoaders: Readonly<
   'catastrophic-forgetting': () =>
     import('@/content/lessons/catastrophic-forgetting/lesson.mdx'),
   'lora': () => import('@/content/lessons/lora/lesson.mdx'),
+  'instruction-tuning-rlhf': () => import('@/content/lessons/instruction-tuning-rlhf/lesson.mdx'),
 };
