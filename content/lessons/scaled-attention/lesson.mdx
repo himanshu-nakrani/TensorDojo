@@ -1,7 +1,7 @@
 import { MathCode } from '@/components/lesson/MathCode';
 import { Callout } from '@/components/lesson/Callout';
 
-## Why divide by √d_k?
+## Why divide by √(d_k)?
 
 The previous lesson used $Q \cdot K$ as the attention score. That score is a sum of $d_k$ products of $N(0, 1)$ random variables. The variance of one such product is $1$, and the variance of the sum is $d_k$. As $d_k$ grows — from $16$ in early transformers to $128$ in modern heads — the raw score values spread wider. Wide scores push $\operatorname{softmax}$ to one entry; a one-hot softmax has zero gradient; the model stops learning.
 

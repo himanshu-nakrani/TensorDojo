@@ -57,7 +57,7 @@ def topp_sample(logits, p=0.9, T=1.0, rng=np.random):
 
 ## Try it
 
-The vocabulary in the centerpiece is 12 plausible next-tokens after "The cat sat on the ___\". The model's logits (fixed, hand-tuned) put "mat" as the most likely, with a few near-tied alternatives.
+The vocabulary in the centerpiece is 12 plausible next-tokens after "The cat sat on the ___". The model's logits (fixed, hand-tuned) put "mat" as the most likely, with a few near-tied alternatives.
 
 <Callout targetInteractive="sampling-decoding-explorer">
   Pick "Greedy". The effective distribution is a one-hot at "mat" (the highest logit). Every sample returns "mat". This is what the model would say if it played it safe every time — boring, predictable, but always the top guess.
@@ -93,4 +93,4 @@ A side-by-side comparison is the cleanest way to see what each strategy does to 
 
 ## Recap
 
-Three takeaways. **Decoding is the rule that turns logits into a single output token.** Greedy picks the top logit (deterministic). Temperature samples from a softened distribution ($T < 1$ sharpens, $T > 1$ flattens — the same temperature from the softmax lesson). Top-k and top-p bound the sampling to the most likely entries. **The model and the strategy are independent.** The same model can be sampled with any strategy; the choice depends on the use case. **In production, temperature is almost always between 0 and 1, with top-p or top-k applied** to bound the long tail. The next lesson asks: knowing the loss for one prediction, how does the model actually *reduce* it?
+Three takeaways. **Decoding is the rule that turns logits into a single output token.** Greedy picks the top logit (deterministic). Temperature samples from a softened distribution ($T < 1$ sharpens, $T > 1$ flattens — the same temperature from the softmax lesson). Top-k and top-p bound the sampling to the most likely entries. **The model and the strategy are independent.** The same model can be sampled with any strategy; the choice depends on the use case. **In production, temperature is almost always between 0 and 1, with top-p or top-k applied** to bound the long tail. The next lesson asks the question this whole chapter has been circling: given the right answer was "mat" and the model predicted a *distribution*, how do we measure how wrong it was? That number — the loss for one prediction — is cross-entropy.

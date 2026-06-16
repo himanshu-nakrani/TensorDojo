@@ -91,12 +91,16 @@ export function Heatmap({
   const rows = values.length;
   const cols = rows > 0 ? values[0]!.length : 0;
 
-  const allValues = values.flat();
+  // Ignore non-finite cells (e.g. NEG_INF from causal masking) when
+  // computing the colormap's reference scale — otherwise maxAbs = ∞
+  // and every finite cell's intensity becomes NaN, which React warns
+  // about on the opacity attribute.
+  const finiteValues = values.flat().filter((v) => Number.isFinite(v));
   const maxAbs =
-    allValues.length > 0
-      ? Math.max(...allValues.map((v) => Math.abs(v)))
+    finiteValues.length > 0
+      ? Math.max(...finiteValues.map((v) => Math.abs(v)))
       : 0;
-  const max = Math.max(0.001, ...allValues);
+  const max = Math.max(0.001, ...finiteValues);
 
   // Layout: leave room for labels. In compact mode (or when no
   // labels are present) drop the gutter so the heatmap sits flush.
@@ -185,10 +189,15 @@ export function Heatmap({
           const x = labelGutter + j * effectiveCellSize;
           const y = colLabelHeight + i * effectiveCellSize;
           const isHi = highlight && highlight.row === i && highlight.col === j;
-          // Colormap -> fill (theme var) + opacity (computed).
+          // Colormap -> fill (theme var) + opacity (computed). Non-finite
+          // cells (e.g. NEG_INF in a masked attention matrix) render
+          // fully transparent so they don't bleed into the colormap.
           let cellFill: string;
           let cellOpacity: number;
-          if (colormap === 'diverging') {
+          if (!Number.isFinite(v)) {
+            cellFill = 'rgb(var(--accent))';
+            cellOpacity = 0;
+          } else if (colormap === 'diverging') {
             const t = maxAbs === 0 ? 0 : v / maxAbs;
             const intensity = divergingIntensity(t);
             cellFill = t >= 0 ? 'rgb(var(--accent))' : 'rgb(var(--negative))';
@@ -227,7 +236,7 @@ export function Heatmap({
                   strokeWidth={2.5}
                   strokeLinejoin="round"
                 >
-                  {v.toFixed(precision)}
+                  {Number.isFinite(v) ? v.toFixed(precision) : '−∞'}
                 </text>
               )}
               {drawValues && (
@@ -238,7 +247,7 @@ export function Heatmap({
                   className="fill-ink font-mono pointer-events-none"
                   fontSize={11}
                 >
-                  {v.toFixed(precision)}
+                  {Number.isFinite(v) ? v.toFixed(precision) : '−∞'}
                 </text>
               )}
             </g>
