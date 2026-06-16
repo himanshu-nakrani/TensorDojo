@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import clsx from 'clsx';
+import { SimFrame } from '@/components/sim/primitives/SimFrame';
 import { layerNorm } from '@/lib/math/layernorm';
 
 /**
@@ -55,14 +56,12 @@ export function LayerNormViz() {
     );
   };
 
-  return (
-    <div className="rounded-xl border border-border bg-surface p-6 sm:p-8 card-surface">
-      <div className="flex items-baseline justify-between mb-5">
-        <h3 className="text-[11px] uppercase tracking-[0.18em] text-dim font-mono">
-          LayerNorm: same direction, different scale
-        </h3>
-      </div>
+  const reset = () => {
+    setScale(1);
+  };
 
+  return (
+    <SimFrame title="LayerNorm: same direction, different scale" onReset={reset}>
       <div className="grid grid-cols-1 md:grid-cols-[1fr_180px] gap-4">
         <div>
           <div className="grid grid-cols-2 gap-3" style={{ transform: 'translate(0, 0)' }}>
@@ -75,7 +74,7 @@ export function LayerNormViz() {
                   {drawArrow(x, 'rgb(var(--fg-muted))')}
                 </g>
               </svg>
-              <div className="text-[10px] text-dim font-mono text-center">
+              <div className="text-[10px] text-dim font-mono text-center tabular-nums">
                 ‖x‖ = {Math.sqrt((x[0] ?? 0) ** 2 + (x[1] ?? 0) ** 2).toFixed(2)}
               </div>
             </div>
@@ -88,7 +87,7 @@ export function LayerNormViz() {
                   {drawArrow(y, 'rgb(var(--accent))')}
                 </g>
               </svg>
-              <div className="text-[10px] text-dim font-mono text-center">
+              <div className="text-[10px] text-dim font-mono text-center tabular-nums">
                 ‖y‖ = {Math.sqrt((y[0] ?? 0) ** 2 + (y[1] ?? 0) ** 2).toFixed(2)}
               </div>
             </div>
@@ -108,6 +107,7 @@ export function LayerNormViz() {
               onChange={(e) => setScale(parseFloat(e.target.value))}
               className="slider w-full"
               style={{ ['--fill' as string]: `${((scale - 0.5) / 2.5) * 100}%` }}
+              aria-label="Input scale"
             />
             <div className="text-ink tabular-nums text-right">{scale.toFixed(1)}×</div>
           </div>
@@ -116,6 +116,6 @@ export function LayerNormViz() {
           </p>
         </div>
       </div>
-    </div>
+    </SimFrame>
   );
 }

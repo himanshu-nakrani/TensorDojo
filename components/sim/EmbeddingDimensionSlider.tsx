@@ -1,6 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
+import { SimFrame } from '@/components/sim/primitives/SimFrame';
 import { nearestNeighbors } from '@/lib/math/linalg';
 
 export interface EmbeddingDimensionSliderPreset {
@@ -96,14 +97,13 @@ export function EmbeddingDimensionSlider({ preset }: { preset?: EmbeddingDimensi
     return nearestNeighbors(target, projected, 5);
   }, [target, projected]);
 
-  return (
-    <div className="rounded-xl border border-border bg-surface p-6 sm:p-8 card-surface">
-      <div className="flex items-baseline justify-between mb-5">
-        <h3 className="text-[11px] uppercase tracking-[0.18em] text-dim font-mono">
-          Synthetic 2D projection
-        </h3>
-      </div>
+  const reset = () => {
+    setD(preset?.d ?? 2);
+    setQuery('cat');
+  };
 
+  return (
+    <SimFrame title="Synthetic 2D projection" onReset={reset}>
       <div className="grid grid-cols-1 md:grid-cols-[1fr_180px] gap-4">
         <div>
           <svg
@@ -147,6 +147,7 @@ export function EmbeddingDimensionSlider({ preset }: { preset?: EmbeddingDimensi
               onChange={(e) => setD(parseInt(e.target.value, 10))}
               className="slider w-full"
               style={{ ['--fill' as string]: `${((d - 2) / 62) * 100}%` }}
+              aria-label="Dimension d"
             />
             <div className="text-ink tabular-nums text-right">{d}</div>
           </div>
@@ -166,6 +167,6 @@ export function EmbeddingDimensionSlider({ preset }: { preset?: EmbeddingDimensi
           </p>
         </div>
       </div>
-    </div>
+    </SimFrame>
   );
 }

@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Slider } from '@/components/sim/primitives/Slider';
+import { SimFrame } from '@/components/sim/primitives/SimFrame';
 
 const D_MODEL = 4;
 const D_HIDDEN_VALUES = [4, 8, 16, 32];
@@ -41,14 +42,13 @@ export function FFNParameterCount() {
   const dHidden = D_HIDDEN_VALUES[dHiddenIdx] as number;
   const counts = paramCount(dModel, dHidden);
 
-  return (
-    <div className="rounded-xl border border-border bg-surface p-6 sm:p-8">
-      <div className="flex items-baseline justify-between mb-3">
-        <h3 className="text-[11px] uppercase tracking-[0.18em] text-dim font-mono">
-          Where the parameters live
-        </h3>
-      </div>
+  const reset = () => {
+    setDModel(D_MODEL);
+    setDHiddenIdx(2);
+  };
 
+  return (
+    <SimFrame title="Where the parameters live" onReset={reset}>
       <p className="text-[12px] text-muted font-mono leading-relaxed mb-5">
         Most of a transformer's parameters are in the FFN, not the
         attention. The FFN has 2 × d_model × d_hidden weights (W₁ and W₂);
@@ -130,6 +130,6 @@ export function FFNParameterCount() {
         real transformers (d_model = 512, 1024, 4096), the FFN is
         typically 60–70% of the model's total parameter count.
       </p>
-    </div>
+    </SimFrame>
   );
 }

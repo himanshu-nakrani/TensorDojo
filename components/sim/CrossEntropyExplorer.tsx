@@ -3,6 +3,7 @@
 import { useMemo, useState } from 'react';
 import { Slider } from '@/components/sim/primitives/Slider';
 import { BarChart } from '@/components/sim/primitives/BarChart';
+import { SimFrame } from '@/components/sim/primitives/SimFrame';
 import { crossEntropy } from '@/lib/math/cross-entropy';
 
 interface VocabEntry {
@@ -73,20 +74,7 @@ export function CrossEntropyExplorer() {
   };
 
   return (
-    <div className="rounded-xl border border-border bg-surface p-6 sm:p-8 card-surface">
-      <div className="flex items-baseline justify-between mb-5">
-        <h3 className="text-[11px] uppercase tracking-[0.18em] text-dim font-mono">
-          Cross-entropy explorer
-        </h3>
-        <button
-          type="button"
-          onClick={reset}
-          className="text-[11px] uppercase tracking-[0.18em] font-mono text-muted hover:text-ink focus-ring transition-colors"
-        >
-          Reset
-        </button>
-      </div>
-
+    <SimFrame title="Cross-entropy explorer" onReset={reset}>
       {/* Logits — one slider per token */}
       <section aria-label="Logits" className="mb-6">
         <div className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono mb-3">
@@ -176,6 +164,6 @@ export function CrossEntropyExplorer() {
                   : 'Confident-wrong region: loss is large.'}
         </p>
       </section>
-    </div>
+    </SimFrame>
   );
 }

@@ -7,6 +7,7 @@ import {
   type VectorCanvasVector,
 } from '@/components/sim/primitives/VectorCanvas';
 import { Heatmap } from '@/components/sim/primitives/Heatmap';
+import { SimFrame } from '@/components/sim/primitives/SimFrame';
 import { dot, matMul, transpose } from '@/lib/math/linalg';
 import { softmaxRows } from '@/lib/math/softmax';
 
@@ -95,23 +96,13 @@ export function AttentionMatrix({ preset }: { preset?: AttentionMatrixPreset }) 
   };
 
   return (
-    <div className="rounded-xl border border-border bg-surface p-6 sm:p-8 card-surface">
-      <div className="flex items-baseline justify-between mb-5">
-        <h3 className="text-[11px] uppercase tracking-[0.18em] text-dim font-mono">
-          Attention Matrix
-        </h3>
-        <button
-          type="button"
-          onClick={() => {
-            setQ(DEFAULT_Q.map(([x, y]) => [x, y] as [number, number]));
-            setK(DEFAULT_K.map(([x, y]) => [x, y] as [number, number]));
-          }}
-          className="text-[11px] uppercase tracking-[0.18em] font-mono text-muted hover:text-ink focus-ring transition-colors"
-        >
-          Reset
-        </button>
-      </div>
-
+    <SimFrame
+      title="Attention Matrix"
+      onReset={() => {
+        setQ(DEFAULT_Q.map(([x, y]) => [x, y] as [number, number]));
+        setK(DEFAULT_K.map(([x, y]) => [x, y] as [number, number]));
+      }}
+    >
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
           <div className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono mb-2">
@@ -181,7 +172,7 @@ export function AttentionMatrix({ preset }: { preset?: AttentionMatrixPreset }) 
             />
             <p className="mt-2 text-[11px] text-muted font-mono">
               Each row sums to{' '}
-              <span className="text-ink">{fmt(weights[0]?.reduce((a, b) => a + b, 0) ?? 1, 3)}</span>.
+              <span className="text-ink tabular-nums">{fmt(weights[0]?.reduce((a, b) => a + b, 0) ?? 1, 3)}</span>.
               Read across a row to see what that token attends to.
             </p>
           </div>
@@ -212,6 +203,6 @@ export function AttentionMatrix({ preset }: { preset?: AttentionMatrixPreset }) 
           )),
         )}
       </div>
-    </div>
+    </SimFrame>
   );
 }

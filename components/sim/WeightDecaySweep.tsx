@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { Slider } from '@/components/sim/primitives/Slider';
+import { SimFrame } from '@/components/sim/primitives/SimFrame';
 import { l2PolyFit } from '@/lib/math/regularization';
 import { evalPolyVector, mse, syntheticRegression } from '@/lib/math/polynomial-fit';
 
@@ -70,17 +71,30 @@ export function WeightDecaySweep() {
     ? Math.max(...finite.map((s) => Math.max(s.train, s.test)))
     : 1;
 
-  return (
-    <div className="rounded-xl border border-border bg-surface p-6 sm:p-8 card-surface">
-      <div className="flex items-baseline justify-between mb-3 flex-wrap gap-3">
-        <h3 className="text-[11px] uppercase tracking-[0.18em] text-dim font-mono">
-          Train + test loss vs λ
-        </h3>
-        <div className="text-[10px] text-dim font-mono">
-          degree 12 · log-scale x-axis · the recorded sweep persists
-        </div>
-      </div>
+  const reset = () => {
+    setLambda(0.01);
+    setSweep([]);
+  };
 
+  return (
+    <SimFrame
+      title="Train + test loss vs λ"
+      headerAction={
+        <div className="flex items-center gap-3">
+          <div className="text-[10px] text-dim font-mono">
+            degree 12 · log-scale x-axis · the recorded sweep persists
+          </div>
+          <button
+            type="button"
+            onClick={reset}
+            className="text-[11px] uppercase tracking-[0.18em] font-mono text-muted hover:text-ink focus-ring transition-colors"
+          >
+            Reset
+          </button>
+        </div>
+      }
+      headerWrap
+    >
       <div className="space-y-3 font-mono text-[12px]">
         <div>
           <div className="flex items-baseline justify-between mb-1">
@@ -138,7 +152,7 @@ export function WeightDecaySweep() {
           train loss (teal) is still small.
         </p>
       </div>
-    </div>
+    </SimFrame>
   );
 }
 

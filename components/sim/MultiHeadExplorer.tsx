@@ -2,6 +2,8 @@
 
 import { useMemo, useState } from 'react';
 import clsx from 'clsx';
+import { SimFrame } from '@/components/sim/primitives/SimFrame';
+import { Slider } from '@/components/sim/primitives/Slider';
 import { softmaxRows } from '@/lib/math/softmax';
 import { scaledDot } from '@/lib/math/linalg';
 
@@ -32,6 +34,14 @@ export function MultiHeadExplorer({ preset }: { preset?: MultiHeadExplorerPreset
     Array.from({ length: 4 }, (_, i) => Math.PI / 2 - i * 0.3),
   );
 
+  const reset = () => {
+    setN(preset?.n ?? 4);
+    setH(preset?.h ?? 4);
+    setDK(preset?.dK ?? 2);
+    setQAngles(Array.from({ length: 4 }, (_, i) => i * 0.4));
+    setKAngles(Array.from({ length: 4 }, (_, i) => Math.PI / 2 - i * 0.3));
+  };
+
   // For each head, compute the attention weights.
   const headWeights = useMemo(() => {
     const allWeights: number[][][] = [];
@@ -55,13 +65,7 @@ export function MultiHeadExplorer({ preset }: { preset?: MultiHeadExplorerPreset
   }, [n, h, dK, qAngles, kAngles]);
 
   return (
-    <div className="rounded-xl border border-border bg-surface p-6 sm:p-8 card-surface">
-      <div className="flex items-baseline justify-between mb-5">
-        <h3 className="text-[11px] uppercase tracking-[0.18em] text-dim font-mono">
-          Multi-head attention
-        </h3>
-      </div>
-
+    <SimFrame title="Multi-head attention" onReset={reset}>
       <div className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
@@ -106,25 +110,22 @@ export function MultiHeadExplorer({ preset }: { preset?: MultiHeadExplorerPreset
               {qAngles.slice(0, h).map((a, head) => (
                 <div key={`q${head}`} className="flex items-center gap-2 font-mono text-[11px]">
                   <span className="text-dim w-12">head {head + 1}</span>
-                  <input
-                    type="range"
+                  <Slider
+                    value={a}
                     min={0}
                     max={Math.PI * 2}
                     step={0.05}
-                    value={a}
-                    onChange={(e) => {
-                      const v = parseFloat(e.target.value);
+                    onChange={(v) => {
                       setQAngles((prev) => {
                         const next = prev.slice();
                         next[head] = v;
                         return next;
                       });
                     }}
-                    className="slider flex-1 min-w-0"
-                    style={{ ['--fill' as string]: `${(a / (Math.PI * 2)) * 100}%` }}
-                    aria-label={`Q angle for head ${head + 1}`}
+                    formatValue={(v) => `${(v / Math.PI).toFixed(2)}π`}
+                    ariaLabel={`Q angle for head ${head + 1}`}
+                    valueMinWidth="4ch"
                   />
-                  <span className="text-ink tabular-nums w-12 text-right">{(a / Math.PI).toFixed(2)}π</span>
                 </div>
               ))}
             </div>
@@ -135,25 +136,22 @@ export function MultiHeadExplorer({ preset }: { preset?: MultiHeadExplorerPreset
               {kAngles.slice(0, h).map((a, head) => (
                 <div key={`k${head}`} className="flex items-center gap-2 font-mono text-[11px]">
                   <span className="text-dim w-12">head {head + 1}</span>
-                  <input
-                    type="range"
+                  <Slider
+                    value={a}
                     min={0}
                     max={Math.PI * 2}
                     step={0.05}
-                    value={a}
-                    onChange={(e) => {
-                      const v = parseFloat(e.target.value);
+                    onChange={(v) => {
                       setKAngles((prev) => {
                         const next = prev.slice();
                         next[head] = v;
                         return next;
                       });
                     }}
-                    className="slider flex-1 min-w-0"
-                    style={{ ['--fill' as string]: `${(a / (Math.PI * 2)) * 100}%` }}
-                    aria-label={`K angle for head ${head + 1}`}
+                    formatValue={(v) => `${(v / Math.PI).toFixed(2)}π`}
+                    ariaLabel={`K angle for head ${head + 1}`}
+                    valueMinWidth="4ch"
                   />
-                  <span className="text-ink tabular-nums w-12 text-right">{(a / Math.PI).toFixed(2)}π</span>
                 </div>
               ))}
             </div>
@@ -172,6 +170,7 @@ export function MultiHeadExplorer({ preset }: { preset?: MultiHeadExplorerPreset
               onChange={(e) => setN(parseInt(e.target.value, 10))}
               className="slider w-full"
               style={{ ['--fill' as string]: `${((n - 2) / 4) * 100}%` }}
+              aria-label="Sequence length n"
             />
             <div className="text-ink tabular-nums text-right text-[11px]">{n}</div>
           </div>
@@ -186,11 +185,12 @@ export function MultiHeadExplorer({ preset }: { preset?: MultiHeadExplorerPreset
               onChange={(e) => setH(parseInt(e.target.value, 10))}
               className="slider w-full"
               style={{ ['--fill' as string]: `${((h - 1) / 3) * 100}%` }}
+              aria-label="Heads h"
             />
             <div className="text-ink tabular-nums text-right text-[11px]">{h}</div>
           </div>
         </div>
       </div>
-    </div>
+    </SimFrame>
   );
 }

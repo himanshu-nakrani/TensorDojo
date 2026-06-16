@@ -4,6 +4,7 @@ import { useMemo, useState } from 'react';
 import { Slider } from '@/components/sim/primitives/Slider';
 import { NumberInput } from '@/components/sim/primitives/NumberInput';
 import { BarChart } from '@/components/sim/primitives/BarChart';
+import { SimFrame } from '@/components/sim/primitives/SimFrame';
 import { argmax, softmax } from '@/lib/math/softmax';
 
 const DEFAULT_SCORES: readonly number[] = [2.0, 1.0, 0.1, -0.5, 1.5];
@@ -61,26 +62,13 @@ export function SoftmaxExplorer({ preset }: { preset?: SoftmaxPreset }) {
   };
 
   return (
-    <div className="rounded-xl border border-border bg-surface p-6 sm:p-8 card-surface">
-      <div className="flex items-baseline justify-between mb-6">
-        <h3 className="text-[11px] uppercase tracking-[0.18em] text-dim font-mono">
-          Softmax Explorer
-        </h3>
-        <button
-          type="button"
-          onClick={reset}
-          className="text-[11px] uppercase tracking-[0.18em] font-mono text-muted hover:text-ink focus-ring transition-colors"
-        >
-          Reset
-        </button>
-      </div>
-
+    <SimFrame title="Softmax Explorer" onReset={reset}>
       {/* Scores */}
       <section aria-label="Scores" className="mb-7">
         <div className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono mb-3">
           Scores
         </div>
-        <div className="grid grid-cols-5 gap-2 sm:gap-3">
+        <div className="grid grid-cols-3 sm:grid-cols-5 gap-2 sm:gap-3">
           {scores.map((s, i) => (
             <div key={i} className="flex flex-col items-center gap-1.5">
               <NumberInput
@@ -146,6 +134,6 @@ export function SoftmaxExplorer({ preset }: { preset?: SoftmaxPreset }) {
         <span>Σ pᵢ</span>
         <span className="text-ink tabular-nums">= {sumLabel}</span>
       </div>
-    </div>
+    </SimFrame>
   );
 }

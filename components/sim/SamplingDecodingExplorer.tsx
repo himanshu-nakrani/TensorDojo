@@ -3,6 +3,7 @@
 import { useMemo, useState } from 'react';
 import { Slider } from '@/components/sim/primitives/Slider';
 import { BarChart } from '@/components/sim/primitives/BarChart';
+import { SimFrame } from '@/components/sim/primitives/SimFrame';
 import {
   effectiveDistribution,
   greedyDecode,
@@ -132,11 +133,9 @@ export function SamplingDecodingExplorer() {
   };
 
   return (
-    <div className="rounded-xl border border-border bg-surface p-6 sm:p-8 card-surface">
-      <div className="flex items-baseline justify-between mb-5">
-        <h3 className="text-[11px] uppercase tracking-[0.18em] text-dim font-mono">
-          Sampling explorer
-        </h3>
+    <SimFrame
+      title="Sampling explorer"
+      headerAction={
         <button
           type="button"
           onClick={() => {
@@ -147,8 +146,8 @@ export function SamplingDecodingExplorer() {
         >
           Sample 100 times
         </button>
-      </div>
-
+      }
+    >
       {/* Prompt */}
       <div className="text-[12px] text-muted font-mono mb-5">
         <span className="text-dim">Prompt: </span>
@@ -310,7 +309,7 @@ export function SamplingDecodingExplorer() {
         </button>
         <span>logits are static; the strategy chooses how to interpret them.</span>
       </div>
-    </div>
+    </SimFrame>
   );
 }
 

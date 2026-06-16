@@ -1,6 +1,6 @@
 'use client';
 
-import { useId } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import clsx from 'clsx';
 
 export type HeatmapColormap = 'accent' | 'diverging';
@@ -23,8 +23,15 @@ interface HeatmapProps {
   precision?: number;
   /** Optional: highlight one row + column (e.g. to show the dot product). */
   highlight?: { row: number; col: number };
-  /** Cell side in pixels. Default 56. */
+  /**
+   * Cell side in pixels (upper bound). The Heatmap measures its
+   * container and shrinks cells if necessary so the whole grid fits
+   * without horizontal overflow; cells never grow past this value.
+   * Default 56.
+   */
   cellSize?: number;
+  /** Lower bound on the auto-shrunk cell size. Default 24 (normal), 10 (compact). */
+  minCellSize?: number;
   /**
    * Compact mode for inline mini-heatmaps (e.g. 8-dim × 4-token
    * vector previews in the transformer block pipeline). Drops the
@@ -76,6 +83,7 @@ export function Heatmap({
   precision = 2,
   highlight,
   cellSize = 56,
+  minCellSize,
   compact = false,
   ariaLabel,
 }: HeatmapProps) {
@@ -95,12 +103,41 @@ export function Heatmap({
   const wantLabels = !compact && (rowLabels !== undefined || colLabels !== undefined);
   const labelGutter = wantLabels ? 64 : 0;
   const colLabelHeight = colLabels && !compact ? 24 : 0;
-  const width = labelGutter + cols * cellSize;
-  const height = colLabelHeight + rows * cellSize;
+
+  // Container-aware cellSize: measure the rendered width and shrink
+  // cells (down to minCellSize) so the grid fits without forcing the
+  // SVG to scale-down to illegibility. SSR + first paint use the prop
+  // value; the observer kicks in after mount.
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const [containerWidth, setContainerWidth] = useState<number | null>(null);
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver((entries) => {
+      const w = entries[0]?.contentRect.width;
+      if (typeof w === 'number') setContainerWidth(w);
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+  const floor = minCellSize ?? (compact ? 10 : 24);
+  const effectiveCellSize =
+    containerWidth !== null && cols > 0
+      ? Math.max(
+          floor,
+          Math.min(cellSize, Math.floor((containerWidth - labelGutter) / cols)),
+        )
+      : cellSize;
+
+  const width = labelGutter + cols * effectiveCellSize;
+  const height = colLabelHeight + rows * effectiveCellSize;
   // In compact mode, hide in-cell numbers (unreadable at small size).
-  const drawValues = !compact && showValues;
+  // Also hide numbers when cells get too small in normal mode (~28px
+  // is the threshold where the 11px label crowds the cell edges).
+  const drawValues = !compact && showValues && effectiveCellSize >= 28;
 
   return (
+    <div ref={containerRef} className="w-full">
     <svg
       viewBox={`0 0 ${width} ${height}`}
       preserveAspectRatio="xMidYMid meet"
@@ -117,7 +154,7 @@ export function Heatmap({
         colLabels.map((label, j) => (
           <text
             key={`c${j}`}
-            x={labelGutter + j * cellSize + cellSize / 2}
+            x={labelGutter + j * effectiveCellSize + effectiveCellSize / 2}
             y={colLabelHeight - 8}
             textAnchor="middle"
             className="fill-muted font-mono"
@@ -133,7 +170,7 @@ export function Heatmap({
           <text
             key={`r${i}`}
             x={labelGutter - 8}
-            y={colLabelHeight + i * cellSize + cellSize / 2 + 4}
+            y={colLabelHeight + i * effectiveCellSize + effectiveCellSize / 2 + 4}
             textAnchor="end"
             className="fill-muted font-mono"
             fontSize={11}
@@ -145,8 +182,8 @@ export function Heatmap({
       {/* Cells */}
       {values.map((row, i) =>
         row.map((v, j) => {
-          const x = labelGutter + j * cellSize;
-          const y = colLabelHeight + i * cellSize;
+          const x = labelGutter + j * effectiveCellSize;
+          const y = colLabelHeight + i * effectiveCellSize;
           const isHi = highlight && highlight.row === i && highlight.col === j;
           // Colormap -> fill (theme var) + opacity (computed).
           let cellFill: string;
@@ -165,8 +202,8 @@ export function Heatmap({
               <rect
                 x={x + (compact ? 0 : 1)}
                 y={y + (compact ? 0 : 1)}
-                width={cellSize - (compact ? 1 : 2)}
-                height={cellSize - (compact ? 1 : 2)}
+                width={effectiveCellSize - (compact ? 1 : 2)}
+                height={effectiveCellSize - (compact ? 1 : 2)}
                 rx={compact ? 1 : 3}
                 fill={cellFill}
                 opacity={cellOpacity}
@@ -180,8 +217,8 @@ export function Heatmap({
               />
               {drawValues && (
                 <text
-                  x={x + cellSize / 2}
-                  y={y + cellSize / 2 + 4}
+                  x={x + effectiveCellSize / 2}
+                  y={y + effectiveCellSize / 2 + 4}
                   textAnchor="middle"
                   className="fill-ink font-mono pointer-events-none"
                   fontSize={11}
@@ -195,8 +232,8 @@ export function Heatmap({
               )}
               {drawValues && (
                 <text
-                  x={x + cellSize / 2}
-                  y={y + cellSize / 2 + 4}
+                  x={x + effectiveCellSize / 2}
+                  y={y + effectiveCellSize / 2 + 4}
                   textAnchor="middle"
                   className="fill-ink font-mono pointer-events-none"
                   fontSize={11}
@@ -209,5 +246,6 @@ export function Heatmap({
         }),
       )}
     </svg>
+    </div>
   );
 }

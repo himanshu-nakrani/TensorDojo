@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
+import { SimFrame } from '@/components/sim/primitives/SimFrame';
 import {
   PRESET_CONFIGS,
   defaultInitParams,
@@ -62,11 +63,9 @@ export function TrainingPresetComparison() {
   const height = 160;
 
   return (
-    <div className="rounded-xl border border-border bg-surface p-6 sm:p-8 card-surface">
-      <div className="flex items-baseline justify-between mb-5">
-        <h3 className="text-[11px] uppercase tracking-[0.18em] text-dim font-mono">
-          Three presets, side by side
-        </h3>
+    <SimFrame
+      title="Three presets, side by side"
+      headerAction={
         <button
           type="button"
           onClick={() => {
@@ -78,8 +77,8 @@ export function TrainingPresetComparison() {
         >
           {running ? 'Running…' : 'Re-run'}
         </button>
-      </div>
-
+      }
+    >
       <div className="space-y-3">
         <svg
           viewBox={`0 0 ${width} ${height}`}
@@ -182,6 +181,6 @@ export function TrainingPresetComparison() {
           })}
         </div>
       </div>
-    </div>
+    </SimFrame>
   );
 }

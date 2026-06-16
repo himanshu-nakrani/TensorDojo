@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useRef, useState } from 'react';
+import { SimFrame } from '@/components/sim/primitives/SimFrame';
 import { dpoGradient, policySoftmax } from '@/lib/math/rlhf';
 import {
   BETA,
@@ -104,17 +105,15 @@ export function PreferencePolicyTrainer() {
   }, []);
 
   return (
-    <div className="rounded-xl border border-border bg-surface p-6 sm:p-8 card-surface space-y-5">
-      {/* Header */}
-      <div className="flex items-baseline justify-between">
-        <h3 className="text-[11px] uppercase tracking-[0.18em] text-dim font-mono">
-          Policy trainer
-        </h3>
+    <SimFrame
+      title="Policy trainer"
+      headerAction={
         <span className="text-[11px] font-mono text-muted tabular-nums">
           step {totalSteps % N_PREFS} of {N_PREFS} &middot; epoch {epoch}
         </span>
-      </div>
-
+      }
+    >
+      <div className="space-y-5">
       {/* Prompt */}
       <div className="rounded border border-border bg-bg/50 px-3 py-2">
         <span className="text-[10px] uppercase tracking-[0.14em] text-dim font-mono mr-2">
@@ -198,6 +197,7 @@ export function PreferencePolicyTrainer() {
           Reset
         </button>
       </div>
-    </div>
+      </div>
+    </SimFrame>
   );
 }

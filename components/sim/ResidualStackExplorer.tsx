@@ -2,6 +2,8 @@
 
 import { useMemo, useState } from 'react';
 import clsx from 'clsx';
+import { SimFrame } from '@/components/sim/primitives/SimFrame';
+import { Slider } from '@/components/sim/primitives/Slider';
 
 export interface ResidualStackExplorerPreset {
   n?: number;
@@ -170,18 +172,29 @@ export function ResidualStackExplorer({ preset }: { preset?: ResidualStackExplor
   const plotW = WIDTH - 2 * PAD;
   const plotH = HEIGHT - 2 * PAD;
 
+  const reset = () => {
+    setN(preset?.n ?? 8);
+    setUseResidual(true);
+    setUseLayerNorm(false);
+  };
+
   return (
-    <div className="rounded-xl border border-border bg-surface p-6 sm:p-8 card-surface">
-      <div className="flex items-baseline justify-between mb-5">
-        <h3 className="text-[11px] uppercase tracking-[0.18em] text-dim font-mono">
-          Residual + LayerNorm
-        </h3>
+    <SimFrame
+      title="Residual + LayerNorm"
+      headerAction={
         <div className="flex items-center gap-3">
           <Toggle label="Residual" on={useResidual} onChange={setUseResidual} />
           <Toggle label="LayerNorm" on={useLayerNorm} onChange={setUseLayerNorm} />
+          <button
+            type="button"
+            onClick={reset}
+            className="text-[11px] uppercase tracking-[0.18em] font-mono text-muted hover:text-ink focus-ring transition-colors"
+          >
+            Reset
+          </button>
         </div>
-      </div>
-
+      }
+    >
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
           <div className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono mb-2">
@@ -201,19 +214,18 @@ export function ResidualStackExplorer({ preset }: { preset?: ResidualStackExplor
         <span className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono">
           Stack depth N
         </span>
-        <input
-          type="range"
+        <Slider
+          value={n}
           min={1}
           max={24}
           step={1}
-          value={n}
-          onChange={(e) => setN(parseInt(e.target.value, 10))}
-          className="slider flex-1 min-w-0"
-          style={{ ['--fill' as string]: `${((n - 1) / 23) * 100}%` }}
+          onChange={(v) => setN(Math.round(v))}
+          formatValue={(v) => String(Math.round(v))}
+          ariaLabel="Stack depth N"
+          valueMinWidth="1.5ch"
         />
-        <span className="text-ink tabular-nums w-6 text-right">{n}</span>
       </div>
-    </div>
+    </SimFrame>
   );
 }
 

@@ -3,6 +3,7 @@
 import { useMemo, useState } from 'react';
 import { Heatmap } from '@/components/sim/primitives/Heatmap';
 import { Slider } from '@/components/sim/primitives/Slider';
+import { SimFrame } from '@/components/sim/primitives/SimFrame';
 import { sinusoidalPE } from '@/lib/math/positional';
 import {
   transformerBlock,
@@ -145,14 +146,17 @@ export function BlockDepth() {
     return { outputs: allOutputs, drift: d, xIn: x0 };
   }, [sentence, depth, useRes1, useRes2, useLN1, useLN2]);
 
-  return (
-    <div className="rounded-xl border border-border bg-surface p-6 sm:p-8 card-surface">
-      <div className="flex items-baseline justify-between mb-5">
-        <h3 className="text-[11px] uppercase tracking-[0.18em] text-dim font-mono">
-          Block depth
-        </h3>
-      </div>
+  const reset = () => {
+    setSentenceId('coref');
+    setDepth(3);
+    setUseRes1(true);
+    setUseRes2(true);
+    setUseLN1(true);
+    setUseLN2(true);
+  };
 
+  return (
+    <SimFrame title="Block depth" onReset={reset}>
       <div className="space-y-3 mb-5">
         <label className="flex items-center gap-2 text-[10px] uppercase tracking-[0.18em] text-dim font-mono">
           Sentence
@@ -273,7 +277,7 @@ export function BlockDepth() {
           you stack, the more it drifts.
         </div>
       </div>
-    </div>
+    </SimFrame>
   );
 }
 

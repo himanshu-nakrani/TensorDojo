@@ -6,6 +6,7 @@ import {
   VectorCanvas,
   type VectorCanvasVector,
 } from '@/components/sim/primitives/VectorCanvas';
+import { SimFrame } from '@/components/sim/primitives/SimFrame';
 import { cosTheta, magnitude, projection, residual } from '@/lib/math/linalg';
 
 export interface ProjectionExplorerPreset {
@@ -62,11 +63,9 @@ export function ProjectionExplorer({ preset }: { preset?: ProjectionExplorerPres
   };
 
   return (
-    <div className="rounded-xl border border-border bg-surface p-6 sm:p-8 card-surface">
-      <div className="flex items-baseline justify-between mb-5">
-        <h3 className="text-[11px] uppercase tracking-[0.18em] text-dim font-mono">
-          Projection Explorer
-        </h3>
+    <SimFrame
+      title="Projection Explorer"
+      headerAction={
         <div className="flex items-center gap-3">
           <button
             type="button"
@@ -92,8 +91,8 @@ export function ProjectionExplorer({ preset }: { preset?: ProjectionExplorerPres
             Reset
           </button>
         </div>
-      </div>
-
+      }
+    >
       <div className="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-6">
         <div>
           <VectorCanvas
@@ -188,7 +187,7 @@ export function ProjectionExplorer({ preset }: { preset?: ProjectionExplorerPres
           </div>
         </div>
       </div>
-    </div>
+    </SimFrame>
   );
 }
 

@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from 'react';
 import { Slider } from '@/components/sim/primitives/Slider';
+import { SimFrame } from '@/components/sim/primitives/SimFrame';
 import {
   evalPolyVector,
   mse,
@@ -100,18 +101,30 @@ export function OverfittingExplorer() {
   const currentTrain = sweep[degree - 1]?.train ?? NaN;
   const currentTest = sweep[degree - 1]?.test ?? NaN;
 
-  return (
-    <div className="rounded-xl border border-border bg-surface p-6 sm:p-8 card-surface">
-      <div className="flex items-baseline justify-between mb-5 flex-wrap gap-3">
-        <h3 className="text-[11px] uppercase tracking-[0.18em] text-dim font-mono">
-          Overfitting
-        </h3>
-        <div className="text-[10px] text-dim font-mono">
-          fit on {split.xsTrain.length} of {split.xsAll.length} points · test set size{' '}
-          {split.xsTest.length}
-        </div>
-      </div>
+  const reset = () => {
+    setDegree(12);
+  };
 
+  return (
+    <SimFrame
+      title="Overfitting"
+      headerAction={
+        <div className="flex items-center gap-3">
+          <div className="text-[10px] text-dim font-mono">
+            fit on {split.xsTrain.length} of {split.xsAll.length} points · test set size{' '}
+            {split.xsTest.length}
+          </div>
+          <button
+            type="button"
+            onClick={reset}
+            className="text-[11px] uppercase tracking-[0.18em] font-mono text-muted hover:text-ink focus-ring transition-colors"
+          >
+            Reset
+          </button>
+        </div>
+      }
+      headerWrap
+    >
       <div className="grid grid-cols-1 md:grid-cols-[1fr_220px] gap-5">
         <div>
           <FitPlot
@@ -180,7 +193,7 @@ export function OverfittingExplorer() {
           </div>
         </div>
       </div>
-    </div>
+    </SimFrame>
   );
 }
 

@@ -3,6 +3,7 @@
 import { useMemo, useState } from 'react';
 import { Heatmap } from '@/components/sim/primitives/Heatmap';
 import { Slider } from '@/components/sim/primitives/Slider';
+import { SimFrame } from '@/components/sim/primitives/SimFrame';
 import {
   compose,
   paramCount,
@@ -139,14 +140,13 @@ export function LoRAReconstruction() {
     };
   }, [target, r]);
 
-  return (
-    <div className="rounded-xl border border-border bg-surface p-6 sm:p-8 card-surface space-y-6">
-      <div className="flex items-baseline justify-between">
-        <h3 className="text-[11px] uppercase tracking-[0.18em] text-dim font-mono">
-          LoRA: low-rank reconstruction
-        </h3>
-      </div>
+  const reset = () => {
+    setR(3);
+  };
 
+  return (
+    <SimFrame title="LoRA: low-rank reconstruction" onReset={reset}>
+      <div className="space-y-6">
       {/* Rank slider */}
       <div>
         <div className="flex items-baseline justify-between mb-1">
@@ -193,6 +193,7 @@ export function LoRAReconstruction() {
         below r=3 it shows the components the reconstruction misses.
         LoRA stores only A (8×r) and B (r×8) instead of the full 8×8 matrix.
       </p>
-    </div>
+      </div>
+    </SimFrame>
   );
 }

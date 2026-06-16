@@ -266,6 +266,16 @@
   outline: 2px solid rgb(var(--accent));
   outline-offset: 1px;
 }
+.number-input--error {
+  border-color: rgb(var(--negative));
+}
+.number-input--error:focus {
+  border-color: rgb(var(--negative));
+  box-shadow: 0 0 0 2px rgba(var(--negative), 0.25);
+}
+.number-input--error:focus-visible {
+  outline-color: rgb(var(--negative));
+}
 
 /* ===========================================================================
    Universal :focus-visible ring

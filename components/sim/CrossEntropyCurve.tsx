@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Slider } from '@/components/sim/primitives/Slider';
+import { SimFrame } from '@/components/sim/primitives/SimFrame';
 import { crossEntropyCurve } from '@/lib/math/cross-entropy';
 
 const WIDTH = 480;
@@ -46,14 +47,12 @@ export function CrossEntropyCurve() {
   const cx = toScreenX(pTrue);
   const cy = toScreenY(current);
 
-  return (
-    <div className="rounded-xl border border-border bg-surface p-6 sm:p-8">
-      <div className="flex items-baseline justify-between mb-3">
-        <h3 className="text-[11px] uppercase tracking-[0.18em] text-dim font-mono">
-          Loss as a function of p(true)
-        </h3>
-      </div>
+  const reset = () => {
+    setPTrue(0.5);
+  };
 
+  return (
+    <SimFrame title="Loss as a function of p(true)" onReset={reset}>
       <svg
         viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
         className="w-full h-auto"
@@ -194,6 +193,6 @@ export function CrossEntropyCurve() {
           </span>
         </div>
       </div>
-    </div>
+    </SimFrame>
   );
 }

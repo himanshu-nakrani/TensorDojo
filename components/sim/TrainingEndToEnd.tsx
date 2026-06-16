@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { Slider } from '@/components/sim/primitives/Slider';
+import { SimFrame } from '@/components/sim/primitives/SimFrame';
 
 /**
  * Capstone centerpiece: train a tiny MLP on a 2D 3-class
@@ -121,18 +122,16 @@ export function TrainingEndToEnd() {
   }, [progress]);
 
   return (
-    <div className="rounded-xl border border-border bg-surface p-6 sm:p-8 card-surface">
-      <div className="flex items-baseline justify-between mb-5">
-        <h3 className="text-[11px] uppercase tracking-[0.18em] text-dim font-mono">
-          Training capstone
-        </h3>
+    <SimFrame
+      title="Training capstone"
+      headerAction={
         <div className="flex items-center gap-2">
           <PresetButton id="default" onClick={() => onPreset('default')} />
           <PresetButton id="diverges" onClick={() => onPreset('diverges')} />
           <PresetButton id="no-schedule" onClick={() => onPreset('no-schedule')} />
         </div>
-      </div>
-
+      }
+    >
       <div className="grid grid-cols-1 md:grid-cols-[1fr_220px] gap-5">
         <div className="space-y-4">
           <LossChart
@@ -273,7 +272,7 @@ export function TrainingEndToEnd() {
           </div>
         </div>
       </div>
-    </div>
+    </SimFrame>
   );
 }
 

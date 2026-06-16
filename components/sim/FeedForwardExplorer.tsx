@@ -3,6 +3,7 @@
 import { useMemo, useState } from 'react';
 import { Heatmap } from '@/components/sim/primitives/Heatmap';
 import { Slider } from '@/components/sim/primitives/Slider';
+import { SimFrame } from '@/components/sim/primitives/SimFrame';
 import { ffn } from '@/lib/math/ffn';
 import { gelu as geluRef, relu } from '@/lib/math/gelu';
 
@@ -114,17 +115,30 @@ export function FeedForwardExplorer() {
     ];
   }, [TOKEN_VEC, ffnParams, activation, dHidden]);
 
-  return (
-    <div className="rounded-xl border border-border bg-surface p-6 sm:p-8 card-surface">
-      <div className="flex items-baseline justify-between mb-5">
-        <h3 className="text-[11px] uppercase tracking-[0.18em] text-dim font-mono">
-          Feed-forward explorer
-        </h3>
-        <span className="text-[10px] text-dim font-mono">
-          FFN(x) = W₂·σ(W₁x + b₁) + b₂
-        </span>
-      </div>
+  const reset = () => {
+    setTokenId('cat');
+    setExpansion(4);
+    setActivation('gelu');
+  };
 
+  return (
+    <SimFrame
+      title="Feed-forward explorer"
+      headerAction={
+        <div className="flex items-center gap-3">
+          <span className="text-[10px] text-dim font-mono">
+            FFN(x) = W₂·σ(W₁x + b₁) + b₂
+          </span>
+          <button
+            type="button"
+            onClick={reset}
+            className="text-[11px] uppercase tracking-[0.18em] font-mono text-muted hover:text-ink focus-ring transition-colors"
+          >
+            Reset
+          </button>
+        </div>
+      }
+    >
       {/* Token selector */}
       <div className="mb-4 flex flex-wrap items-center gap-2">
         <span className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono mr-1">
@@ -216,6 +230,6 @@ export function FeedForwardExplorer() {
           </div>
         ))}
       </div>
-    </div>
+    </SimFrame>
   );
 }

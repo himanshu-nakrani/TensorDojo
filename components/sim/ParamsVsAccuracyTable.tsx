@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { SimFrame } from '@/components/sim/primitives/SimFrame';
 import { PRETRAINED_PARAMS } from '@/lib/math/pretrain-init';
 
 /**
@@ -214,13 +215,7 @@ export function ParamsVsAccuracyTable() {
   const isDone = results !== null;
 
   return (
-    <div className="rounded-xl border border-border bg-surface p-6 sm:p-8 card-surface">
-      <div className="mb-5">
-        <h3 className="text-[11px] uppercase tracking-[0.18em] text-dim font-mono">
-          Params updated vs final accuracy — all 8 freeze configs
-        </h3>
-      </div>
-
+    <SimFrame title="Params updated vs final accuracy — all 8 freeze configs">
       <div className="space-y-4">
         {/* Note */}
         <p className="font-mono text-[10px] text-fg-subtle leading-relaxed">
@@ -284,6 +279,6 @@ export function ParamsVsAccuracyTable() {
           </>
         )}
       </div>
-    </div>
+    </SimFrame>
   );
 }

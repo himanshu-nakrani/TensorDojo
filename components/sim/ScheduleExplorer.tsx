@@ -3,6 +3,7 @@
 import { useMemo, useState } from 'react';
 import { Slider } from '@/components/sim/primitives/Slider';
 import { BarChart } from '@/components/sim/primitives/BarChart';
+import { SimFrame } from '@/components/sim/primitives/SimFrame';
 import {
   constant,
   cosineDecay,
@@ -90,14 +91,15 @@ export function ScheduleExplorer() {
     return out;
   }, [scheduleFn, total]);
 
-  return (
-    <div className="rounded-xl border border-border bg-surface p-6 sm:p-8 card-surface">
-      <div className="flex items-baseline justify-between mb-5">
-        <h3 className="text-[11px] uppercase tracking-[0.18em] text-dim font-mono">
-          Schedule explorer
-        </h3>
-      </div>
+  const reset = () => {
+    setTotal(200);
+    setPeak(0.05);
+    setWarmupSteps(10);
+    setSchedule('warmup-cosine');
+  };
 
+  return (
+    <SimFrame title="Schedule explorer" onReset={reset}>
       <div className="grid grid-cols-1 md:grid-cols-[1fr_240px] gap-5">
         <div className="space-y-4">
           {/* LR schedule plot */}
@@ -229,7 +231,7 @@ export function ScheduleExplorer() {
           </div>
         </div>
       </div>
-    </div>
+    </SimFrame>
   );
 }
 
@@ -313,13 +315,13 @@ export function ScheduleComparison() {
 
   const minFinal = Math.min(...results.map((r) => r.final));
 
+  const reset = () => {
+    setTotal(300);
+    setPeak(0.05);
+  };
+
   return (
-    <div className="rounded-xl border border-border bg-surface p-6 sm:p-8 card-surface">
-      <div className="flex items-baseline justify-between mb-5">
-        <h3 className="text-[11px] uppercase tracking-[0.18em] text-dim font-mono">
-          Three schedules, same problem
-        </h3>
-      </div>
+    <SimFrame title="Three schedules, same problem" onReset={reset}>
       <div className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 font-mono text-[12px]">
           <div>
@@ -337,7 +339,7 @@ export function ScheduleComparison() {
             />
           </div>
           <div>
-            <div className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono mb-1">
+            <div className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono mb-1 tabular-nums">
               Peak LR ({peak.toFixed(3)})
             </div>
             <Slider
@@ -391,6 +393,6 @@ export function ScheduleComparison() {
           the model settle.
         </p>
       </div>
-    </div>
+    </SimFrame>
   );
 }

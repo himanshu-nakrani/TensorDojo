@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from 'react';
 import { Slider } from '@/components/sim/primitives/Slider';
+import { SimFrame } from '@/components/sim/primitives/SimFrame';
 import {
   D,
   H1,
@@ -215,11 +216,9 @@ export function BackpropExplorer() {
   }
 
   return (
-    <div className="rounded-xl border border-border bg-surface p-6 sm:p-8 card-surface">
-      <div className="flex items-baseline justify-between mb-5">
-        <h3 className="text-[11px] uppercase tracking-[0.18em] text-dim font-mono">
-          Backprop, by hand
-        </h3>
+    <SimFrame
+      title="Backprop, by hand"
+      headerAction={
         <div className="flex items-center gap-2">
           <button
             type="button"
@@ -242,8 +241,8 @@ export function BackpropExplorer() {
             Re-init
           </button>
         </div>
-      </div>
-
+      }
+    >
       <div className="grid grid-cols-1 md:grid-cols-[1fr_280px] gap-5">
         {/* Activations + loss */}
         <div className="space-y-3 font-mono text-[12px]">
@@ -391,7 +390,7 @@ export function BackpropExplorer() {
           ))}
         </div>
       </div>
-    </div>
+    </SimFrame>
   );
 }
 

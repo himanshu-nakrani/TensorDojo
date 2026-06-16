@@ -37,6 +37,19 @@ export const NumberInput = forwardRef<HTMLInputElement, NumberInputProps>(
 
     const display = buffer ?? String(value);
 
+    // Error state: the buffer parses to a finite number that's outside
+    // [min, max]. Triggered mid-edit so the user sees the red border
+    // before blur clamps the value. A non-finite buffer (mid-type "-"
+    // or ".") is NOT an error — it's a normal typing waypoint.
+    const inError = (() => {
+      if (buffer === null) return false;
+      const parsed = parseFloat(buffer);
+      if (!Number.isFinite(parsed)) return false;
+      if (typeof min === 'number' && parsed < min) return true;
+      if (typeof max === 'number' && parsed > max) return true;
+      return false;
+    })();
+
     const commit = (raw: string) => {
       const parsed = parseFloat(raw);
       if (!Number.isFinite(parsed)) {
@@ -60,7 +73,14 @@ export const NumberInput = forwardRef<HTMLInputElement, NumberInputProps>(
       const parsed = parseFloat(raw);
       if (Number.isFinite(parsed)) {
         setBuffer(raw);
-        onChange(parsed);
+        // Only commit in-range values mid-edit so downstream derived
+        // state (slider fills, plots) doesn't briefly snap to a value
+        // the user is going to back out of. The blur path clamps and
+        // commits whatever they end at.
+        const outOfRange =
+          (typeof min === 'number' && parsed < min) ||
+          (typeof max === 'number' && parsed > max);
+        if (!outOfRange) onChange(parsed);
       } else {
         setBuffer(raw);
       }
@@ -83,7 +103,12 @@ export const NumberInput = forwardRef<HTMLInputElement, NumberInputProps>(
         onChange={handleChange}
         onBlur={handleBlur}
         onKeyDown={onKeyDown}
-        className={clsx('number-input font-mono', className)}
+        aria-invalid={inError || undefined}
+        className={clsx(
+          'number-input font-mono',
+          inError && 'number-input--error',
+          className,
+        )}
       />
     );
   },

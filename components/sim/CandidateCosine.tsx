@@ -6,6 +6,7 @@ import {
   VectorCanvas,
   type VectorCanvasVector,
 } from '@/components/sim/primitives/VectorCanvas';
+import { SimFrame } from '@/components/sim/primitives/SimFrame';
 import { cosTheta, dot, magnitude } from '@/lib/math/linalg';
 
 export interface CandidateCosinePreset {
@@ -119,23 +120,13 @@ export function CandidateCosine({ preset }: { preset?: CandidateCosinePreset }) 
   const maxAbs = Math.max(0.001, ...rows.map((r) => Math.abs(r.qDot)));
 
   return (
-    <div className="rounded-xl border border-border bg-surface p-6 sm:p-8 card-surface">
-      <div className="flex items-baseline justify-between mb-5">
-        <h3 className="text-[11px] uppercase tracking-[0.18em] text-dim font-mono">
-          Candidate Cosine
-        </h3>
-        <button
-          type="button"
-          onClick={() => {
-            setQ([...DEFAULT_Q] as [number, number]);
-            setResizableLen(DEFAULT_RESIZABLE_LEN);
-          }}
-          className="text-[11px] uppercase tracking-[0.18em] font-mono text-muted hover:text-ink focus-ring transition-colors"
-        >
-          Reset
-        </button>
-      </div>
-
+    <SimFrame
+      title="Candidate Cosine"
+      onReset={() => {
+        setQ([...DEFAULT_Q] as [number, number]);
+        setResizableLen(DEFAULT_RESIZABLE_LEN);
+      }}
+    >
       <div className="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-6">
         <div>
           <div className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono mb-2">
@@ -206,7 +197,7 @@ export function CandidateCosine({ preset }: { preset?: CandidateCosinePreset }) 
           </div>
         </div>
       </div>
-    </div>
+    </SimFrame>
   );
 }
 

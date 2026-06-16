@@ -20,6 +20,7 @@
  */
 
 import { useEffect, useRef, useState } from 'react';
+import { SimFrame } from '@/components/sim/primitives/SimFrame';
 import type { LabeledExample } from '@/lib/math/training';
 import type { ForgettingResult } from '@/lib/math/forgetting';
 
@@ -383,14 +384,13 @@ export function MitigationToggles() {
     ? `config: lr=${lrBDisplay}, ${interleave ? 'interleaved' : 'sequential'}`
     : 'loading…';
 
-  return (
-    <div className="rounded-xl border border-border bg-surface p-6 sm:p-8 card-surface">
-      <div className="mb-5">
-        <h3 className="text-[11px] uppercase tracking-[0.18em] text-dim font-mono">
-          Mitigation strategies
-        </h3>
-      </div>
+  const reset = () => {
+    setLowLrB(false);
+    setInterleave(false);
+  };
 
+  return (
+    <SimFrame title="Mitigation strategies" onReset={reset}>
       <div className="space-y-5">
         {/* Toggle switches */}
         <div>
@@ -467,6 +467,6 @@ export function MitigationToggles() {
           </div>
         )}
       </div>
-    </div>
+    </SimFrame>
   );
 }

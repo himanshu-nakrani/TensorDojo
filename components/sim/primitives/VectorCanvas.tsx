@@ -2,6 +2,7 @@
 
 import * as React from 'react';
 import {
+  KeyboardEvent as ReactKeyboardEvent,
   PointerEvent as ReactPointerEvent,
   useCallback,
   useRef,
@@ -107,6 +108,35 @@ export function VectorCanvas({
 
   const onPointerUp = () => setDragging(null);
 
+  /**
+   * Arrow keys nudge the focused tip by 0.05 of the range, Shift × 5
+   * for coarse nudges. Clamping is handled by the same path the drag
+   * uses (via clamp on the math side below).
+   */
+  const onKeyDown = (
+    id: string,
+    v: readonly [number, number],
+    e: ReactKeyboardEvent<SVGCircleElement>,
+  ) => {
+    if (readOnly || !onChange) return;
+    const KEYS: Record<string, [number, number]> = {
+      ArrowLeft: [-1, 0],
+      ArrowRight: [1, 0],
+      ArrowUp: [0, 1],
+      ArrowDown: [0, -1],
+    };
+    const dir = KEYS[e.key];
+    if (!dir) return;
+    e.preventDefault();
+    const baseStep = 0.05;
+    const mul = e.shiftKey ? 5 : 1;
+    const dx = dir[0] * baseStep * (range.x[1] - range.x[0]) * mul;
+    const dy = dir[1] * baseStep * (range.y[1] - range.y[0]) * mul;
+    const nx = Math.max(range.x[0], Math.min(range.x[1], v[0] + dx));
+    const ny = Math.max(range.y[0], Math.min(range.y[1], v[1] + dy));
+    onChange(id, [nx, ny]);
+  };
+
   const [ox, oy] = toScreen(0, 0);
   const titleId = `vc-${vectors.map((v) => v.id).join('-')}`;
 
@@ -200,18 +230,27 @@ export function VectorCanvas({
                 isDragging ? 'fill-accent-hover' : 'fill-accent',
               )}
             />
-            {/* Invisible larger hit area for easier targeting. */}
+            {/* Invisible larger hit area for easier targeting. Also the
+                keyboard-focusable handle: tab to it, arrow-keys nudge. */}
             <circle
               cx={tx}
               cy={ty}
               r={6}
               fill="transparent"
               className={clsx(
-                !readOnly && 'cursor-grab',
+                !readOnly && 'cursor-grab focus:outline-none focus-visible:stroke-accent-hover',
                 isDragging && 'cursor-grabbing',
                 readOnly && 'cursor-default',
               )}
+              stroke="transparent"
+              strokeWidth={1.5}
+              vectorEffect="non-scaling-stroke"
               onPointerDown={(e) => onPointerDown(v.id, e)}
+              onKeyDown={(e) => onKeyDown(v.id, v.value, e)}
+              tabIndex={readOnly ? -1 : 0}
+              role={readOnly ? undefined : 'slider'}
+              aria-label={`${v.label} vector. Arrow keys nudge; hold Shift for coarse steps.`}
+              aria-valuetext={`x ${v.value[0].toFixed(2)}, y ${v.value[1].toFixed(2)}`}
             />
             {/* Visible tip circle. */}
             <circle

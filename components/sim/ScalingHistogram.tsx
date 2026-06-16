@@ -4,6 +4,7 @@ import { useMemo, useState } from 'react';
 import clsx from 'clsx';
 import { sampleDotProducts } from '@/lib/math/random';
 import { Slider } from '@/components/sim/primitives/Slider';
+import { SimFrame } from '@/components/sim/primitives/SimFrame';
 
 export interface ScalingHistogramPreset {
   dK?: number;
@@ -76,29 +77,19 @@ export function ScalingHistogram({ preset }: { preset?: ScalingHistogramPreset }
   const barW = bins.counts.length > 0 ? plotW / bins.counts.length - barGap : 0;
 
   return (
-    <div className="rounded-xl border border-border bg-surface p-6 sm:p-8 card-surface">
-      <div className="flex items-baseline justify-between mb-5">
-        <h3 className="text-[11px] uppercase tracking-[0.18em] text-dim font-mono">
-          Why we scale attention
-        </h3>
-        <button
-          type="button"
-          onClick={() => {
-            setDK(16);
-            setScale(false);
-          }}
-          className="text-[11px] uppercase tracking-[0.18em] font-mono text-muted hover:text-ink focus-ring transition-colors"
-        >
-          Reset
-        </button>
-      </div>
-
+    <SimFrame
+      title="Why we scale attention"
+      onReset={() => {
+        setDK(16);
+        setScale(false);
+      }}
+    >
       <div className="space-y-4">
         <div>
           <div className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono mb-2">
             Q · K distribution · {N_PAIRS.toLocaleString()} random pairs
           </div>
-          <div className="text-[11px] text-muted font-mono mb-1">
+          <div className="text-[11px] text-muted font-mono mb-1 tabular-nums">
             std dev = {std.toFixed(2)}
             <span className="text-dim">
               {' '}
@@ -231,6 +222,6 @@ export function ScalingHistogram({ preset }: { preset?: ScalingHistogramPreset }
           </div>
         </div>
       </div>
-    </div>
+    </SimFrame>
   );
 }

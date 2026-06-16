@@ -2,6 +2,7 @@
 
 import { useMemo, useRef, useState, KeyboardEvent } from 'react';
 import { NumberInput } from '@/components/sim/primitives/NumberInput';
+import { SimFrame } from '@/components/sim/primitives/SimFrame';
 import { argmax, softmax } from '@/lib/math/softmax';
 
 const DEFAULT_SCORES: readonly number[] = [2.0, 1.0, 0.1, -0.5, 1.5];
@@ -58,19 +59,7 @@ export function ScoreEditor({ preset }: { preset?: ScoreEditorPreset }) {
   const max = Math.max(0.001, ...distribution);
 
   return (
-    <div className="rounded-xl border border-border bg-surface p-6 sm:p-8">
-      <div className="flex items-baseline justify-between mb-2">
-        <h3 className="text-[11px] uppercase tracking-[0.18em] text-dim font-mono">
-          Score Editor
-        </h3>
-        <button
-          type="button"
-          onClick={reset}
-          className="text-[11px] uppercase tracking-[0.18em] font-mono text-muted hover:text-ink focus-ring transition-colors"
-        >
-          Reset
-        </button>
-      </div>
+    <SimFrame title="Score Editor" onReset={reset}>
       <p className="text-[12px] text-muted mb-5 font-mono">
         Focus a cell and nudge with{' '}
         <kbd className="px-1.5 py-0.5 rounded border border-border-strong text-ink bg-surface-2 text-[10px]">
@@ -143,6 +132,6 @@ export function ScoreEditor({ preset }: { preset?: ScoreEditorPreset }) {
         <span>Σ pᵢ</span>
         <span className="text-ink tabular-nums">= {sumLabel}</span>
       </div>
-    </div>
+    </SimFrame>
   );
 }

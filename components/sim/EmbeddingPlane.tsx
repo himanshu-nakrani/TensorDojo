@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from 'react';
 import clsx from 'clsx';
+import { SimFrame } from '@/components/sim/primitives/SimFrame';
 import { nearestNeighbors } from '@/lib/math/linalg';
 
 export interface EmbeddingPlanePreset {
@@ -109,27 +110,40 @@ export function EmbeddingPlane({ preset }: { preset?: EmbeddingPlanePreset }) {
     return { a, b, c, target, nearest: tokens[nearestIdx] };
   }, [analogy, tokens]);
 
-  return (
-    <div className="rounded-xl border border-border bg-surface p-6 sm:p-8 card-surface">
-      <div className="flex items-baseline justify-between mb-5">
-        <h3 className="text-[11px] uppercase tracking-[0.18em] text-dim font-mono">
-          Embedding plane
-        </h3>
-        <button
-          type="button"
-          onClick={() => setShowAnalogy((s) => !s)}
-          className={clsx(
-            'text-[10px] uppercase tracking-[0.18em] font-mono px-2 py-0.5 rounded border focus-ring transition-colors',
-            showAnalogy
-              ? 'border-accent text-accent'
-              : 'border-border text-muted hover:text-ink',
-          )}
-          aria-pressed={showAnalogy}
-        >
-          Show analogy
-        </button>
-      </div>
+  const reset = () => {
+    setQuery(preset?.query ?? 'king');
+    setAnalogy({ a: 'king', b: 'man', c: 'woman' });
+    setShowAnalogy(false);
+  };
 
+  return (
+    <SimFrame
+      title="Embedding plane"
+      headerAction={
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={() => setShowAnalogy((s) => !s)}
+            className={clsx(
+              'text-[10px] uppercase tracking-[0.18em] font-mono px-2 py-0.5 rounded border focus-ring transition-colors',
+              showAnalogy
+                ? 'border-accent text-accent'
+                : 'border-border text-muted hover:text-ink',
+            )}
+            aria-pressed={showAnalogy}
+          >
+            Show analogy
+          </button>
+          <button
+            type="button"
+            onClick={reset}
+            className="text-[11px] uppercase tracking-[0.18em] font-mono text-muted hover:text-ink focus-ring transition-colors"
+          >
+            Reset
+          </button>
+        </div>
+      }
+    >
       <div className="grid grid-cols-1 md:grid-cols-[1fr_220px] gap-6">
         <div>
           <svg
@@ -231,7 +245,7 @@ export function EmbeddingPlane({ preset }: { preset?: EmbeddingPlanePreset }) {
                   <li key={t!.id} className="text-ink flex items-baseline gap-2">
                     <span className="text-muted">·</span>
                     <span>{t!.label}</span>
-                    <span className="text-dim">@ ({t!.value[0].toFixed(2)}, {t!.value[1].toFixed(2)})</span>
+                    <span className="text-dim tabular-nums">@ ({t!.value[0].toFixed(2)}, {t!.value[1].toFixed(2)})</span>
                   </li>
                 ))}
               </ul>
@@ -248,13 +262,13 @@ export function EmbeddingPlane({ preset }: { preset?: EmbeddingPlanePreset }) {
               {analogyHit.nearest && (
                 <p className="text-ink">
                   → <span className="text-accent">{analogyHit.nearest.label}</span>
-                  <span className="text-dim"> @ ({analogyHit.target[0].toFixed(2)}, {analogyHit.target[1].toFixed(2)})</span>
+                  <span className="text-dim tabular-nums"> @ ({analogyHit.target[0].toFixed(2)}, {analogyHit.target[1].toFixed(2)})</span>
                 </p>
               )}
             </div>
           )}
         </div>
       </div>
-    </div>
+    </SimFrame>
   );
 }

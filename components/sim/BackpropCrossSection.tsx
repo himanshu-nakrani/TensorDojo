@@ -1,6 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
+import { SimFrame } from '@/components/sim/primitives/SimFrame';
 import {
   defaultParams,
   forwardAndBackward,
@@ -115,13 +116,14 @@ export function BackpropCrossSection() {
   const slopeX2 = markerX + (dx / 4) * w;
   const slopeY2 = markerY + (dy / range) * h;
 
+  const reset = () => {
+    setChoice(PARAM_CHOICES[0]!);
+    setX([0.5, -0.3]);
+    setT(0.4);
+  };
+
   return (
-    <div className="rounded-xl border border-border bg-surface p-6 sm:p-8 card-surface">
-      <div className="flex items-baseline justify-between mb-5">
-        <h3 className="text-[11px] uppercase tracking-[0.18em] text-dim font-mono">
-          Loss cross-section: a single weight
-        </h3>
-      </div>
+    <SimFrame title="Loss cross-section: a single weight" onReset={reset}>
       <div className="grid grid-cols-1 md:grid-cols-[1fr_240px] gap-5">
         <div>
           <svg
@@ -165,7 +167,7 @@ export function BackpropCrossSection() {
           </svg>
           <div className="flex items-center justify-between text-[10px] text-dim font-mono mt-1">
             <span>−2</span>
-            <span>{choice.label} = {currentValue.toFixed(2)}</span>
+            <span className="tabular-nums">{choice.label} = {currentValue.toFixed(2)}</span>
             <span>+2</span>
           </div>
         </div>
@@ -220,7 +222,7 @@ export function BackpropCrossSection() {
           </div>
         </div>
       </div>
-    </div>
+    </SimFrame>
   );
 }
 

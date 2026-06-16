@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Heatmap } from '@/components/sim/primitives/Heatmap';
 import { Slider } from '@/components/sim/primitives/Slider';
+import { SimFrame } from '@/components/sim/primitives/SimFrame';
 import {
   compose,
   paramCount,
@@ -238,14 +239,13 @@ export function LoRAFinetuneLoss() {
   const paramsUsed = paramCount(8, 8, r);
   const finalLoss = fitResult ? fitResult.losses[fitResult.losses.length - 1] ?? 0 : 0;
 
-  return (
-    <div className="rounded-xl border border-border bg-surface p-6 sm:p-8 card-surface space-y-6">
-      <div className="flex items-baseline justify-between">
-        <h3 className="text-[11px] uppercase tracking-[0.18em] text-dim font-mono">
-          LoRA: gradient-descent fitting
-        </h3>
-      </div>
+  const reset = () => {
+    setR(2);
+  };
 
+  return (
+    <SimFrame title="LoRA: gradient-descent fitting" onReset={reset}>
+      <div className="space-y-6">
       {/* Rank slider */}
       <div>
         <div className="flex items-baseline justify-between mb-1">
@@ -306,6 +306,7 @@ export function LoRAFinetuneLoss() {
         same global optimum as SVD. Changing rank triggers a fresh run (cached on
         re-visit).
       </p>
-    </div>
+      </div>
+    </SimFrame>
   );
 }

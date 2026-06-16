@@ -6,6 +6,7 @@ import {
   VectorCanvas,
   type VectorCanvasVector,
 } from '@/components/sim/primitives/VectorCanvas';
+import { SimFrame } from '@/components/sim/primitives/SimFrame';
 import { cosTheta, dot, magnitude } from '@/lib/math/linalg';
 
 export interface DotProductPreset {
@@ -67,20 +68,7 @@ export function DotProductExplorer({ preset }: { preset?: DotProductPreset }) {
   const widthPct = Math.abs(barFrac) * half;
 
   return (
-    <div className="rounded-xl border border-border bg-surface p-6 sm:p-8 card-surface">
-      <div className="flex items-baseline justify-between mb-5">
-        <h3 className="text-[11px] uppercase tracking-[0.18em] text-dim font-mono">
-          Dot Product Explorer
-        </h3>
-        <button
-          type="button"
-          onClick={reset}
-          className="text-[11px] uppercase tracking-[0.18em] font-mono text-muted hover:text-ink focus-ring transition-colors"
-        >
-          Reset
-        </button>
-      </div>
-
+    <SimFrame title="Dot Product Explorer" onReset={reset}>
       <VectorCanvas
         vectors={vectors}
         onChange={setVector}
@@ -129,7 +117,7 @@ export function DotProductExplorer({ preset }: { preset?: DotProductPreset }) {
           <span>+{SCALE}</span>
         </div>
       </div>
-    </div>
+    </SimFrame>
   );
 }
 

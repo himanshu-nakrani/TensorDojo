@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { SimFrame } from '@/components/sim/primitives/SimFrame';
 import { PRETRAINED_PARAMS } from '@/lib/math/pretrain-init';
 
 /**
@@ -404,11 +405,9 @@ export function LayerFreezeExplorer() {
   const paramsUpdated = mods ? mods.freezeParamCount(mask) : null;
 
   return (
-    <div className="rounded-xl border border-border bg-surface p-6 sm:p-8 card-surface">
-      <div className="flex items-baseline justify-between mb-5">
-        <h3 className="text-[11px] uppercase tracking-[0.18em] text-dim font-mono">
-          Layer freeze explorer
-        </h3>
+    <SimFrame
+      title="Layer freeze explorer"
+      headerAction={
         <div className="flex items-center gap-3">
           <button
             type="button"
@@ -427,8 +426,8 @@ export function LayerFreezeExplorer() {
             Reset
           </button>
         </div>
-      </div>
-
+      }
+    >
       <div className="space-y-5">
         {/* Layer checkboxes */}
         <div>
@@ -534,6 +533,6 @@ export function LayerFreezeExplorer() {
           </div>
         )}
       </div>
-    </div>
+    </SimFrame>
   );
 }

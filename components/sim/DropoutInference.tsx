@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Slider } from '@/components/sim/primitives/Slider';
+import { SimFrame } from '@/components/sim/primitives/SimFrame';
 
 /**
  * Secondary for the dropout lesson: the inference-time
@@ -26,17 +27,29 @@ export function DropoutInference() {
   const [p, setP] = useState<number>(0.3);
   const invertedScale = p > 0 ? 1 / (1 - p) : 1;
 
-  return (
-    <div className="rounded-xl border border-border bg-surface p-6 sm:p-8 card-surface">
-      <div className="flex items-baseline justify-between mb-3 flex-wrap gap-3">
-        <h3 className="text-[11px] uppercase tracking-[0.18em] text-dim font-mono">
-          Inverted dropout: the inference scaling
-        </h3>
-        <div className="text-[10px] text-dim font-mono">
-          training (p={p.toFixed(2)}) vs inference (p=0)
-        </div>
-      </div>
+  const reset = () => {
+    setP(0.3);
+  };
 
+  return (
+    <SimFrame
+      title="Inverted dropout: the inference scaling"
+      headerAction={
+        <div className="flex items-center gap-3">
+          <div className="text-[10px] text-dim font-mono tabular-nums">
+            training (p={p.toFixed(2)}) vs inference (p=0)
+          </div>
+          <button
+            type="button"
+            onClick={reset}
+            className="text-[11px] uppercase tracking-[0.18em] font-mono text-muted hover:text-ink focus-ring transition-colors"
+          >
+            Reset
+          </button>
+        </div>
+      }
+      headerWrap
+    >
       <div className="space-y-3 font-mono text-[12px]">
         <div>
           <div className="flex items-baseline justify-between mb-1">
@@ -100,6 +113,6 @@ export function DropoutInference() {
           the no-mask case. No rescaling needed at inference.
         </p>
       </div>
-    </div>
+    </SimFrame>
   );
 }

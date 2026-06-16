@@ -3,6 +3,8 @@
 import { useMemo, useState } from 'react';
 import clsx from 'clsx';
 import { Heatmap } from '@/components/sim/primitives/Heatmap';
+import { Slider } from '@/components/sim/primitives/Slider';
+import { SimFrame } from '@/components/sim/primitives/SimFrame';
 import { causalMask, applyMask, NEG_INF } from '@/lib/math/mask';
 import { softmaxRows } from '@/lib/math/softmax';
 
@@ -40,12 +42,15 @@ export function CausalMaskExplorer({ preset }: { preset?: CausalMaskExplorerPres
   );
   const weights = useMemo(() => softmaxRows(maskedScores), [maskedScores]);
 
+  const reset = () => {
+    setN(preset?.n ?? 6);
+    setMaskOn(true);
+  };
+
   return (
-    <div className="rounded-xl border border-border bg-surface p-6 sm:p-8 card-surface">
-      <div className="flex items-baseline justify-between mb-5">
-        <h3 className="text-[11px] uppercase tracking-[0.18em] text-dim font-mono">
-          Causal mask
-        </h3>
+    <SimFrame
+      title="Causal mask"
+      headerAction={
         <div className="flex items-center gap-3">
           <button
             type="button"
@@ -60,9 +65,16 @@ export function CausalMaskExplorer({ preset }: { preset?: CausalMaskExplorerPres
           >
             Causal mask: {maskOn ? 'on' : 'off'}
           </button>
+          <button
+            type="button"
+            onClick={reset}
+            className="text-[11px] uppercase tracking-[0.18em] font-mono text-muted hover:text-ink focus-ring transition-colors"
+          >
+            Reset
+          </button>
         </div>
-      </div>
-
+      }
+    >
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
           <div className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono mb-2">
@@ -136,19 +148,17 @@ export function CausalMaskExplorer({ preset }: { preset?: CausalMaskExplorerPres
         <span className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono">
           Sequence length
         </span>
-        <input
-          type="range"
+        <Slider
+          value={n}
           min={3}
           max={8}
           step={1}
-          value={n}
-          onChange={(e) => setN(parseInt(e.target.value, 10))}
-          className="slider flex-1 min-w-0"
-          style={{ ['--fill' as string]: `${((n - 3) / 5) * 100}%` }}
-          aria-label="Sequence length"
+          onChange={(v) => setN(Math.round(v))}
+          formatValue={(v) => String(Math.round(v))}
+          ariaLabel="Sequence length"
+          valueMinWidth="1.5ch"
         />
-        <span className="text-ink tabular-nums w-6 text-right">{n}</span>
       </div>
-    </div>
+    </SimFrame>
   );
 }

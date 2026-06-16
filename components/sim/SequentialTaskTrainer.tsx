@@ -22,6 +22,7 @@
  */
 
 import { useEffect, useRef, useState } from 'react';
+import { SimFrame } from '@/components/sim/primitives/SimFrame';
 import type { LabeledExample } from '@/lib/math/training';
 import type { ForgettingResult } from '@/lib/math/forgetting';
 
@@ -368,11 +369,9 @@ export function SequentialTaskTrainer() {
   const trainReady = mods !== null;
 
   return (
-    <div className="rounded-xl border border-border bg-surface p-6 sm:p-8 card-surface">
-      <div className="flex items-baseline justify-between mb-5">
-        <h3 className="text-[11px] uppercase tracking-[0.18em] text-dim font-mono">
-          Sequential task trainer — catastrophic forgetting
-        </h3>
+    <SimFrame
+      title="Sequential task trainer — catastrophic forgetting"
+      headerAction={
         <div className="flex items-center gap-3">
           <button
             type="button"
@@ -391,8 +390,8 @@ export function SequentialTaskTrainer() {
             Reset
           </button>
         </div>
-      </div>
-
+      }
+    >
       <div className="space-y-4">
         {/* Accuracy plot */}
         <div>
@@ -424,6 +423,6 @@ export function SequentialTaskTrainer() {
           </div>
         )}
       </div>
-    </div>
+    </SimFrame>
   );
 }

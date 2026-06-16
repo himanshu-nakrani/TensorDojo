@@ -3,6 +3,7 @@
 import { useMemo, useState } from 'react';
 import { Slider } from '@/components/sim/primitives/Slider';
 import { LossLandscape } from '@/components/sim/primitives/LossLandscape';
+import { SimFrame } from '@/components/sim/primitives/SimFrame';
 import { adamStep, sgdMomentumStep, sgdStep, type AdamState, type MomentumState } from '@/lib/math/optimizers';
 
 /**
@@ -107,20 +108,11 @@ export function OptimizerRace() {
   }, [seed]);
 
   return (
-    <div className="rounded-xl border border-border bg-surface p-6 sm:p-8 card-surface">
-      <div className="flex items-baseline justify-between mb-5">
-        <h3 className="text-[11px] uppercase tracking-[0.18em] text-dim font-mono">
-          Optimizer race on a narrow valley
-        </h3>
-        <button
-          type="button"
-          onClick={() => setSeed((s) => s + 1)}
-          className="text-[11px] uppercase tracking-[0.18em] font-mono text-muted hover:text-ink focus-ring transition-colors"
-        >
-          Re-run
-        </button>
-      </div>
-
+    <SimFrame
+      title="Optimizer race on a narrow valley"
+      onReset={() => setSeed((s) => s + 1)}
+      resetLabel="Re-run"
+    >
       <div className="grid grid-cols-1 md:grid-cols-[1fr_240px] gap-5">
         <div>
           <LossLandscape
@@ -182,7 +174,7 @@ export function OptimizerRace() {
           />
         </div>
       </div>
-    </div>
+    </SimFrame>
   );
 }
 
@@ -252,12 +244,7 @@ export function MomentumSweep() {
   const start: [number, number] = [-0.5, 0.8];
   const trace = useMemo(() => runMomentum(start, beta), [beta]);
   return (
-    <div className="rounded-xl border border-border bg-surface p-6 sm:p-8 card-surface">
-      <div className="flex items-baseline justify-between mb-5">
-        <h3 className="text-[11px] uppercase tracking-[0.18em] text-dim font-mono">
-          Momentum coefficient β
-        </h3>
-      </div>
+    <SimFrame title="Momentum coefficient β">
       <div className="grid grid-cols-1 md:grid-cols-[1fr_220px] gap-5">
         <div>
           <LossLandscape
@@ -319,6 +306,6 @@ export function MomentumSweep() {
           </div>
         </div>
       </div>
-    </div>
+    </SimFrame>
   );
 }

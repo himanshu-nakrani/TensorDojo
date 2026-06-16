@@ -3,6 +3,7 @@
 import { useMemo, useState } from 'react';
 import { Slider } from '@/components/sim/primitives/Slider';
 import { LossLandscape } from '@/components/sim/primitives/LossLandscape';
+import { SimFrame } from '@/components/sim/primitives/SimFrame';
 import {
   batchLoss,
   gradientEmpiricalStats,
@@ -83,20 +84,11 @@ export function SGDBatchExplorer() {
   const finalLoss = chosen.result.losses[chosen.result.losses.length - 1]!;
 
   return (
-    <div className="rounded-xl border border-border bg-surface p-6 sm:p-8 card-surface">
-      <div className="flex items-baseline justify-between mb-5">
-        <h3 className="text-[11px] uppercase tracking-[0.18em] text-dim font-mono">
-          Mini-batch SGD on a noisy landscape
-        </h3>
-        <button
-          type="button"
-          onClick={() => setStep((s) => s + 1)}
-          className="text-[11px] uppercase tracking-[0.18em] font-mono text-muted hover:text-ink focus-ring transition-colors"
-        >
-          Re-run
-        </button>
-      </div>
-
+    <SimFrame
+      title="Mini-batch SGD on a noisy landscape"
+      onReset={() => setStep((s) => s + 1)}
+      resetLabel="Re-run"
+    >
       <div className="grid grid-cols-1 md:grid-cols-[1fr_240px] gap-5">
         {/* Loss surface + trajectories */}
         <div>
@@ -214,7 +206,7 @@ export function SGDBatchExplorer() {
           />
         </div>
       </div>
-    </div>
+    </SimFrame>
   );
 }
 
@@ -296,12 +288,7 @@ export function SGDVarianceHistogram() {
   const barW = w / NB;
 
   return (
-    <div className="rounded-xl border border-border bg-surface p-6 sm:p-8 card-surface">
-      <div className="flex items-baseline justify-between mb-5">
-        <h3 className="text-[11px] uppercase tracking-[0.18em] text-dim font-mono">
-          Gradient estimate variance
-        </h3>
-      </div>
+    <SimFrame title="Gradient estimate variance">
       <div className="grid grid-cols-1 md:grid-cols-[1fr_220px] gap-5">
         <div>
           <svg viewBox={`0 0 ${w} ${h}`} className="w-full h-auto" aria-label="Histogram of mini-batch gradient estimates (a).">
@@ -334,9 +321,9 @@ export function SGDVarianceHistogram() {
             })()}
           </svg>
           <div className="flex items-center justify-between text-[10px] text-dim font-mono mt-1">
-            <span>{lo.toFixed(3)}</span>
+            <span className="tabular-nums">{lo.toFixed(3)}</span>
             <span>gradient estimate (a)</span>
-            <span>{hi.toFixed(3)}</span>
+            <span className="tabular-nums">{hi.toFixed(3)}</span>
           </div>
           <div className="text-[10px] text-fg-subtle font-mono mt-1">
             Vertical line: true full-batch gradient. Bars: 100 mini-batch estimates.
@@ -394,6 +381,6 @@ export function SGDVarianceHistogram() {
           </div>
         </div>
       </div>
-    </div>
+    </SimFrame>
   );
 }

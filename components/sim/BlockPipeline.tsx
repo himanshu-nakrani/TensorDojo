@@ -4,6 +4,7 @@ import { useMemo, useState } from 'react';
 import clsx from 'clsx';
 import { Heatmap } from '@/components/sim/primitives/Heatmap';
 import { Slider } from '@/components/sim/primitives/Slider';
+import { SimFrame } from '@/components/sim/primitives/SimFrame';
 import { sinusoidalPE } from '@/lib/math/positional';
 import {
   transformerBlock,
@@ -323,21 +324,40 @@ export function BlockPipeline() {
 
   const showDepth = blockDepth > 1;
 
-  return (
-    <div className="rounded-xl border border-border bg-surface p-6 sm:p-8 card-surface">
-      <div className="flex items-baseline justify-between mb-5 flex-wrap gap-3">
-        <h3 className="text-[11px] uppercase tracking-[0.18em] text-dim font-mono">
-          Block pipeline
-        </h3>
-        <div className="flex items-center gap-2 flex-wrap font-mono text-[10px] uppercase tracking-[0.18em]">
-          <span className="text-dim">d_model={D}</span>
-          <span className="text-border-strong">·</span>
-          <span className="text-dim">h={H}</span>
-          <span className="text-border-strong">·</span>
-          <span className="text-dim">T={T}</span>
-        </div>
-      </div>
+  const reset = () => {
+    setSentenceId('coref');
+    setHeadIdx(0);
+    setShowAllHeads(false);
+    setUseRes1(true);
+    setUseRes2(true);
+    setUseLN1(true);
+    setUseLN2(true);
+    setBlockDepth(1);
+  };
 
+  return (
+    <SimFrame
+      title="Block pipeline"
+      headerAction={
+        <div className="flex items-center gap-3 flex-wrap">
+          <div className="flex items-center gap-2 flex-wrap font-mono text-[10px] uppercase tracking-[0.18em]">
+            <span className="text-dim">d_model={D}</span>
+            <span className="text-border-strong">·</span>
+            <span className="text-dim">h={H}</span>
+            <span className="text-border-strong">·</span>
+            <span className="text-dim">T={T}</span>
+          </div>
+          <button
+            type="button"
+            onClick={reset}
+            className="text-[11px] uppercase tracking-[0.18em] font-mono text-muted hover:text-ink focus-ring transition-colors"
+          >
+            Reset
+          </button>
+        </div>
+      }
+      headerWrap
+    >
       <Controls
         sentenceId={sentenceId}
         setSentenceId={setSentenceId}
@@ -387,7 +407,7 @@ export function BlockPipeline() {
           />
         )}
       </div>
-    </div>
+    </SimFrame>
   );
 }
 

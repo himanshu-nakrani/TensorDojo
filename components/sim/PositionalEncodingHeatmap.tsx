@@ -2,6 +2,7 @@
 
 import { Fragment, useMemo, useState } from 'react';
 import clsx from 'clsx';
+import { SimFrame } from '@/components/sim/primitives/SimFrame';
 import { sinusoidalPE } from '@/lib/math/positional';
 
 export interface PositionalEncodingHeatmapPreset {
@@ -31,14 +32,15 @@ export function PositionalEncodingHeatmap({ preset }: { preset?: PositionalEncod
     return s;
   }, [pe, a, b]);
 
-  return (
-    <div className="rounded-xl border border-border bg-surface p-6 sm:p-8 card-surface">
-      <div className="flex items-baseline justify-between mb-5">
-        <h3 className="text-[11px] uppercase tracking-[0.18em] text-dim font-mono">
-          Positional encoding
-        </h3>
-      </div>
+  const reset = () => {
+    setMaxPos(preset?.maxPos ?? 16);
+    setD(preset?.d ?? 16);
+    setA(0);
+    setB(4);
+  };
 
+  return (
+    <SimFrame title="Positional encoding" onReset={reset}>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
           <div className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono mb-2">
@@ -88,7 +90,7 @@ export function PositionalEncodingHeatmap({ preset }: { preset?: PositionalEncod
             </div>
             <div className="flex items-baseline justify-between pt-1">
               <span className="text-dim">PE(a) · PE(b)</span>
-              <span className="text-accent">{dotAB.toFixed(3)}</span>
+              <span className="text-accent tabular-nums">{dotAB.toFixed(3)}</span>
             </div>
             <p className="text-[10px] text-dim leading-relaxed">
               As |a − b| grows, the dot product changes smoothly — that is how the model "feels" distance.
@@ -96,7 +98,7 @@ export function PositionalEncodingHeatmap({ preset }: { preset?: PositionalEncod
           </div>
         </div>
       </div>
-    </div>
+    </SimFrame>
   );
 }
 

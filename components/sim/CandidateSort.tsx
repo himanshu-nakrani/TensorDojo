@@ -6,6 +6,7 @@ import {
   VectorCanvas,
   type VectorCanvasVector,
 } from '@/components/sim/primitives/VectorCanvas';
+import { SimFrame } from '@/components/sim/primitives/SimFrame';
 import { dot } from '@/lib/math/linalg';
 
 export interface CandidateSortPreset {
@@ -63,19 +64,10 @@ export function CandidateSort({ preset }: { preset?: CandidateSortPreset }) {
   };
 
   return (
-    <div className="rounded-xl border border-border bg-surface p-6 sm:p-8">
-      <div className="flex items-baseline justify-between mb-2">
-        <h3 className="text-[11px] uppercase tracking-[0.18em] text-dim font-mono">
-          Candidate Sort
-        </h3>
-        <button
-          type="button"
-          onClick={() => setQuery([...DEFAULT_QUERY])}
-          className="text-[11px] uppercase tracking-[0.18em] font-mono text-muted hover:text-ink focus-ring transition-colors"
-        >
-          Reset
-        </button>
-      </div>
+    <SimFrame
+      title="Candidate Sort"
+      onReset={() => setQuery([...DEFAULT_QUERY])}
+    >
       <p className="text-[12px] text-muted mb-5 font-mono">
         Drag <span className="text-accent">q</span> — the 5 candidates re-sort by{' '}
         <span className="text-ink">q · cᵢ</span> in real time.
@@ -110,7 +102,7 @@ export function CandidateSort({ preset }: { preset?: CandidateSortPreset }) {
           </li>
         ))}
       </ol>
-    </div>
+    </SimFrame>
   );
 }
 

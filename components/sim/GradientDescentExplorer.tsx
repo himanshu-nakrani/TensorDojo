@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from 'react';
 import { Slider } from '@/components/sim/primitives/Slider';
+import { SimFrame } from '@/components/sim/primitives/SimFrame';
 import { gradient, loss, run, type Point } from '@/lib/math/gradient-descent';
 
 const PLOT_W = 360;
@@ -140,20 +141,11 @@ export function GradientDescentExplorer() {
   const diverged = runResult.divergedAt !== null;
 
   return (
-    <div className="rounded-xl border border-border bg-surface p-6 sm:p-8 card-surface">
-      <div className="flex items-baseline justify-between mb-5">
-        <h3 className="text-[11px] uppercase tracking-[0.18em] text-dim font-mono">
-          Gradient descent
-        </h3>
-        <button
-          type="button"
-          onClick={() => setSeed((s) => s + 1)}
-          className="text-[11px] uppercase tracking-[0.18em] font-mono text-muted hover:text-ink focus-ring transition-colors"
-        >
-          Step
-        </button>
-      </div>
-
+    <SimFrame
+      title="Gradient descent"
+      onReset={() => setSeed((s) => s + 1)}
+      resetLabel="Step"
+    >
       {/* Presets */}
       <div className="mb-5 flex flex-wrap items-center gap-2">
         <span className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono mr-1">
@@ -347,6 +339,6 @@ export function GradientDescentExplorer() {
           </div>
         </div>
       </div>
-    </div>
+    </SimFrame>
   );
 }

@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { Slider } from '@/components/sim/primitives/Slider';
 import { AttentionMatrix } from '@/components/sim/AttentionMatrix';
+import { SimFrame } from '@/components/sim/primitives/SimFrame';
 
 export interface AttentionTemperaturePreset {
   temperature?: number;
@@ -26,19 +27,10 @@ export function AttentionTemperature({ preset }: { preset?: AttentionTemperature
   );
 
   return (
-    <div className="rounded-xl border border-border bg-surface p-6 sm:p-8">
-      <div className="flex items-baseline justify-between mb-3">
-        <h3 className="text-[11px] uppercase tracking-[0.18em] text-dim font-mono">
-          Attention + Temperature
-        </h3>
-        <button
-          type="button"
-          onClick={() => setTemperature(1.0)}
-          className="text-[11px] uppercase tracking-[0.18em] font-mono text-muted hover:text-ink focus-ring transition-colors"
-        >
-          Reset
-        </button>
-      </div>
+    <SimFrame
+      title="Attention + Temperature"
+      onReset={() => setTemperature(1.0)}
+    >
 
       <div className="mb-3 flex items-baseline justify-between">
         <div className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono">
@@ -65,6 +57,6 @@ export function AttentionTemperature({ preset }: { preset?: AttentionTemperature
       <div className="mt-6">
         <AttentionMatrix preset={{ temperature, q: preset?.q, k: preset?.k }} />
       </div>
-    </div>
+    </SimFrame>
   );
 }

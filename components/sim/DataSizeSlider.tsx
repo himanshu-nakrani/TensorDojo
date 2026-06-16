@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { PRETRAINED_PARAMS } from '@/lib/math/pretrain-init';
 import { Slider } from '@/components/sim/primitives/Slider';
+import { SimFrame } from '@/components/sim/primitives/SimFrame';
 
 const N_VALUES = [8, 16, 32, 64, 128, 256] as const;
 type NValue = (typeof N_VALUES)[number];
@@ -309,14 +310,12 @@ export function DataSizeSlider() {
 
   const activeN = N_VALUES[nIdx]!;
 
-  return (
-    <div className="rounded-xl border border-border bg-surface p-6 sm:p-8 card-surface">
-      <div className="mb-5">
-        <h3 className="text-[11px] uppercase tracking-[0.18em] text-dim font-mono">
-          Fine-tune dataset size vs final loss
-        </h3>
-      </div>
+  const reset = () => {
+    setNIdx(2);
+  };
 
+  return (
+    <SimFrame title="Fine-tune dataset size vs final loss" onReset={reset}>
       <div className="space-y-4">
         {/* Slider */}
         <div>
@@ -355,6 +354,6 @@ export function DataSizeSlider() {
             : ''}
         </div>
       </div>
-    </div>
+    </SimFrame>
   );
 }
