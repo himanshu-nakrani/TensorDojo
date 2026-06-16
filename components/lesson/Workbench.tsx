@@ -47,9 +47,16 @@ export interface InteractiveEntry {
 export interface WorkbenchContextValue {
   /**
    * Expand the named interactive, pulse it, and scroll it into view.
-   * Used by prose-side "Open in workbench" callouts.
+   * Used by prose-side "Open in workbench" callouts on wide viewports.
    */
   focusInteractive: (id: string) => void;
+  /**
+   * Look up a registered interactive by id. Used by the Callout
+   * inline-preview path on narrow viewports, where scrolling to the
+   * bottom-stacked workbench would lose the reader's place. Returns
+   * undefined if the id is not registered.
+   */
+  getInteractive: (id: string) => InteractiveEntry | undefined;
 }
 
 const WorkbenchContext = createContext<WorkbenchContextValue | null>(null);
@@ -137,9 +144,20 @@ export function Workbench({
     setActive((prev) => (prev === id ? '' : id));
   }, []);
 
+  const interactiveById = useMemo(() => {
+    const m = new Map<string, InteractiveEntry>();
+    for (const i of interactives) m.set(i.id, i);
+    return m;
+  }, [interactives]);
+
+  const getInteractive = useCallback(
+    (id: string) => interactiveById.get(id),
+    [interactiveById],
+  );
+
   const ctxValue = useMemo<WorkbenchContextValue>(
-    () => ({ focusInteractive }),
-    [focusInteractive],
+    () => ({ focusInteractive, getInteractive }),
+    [focusInteractive, getInteractive],
   );
 
   return (
