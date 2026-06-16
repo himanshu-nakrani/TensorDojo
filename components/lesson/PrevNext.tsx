@@ -32,17 +32,26 @@ export function PrevNext({ slug }: PrevNextProps) {
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
-      // Only navigate if no input/textarea/contenteditable is focused.
+      if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+      // Modifier-laden arrows belong to the browser / OS.
+      if (e.metaKey || e.ctrlKey || e.altKey || e.shiftKey) return;
+      // Skip if focus is on (or inside) any interactive control —
+      // sliders, canvas, buttons, links, inputs all use arrow keys.
       const target = e.target as HTMLElement | null;
-      if (target) {
-        const tag = target.tagName.toLowerCase();
-        if (tag === 'input' || tag === 'textarea' || target.isContentEditable) {
-          return;
-        }
+      if (target && target.closest) {
+        const guarded = target.closest(
+          'input, textarea, select, button, a, canvas, summary, ' +
+            '[role=slider], [role=spinbutton], [role=textbox], ' +
+            '[role=button], [contenteditable=""], [contenteditable=true], ' +
+            '[data-interactive-id]',
+        );
+        if (guarded) return;
       }
       if (e.key === 'ArrowLeft' && prev) {
+        e.preventDefault();
         router.push(`/lessons/${prev}`);
       } else if (e.key === 'ArrowRight' && next) {
+        e.preventDefault();
         router.push(`/lessons/${next}`);
       }
     };
@@ -63,28 +72,32 @@ export function PrevNext({ slug }: PrevNextProps) {
       aria-label="Lesson navigation"
       className="mt-12 pt-6 border-t border-border"
     >
-      <div className="flex items-start justify-between gap-4 font-mono text-[12px]">
+      <div className="flex items-start justify-between gap-4">
         {prevLesson ? (
           <Link
             href={`/lessons/${prevLesson.meta.slug}`}
-            className="group flex items-start gap-2 text-muted hover:text-ink transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg focus-visible:text-ink min-w-0 rounded-sm"
+            className="group flex items-start gap-3 text-muted hover:text-ink transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg focus-visible:text-ink min-w-0 rounded-sm max-w-[48%]"
           >
             <span
               aria-hidden="true"
-              className="text-dim group-hover:-translate-x-0.5 transition-transform shrink-0 mt-0.5"
+              className="text-dim group-hover:-translate-x-0.5 motion-reduce:group-hover:translate-x-0 transition-transform shrink-0 mt-1 font-mono"
             >
               ←
             </span>
             <span className="min-w-0">
-              {prevIsNewTrack && (
-                <span className="block text-[10px] uppercase tracking-[0.18em] text-accent">
-                  New track
-                </span>
-              )}
-              <span className="block text-[10px] uppercase tracking-[0.18em] text-dim">
-                {prevIsNewTrack ? 'Previous' : 'Previous lesson'}
+              <span className="block text-[10px] uppercase tracking-[0.18em] text-dim font-mono mb-0.5">
+                {prevIsNewTrack ? (
+                  <>
+                    <span className="text-accent">New track</span>
+                    <span className="text-dim"> · previous</span>
+                  </>
+                ) : (
+                  'Previous lesson'
+                )}
               </span>
-              {prevLesson.meta.title}
+              <span className="block text-[14px] font-medium text-ink leading-snug group-hover:text-accent transition-colors">
+                {prevLesson.meta.title}
+              </span>
             </span>
           </Link>
         ) : (
@@ -93,22 +106,26 @@ export function PrevNext({ slug }: PrevNextProps) {
         {nextLesson ? (
           <Link
             href={`/lessons/${nextLesson.meta.slug}`}
-            className="group flex items-start gap-2 text-muted hover:text-ink transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg focus-visible:text-ink min-w-0 rounded-sm text-right"
+            className="group flex items-start gap-3 text-muted hover:text-ink transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg focus-visible:text-ink min-w-0 rounded-sm text-right ml-auto max-w-[48%]"
           >
             <span className="min-w-0">
-              {nextIsNewTrack && (
-                <span className="block text-[10px] uppercase tracking-[0.18em] text-accent">
-                  New track
-                </span>
-              )}
-              <span className="block text-[10px] uppercase tracking-[0.18em] text-dim">
-                {nextIsNewTrack ? 'Next' : 'Next lesson'}
+              <span className="block text-[10px] uppercase tracking-[0.18em] text-dim font-mono mb-0.5">
+                {nextIsNewTrack ? (
+                  <>
+                    <span className="text-accent">New track</span>
+                    <span className="text-dim"> · next</span>
+                  </>
+                ) : (
+                  'Next lesson'
+                )}
               </span>
-              {nextLesson.meta.title}
+              <span className="block text-[14px] font-medium text-ink leading-snug group-hover:text-accent transition-colors">
+                {nextLesson.meta.title}
+              </span>
             </span>
             <span
               aria-hidden="true"
-              className="text-dim group-hover:translate-x-0.5 transition-transform shrink-0 mt-0.5"
+              className="text-dim group-hover:translate-x-0.5 motion-reduce:group-hover:translate-x-0 transition-transform shrink-0 mt-1 font-mono"
             >
               →
             </span>

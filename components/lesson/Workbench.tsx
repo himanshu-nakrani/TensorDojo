@@ -87,13 +87,54 @@ export function Workbench({
 
   const focusInteractive = useCallback((id: string) => {
     setActive(id);
-    // Bumping the version re-triggers the pulse animation in WorkbenchItem.
-    setPulse({ id, version: Date.now() });
-    // Allow the accordion to expand before scrolling.
+    // Allow the accordion to expand, then scroll into view and pulse
+    // *after* the scroll resolves so the eye lands on a fresh ring
+    // rather than one mid-decay.
     setTimeout(() => {
       const el = refs.current[id];
-      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      if (!el) {
+        setPulse({ id, version: Date.now() });
+        return;
+      }
+      const reduced =
+        typeof window.matchMedia === 'function' &&
+        window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      el.scrollIntoView({
+        behavior: reduced ? 'auto' : 'smooth',
+        block: 'center',
+      });
+
+      let fired = false;
+      const fire = () => {
+        if (fired) return;
+        fired = true;
+        setPulse({ id, version: Date.now() });
+      };
+      if (typeof IntersectionObserver === 'function') {
+        const io = new IntersectionObserver(
+          (entries) => {
+            const e = entries[0];
+            if (e && e.intersectionRatio > 0.6) {
+              io.disconnect();
+              fire();
+            }
+          },
+          { threshold: [0, 0.6, 1] },
+        );
+        io.observe(el);
+        // Fallback if the scroll never resolves (reduced motion etc).
+        window.setTimeout(() => {
+          io.disconnect();
+          fire();
+        }, 800);
+      } else {
+        window.setTimeout(fire, 350);
+      }
     }, 60);
+  }, []);
+
+  const toggleInteractive = useCallback((id: string) => {
+    setActive((prev) => (prev === id ? '' : id));
   }, []);
 
   const ctxValue = useMemo<WorkbenchContextValue>(
@@ -111,6 +152,7 @@ export function Workbench({
           pulse={pulse}
           refs={refs}
           focusInteractive={focusInteractive}
+          toggleInteractive={toggleInteractive}
         />
       ) : (
         <DefaultLayout
@@ -120,6 +162,7 @@ export function Workbench({
           pulse={pulse}
           refs={refs}
           focusInteractive={focusInteractive}
+          toggleInteractive={toggleInteractive}
         />
       )}
     </WorkbenchContext.Provider>
@@ -139,6 +182,7 @@ interface LayoutProps {
   pulse: { id: string; version: number } | null;
   refs: React.MutableRefObject<Record<string, HTMLDivElement | null>>;
   focusInteractive: (id: string) => void;
+  toggleInteractive: (id: string) => void;
 }
 
 /** Standard two-column layout: prose left, workbench right. */
@@ -149,14 +193,16 @@ function DefaultLayout({
   pulse,
   refs,
   focusInteractive,
+  toggleInteractive,
 }: LayoutProps) {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,720px)_minmax(0,440px)] gap-x-10 gap-y-10">
       {/* Left: prose */}
       <div className="min-w-0 lesson-body">{prose}</div>
 
-      {/* Right: workbench — sticky on desktop */}
-      <aside className="min-w-0 space-y-4 lg:sticky lg:top-8 lg:self-start lg:max-h-[calc(100vh-4rem)] lg:overflow-y-auto lg:pr-1">
+      {/* Right: workbench — sticky on desktop. No interior scroll;
+          we want the page scroll, not a nested one. */}
+      <aside className="min-w-0 space-y-4 lg:sticky lg:top-16 lg:self-start">
         {interactives.map((entry) => (
           <Item
             key={entry.id}
@@ -165,6 +211,7 @@ function DefaultLayout({
             pulse={pulse}
             refs={refs}
             focusInteractive={focusInteractive}
+            toggleInteractive={toggleInteractive}
           />
         ))}
       </aside>
@@ -185,6 +232,7 @@ function WideLayout({
   pulse,
   refs,
   focusInteractive,
+  toggleInteractive,
 }: LayoutProps) {
   const wideItems = interactives.filter((i) => i.wide);
   const narrowItems = interactives.filter((i) => !i.wide);
@@ -200,24 +248,23 @@ function WideLayout({
             pulse={pulse}
             refs={refs}
             focusInteractive={focusInteractive}
+            toggleInteractive={toggleInteractive}
           />
         ))}
       </div>
       {narrowItems.length > 0 && (
-        <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,720px)_minmax(0,440px)] gap-x-10 gap-y-10">
-          <div className="min-w-0" />
-          <aside className="min-w-0 space-y-4 lg:sticky lg:top-8 lg:self-start lg:max-h-[calc(100vh-4rem)] lg:overflow-y-auto lg:pr-1">
-            {narrowItems.map((entry) => (
-              <Item
-                key={entry.id}
-                entry={entry}
-                active={active}
-                pulse={pulse}
-                refs={refs}
-                focusInteractive={focusInteractive}
-              />
-            ))}
-          </aside>
+        <div className="mx-auto w-full max-w-[720px] space-y-4">
+          {narrowItems.map((entry) => (
+            <Item
+              key={entry.id}
+              entry={entry}
+              active={active}
+              pulse={pulse}
+              refs={refs}
+              focusInteractive={focusInteractive}
+              toggleInteractive={toggleInteractive}
+            />
+          ))}
         </div>
       )}
     </div>
@@ -229,13 +276,14 @@ function Item({
   active,
   pulse,
   refs,
-  focusInteractive,
+  toggleInteractive,
 }: {
   entry: InteractiveEntry;
   active: string;
   pulse: { id: string; version: number } | null;
   refs: React.MutableRefObject<Record<string, HTMLDivElement | null>>;
   focusInteractive: (id: string) => void;
+  toggleInteractive: (id: string) => void;
 }) {
   const isActive = active === entry.id;
   const ItemComponent = entry.Component;
@@ -247,7 +295,7 @@ function Item({
       description={entry.description}
       caption={entry.caption}
       isActive={isActive}
-      onActivate={() => focusInteractive(entry.id)}
+      onToggle={() => toggleInteractive(entry.id)}
       pulseKey={pulse?.id === entry.id ? pulse.version : null}
       ref={(el) => {
         refs.current[entry.id] = el;

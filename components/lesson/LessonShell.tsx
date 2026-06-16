@@ -17,7 +17,7 @@ interface LessonShellProps {
  */
 export function LessonShell({ title, minutes, summary, children }: LessonShellProps) {
   return (
-    <article className="mx-auto px-6 sm:px-10 py-12 sm:py-16 max-w-[1320px]">
+    <article id="main" className="mx-auto px-6 sm:px-10 py-12 sm:py-16 max-w-[1320px]">
       <Link
         href="/"
         className="text-[11px] text-muted hover:text-ink transition-colors font-mono inline-block mb-6"

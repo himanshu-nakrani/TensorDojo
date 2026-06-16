@@ -203,16 +203,36 @@
   background: rgb(var(--accent));
 }
 .slider::-moz-range-thumb {
-  height: 12px;
-  width: 12px;
+  height: 16px;
+  width: 16px;
   border-radius: 50%;
   background: rgb(var(--accent));
   border: 3px solid rgb(var(--bg));
   box-shadow: 0 0 0 1px rgb(var(--accent));
   cursor: pointer;
+  transition: transform 120ms ease-out, box-shadow 120ms ease-out;
 }
-.slider::-moz-range-thumb:hover {
+.slider:hover::-moz-range-thumb {
   transform: scale(1.12);
+}
+.slider:focus-visible::-moz-range-thumb {
+  box-shadow:
+    0 0 0 1px rgb(var(--bg)),
+    0 0 0 4px rgb(var(--accent));
+  transform: scale(1.12);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .slider::-webkit-slider-thumb,
+  .slider::-moz-range-thumb {
+    transition: none;
+  }
+  .slider:hover::-webkit-slider-thumb,
+  .slider:focus-visible::-webkit-slider-thumb,
+  .slider:hover::-moz-range-thumb,
+  .slider:focus-visible::-moz-range-thumb {
+    transform: none;
+  }
 }
 
 /* ===========================================================================
@@ -393,6 +413,8 @@
 
 /* ===========================================================================
    Workbench pulse (the diagnosis flow triggers this).
+   Longer + larger than before so the eye actually lands on it
+   after smooth-scroll resolves.
    =========================================================================== */
 @keyframes pulse-ring {
   0% {
@@ -400,14 +422,26 @@
       0 0 0 0 var(--accent-shadow),
       0 0 0 0 var(--accent-soft);
   }
+  60% {
+    box-shadow:
+      0 0 0 6px var(--accent-shadow),
+      0 0 0 14px var(--accent-faint);
+  }
   100% {
     box-shadow:
-      0 0 0 10px transparent,
-      0 0 0 18px transparent;
+      0 0 0 14px transparent,
+      0 0 0 26px transparent;
   }
 }
 .animate-pulse-ring {
-  animation: pulse-ring 600ms ease-out;
+  animation: pulse-ring 1200ms ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-pulse-ring {
+    animation: none;
+    box-shadow: 0 0 0 2px var(--accent-shadow);
+  }
 }
 
 /* ===========================================================================

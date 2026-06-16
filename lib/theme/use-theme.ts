@@ -9,7 +9,7 @@ const STORAGE_KEY = 'tld-theme';
 /**
  * Resolve the initial theme using the same precedence as the inline
  * bootstrap script in app/layout.tsx: explicit localStorage first,
- * then system preference, then dark.
+ * then the OS preference if known, then dark.
  */
 function resolveInitialTheme(): Theme {
   if (typeof window === 'undefined') return 'dark';
@@ -19,11 +19,11 @@ function resolveInitialTheme(): Theme {
   } catch {
     /* localStorage blocked (private mode, etc.) */
   }
-  if (
-    typeof window.matchMedia === 'function' &&
-    window.matchMedia('(prefers-color-scheme: dark)').matches
-  ) {
-    return 'dark';
+  if (typeof window.matchMedia === 'function') {
+    const mq = window.matchMedia('(prefers-color-scheme: dark)');
+    if (mq.media === '(prefers-color-scheme: dark)') {
+      return mq.matches ? 'dark' : 'light';
+    }
   }
   return 'dark';
 }

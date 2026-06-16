@@ -1,12 +1,14 @@
 import Link from 'next/link';
+import { listSlugs } from '@/lib/lessons';
 
 export const metadata = {
   title: 'Lost — AI Learning Lab',
 };
 
 export default function NotFound() {
+  const total = listSlugs().length;
   return (
-    <main className="mx-auto px-6 sm:px-10 py-32 max-w-prose flex flex-col">
+    <main id="main" className="mx-auto px-6 sm:px-10 py-32 max-w-prose flex flex-col">
       <div className="text-[11px] uppercase tracking-[0.18em] text-dim font-mono mb-6">
         404 — page not found
       </div>
@@ -14,7 +16,7 @@ export default function NotFound() {
         Lost?
       </h1>
       <p className="text-[1.0625rem] text-muted leading-relaxed mb-10">
-        That URL doesn&apos;t match a lesson. The home page lists the 21
+        That URL doesn&apos;t match a lesson. The home page lists the {total}{' '}
         lessons in reading order; the concept map shows how they
         connect.
       </p>

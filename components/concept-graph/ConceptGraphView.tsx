@@ -215,7 +215,7 @@ function MapCanvas({
                 width={w}
                 height={height - PADDING_Y * 2}
                 rx={12}
-                className="fill-bg fill-opacity-50"
+                className="fill-bg/50"
               />
             );
           })}
@@ -249,19 +249,22 @@ function MapCanvas({
               node. The control points pull the curve out of the
               column band so it doesn't overlap nodes. */}
           {crossEdges.map((e) => {
-            const sx = e.from.cx;
-            const sy = e.from.cy + NODE_H / 2;
-            const tx = e.to.cx;
-            const ty = e.to.cy - NODE_H / 2;
-            // Control point distance scales with column gap so the
-            // arc clears node boxes.
+            // Exit the source from its right or left edge (toward the
+            // destination), and enter the destination from the opposite
+            // edge. Curving through the gutter keeps the arc out of
+            // intermediate column bands instead of slicing through
+            // unrelated node boxes.
+            const goingRight = e.to.cx > e.from.cx;
+            const sx = e.from.cx + (goingRight ? NODE_W / 2 : -NODE_W / 2);
+            const sy = e.from.cy;
+            const tx = e.to.cx + (goingRight ? -NODE_W / 2 : NODE_W / 2);
+            const ty = e.to.cy;
             const dx = tx - sx;
-            const dy = ty - sy;
-            const k = Math.max(40, Math.min(120, Math.abs(dy) / 2));
-            const c1x = sx + Math.sign(dx) * 8;
-            const c1y = sy + k;
-            const c2x = tx - Math.sign(dx) * 8;
-            const c2y = ty - k;
+            const reach = Math.max(40, Math.min(160, Math.abs(dx) * 0.45));
+            const c1x = sx + Math.sign(dx) * reach;
+            const c1y = sy;
+            const c2x = tx - Math.sign(dx) * reach;
+            const c2y = ty;
             return (
               <path
                 key={`${e.from.slug}->${e.to.slug}`}
@@ -293,7 +296,7 @@ function MapCanvas({
                   width: `${NODE_W}px`,
                 }}
               >
-                <h2 className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono leading-snug">
+                <h2 className="text-[11px] uppercase tracking-[0.18em] text-ink font-mono font-semibold leading-snug">
                   {section.label}
                 </h2>
                 <div className="text-[10px] text-fg-subtle font-mono mt-0.5">
@@ -378,8 +381,8 @@ function LessonNode({
           aria-hidden="true"
           className={
             visited
-              ? 'inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-accent mt-1'
-              : 'inline-block h-1.5 w-1.5 shrink-0 rounded-full border border-border-strong mt-1'
+              ? 'inline-block h-2.5 w-2.5 shrink-0 rounded-full bg-accent ring-2 ring-accent/20 mt-1'
+              : 'inline-block h-2.5 w-2.5 shrink-0 rounded-full border border-border-strong mt-1'
           }
           title={visited ? 'Visited' : 'Not yet visited'}
         />
@@ -402,13 +405,13 @@ function Legend({ hasResume }: { hasResume: boolean }) {
     <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-[10px] font-mono text-fg-subtle pt-4 border-t border-border">
       <span className="uppercase tracking-[0.18em] text-dim">Legend</span>
       <span className="inline-flex items-center gap-1.5">
-        <span aria-hidden="true" className="inline-block h-1.5 w-1.5 rounded-full bg-accent" />
+        <span aria-hidden="true" className="inline-block h-2.5 w-2.5 rounded-full bg-accent ring-2 ring-accent/20" />
         visited
       </span>
       <span className="inline-flex items-center gap-1.5">
         <span
           aria-hidden="true"
-          className="inline-block h-1.5 w-1.5 rounded-full border border-border-strong"
+          className="inline-block h-2.5 w-2.5 rounded-full border border-border-strong"
         />
         unvisited
       </span>

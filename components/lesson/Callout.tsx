@@ -36,7 +36,7 @@ export function Callout({
   return (
     <aside
       className={clsx(
-        'my-6 rounded-md border-l-2 pl-5 pr-4 py-4',
+        'my-6 rounded-md border-l-2 pl-6 pr-5 py-4',
         variant === 'try'
           ? 'border-accent bg-accent-faint'
           : 'border-border-strong bg-surface',

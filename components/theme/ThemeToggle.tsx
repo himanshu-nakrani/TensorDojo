@@ -24,7 +24,7 @@ export function ThemeToggle() {
       onClick={toggle}
       aria-label={label}
       title={label}
-      className="focus-ring fixed top-4 right-4 sm:top-6 sm:right-6 z-50 inline-flex h-9 w-9 items-center justify-center rounded-md border border-border bg-bg-elevated text-fg-muted hover:text-ink hover:border-border-strong hover:bg-bg-elevated-hover transition-colors"
+      className="focus-ring inline-flex h-8 w-8 items-center justify-center rounded-md text-fg-muted hover:text-ink hover:bg-bg-elevated-hover transition-colors"
     >
       {theme === 'dark' ? <SunIcon /> : <MoonIcon />}
     </button>

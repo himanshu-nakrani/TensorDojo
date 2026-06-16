@@ -3,8 +3,8 @@
 import {
   forwardRef,
   useEffect,
+  useId,
   useState,
-  type KeyboardEvent,
   type ReactNode,
 } from 'react';
 import clsx from 'clsx';
@@ -15,16 +15,17 @@ interface WorkbenchItemProps {
   description?: string;
   caption?: string;
   isActive: boolean;
-  onActivate: () => void;
-  /** Bumping this triggers a 600ms pulse animation on the item. */
+  onToggle: () => void;
+  /** Bumping this triggers a pulse animation on the item. */
   pulseKey: number | null;
   children: ReactNode;
 }
 
 /**
- * Accordion-style workbench item. Renders a clickable header that
- * activates the item, and an expanded body. Pulse animation runs for
- * 600ms whenever `pulseKey` changes (driven by the workbench).
+ * Accordion-style workbench item. Header is a real disclosure button:
+ * clicking the inactive item opens it (the workbench collapses any
+ * sibling), and clicking the active item closes it. `aria-expanded`
+ * and `aria-controls` are wired to the panel below.
  */
 export const WorkbenchItem = forwardRef<HTMLDivElement, WorkbenchItemProps>(
   function WorkbenchItem(
@@ -34,27 +35,21 @@ export const WorkbenchItem = forwardRef<HTMLDivElement, WorkbenchItemProps>(
       description,
       caption,
       isActive,
-      onActivate,
+      onToggle,
       pulseKey,
       children,
     },
     ref,
   ) {
     const [pulsing, setPulsing] = useState(false);
+    const panelId = useId();
 
     useEffect(() => {
       if (pulseKey == null) return;
       setPulsing(true);
-      const t = window.setTimeout(() => setPulsing(false), 600);
+      const t = window.setTimeout(() => setPulsing(false), 1200);
       return () => window.clearTimeout(t);
     }, [pulseKey]);
-
-    const onHeaderKeyDown = (e: KeyboardEvent<HTMLButtonElement>) => {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        onActivate();
-      }
-    };
 
     return (
       <div
@@ -68,20 +63,12 @@ export const WorkbenchItem = forwardRef<HTMLDivElement, WorkbenchItemProps>(
       >
         <button
           type="button"
-          onClick={onActivate}
-          onKeyDown={onHeaderKeyDown}
+          onClick={onToggle}
           aria-expanded={isActive}
-          className="w-full px-5 py-4 flex items-center gap-4 text-left rounded-xl"
+          aria-controls={panelId}
+          className="focus-ring w-full px-5 py-4 flex items-center gap-4 text-left rounded-xl"
         >
-          <span
-            className={clsx(
-              'inline-block transition-transform',
-              isActive ? 'rotate-90 text-accent' : 'text-dim',
-            )}
-            aria-hidden="true"
-          >
-            ▸
-          </span>
+          <Chevron open={isActive} />
           <span className="flex-1 min-w-0">
             <span className="block text-[11px] uppercase tracking-[0.18em] text-dim font-mono">
               Interactive
@@ -98,7 +85,12 @@ export const WorkbenchItem = forwardRef<HTMLDivElement, WorkbenchItemProps>(
         </button>
 
         {isActive && (
-          <div className="px-5 pb-5 pt-1 border-t border-border">
+          <div
+            id={panelId}
+            role="region"
+            aria-label={`${title} — workspace`}
+            className="px-5 pb-5 pt-1 border-t border-border"
+          >
             {children}
             {caption && (
               <p className="mt-4 text-[11px] text-dim font-mono leading-relaxed border-t border-border pt-3">
@@ -111,3 +103,27 @@ export const WorkbenchItem = forwardRef<HTMLDivElement, WorkbenchItemProps>(
     );
   },
 );
+
+function Chevron({ open }: { open: boolean }) {
+  return (
+    <svg
+      width="12"
+      height="12"
+      viewBox="0 0 12 12"
+      aria-hidden="true"
+      className={clsx(
+        'shrink-0 transition-transform motion-reduce:transition-none',
+        open ? 'rotate-90 text-accent' : 'text-dim',
+      )}
+    >
+      <path
+        d="M4 2 L8 6 L4 10"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}

@@ -32,7 +32,7 @@ export default function MapPage() {
   const sections = buildTrackSections(graph, lessonMeta);
 
   return (
-    <main className="mx-auto px-4 sm:px-6 py-12 sm:py-16 max-w-[1500px]">
+    <main id="main" className="mx-auto px-4 sm:px-6 py-12 sm:py-16 max-w-[1500px]">
       <header className="mb-10 max-w-prose">
         <Link
           href="/"
