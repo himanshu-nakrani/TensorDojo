@@ -63,6 +63,7 @@ export function VectorCanvas({
 }: VectorCanvasProps) {
   const svgRef = useRef<SVGSVGElement>(null);
   const [dragging, setDragging] = useState<string | null>(null);
+  const [focused, setFocused] = useState<string | null>(null);
 
   const toScreen = useCallback(
     (x: number, y: number): [number, number] => {
@@ -230,6 +231,25 @@ export function VectorCanvas({
                 isDragging ? 'fill-accent-hover' : 'fill-accent',
               )}
             />
+            {/* Focus ring — visible only when this tip has keyboard
+                focus. Rendered as a separate non-interactive ring under
+                the hit area so the SVG stroke is genuinely thicker than
+                the 1.5px non-scaling stroke we used to apply to the
+                hit-target itself (which was invisible against the
+                accent-colored tip beneath it). */}
+            {focused === v.id && (
+              <circle
+                cx={tx}
+                cy={ty}
+                r={5}
+                fill="none"
+                stroke="rgb(var(--accent-hover))"
+                strokeWidth={1.6}
+                vectorEffect="non-scaling-stroke"
+                opacity={0.9}
+                pointerEvents="none"
+              />
+            )}
             {/* Invisible larger hit area for easier targeting. Also the
                 keyboard-focusable handle: tab to it, arrow-keys nudge. */}
             <circle
@@ -238,15 +258,14 @@ export function VectorCanvas({
               r={6}
               fill="transparent"
               className={clsx(
-                !readOnly && 'cursor-grab focus:outline-none focus-visible:stroke-accent-hover',
+                !readOnly && 'cursor-grab focus:outline-none',
                 isDragging && 'cursor-grabbing',
                 readOnly && 'cursor-default',
               )}
-              stroke="transparent"
-              strokeWidth={1.5}
-              vectorEffect="non-scaling-stroke"
               onPointerDown={(e) => onPointerDown(v.id, e)}
               onKeyDown={(e) => onKeyDown(v.id, v.value, e)}
+              onFocus={() => setFocused(v.id)}
+              onBlur={() => setFocused((prev) => (prev === v.id ? null : prev))}
               tabIndex={readOnly ? -1 : 0}
               role={readOnly ? undefined : 'slider'}
               aria-label={`${v.label} vector. Arrow keys nudge; hold Shift for coarse steps.`}

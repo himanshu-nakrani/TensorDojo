@@ -2,6 +2,7 @@
 
 import { Fragment, useMemo, useState } from 'react';
 import clsx from 'clsx';
+import { NumberInput } from '@/components/sim/primitives/NumberInput';
 import { SimFrame } from '@/components/sim/primitives/SimFrame';
 import { sinusoidalPE } from '@/lib/math/positional';
 
@@ -154,14 +155,14 @@ function NumberRow({
   return (
     <label className="block">
       <div className="text-[10px] text-dim font-mono mb-1">{label}</div>
-      <input
-        type="number"
+      <NumberInput
+        value={value}
         min={0}
         max={max}
-        value={value}
-        onChange={(e) => onChange(parseInt(e.target.value, 10) || 0)}
-        className="number-input font-mono w-full"
-        aria-label={label}
+        step={1}
+        onChange={(v) => onChange(Math.round(v))}
+        ariaLabel={label}
+        className="w-full"
       />
     </label>
   );
