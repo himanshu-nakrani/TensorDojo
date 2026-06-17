@@ -60,7 +60,7 @@ The centerpiece is a control panel: a schedule-kind selector plus sliders for to
 
 **The peak LR and the schedule are coupled, not independent.** A peak LR that's too high will diverge the model regardless of the schedule. The schedule controls how the LR *changes*; it can't rescue a peak that's wrong. The right way to pick the peak LR is to run a short training with a constant LR and find the largest one that doesn't diverge, then pick a peak 3–10× smaller. Once the peak is right, the schedule is decoration.
 
-**Cosine decay is a default, not a law.** Other schedules work: linear decay, step decay, exponential decay. Cosine is conventional because its shape (fast decay near the end, slow decay early) matches the empirical shape of training loss curves — most of the loss reduction happens in the first half of training, and the late steps are fine-grained settling. The differences between these schedules are usually small; the difference between *a* schedule and *no* schedule (constant) is large.
+**Cosine decay is a default, not a law.** Other schedules work: linear decay, step decay, exponential decay. Cosine's appeal is its shape — *slow at both ends, fastest in the middle* (the derivative of $\tfrac{1}{2}(1+\cos(\pi t/T))$ is zero at the endpoints and maximal at $t = T/2$). The slow start lets the model linger near peak LR while it's still finding the basin; the fast middle drops it most of the way; the slow end gives a long fine-grained settling tail. The differences between these schedules are usually small; the difference between *a* schedule and *no* schedule (constant) is large.
 
 ## Recap
 

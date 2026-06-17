@@ -21,7 +21,7 @@ $$
 The score matrix is one dot product per (query, key) pair. The weight matrix is the row-wise softmax.
 
 <MathCode
-  math="\text{scores}_{ij} = Q_i \cdot K_j, \qquad \text{weights}_{ij} = \frac{e^{\text{scores}_{ij} / T}}{\sum_k e^{\text{scores}_{ik} / T}}"
+  math="\text{scores}_{ij} = Q_i \cdot K_j, \qquad \text{weights}_{ij} = \frac{e^{\text{scores}_{ij}}}{\sum_k e^{\text{scores}_{ik}}}"
   code={`import numpy as np
 
 scores  = Q @ K.T                                    # (n, n) dot products
