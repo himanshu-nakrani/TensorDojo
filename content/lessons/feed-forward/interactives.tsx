@@ -29,7 +29,7 @@ export const interactives: readonly InteractiveEntry[] = [
     description:
       'A parameter-count widget: drag d_model and pick the d_hidden expansion. See how the FFN\'s share of the block\'s parameters grows with the expansion factor.',
     caption:
-      'At 4× expansion (the standard), the FFN is roughly 60% of the block\'s parameters. Real transformers are bigger (d_model = 512 to 4096) and the FFN is even more dominant. The lesson: the "thinking" of the model is mostly in the FFN; the attention is the routing.',
+      'At 4× expansion (the standard), the FFN is roughly 65% of the block\'s parameters. Real transformers are bigger (d_model = 512 to 4096) and the FFN is even more dominant. The lesson: the "thinking" of the model is mostly in the FFN; the attention is the routing.',
     Component: FFNParameterCount,
   },
 ];

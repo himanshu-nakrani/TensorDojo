@@ -178,7 +178,7 @@ speculation.
 TensorDojo/
 ├── app/
 │   ├── layout.tsx                 # root layout, inline no-flash theme script
-│   ├── page.tsx                   # landing: 5 track groups
+│   ├── page.tsx                   # landing: 8 track groups
 │   ├── globals.css                # design tokens (light default, .dark override)
 │   ├── not-found.tsx              # 404
 │   ├── lessons/[slug]/page.tsx    # dynamic SSG route, MDX code-split per slug
@@ -252,7 +252,7 @@ slider value columns so digit changes don't reflow the row.
 
 ## Navigation model
 
-- **Home** (`/`) — six track groups, each lesson a card. Two
+- **Home** (`/`) — eight track groups, each lesson a card. Two
   forward links to `/map`.
 - **Lesson** (`/lessons/<slug>`) — two-column layout: prose on the
   left, an interactive workbench on the right with the lesson's

@@ -1,267 +1,134 @@
 # Content Directory
 
-This directory contains all lesson content for AI Learning Lab.
+All lesson content for TensorDojo. 31 lessons across 8 tracks, served
+by the Next.js routes in `app/lessons/[slug]/`.
 
-## 📁 Structure
+## Structure
 
 ```
 content/
-├── modules.yaml             # Module ordering, metadata, and dependencies
 ├── concepts/
-│   └── graph.yaml           # All concept nodes + prerequisite edges
-├── misconceptions.yaml      # Global misconception catalog
+│   └── graph.yaml       # Concept graph (used by /map): nodes + edges
 └── lessons/
-    └── {module-number}-{module-name}/
-        └── {lesson-number}-{lesson-name}/
-            ├── lesson.mdx          # Main lesson content (MDX format)
-            ├── lesson.yaml         # Lesson metadata and configuration
-            ├── simulation.tsx      # React simulation component
-            ├── notebook.ipynb      # Canonical Jupyter notebook
-            ├── solution.ipynb      # Solution notebook (for exercises)
-            ├── quiz.yaml           # Quiz questions with tagged distractors
-            └── diagram.svg         # Static diagrams (optional)
+    └── <slug>/
+        ├── meta.ts         # { slug, title, summary, minutes, order }
+        ├── lesson.mdx      # MDX body — prose + KaTeX + <Callout>/<MathCode>
+        └── interactives.tsx # Registers Workbench items: { id, title, Component, ... }
 ```
 
-## 📝 Content Types
+Track grouping lives in `lib/lessons-meta.ts` (`TRACKS`). Reading order is `TRACKS.flatMap(t => t.slugs)`.
 
-### 1. `modules.yaml`
+## Per-lesson files
 
-Defines the module structure and ordering:
+### `meta.ts`
 
-```yaml
-- id: foundations
-  title: Foundations
-  description: Python for tensors, NumPy, and mathematical building blocks
-  order: 1
-  lessons: [vector-basics, dot-product, gradients, ...]
-
-- id: attention-transformers
-  title: Attention & Transformers
-  description: The core mechanisms of modern AI
-  order: 4
-  lessons: [self-attention, masking, multi-head, transformer-block]
+```ts
+export const meta = {
+  slug: 'softmax',
+  title: 'Softmax: turning scores into a distribution',
+  summary: 'Models emit raw numbers. A probability distribution needs ...',
+  minutes: 8,
+  order: 3,
+} as const;
 ```
 
-### 2. `concepts/graph.yaml`
+- `order` is the global reading order, contiguous `1..31`.
+- `minutes` is the reading-time estimate shown in the lesson header (6–10 min for most lessons).
 
-The concept graph defines all learnable concepts and their prerequisites:
+### `lesson.mdx`
 
-```yaml
-concepts:
-  - id: dot-product
-    title: Dot Product
-    description: The sum of element-wise products of two vectors
-    module: foundations
-    micro_lesson: dot-product-001
-
-  - id: softmax
-    title: Softmax
-    description: Normalizes a vector into a probability distribution
-    module: neural-networks
-    micro_lesson: softmax-001
-
-edges:
-  - prerequisite: dot-product
-    concept: softmax
-  - prerequisite: softmax
-    concept: attention-score
-```
-
-### 3. `misconceptions.yaml`
-
-Global catalog of misconceptions for LLM diagnosis (Tier 2):
-
-```yaml
-misconceptions:
-  score-vs-weight:
-    title: "Confusing Score with Weight"
-    description: "Attention score is raw similarity; weight is softmax-normalized"
-    module: attention-transformers
-
-  forgot-softmax:
-    title: "Forgot to Apply Softmax"
-    description: "Outputs don't sum to 1 because softmax was omitted"
-    module: neural-networks
-```
-
-### 4. Lesson Files
-
-#### `lesson.mdx`
-
-MDX format with embedded React components:
+Standard MDX with two components imported at the top:
 
 ```mdx
-# Self-Attention From Scratch
+import { MathCode } from '@/components/lesson/MathCode';
+import { Callout } from '@/components/lesson/Callout';
 
-## What attention computes
+## How aligned are two vectors?
 
-Each token asks: "which other tokens matter to me?"
+Prose with inline KaTeX like $\mathbf{a} \cdot \mathbf{b}$ and display blocks:
 
-<MathCodeBlock>
-  <Math>
-    softmax(x_i) = \frac{exp(x_i)}{\sum_j exp(x_j)}
-  </Math>
-  <Code language="python">
-    def softmax(x):
-        e = np.exp(x - x.max())
-        return e / e.sum()
-  </Code>
-</MathCodeBlock>
+$$
+\mathbf{a} \cdot \mathbf{b} = \sum_i a_i b_i
+$$
 
-## Try it
+<MathCode
+  math="\mathbf{a} \cdot \mathbf{b} = \sum_i a_i b_i"
+  code={`def dot(a, b):
+    return sum(x * y for x, y in zip(a, b))`}
+  caption="The component form — the form you actually compute."
+/>
 
-<Simulation id="attention-matrix" />
-
-Drag the temperature slider and watch the distribution sharpen.
-
-<SyncBadge />
-
-## Check understanding
-
-<Quiz id="q-attn-3" />
+<Callout title="What to watch for" targetInteractive="dot-product-explorer">
+  Drag tip A toward B. Watch cos θ rise to 1; the dot product peaks
+  when they're parallel.
+</Callout>
 ```
 
-#### `lesson.yaml`
+- Math: `$inline$` and `$$display$$` (KaTeX via `remark-math` + `rehype-katex`).
+- `<Callout targetInteractive="<id>">` ties prose to the Workbench item registered under that `id` in `interactives.tsx`. The id must match.
+- `<MathCode math="..." code={\`...\`} caption="..." />` pairs a KaTeX expression with a runnable code block.
 
-Lesson metadata and sync configuration:
-
-```yaml
-id: attention-002
-title: Self-Attention From Scratch
-module: attention-transformers
-prerequisites: [embeddings, dot-product, softmax]
-concepts: [query, key, value, attention-score, attention-weight, causal-mask]
-simulations: [attention-matrix, mask-toggle, head-compare]
-notebooks: [numpy-attention.ipynb]
-estimated_minutes: 35
-sync:
-  - variable: temperature        # Python variable name
-    control: temperature-slider  # Simulation control ID
-    type: float
-    range: [0.1, 3.0]
-    cell: cell-1                # Notebook cell ID
-  - variable: mask_enabled
-    control: mask-toggle
-    type: bool
-    cell: cell-2
-```
-
-#### `simulation.tsx`
-
-React component for interactive simulation:
+### `interactives.tsx`
 
 ```tsx
-import { useSyncStore } from '@ail/sync-engine';
-import { Slider, Heatmap } from '@ail/sim-components';
+import type { InteractiveEntry } from '@/lib/lessons-meta';
+import { DotProductExplorer } from '@/components/sim/DotProductExplorer';
 
-export default function AttentionMatrixSimulation() {
-  const { values, setValue } = useSyncStore();
-  const temperature = values.temperature || 1.0;
-
-  return (
-    <div className="simulation">
-      <Heatmap
-        data={computeAttentionWeights(temperature)}
-        labels={['The', 'cat', 'sat', 'down']}
-      />
-      <Slider
-        id="temperature-slider"
-        value={temperature}
-        onChange={(v) => setValue('temperature', v)}
-        min={0.1}
-        max={3.0}
-        step={0.1}
-      />
-      <SyncIndicator bindings={['temperature']} />
-    </div>
-  );
-}
+export const interactives: readonly InteractiveEntry[] = [
+  {
+    id: 'dot-product-explorer',
+    title: 'Dot Product Explorer',
+    description: 'Drag two vectors; |a|, |b|, cos θ, a·b update live.',
+    caption: 'A sign flip happens when the angle crosses 90°.',
+    Component: DotProductExplorer,
+  },
+];
 ```
 
-#### `quiz.yaml`
+Each entry becomes a Workbench item on the lesson page. The `id` is what `<Callout targetInteractive>` references; the `title` and `description` are reader-facing.
 
-Quiz questions with misconception tags:
+## Sim components
 
-```yaml
-- id: q-attn-3
-  type: multiple-choice
-  prompt: "Which values sum to 1 across a row of the attention matrix?"
-  options:
-    - text: "The attention scores"
-      misconception: score-vs-weight        # Required on wrong options
-    - text: "The attention weights"
-      correct: true
-    - text: "The value vectors"
-      misconception: value-vs-weight
-  variant:                                  # Re-test after diagnosis
-    prompt: "After softmax is applied to a row of scores, what is true of the resulting values?"
-    options:
-      - text: "They sum to 1"
-        correct: true
-      - text: "They are unchanged raw similarities"
-        misconception: score-vs-weight
-  diagnosis:
-    score-vs-weight:
-      distinction: "Score = raw Q·K similarity. Weight = softmax(score)."
-      experiment:
-        simulation: attention-matrix
-        preset: { highlight: softmax-step, focus: temperature-slider }
-        instruction: "Lower temperature — watch weights sharpen. Raise to 1.5 — watch them flatten."
-```
+The `Component` field in each interactive points to a sim component in `components/sim/`. Sim conventions:
 
-## 🎯 Authoring Principles
+- `'use client'` directive at the top.
+- Wraps in `<SimFrame title onReset?>` from `components/sim/primitives/`.
+- Math imported from `lib/math/`, not redefined inline.
+- Visual primitives (`Slider`, `NumberInput`, `BarChart`, `Heatmap`, `VectorCanvas`) live under `components/sim/primitives/`.
 
-1. **One concept, one lesson** — Estimated time: 20–40 minutes. Longer → split.
-2. **Side-by-side math & code** — Always pair notation with runnable code.
-3. **Every parameter that matters pedagogically gets a sync binding** — Decoration parameters (colors, layout) do not.
-4. **Every quiz wrong option must have a misconception tag** — This enables the Concept Debugger.
-5. **Every diagnosable question must have a variant** — For re-testing after diagnosis.
-6. **Synced cells must be lightweight** — <200ms compute time to meet the 500ms interaction budget.
+See `components/sim/README.md` for the sim authoring conventions.
 
-## ✅ Validation
+## Concept graph
 
-All content is validated via `lesson-lint` in CI:
+`concepts/graph.yaml` lists concept nodes and prerequisite edges. The `/map` route reads this file at build time. Each lesson is associated with one or more concept nodes.
 
-1. **Schema validation** — YAML files against JSON schemas
-2. **Graph integrity** — All prerequisites exist; graph is acyclic
-3. **Distractor tagging** — Every wrong option has a misconception tag
-4. **Sync contract** — All bindings reference existing variables and controls
-5. **Notebook execution** — All cells must pass in Pyodide
-6. **Performance budget** — Synced cells profiled against 200ms compute budget
+## Validation
 
-Run validation locally:
+`npm run lint:content` runs `scripts/lint-content.ts`, which checks:
+
+- Every lesson directory has both `meta.ts` and `interactives.tsx`.
+- `interactives.tsx` declares well-formed `id` fields (regex-scanned, no transpile).
+- `concepts/graph.yaml` has no dangling prereq edges and no cycles.
+
+For deeper checks (MDX parses, KaTeX renders, types match), use:
 
 ```bash
-# From repo root
-npm run lesson-lint
-
-# Or with Docker
-docker run --rm -v $(pwd):/app lesson-lint:latest
+npm run lint:content   # content-only fast checks
+npm test               # math + component tests under lib/math/
+npm run build          # full Next.js build (catches MDX/KaTeX errors)
 ```
 
-## 📊 Content Statistics
+## Adding a new lesson
 
-| Module | Lessons | Concepts | Sims | Notebooks |
-|--------|---------|----------|------|-----------|
-| Foundations | 8 | 25 | 12 | 8 |
-| Neural Networks | 7 | 20 | 10 | 7 |
-| Tokenization & Embeddings | 5 | 15 | 8 | 5 |
-| Attention & Transformers | 7 | 30 | 15 | 7 |
-| Training | 6 | 18 | 10 | 6 |
-| AI Engineering | 9 | 22 | 12 | 9 |
-| **Total** | **42** | **~120** | **67** | **42** |
+1. Pick a slug and create `content/lessons/<slug>/`.
+2. Write `meta.ts` with a chosen `order`; bump every later lesson's `order` by 1.
+3. Write `interactives.tsx` and the sim component(s) it imports.
+4. Write `lesson.mdx`.
+5. Add the slug to the appropriate track in `lib/lessons-meta.ts` `TRACKS`.
+6. Add concept nodes/edges to `concepts/graph.yaml` if relevant.
+7. `npm run lint:content && npm test && npm run build`.
 
-## 🚀 Adding New Content
+## Resources
 
-1. Create a new lesson directory under `content/lessons/{module}/{lesson}`
-2. Add the 6 required files (MDX, YAML, TSX, 2x IPYNB, YAML)
-3. Update `concepts/graph.yaml` with new concepts and edges
-4. Add new misconceptions to `misconceptions.yaml` if needed
-5. Run `npm run lesson-lint` to validate
-6. Create a PR for review
-
-## 🔗 Resources
-
-- [Design Spec](../design-spec.md) — Product requirements and UX
-- [Technical Spec](../technical-spec.md) — Architecture and implementation details
-- [Simulation Components](../../components/sim/README.md) — Reusable React components in this repo
+- [Sim authoring conventions](../components/sim/README.md)
+- [Tracks definition](../lib/lessons-meta.ts)
