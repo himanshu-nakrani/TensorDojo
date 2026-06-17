@@ -19,7 +19,7 @@ $$
 For a ReLU activation, the local derivative is the indicator $\mathbb{1}\{z > 0\}$. The loss in this lesson's centerpiece is squared error $L = \tfrac{1}{2}(y - t)^2$, so the final-layer signal is $\delta^{(L)} = y - t$. (Swap in a softmax + cross-entropy head and the same machinery produces $\delta^{(L)} = p - y_\text{onehot}$ — the cleanest gradient in deep learning.) The chain stitches the local pieces together.
 
 <MathCode
-  math="\delta^{(L)} = y - t, \quad \delta^{(l)} = (W^{(l+1)})^{\top} \delta^{(l+1)} \odot \mathbb{1}\{z^{(l)} > 0\}, \quad \frac{\partial L}{\partial W^{(l)}} = \delta^{(l)} (h^{(l-1)})^{\top}"
+  math="\delta^{(L)} = y - t \text{ (MSE; for softmax+CE: } p - y_\text{onehot}\text{)}, \quad \delta^{(l)} = (W^{(l+1)})^{\top} \delta^{(l+1)} \odot \mathbb{1}\{z^{(l)} > 0\}, \quad \frac{\partial L}{\partial W^{(l)}} = \delta^{(l)} (h^{(l-1)})^{\top}"
   code={`# A toy 3-layer MLP: 2 -> 4 -> 2 -> 1, ReLU activations, MSE loss.
 # This is the lesson's centerpiece, by hand.
 

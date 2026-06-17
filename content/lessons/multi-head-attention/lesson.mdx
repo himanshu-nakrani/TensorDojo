@@ -19,7 +19,7 @@ $$
 Each head $i \in \{1, \ldots, h\}$ has its own learned $W_i^Q, W_i^K, W_i^V \in \mathbb{R}^{d_{\text{model}} \times d_k}$ that project the shared input into a head-specific subspace. The $W_{\text{out}}$ projection mixes the head outputs back into $d_{\text{model}}$.
 
 <MathCode
-  math="\text{head}_i = \operatorname{softmax}\!\left(\frac{Q W_i^Q (K W_i^K)^\top}{\sqrt{d_k}}\right) V W_i^V"
+  math="\text{head}_i = \operatorname{softmax}\!\left(\frac{Q W_i^Q (K W_i^K)^\top}{\sqrt{d_k}} + M\right) V W_i^V \quad\text{($M$ = causal mask if any)}"
   code={`# h = d_model / d_k heads in parallel
 heads = [softmax((Q @ Wq_h) @ (K @ Wk_h).T / sqrt(d_k)) @ (V @ Wv_h)
          for Wq_h, Wk_h, Wv_h in zip(Wq, Wk, Wv)]
@@ -30,7 +30,7 @@ output = concat(heads, dim=-1) @ W_out`}
 ## Try it
 
 <Callout targetInteractive="multi-head-explorer">
-  With $h = 4$ heads, drag head 1's Q rotation slider. The top-left 2×2 weight heatmap for head 1 reshapes — that head is now "looking at" a different pair of positions. Heads 2, 3, 4 are unchanged. The point: each head is its own small attention, and they live in parallel.
+  With $h = 4$ heads, drag head 1's Q rotation slider. The top-left 2×2 weight heatmap for head 1 reshapes — that head is now "looking at" a different pair of positions. Heads 2, 3, 4 are unchanged. The matching K rotation slider just below rotates the keys for that head instead of the queries; both knobs together let you shape the head's full projection. The point: each head is its own small attention, and they live in parallel.
 </Callout>
 
 <Callout targetInteractive="multi-head-explorer">

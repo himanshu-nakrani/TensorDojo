@@ -50,7 +50,7 @@ The distinction between *batch statistics at training* and *running statistics a
 ## Try it
 
 <Callout targetInteractive="batch-norm-explorer">
-  Toggle batch-norm on and off. Both runs start from the same init. The test-loss curve (top) shows batch-norm reaches a lower loss in fewer steps; the per-layer activation-norm chart (bottom) shows *why* — without batch-norm the activation norm grows without bound as training progresses, with batch-norm it is anchored.
+  Toggle batch-norm on and off. Both runs start from the same init. The test-loss curve (top) shows batch-norm reaches a lower loss in fewer steps; the per-layer activation-norm chart (bottom) shows *why* — without batch-norm the activation norm in this simulator climbs without an anchor as training progresses, with batch-norm it is held in a consistent range. (Real networks can also fail by *vanishing* — this toy is on the exploding side.)
 </Callout>
 
 <Callout targetInteractive="batch-norm-explorer">

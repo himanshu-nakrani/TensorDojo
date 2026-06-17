@@ -15,7 +15,7 @@ $$
 H(\mathbf{p}, t) \;=\; -\log p_t
 $$
 
-$p_t$ is the probability the model assigned to the correct answer. If the model is right, $p_t \approx 1$ and the loss is near zero. If the model put zero mass on the truth, the loss is infinity — there is no recovery from "the model thought the right answer was literally impossible."
+$p_t$ is the probability the model assigned to the correct answer. If the model is right, $p_t \approx 1$ and the loss is near zero. If the model put zero mass on the truth, the loss is mathematically infinite — there is no recovery from "the model thought the right answer was literally impossible." In practice, implementations clamp $p_t$ away from zero (e.g. at $10^{-12}$) before the log, so the runtime value is capped at $-\log(10^{-12}) \approx 27.6$; that clamp is a numerical floor, not a real escape hatch.
 
 <MathCode
   math="H(\mathbf{p}, t) = -\log p_t"

@@ -14,14 +14,14 @@ The previous lesson was the building block (dot product). This one is the next l
 For a row of $n$ query vectors $Q \in \mathbb{R}^{n \times d}$ and a row of $n$ key vectors $K \in \mathbb{R}^{n \times d}$:
 
 $$
-\operatorname{scores} = Q K^\top \in \mathbb{R}^{n \times n}, \qquad
-\operatorname{weights}_i = \operatorname{softmax}(\operatorname{scores}_i) \text{ per row}
+\text{scores} = Q K^\top \in \mathbb{R}^{n \times n}, \qquad
+\text{weights}_i = \operatorname{softmax}(\text{scores}_i) \text{ per row}
 $$
 
 The score matrix is one dot product per (query, key) pair. The weight matrix is the row-wise softmax.
 
 <MathCode
-  math="\operatorname{scores}_{ij} = Q_i \cdot K_j, \qquad \operatorname{weights}_{ij} = \frac{e^{\operatorname{scores}_{ij} / T}}{\sum_k e^{\operatorname{scores}_{ik} / T}}"
+  math="\text{scores}_{ij} = Q_i \cdot K_j, \qquad \text{weights}_{ij} = \frac{e^{\text{scores}_{ij} / T}}{\sum_k e^{\text{scores}_{ik} / T}}"
   code={`import numpy as np
 
 scores  = Q @ K.T                                    # (n, n) dot products

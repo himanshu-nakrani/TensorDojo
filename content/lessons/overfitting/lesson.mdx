@@ -11,7 +11,7 @@ The intuition: a model with enough parameters can fit any set of points *exactly
 
 A polynomial of degree $d$ has $d+1$ coefficients. $d$ controls the model's *capacity* — how many wiggles it can produce. We can make capacity the slider and watch what happens to train and test loss at the same time.
 
-For a fixed dataset (20 points, $y = \sin(2x) + \varepsilon$, with deterministic noise), the closed-form least-squares polynomial fit is
+For a fixed dataset (20 points, $y = \sin(2x) + \varepsilon$, with seeded noise — the noise is real, just reproducible), the closed-form least-squares polynomial fit is
 
 <MathCode
   math="\mathbf{w}^\star = (X^\top X)^{-1} X^\top \mathbf{y}"
@@ -27,7 +27,7 @@ def poly_fit(xs, ys, degree):
 The fit on the first 14 points is the training set; the last 6 are the test. The point of the lesson is what happens to *both* losses as $d$ grows.
 
 <Callout targetInteractive="overfitting-explorer">
-  Drag the polynomial degree from 1 to 15. At $d=1$ the fit is a flat line and both losses are big (under-fit). As $d$ climbs the fit weaves closer to the data; training loss falls. Test loss falls too — until around $d=4$ or $5$, where it bottoms and starts climbing back. Training loss keeps falling. The two curves diverge. The gap *is* overfitting.
+  Drag the polynomial degree from 1 to 13. At $d=1$ the fit is a flat line and both losses are big (under-fit). As $d$ climbs the fit weaves closer to the data; training loss falls. Test loss falls too — until around $d=4$ or $5$, where it bottoms and starts climbing back. Training loss keeps falling. The two curves diverge. The gap *is* overfitting.
 </Callout>
 
 ## Reading the result

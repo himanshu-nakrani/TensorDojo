@@ -27,7 +27,10 @@ import {
  */
 
 const DEG_MIN = 1;
-const DEG_MAX = 15;
+// Cap at 13: the training set has 14 points, so degree-14+ designs
+// are square or underdetermined and the closed-form fit is no longer
+// the canonical overfitting demo.
+const DEG_MAX = 13;
 const X_RANGE: [number, number] = [-1, 1];
 const Y_RANGE: [number, number] = [-1.6, 1.6];
 

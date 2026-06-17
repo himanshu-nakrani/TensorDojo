@@ -20,12 +20,12 @@ For a step $t \in [0, T)$ with peak LR $\eta_{\max}$ and floor $\eta_{\min}$:
 **Warmup + cosine:** for the first $W$ steps, $\eta(t) = \eta_{\max} \cdot (t / W)$ (linear ramp from 0 to $\eta_{\max}$). For $t \geq W$, $\eta(t) = \eta_{\min} + (\eta_{\max} - \eta_{\min}) \cdot \tfrac{1}{2}\bigl(1 + \cos(\pi \cdot (t - W) / (T - W))\bigr)$. The conventional modern default.
 
 <MathCode
-  math="\eta(t) = \begin{cases} \eta_{\max} \cdot \frac{t}{W} & 0 \le t < W \\ \eta_{\min} + (\eta_{\max} - \eta_{\min}) \cdot \frac{1}{2}\bigl(1 + \cos(\pi \cdot \frac{t - W}{T - W})\bigr) & W \le t < T \\ 0 & t \ge T \end{cases}"
+  math="\eta(t) = \begin{cases} \eta_{\max} \cdot \frac{t}{W} & 0 \le t < W \\ \eta_{\min} + (\eta_{\max} - \eta_{\min}) \cdot \frac{1}{2}\bigl(1 + \cos(\pi \cdot \frac{t - W}{T - W})\bigr) & W \le t \le T \end{cases}"
   code={`def warmup_cosine(t, total, peak, warmup, floor=0.0):
     if t < warmup:
         return peak * (t / warmup)            # linear ramp 0 → peak
     if t >= total:
-        return 0
+        return floor                          # training is over; pin at floor
     # Cosine decay peak → floor over the remaining (total − warmup) steps.
     remaining = total - warmup
     return floor + (peak - floor) * 0.5 * (

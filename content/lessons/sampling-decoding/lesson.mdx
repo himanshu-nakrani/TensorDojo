@@ -34,6 +34,8 @@ def temperature_sample(logits, T=1.0, rng=np.random):
 
 def topk_sample(logits, k=5, T=1.0, rng=np.random):
     probs = softmax(logits, T)
+    # Keep the k highest-prob entries. Ties at the boundary are kept,
+    # so the support can be slightly larger than k in pathological cases.
     cutoff = np.sort(probs)[-k]
     kept = np.where(probs >= cutoff, probs, 0)
     kept /= kept.sum()

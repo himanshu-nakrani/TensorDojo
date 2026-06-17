@@ -34,7 +34,7 @@ v_{t+1} \;=\; \beta_2 \cdot v_t + (1 - \beta_2) \cdot g_t^2 \\
 \theta_{t+1} \;=\; \theta_t - \eta \cdot \hat{m}_{t+1} / (\sqrt{\hat{v}_{t+1}} + \epsilon)
 $$
 
-The two running averages $m$ and $v$ estimate the first and second moments of the gradient. The bias-correction $\hat{m}, \hat{v}$ matters at the start of training when $m$ and $v$ are still small (initialized at zero); without it, the first few steps would be biased small. The step is the bias-corrected mean divided by the bias-corrected standard deviation — approximately $\eta \cdot \text{sign}(g)$ per parameter.
+The two running averages $m$ and $v$ estimate the first and second moments of the gradient. The bias-correction $\hat{m}, \hat{v}$ matters at the start of training when $m$ and $v$ are still small (initialized at zero); without it, the first few steps would be biased small. Once $m$ and $v$ have settled (after a handful of steps), the step is the bias-corrected mean divided by the bias-corrected standard deviation — approximately $\eta \cdot \text{sign}(g)$ per parameter when the gradient direction has been roughly stable.
 
 <MathCode
   math="\theta_{t+1} = \theta_t - \eta \cdot \frac{\hat{m}_{t+1}}{\sqrt{\hat{v}_{t+1}} + \epsilon}"
@@ -78,7 +78,7 @@ The centerpiece is a 2D loss surface with a long narrow valley — the pathologi
 
 **Momentum is a low-pass filter on the gradient signal.** The per-step gradient is noisy (especially at small batch sizes); the running velocity averages it out. On smooth loss surfaces the velocity is essentially the gradient; on noisy or oscillating ones, the velocity reveals the underlying direction the per-step gradient is hiding.
 
-**Adam is approximately per-parameter sign descent with a global step size.** The ratio $\hat{m} / (\sqrt{\hat{v}} + \epsilon)$ is close to $\text{sign}(g)$ — the *direction* of the gradient, not the magnitude. The global LR scales that direction. This is why Adam is robust to gradient scale: a parameter that always gets gradients of magnitude 1000 has the same step size as a parameter that always gets gradients of magnitude 0.001, after a few warmup steps when $m$ and $v$ have caught up. Plain SGD would treat the first parameter as a thousand times more important than the second.
+**Adam is approximately per-parameter sign descent with a global step size, once the moments have settled.** When $\hat{m}$ and $\hat{v}$ have caught up (a handful of steps in) and the gradient direction is roughly stationary, the ratio $\hat{m} / (\sqrt{\hat{v}} + \epsilon)$ is close to $\text{sign}(g)$ — the *direction* of the gradient, not the magnitude. The global LR scales that direction. This is why Adam is robust to gradient scale: a parameter that always gets gradients of magnitude 1000 has the same step size as a parameter that always gets gradients of magnitude 0.001, after a few warmup steps when $m$ and $v$ have caught up. Plain SGD would treat the first parameter as a thousand times more important than the second.
 
 **The conventional defaults are good defaults, not arbitrary ones.** $\beta_1 = 0.9$ and $\beta_2 = 0.999$ correspond to "remember roughly the last 10 gradients" and "remember roughly the last 1000 gradients" — about 10× the first-moment window. You usually don't need to tune them; tune the LR first.
 

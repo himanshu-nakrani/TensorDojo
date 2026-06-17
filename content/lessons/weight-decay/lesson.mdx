@@ -27,7 +27,7 @@ $$
 \mathbf{w} \leftarrow \mathbf{w} - \eta (\nabla L + 2\lambda \mathbf{w}) = (1 - 2\eta\lambda) \mathbf{w} - \eta \nabla L
 $$
 
-The $2\lambda \mathbf{w}$ term shrinks every weight by a fixed factor $(1 - 2\eta\lambda)$ per step, regardless of what the data says. *Big weights are pulled toward zero unless the data evidence pushes them away.*
+The $2\lambda \mathbf{w}$ term shrinks every weight by a fixed factor $(1 - 2\eta\lambda)$ per step, regardless of what the data says. *Big weights are pulled toward zero unless the data evidence pushes them away.* (Library implementations absorb the factor of 2 into $\lambda$ — that's why PyTorch and the AdamW form below show $\eta \lambda \mathbf{w}$, not $2\eta\lambda \mathbf{w}$. The two conventions differ by a factor of 2 in the numeric value of $\lambda$, but describe the same update.)
 
 <MathCode
   math="\mathbf{w} \leftarrow (1 - 2\eta\lambda)\,\mathbf{w} - \eta\,\nabla L(\mathbf{w};\,x)"

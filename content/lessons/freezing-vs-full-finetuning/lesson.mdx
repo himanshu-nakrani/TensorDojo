@@ -13,11 +13,13 @@ If the feature extractor is already good, you don't have to retrain it. You can 
 
 ## The gradient mask
 
-Each gradient-descent step applies an update `θ ← θ - η ∇L(θ)`. "Freezing" a layer means: for the parameters in that layer, multiply the gradient by zero. Conceptually you can think of it as a per-layer mask `m_ℓ ∈ {0,1}`:
+Each gradient-descent step applies an update $\theta \leftarrow \theta - \eta\,\nabla L(\theta)$. "Freezing" a layer means: for the parameters in that layer, multiply the gradient by zero. Conceptually you can think of it as a per-layer mask $m_\ell \in \{0, 1\}$:
 
-`θ_ℓ ← θ_ℓ - η m_ℓ ∇_ℓ L`
+$$
+\theta_\ell \;\leftarrow\; \theta_\ell - \eta\,m_\ell\,\nabla_\ell L
+$$
 
-When `m_ℓ = 0`, the layer's parameters are *immortal* — they keep whatever values the pretrained checkpoint gave them, step after step. When `m_ℓ = 1`, the layer trains normally, updating at every step.
+When $m_\ell = 0$, the layer's parameters are *immortal* — they keep whatever values the pretrained checkpoint gave them, step after step. When $m_\ell = 1$, the layer trains normally, updating at every step.
 
 The total number of parameters that *move* is just the count across all unfrozen layers. With three layers and only the last one unfrozen, you might be updating 20% of the parameters and leaving 80% frozen at their pretrained values. The gradient computation still touches the frozen layers — you need their activations and, if you want to train the later layers, their Jacobians — but the update step skips them.
 
