@@ -40,7 +40,7 @@ where $g_t$ is the gradient of the loss over the batch sampled at step $t$, and 
 
 ## Try it
 
-The centerpiece is a 2D 3-class classification task (~200 samples, ~67 per class, labels assigned by which of three angular sectors the point falls in). The model is a tiny MLP: 2 → 8 → 8 → 3 with ReLU activations, ~91 parameters. The default config trains to ≥ 90% test accuracy in 300 steps. Three preset buttons — Default, LR too high, No schedule — reconfigure all the controls and let you re-run with a single click.
+The centerpiece is a 2D 3-class classification task (~200 samples, ~67 per class, labels assigned by which of three angular sectors the point falls in). The model is a tiny MLP: 2 → 8 → 8 → 3 with ReLU activations, 123 parameters (16 + 8 + 64 + 8 + 24 + 3, weights and biases for the three layers). The default config trains to ≥ 90% test accuracy in 300 steps. Three preset buttons — Default, LR too high, No schedule — reconfigure all the controls and let you re-run with a single click.
 
 <Callout targetInteractive="training-end-to-end">
   Press Train. The loss descends smoothly from ~1.1 (random-prediction cross-entropy on 3 classes) to a small value in 300 steps. Test accuracy climbs from ~33% to ≥ 90%. The default is Adam, batch 16, peak LR 5e-3, warmup + cosine. This is the conventional modern recipe.

@@ -212,10 +212,10 @@ export function batchAccuracy(
  * acceptable. The test file checks the result against an
  * alternative analytic implementation as a smoke test.
  *
- *   For a 91-parameter model and a small batch, central
+ *   For the 123-parameter model and a small batch, central
  *   differences over each parameter is N_PARAMS × 2 forward
- *   passes. For 200 examples that's 91 × 2 = 182 forward
- *   passes per example, or 36,400 per step. Each forward is
+ *   passes. For 200 examples that's 123 × 2 = 246 forward
+ *   passes per example. Each forward is
  *   cheap. The capstone uses a real but slower
  *   implementation, and the test guards the correctness.
  */

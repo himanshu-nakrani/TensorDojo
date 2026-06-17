@@ -59,7 +59,7 @@ The sinusoidal scheme has a nice property that the original paper exploited: a s
 A 1D plot of one dimension of PE as a function of position. The frequency slider picks which dimension.
 
 <Callout targetInteractive="positional-sinewave">
-  Dimensions are paired (sin, cos) and share a wavelength, so the natural axis to think along is the *pair index* $p = \lfloor i/2 \rfloor$ — with $d = 16$ that's $p \in \{0, 1, \ldots, 7\}$. Pair $0$ has wavelength $2\pi \approx 6.3$ — one full cycle every six positions. Pair $2$ has wavelength $2\pi \cdot 10000^{2/8} \approx 63$, ten times longer. Pair $7$ has wavelength $\approx 6{,}300$ — across the 32 positions on screen the curve barely budges. The widget's "dimension index" slider $i$ maps to pair $p = \lfloor i/2 \rfloor$; step it through dim indices $0, 4, 14$ (pairs $0, 2, 7$) and watch the period stretch by a factor of $\approx 10$ between them.
+  Dimensions are paired (sin, cos) and share a wavelength, so the natural axis to think along is the *pair index* $p = \lfloor i/2 \rfloor$ — with $d = 16$ that's $p \in \{0, 1, \ldots, 7\}$. Pair $0$ has wavelength $2\pi \approx 6.3$ — one full cycle every six positions. Pair $2$ has wavelength $2\pi \cdot 10000^{2/8} \approx 63$, ten times longer. Pair $7$ has wavelength $\approx 20{,}000$ — across the 32 positions on screen the curve barely budges. The widget's "dimension index" slider $i$ maps to pair $p = \lfloor i/2 \rfloor$; step it through dim indices $0, 4, 14$ (pairs $0, 2, 7$) and watch the period stretch by a factor of $\approx 10$ between them.
 </Callout>
 
 ## Recap

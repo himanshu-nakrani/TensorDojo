@@ -22,7 +22,8 @@ with $W_1 \in \mathbb{R}^{d_{\text{hidden}} \times d_{\text{model}}}$, $W_2 \in 
   code={`import numpy as np
 
 def gelu(x):
-    # Exact GELU: 0.5 * x * (1 + erf(x / sqrt(2)))
+    # tanh approximation of GELU (the one GPT-2 uses).
+    # Exact form is 0.5 * x * (1 + erf(x / sqrt(2))).
     return 0.5 * x * (1 + np.tanh(np.sqrt(2/np.pi) * (x + 0.044715*x**3)))
 
 def ffn(x, W1, b1, W2, b2):
@@ -72,7 +73,7 @@ Three things to internalize.
 **The activation is the non-linearity that makes the FFN interesting.** Two linear layers in sequence, without a non-linearity, collapse to a single linear layer. GELU is the modern default; ReLU was used in the original Transformer paper. GELU is smooth at zero (letting small negative signals through), which empirically trains better for transformer FFNs.
 
 <Callout targetInteractive="ffn-parameter-count">
-  The "Where the parameters live" widget lets you drag d_model and pick d_hidden and see the FFN's share of the block's total parameters. At d_model = 4, d_hidden = 16 (4×), the FFN is 64 / (64 + 80) ≈ 44% of the block. At d_model = 32, d_hidden = 32 (1×), the FFN is small; at d_model = 32, d_hidden = 256 (8×), the FFN dominates. The lesson: most of a transformer's parameters live in the FFN.
+  The "Where the parameters live" widget lets you drag d_model and pick d_hidden and see the FFN's share of the block's total parameters. At d_model = 4, d_hidden = 16 (4×), the FFN is 148 / (148 + 80) ≈ 65% of the block. At d_model = 32, d_hidden = 32 (1×), the FFN is ~29% (attention dominates); at d_model = 32, d_hidden = 256 (8×), the FFN climbs to ~77%. The lesson: at the conventional 4× expansion, most of a transformer's parameters live in the FFN.
 </Callout>
 
 ## A second look

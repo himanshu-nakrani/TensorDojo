@@ -59,10 +59,10 @@ The two together are not optional. Residuals give the gradient a path; layernorm
 
 ## A second look
 
-A single-token visualization. The same vector is shown before and after layernorm at three different input scales. The direction is preserved; only the magnitude and offset change.
+A single-token visualization. The same vector is shown before and after layernorm at three different input scales. After layernorm the vector is always zero-mean with magnitude ≈ $\sqrt{d}$, regardless of the input's scale or its starting position.
 
 <Callout targetInteractive="layer-norm-viz">
-  Drag the input scale from $0.5\times$ to $3.0\times$. The "after" arrow always ends at the same length (≈ 1.41) and the same zero-mean offset, regardless of how big the input was. The direction is preserved exactly — layernorm is a per-vector affine transform, and the "scale" part is $\gamma / \sqrt{\sigma^2 + \epsilon}$ applied uniformly. Nothing in the layernorm operation knows about other tokens, other layers, or the task.
+  Drag the input scale from $0.5\times$ to $3.0\times$. The "after" arrow always ends at the same length (≈ 1.41) and is always zero-mean, regardless of how big the input was. Notice that the "after" direction is the same across all three scales but *isn't* the same as the input direction — the mean-subtraction step rotates a non-zero-mean input. Layernorm is a per-vector affine transform; the "scale" part is $\gamma / \sqrt{\sigma^2 + \epsilon}$ applied uniformly. Nothing in the layernorm operation knows about other tokens, other layers, or the task.
 </Callout>
 
 ## Recap

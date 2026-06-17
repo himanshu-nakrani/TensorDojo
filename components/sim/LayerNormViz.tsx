@@ -8,8 +8,10 @@ import { layerNorm } from '@/lib/math/layernorm';
 /**
  * A small before/after visualization of layernorm. Pick an input
  * scale; the same input vector is drawn once at that scale and
- * once after layernorm. The direction is preserved; only the
- * magnitude and offset change.
+ * once after layernorm. After layernorm the vector is always
+ * mean-zero with magnitude ≈ √d (here √2 ≈ 1.41), regardless of
+ * the input's scale or position. The mean-subtraction step rotates
+ * the input direction when the input has nonzero mean.
  */
 export function LayerNormViz() {
   const [scale, setScale] = useState(1);

@@ -74,7 +74,7 @@ The vocabulary in the centerpiece is 12 plausible next-tokens after "The cat sat
 </Callout>
 
 <Callout targetInteractive="sampling-decoding-explorer">
-  Switch to "Top-p" with $p = 0.5$. The nucleus is small — it includes only the entries needed to cover 50% of the mass, which here is just "mat". Try $p = 0.9$: the nucleus grows to include "mat", "on", "dog", "the" — the entries that together cover 90% of the probability.
+  Switch to "Top-p" with $p = 0.5$. The nucleus is small — only "mat" + "on" + "dog" together clear 50% of the mass (cumulative ${\sim}0.58$). Try $p = 0.9$: the nucleus grows to roughly the top eight tokens ("mat", "on", "dog", "cat", "the", "a", "rabbit", "under") to reach ${\sim}90\%$. The lesson: top-p adapts to the distribution shape — sharp distributions get tiny nuclei, flat ones get large ones.
 </Callout>
 
 ## Reading the result
