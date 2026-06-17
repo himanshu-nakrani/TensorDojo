@@ -10,18 +10,16 @@ describe('sinusoidalPE', () => {
     expect(sinusoidalPE(0, 4)).toEqual([]);
   });
 
-  it('pos 0 is the all-zero vector', () => {
+  it('pos 0 row is [sin(0), cos(0), sin(0), cos(0), ...] = [0, 1, 0, 1]', () => {
     const pe = sinusoidalPE(4, 4);
     expect(pe[0]).toEqual([0, 1, 0, 1]);
   });
 
-  it('pos 1 row 0 is sin(1 / 2π) (the i=0 dimension has wavelength 2π)', () => {
+  it('pos 1, halfD=1: angle = 1 / 10000^0 = 1 (the i=0 pair uses base wavelength 2π)', () => {
     const pe = sinusoidalPE(4, 2);
-    // For halfD=1, wavelength for i=0 is 2π · 10000^0 = 2π
-    // So angle = pos / (2π) = 1 / (2π) for pos=1
-    const expected = Math.sin(1 / (2 * Math.PI));
-    expect(pe[1]![0]).toBeCloseTo(expected, 10);
-    expect(pe[1]![1]).toBeCloseTo(Math.cos(1 / (2 * Math.PI)), 10);
+    // halfD=1, denom for pair i=0 is PE_BASE^0 = 1, so angle = pos / 1 = 1.
+    expect(pe[1]![0]).toBeCloseTo(Math.sin(1), 10);
+    expect(pe[1]![1]).toBeCloseTo(Math.cos(1), 10);
   });
 
   it('all rows have unit norm (sin² + cos² = 1 per pair)', () => {

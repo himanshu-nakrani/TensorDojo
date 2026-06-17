@@ -25,9 +25,11 @@ def sinusoidal_pe(max_pos, d):
     half = d // 2
     for pos in range(max_pos):
         for i in range(half):
-            wavelength = 2 * np.pi * (10000 ** (i / half))
-            out[pos, 2 * i] = np.sin(pos / wavelength)
-            out[pos, 2 * i + 1] = np.cos(pos / wavelength)
+            # angle = pos / 10000^(2i/d); the resulting sin/cos
+            # have wavelength 2π · 10000^(2i/d).
+            angle = pos / (10000 ** (i / half))
+            out[pos, 2 * i] = np.sin(angle)
+            out[pos, 2 * i + 1] = np.cos(angle)
     return out`}
   caption="Deterministic, parameter-free, bounded in [−1, 1]."
 />

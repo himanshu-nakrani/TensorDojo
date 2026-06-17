@@ -57,7 +57,7 @@ Three properties to internalize.
 **The loss is sharply asymmetric.** A confident right answer (p=0.99) and a slightly uncertain answer (p=0.5) differ in loss by less than 1 nat. A slightly wrong answer (p=0.3) and a confident wrong answer (p=0.001) differ by 5 nats. The penalty is much steeper on the "wrong" side than the "right" side, which is exactly what training wants: a small mistake should be gently corrected, a big mistake should be corrected hard.
 
 <Callout targetInteractive="cross-entropy-curve">
-  Drag the slider to move the marker along the curve. Notice the asymmetry: between p=1 and p=0.5 the loss goes from 0 to 0.7, a change of 0.7. Between p=0.5 and p=0.05 the loss goes from 0.7 to 3, a change of 2.3. Between p=0.05 and p=0.005 the loss goes from 3 to 5.3, a change of 2.3. Same change in p, but the loss penalty grows without bound as p gets smaller. The curve is the entire reason cross-entropy is a useful loss.
+  Drag the slider to move the marker along the curve. Notice the asymmetry: between p=1 and p=0.5 the loss goes from 0 to 0.7. Between p=0.5 and p=0.05 (10× smaller) it goes from 0.7 to 3.0 — a 2.3-nat jump. Between p=0.05 and p=0.005 (another 10× smaller) it goes from 3.0 to 5.3 — another 2.3 nats. **Every decade-shrink in p costs the same constant ~2.3 nats** ($\ln 10$), so there is no floor: keep halving $p$ and the loss keeps rising at a predictable rate. The curve is the entire reason cross-entropy is a useful loss.
 </Callout>
 
 ## A second look

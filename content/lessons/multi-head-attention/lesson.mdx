@@ -21,8 +21,8 @@ Each head $i \in \{1, \ldots, h\}$ has its own learned $W_i^Q, W_i^K, W_i^V \in 
 <MathCode
   math="\text{head}_i = \operatorname{softmax}\!\left(\frac{Q W_i^Q (K W_i^K)^\top}{\sqrt{d_k}}\right) V W_i^V"
   code={`# h = d_model / d_k heads in parallel
-heads = [softmax(Q @ Wq_h @ K @ Wk_h.T / sqrt(d_k)) @ V @ Wv_h
-         for h in range(num_heads)]
+heads = [softmax((Q @ Wq_h) @ (K @ Wk_h).T / sqrt(d_k)) @ (V @ Wv_h)
+         for Wq_h, Wk_h, Wv_h in zip(Wq, Wk, Wv)]
 output = concat(heads, dim=-1) @ W_out`}
   caption="h small attentions, then a linear mix back to d_model."
 />

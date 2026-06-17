@@ -3,7 +3,7 @@ import { Callout } from '@/components/lesson/Callout';
 
 ## If big weights mean the model is memorizing noise, what if we just... made big weights expensive?
 
-The previous lesson ended on a cliffhanger: the gap between training and test loss grows when the model has too much capacity for the data. The reader's instinct is "make the model smaller." The math module on this site already lets you do that with a closed-form polynomial fit at the right degree. But the modern approach is different: keep the model the same, and *change the loss function* so that big weights are penalized.
+The previous lesson ended on a cliffhanger: the gap between training and test loss grows when the model has too much capacity for the data. The reader's instinct is "make the model smaller" — drop the polynomial's degree, prune some weights. But the modern approach is different: keep the model the same, and *change the loss function* so that big weights are penalized.
 
 The trick is one line.
 
@@ -45,7 +45,7 @@ $$
 (X^\top X + \lambda I)\,\mathbf{w} = X^\top \mathbf{y}
 $$
 
-(with the convention that the bias term is *not* regularized — see the math module for the precise form). The ridge $\lambda I$ keeps the system well-conditioned for high-degree polynomials, which is the case where the unregularized $X^\top X$ is rank-deficient.
+(with the convention that the bias term is *not* regularized). The ridge $\lambda I$ keeps the system well-conditioned for high-degree polynomials, which is the case where the unregularized $X^\top X$ is rank-deficient.
 
 ## Try it
 
@@ -59,17 +59,15 @@ $$
 
 ## AdamW: the modern decoupled form
 
-The naive form above adds $\lambda \|\mathbf{w}\|^2$ to the loss. With Adam (which adapts the per-parameter step size by dividing by an estimate of the gradient magnitude), this couples the decay to the Adam denominator — large historical gradients *shrink* the effective decay. Loshchilov & Hutter (2019) showed that a *decoupled* form is simpler and works better:
+The naive form above adds $\lambda \|\mathbf{w}\|^2$ to the loss. With Adam (which adapts the per-parameter step size by dividing by an estimate of the gradient magnitude), this couples the decay to the Adam denominator — large historical gradients *shrink* the effective decay. Loshchilov & Hutter (2019) showed that a *decoupled* form is simpler and works better — the decay is a separate, plain $\eta \lambda \mathbf{w}$ subtraction that bypasses the Adam preconditioner:
 
 $$
-\mathbf{w} \leftarrow \mathbf{w} - \eta \big( \mathbf{g} + \lambda \mathbf{w} \big)
+\mathbf{w} \leftarrow \mathbf{w} \;-\; \eta \cdot \frac{\hat{\mathbf{m}}_t}{\sqrt{\hat{\mathbf{v}}_t} + \varepsilon} \;-\; \eta \, \lambda \, \mathbf{w}
 $$
 
-Every modern transformer (BERT, GPT, LLaMA) trains with AdamW. The bias term is conventionally excluded — biases are not "capacity" the way weights are.
+where $\hat{\mathbf{m}}_t, \hat{\mathbf{v}}_t$ are the bias-corrected Adam moments. The first term is the standard Adam update; the second is the decoupled weight decay.
 
-<Callout title="Why the math module splits them">
-  The two forms (L2-in-loss vs decoupled) are different updates under Adam. The math module's `lib/math/regularization.ts` exposes both, with tests that pin down the exact update rules so the lesson and the centerpiece agree.
-</Callout>
+Every modern transformer (BERT, GPT, LLaMA) trains with AdamW. The bias term is conventionally excluded — biases are not "capacity" the way weights are. The two forms (L2-in-loss vs decoupled) are *different* updates under Adam: the L2 form couples decay to the historical-gradient scale; the AdamW form keeps decay at a clean $\eta \lambda \mathbf{w}$ regardless of what Adam's preconditioner is doing.
 
 ## Recap
 

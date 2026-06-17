@@ -33,7 +33,7 @@ return best_w`}
   caption="Early stopping in twelve lines. Every step we record the validation loss; whenever it's better than the best so far we save a checkpoint; when the validation loss has not improved for `patience` steps, we return the saved checkpoint."
 />
 
-That's the whole algorithm. Two pieces of bookkeeping (the best loss and the patience counter) plus the saved model snapshot. The result: the run terminates at the best-validation step, and the returned model is the one with the lowest test error, not the lowest training error. The lesson's centerpiece shows three loss curves (training, validation, and best-checkpoint dot) side by side.
+That's the whole algorithm. Two pieces of bookkeeping (the best loss and the patience counter) plus the saved model snapshot. The result: the run terminates at the best-validation step, and the returned model is the one with the lowest test error, not the lowest training error. The lesson's centerpiece shows three preset runs of the same model, side by side: **(a)** no regularization, **(b)** early stopping, **(c)** early stopping + augmentation.
 
 <Callout targetInteractive="early-stopping-augmentation">
   Look at the (a) curve: training loss falls, validation loss bottoms and climbs. The (b) curve is the same run, but with early stopping — the dot marks the best-validation step, and that's the model that gets returned. The patience slider controls how many non-improving steps to tolerate before stopping; small patience = aggressive stopping, large patience = patient.

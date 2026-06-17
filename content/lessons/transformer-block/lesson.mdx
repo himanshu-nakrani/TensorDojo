@@ -17,12 +17,12 @@ f   &= \operatorname{FFN}(\operatorname{LN}(h)) \\
 \text{out} &= h + f
 \end{aligned}"
   code={`def block(x, ln_gamma, ln_beta, W_qkv, W_o, W_ff1, W_ff2, mask):
-    h = layernorm(x, ln_gamma, ln_beta)             # pre-norm 1
-    a = multi_head_attention(h, W_qkv, W_o, mask)  # cross-token step
-    x = x + a                                        # residual 1
-    h = layernorm(x, ln_gamma, ln_beta)             # pre-norm 2
-    f = feed_forward(h, W_ff1, W_ff2)               # per-token step
-    return x + f                                     # residual 2`}
+    x_norm = layernorm(x, ln_gamma, ln_beta)         # pre-norm 1
+    a      = multi_head_attention(x_norm, W_qkv, W_o, mask)  # cross-token
+    h      = x + a                                    # residual 1  →  matches math's h
+    h_norm = layernorm(h, ln_gamma, ln_beta)          # pre-norm 2
+    f      = feed_forward(h_norm, W_ff1, W_ff2)       # per-token
+    return h + f                                      # residual 2`}
   caption="The block, top to bottom. Pre-norm is the modern convention: layernorm before the sublayer, residual after. Six lines, four lines of math."
 />
 

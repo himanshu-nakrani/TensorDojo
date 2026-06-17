@@ -65,7 +65,7 @@ Three things to internalize.
 
 **The spectrum of $W$ runs from one-hot to uniform.** One-hot $W$ means every output is a single value vector (the model is "looking at" exactly one position). Uniform $W$ means every output is the average of all values (the model is "looking at" everywhere equally). Real attention patterns live in between, and the temperature slider controls where on the spectrum the pattern lands.
 
-**This is the full self-attention operation, end to end.** $Q \cdot K^\top$ → scaled → masked (if causal) → softmax → $W \cdot V$ → output. The output of attention is the input to the next sublayer (the FFN), and the same pattern repeats at the next block.
+**This is self-attention end to end, modulo two numerical wrinkles you haven't met yet.** $Q \cdot K^\top$ → softmax → $W \cdot V$ → output. (The next lesson adds the $\sqrt{d_k}$ scaling that keeps softmax in the linear regime; a few lessons later, causal masking removes the upper triangle so the model can't peek ahead.) The output of attention is the input to the next sublayer at the same block, and the same pattern repeats at the next block.
 
 <Callout targetInteractive="attention-output-explorer">
   Switch back to "softmax" mode and drag the temperature slider from 0.1 to 3.0. The weight matrix sharpens at $T \to 0$ (every row of $W$ collapses to one-hot) and flattens at $T \to \infty$ (every row of $W$ approaches uniform). The output vectors smoothly trace the path between the two bookend behaviors. The temperature dial is the same dial from the attention-scores and softmax lessons — same parameter, same meaning, applied per row.

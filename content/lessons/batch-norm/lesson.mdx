@@ -3,7 +3,7 @@ import { Callout } from '@/components/lesson/Callout';
 
 ## Layernorm normalizes each token's vector independently. What if we normalized across the batch instead?
 
-The transformer block normalizes per-token (layernorm) — each token's vector is independently centered and scaled. The previous block's lesson. This lesson is the contrast: *batch* normalization, the older approach that dominated the conv/CNN era. The math is the same — subtract the mean, divide by the std, apply a learned scale and shift — but the statistics are computed *across the N examples in the mini-batch* instead of *across the feature dimension of a single example*.
+The transformer block normalizes per-token (layernorm) — each token's vector is independently centered and scaled, which was the residuals + layernorm lesson. This lesson is the contrast: *batch* normalization, the older approach that dominated the conv/CNN era. The math is the same — subtract the mean, divide by the std, apply a learned scale and shift — but the statistics are computed *across the N examples in the mini-batch* instead of *across the feature dimension of a single example*.
 
 The result is a regularizer that keeps the activations on a consistent scale across training. Without it, the activation distributions drift; with it, they stay anchored.
 
@@ -25,16 +25,17 @@ $$
 
 <MathCode
   math="\hat{x}_{n,f} = \frac{x_{n,f} - \mu_f}{\sqrt{\sigma^2_f + \varepsilon}}, \quad y_{n,f} = \gamma_f \hat{x}_{n,f} + \beta_f"
-  code={`def batch_norm_forward(x, gamma, beta, eps=1e-5, momentum=0.1):
+  code={`def batch_norm_forward(x, gamma, beta, running_mu, running_var,
+                       eps=1e-5, momentum=0.1):
     # x: shape (N, F). Compute per-feature mean and variance.
-    mu    = x.mean(axis=0)                # shape (F,)
-    var   = x.var(axis=0)                 # shape (F,)
-    x_hat = (x - mu) / np.sqrt(var + eps)  # normalize
-    y     = gamma * x_hat + beta          # scale + shift
+    mu    = x.mean(axis=0)                 # shape (F,)
+    var   = x.var(axis=0)                  # shape (F,)
+    x_hat = (x - mu) / np.sqrt(var + eps)   # normalize
+    y     = gamma * x_hat + beta           # scale + shift
     # Update running stats for inference.
-    running_mu    = (1 - momentum) * running_mu    + momentum * mu
-    running_var   = (1 - momentum) * running_var   + momentum * var
-    return y`}
+    running_mu  = (1 - momentum) * running_mu  + momentum * mu
+    running_var = (1 - momentum) * running_var + momentum * var
+    return y, running_mu, running_var`}
   caption="Forward pass, training mode. The learned γ and β are initialized to (1, 0) so the layer is the identity at init; training adjusts them as needed. The running statistics are accumulated with momentum (default 0.1) and used at inference."
 />
 
@@ -67,10 +68,6 @@ The classic batch-norm bug: at inference, call the BN module with `training=True
 ## Why transformers use layernorm, not batchnorm
 
 The fundamental issue: batch statistics require a batch. In an autoregressive language model at inference time, you run one example at a time (autoregressive decoding) — there is no batch to take statistics over. Layernorm computes its statistics *per-example* (across the feature dimension), which works for any batch size including 1. Modern transformers use layernorm; the conv/CNN era used batchnorm because convs process fixed-size batches. The lesson is the contrast: both work in their respective regimes, and the footgun pattern (training vs inference) is the same in both.
-
-<Callout title="What the math module tests">
-  The math module's `lib/math/batchnorm.ts` exposes both forward (training) and forward (inference) separately, with a test that pins down the running-stats update rule and a test that demonstrates the footgun: a batch of 1 with the training-mode forward yields the bias β.
-</Callout>
 
 ## Recap
 

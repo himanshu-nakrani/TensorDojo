@@ -35,7 +35,7 @@ Each score is exponentiated (always positive), then divided by the sum of all th
 </Callout>
 
 <Callout title="What to watch for" targetInteractive="softmax-explorer">
-  Set the first score to $0.1$ and the second to $2.0$. At $T = 0.1$, the second bar dominates; at $T = 3.0$, the first wins. The winning entry flips at a *specific* temperature, not gradually — that is the exponential in action.
+  Set the first score to $0.1$ and the second to $2.0$. At $T = 0.1$ the second bar is essentially $1.0$ and the rest are pinned at zero — the gap of $1.9$ has been blown up by the exponential. Slide $T$ up to $3.0$ and the second bar drops to ${\sim}0.27$ while the others rise toward an even share. The *winner* never changes — softmax preserves argmax for any $T > 0$ — but the *contrast* slides smoothly from peaked to flat. That smooth contrast control is what makes temperature useful.
 </Callout>
 
 ## Reading the result

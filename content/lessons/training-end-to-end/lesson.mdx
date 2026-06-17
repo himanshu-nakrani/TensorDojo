@@ -3,7 +3,7 @@ import { Callout } from '@/components/lesson/Callout';
 
 ## You have a model, a loss, an optimizer, a schedule, a dataset. What does one training run actually look like?
 
-The previous four lessons built each piece individually. Backprop (P) computes the gradient of a loss with respect to every parameter in a model. SGD (Q) samples batches of examples and averages their gradients. Optimizers (R) turn gradients into parameter updates. Schedules (S) scale the update size over time. The training *run* is the loop that wires them all together.
+The previous four lessons built each piece individually. **Backprop** computes the gradient of a loss with respect to every parameter in a model. **SGD** samples batches of examples and averages their gradients. **Optimizers** turn gradients into parameter updates. **Schedules** scale the update size over time. The training *run* is the loop that wires them all together.
 
 The lesson is the loop. For step in range(N): sample a batch → forward → loss → backward → optimizer step → schedule the LR → log. Every step is one of the pieces from a previous lesson. The thing the reader gets to *see* is the loss curve over thousands of steps, with all the pieces wired up — and a few presets that show what each piece contributes.
 
@@ -47,7 +47,7 @@ The centerpiece is a 2D 3-class classification task (~200 samples, ~67 per class
 </Callout>
 
 <Callout title="What each piece is doing" targetInteractive="training-end-to-end">
-  Read the right column while the run is in progress. Optimizer = Adam (the per-parameter adaptive step size from R). Schedule = warmup + cosine (S). Batch = 16 (Q). Peak LR = 5e-3. The forward, loss, and backward are the per-step operations from P. The loop wires them together; nothing else.
+  Read the right column while the run is in progress. Optimizer = Adam (the per-parameter adaptive step size from the optimizers lesson). Schedule = warmup + cosine. Batch = 16. Peak LR = 5e-3. The forward, loss, and backward are the per-step operations from backprop. The loop wires them together; nothing else.
 </Callout>
 
 <Callout title="The diverges preset" targetInteractive="training-end-to-end">
@@ -72,4 +72,4 @@ The centerpiece is a 2D 3-class classification task (~200 samples, ~67 per class
 
 ## Recap
 
-Three takeaways. **A training run is a loop** that calls the pieces from P, Q, R, S in sequence: sample a batch, forward, loss, backward, optimizer step, schedule the LR, log. The pieces are independent of each other; the loop is what composes them. **The default config — Adam + warmup + cosine + a small batch — is the conventional modern recipe** and a sensible starting point for almost any problem; tune the peak LR first, the rest later. **The three presets in the secondary widget isolate the three knobs** (optimizer, LR peak, schedule) by changing one at a time, which is how you debug a real training run. End of the chain for now. The natural next step is regularization (dropout, weight decay) and the practical realities of training at scale (gradient accumulation, mixed precision, distributed training) — all of which sit on top of this loop without changing it.
+Three takeaways. **A training run is a loop** that calls the previous four lessons' pieces in sequence: sample a batch, forward, loss, backward, optimizer step, schedule the LR, log. The pieces are independent of each other; the loop is what composes them. **The default config — Adam + warmup + cosine + a small batch — is the conventional modern recipe** and a sensible starting point for almost any problem; tune the peak LR first, the rest later. **The three presets in the secondary widget isolate the three knobs** (optimizer, LR peak, schedule) by changing one at a time, which is how you debug a real training run. End of the chain for now. The natural next step is regularization (dropout, weight decay) and the practical realities of training at scale (gradient accumulation, mixed precision, distributed training) — all of which sit on top of this loop without changing it.

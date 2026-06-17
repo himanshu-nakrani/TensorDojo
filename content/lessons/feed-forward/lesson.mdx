@@ -15,7 +15,7 @@ $$
 \operatorname{FFN}(\mathbf{x}) \;=\; W_2 \, \sigma(W_1 \mathbf{x} + \mathbf{b}_1) + \mathbf{b}_2
 $$
 
-with $W_1 \in \mathbb{R}^{d_{\text{model}} \times d_{\text{hidden}}}$, $W_2 \in \mathbb{R}^{d_{\text{hidden}} \times d_{\text{model}}}$, and $\sigma$ a non-linearity. The convention is $d_{\text{hidden}} = 4 \cdot d_{\text{model}}$ (Vaswani et al., 2017) — the **expansion factor** is 4×. The FFN is applied position-wise: it sees one token at a time, no cross-token interaction.
+with $W_1 \in \mathbb{R}^{d_{\text{hidden}} \times d_{\text{model}}}$, $W_2 \in \mathbb{R}^{d_{\text{model}} \times d_{\text{hidden}}}$, and $\sigma$ a non-linearity. (The matrices left-multiply column vectors here. Frameworks that store $\mathbf{x}$ as a row vector and write $\mathbf{x} W_1$ flip both shapes — the parameter count is the same.) The convention is $d_{\text{hidden}} = 4 \cdot d_{\text{model}}$ (Vaswani et al., 2017) — the **expansion factor** is 4×. The FFN is applied position-wise: it sees one token at a time, no cross-token interaction.
 
 <MathCode
   math="\operatorname{FFN}(\mathbf{x}) = W_2 \, \sigma(W_1 \mathbf{x} + \mathbf{b}_1) + \mathbf{b}_2"

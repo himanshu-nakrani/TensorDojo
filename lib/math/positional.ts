@@ -27,12 +27,13 @@ export function sinusoidalPE(maxPos: number, d: number): number[][] {
   const halfD = d / 2;
   for (let pos = 0; pos < maxPos; pos += 1) {
     for (let i = 0; i < halfD; i += 1) {
-      // Wavelength for this dimension: 2π · PE_BASE^(i / halfD)
-      // (We use halfD rather than d in the exponent so the wavelengths
-      //  span 2π to PE_BASE · 2π across the first half of dimensions,
-      //  matching the original paper.)
-      const wavelength = 2 * Math.PI * Math.pow(PE_BASE, i / halfD);
-      const angle = pos / wavelength;
+      // PE(pos, 2i)   = sin(pos / PE_BASE^(i / halfD))
+      // PE(pos, 2i+1) = cos(pos / PE_BASE^(i / halfD))
+      // The exponent i / halfD equals 2i / d in dim space, matching the
+      // Vaswani formula. The resulting wavelength per component is
+      // 2π · PE_BASE^(i / halfD) — what the sim labels.
+      const denom = Math.pow(PE_BASE, i / halfD);
+      const angle = pos / denom;
       const row = out[pos]!;
       row[2 * i] = Math.sin(angle);
       row[2 * i + 1] = Math.cos(angle);

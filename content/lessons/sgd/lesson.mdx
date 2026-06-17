@@ -67,7 +67,7 @@ The centerpiece is a 2D regression task (the loss surface in $(a, b)$, with a 3-
 
 **The noise itself can be a feature.** Sharp minima (small regions of the loss surface with high curvature in some directions) generalize worse than flat minima. A deterministic full-batch gradient slides straight into whatever sharp minimum it finds; a noisy mini-batch gradient "kicks" the parameters out of sharp minima and lets them settle in flatter ones. Empirically, smaller batches often find better-generalizing solutions than larger ones, all else equal.
 
-**The sample-a-batch step is the only place the optimizer interacts with the data.** Everything else in the training loop — the loss function, the optimizer update, the LR schedule — is data-agnostic. The mini-batch sampling is what couples the optimizer to the dataset. The next three lessons are about the rest of that loop: better optimizers (R), better LR schedules (S), and the full training run (T, the capstone).
+**The sample-a-batch step is the only place the optimizer interacts with the data.** Everything else in the training loop — the loss function, the optimizer update, the LR schedule — is data-agnostic. The mini-batch sampling is what couples the optimizer to the dataset. The next three lessons are about the rest of that loop: better optimizers, better LR schedules, and the full training run that wires everything together.
 
 ## Recap
 
