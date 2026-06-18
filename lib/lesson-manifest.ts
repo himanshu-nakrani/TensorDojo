@@ -33,6 +33,7 @@ import { meta as residualsLayernormMeta } from '@/content/lessons/residuals-laye
 import { meta as feedForwardMeta } from '@/content/lessons/feed-forward/meta';
 import { meta as transformerBlockMeta } from '@/content/lessons/transformer-block/meta';
 import { meta as samplingDecodingMeta } from '@/content/lessons/sampling-decoding/meta';
+import { meta as kvCacheMeta } from '@/content/lessons/kv-cache/meta';
 import { meta as crossEntropyMeta } from '@/content/lessons/cross-entropy/meta';
 import { meta as gradientDescentMeta } from '@/content/lessons/gradient-descent/meta';
 import { meta as backpropagationMeta } from '@/content/lessons/backpropagation/meta';
@@ -75,6 +76,7 @@ const metaBySlug: Readonly<Record<string, LessonMeta>> = {
   'feed-forward': feedForwardMeta,
   'transformer-block': transformerBlockMeta,
   'sampling-decoding': samplingDecodingMeta,
+  'kv-cache': kvCacheMeta,
   'cross-entropy': crossEntropyMeta,
   'gradient-descent': gradientDescentMeta,
   'backpropagation': backpropagationMeta,
@@ -156,6 +158,10 @@ const interactivesLoaders: Readonly<Record<string, () => Promise<{
     })),
   'sampling-decoding': () =>
     import('@/content/lessons/sampling-decoding/interactives').then((m) => ({
+      interactives: m.interactives,
+    })),
+  'kv-cache': () =>
+    import('@/content/lessons/kv-cache/interactives').then((m) => ({
       interactives: m.interactives,
     })),
   'cross-entropy': () =>

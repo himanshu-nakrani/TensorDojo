@@ -25,6 +25,7 @@ const SLUGS = [
   'feed-forward',
   'transformer-block',
   'sampling-decoding',
+  'kv-cache',
   'cross-entropy',
   'gradient-descent',
   'backpropagation',

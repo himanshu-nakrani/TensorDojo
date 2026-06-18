@@ -114,6 +114,7 @@ export const mdxLessonLoaders: Readonly<
     import('@/content/lessons/transformer-block/lesson.mdx'),
   'sampling-decoding': () =>
     import('@/content/lessons/sampling-decoding/lesson.mdx'),
+  'kv-cache': () => import('@/content/lessons/kv-cache/lesson.mdx'),
   'cross-entropy': () => import('@/content/lessons/cross-entropy/lesson.mdx'),
   'gradient-descent': () =>
     import('@/content/lessons/gradient-descent/lesson.mdx'),

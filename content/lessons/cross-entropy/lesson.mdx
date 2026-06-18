@@ -3,7 +3,7 @@ import { Callout } from '@/components/lesson/Callout';
 
 ## For one prediction, how do you turn "the model said this" into a number to minimize?
 
-The previous lesson showed how the model turns the block's output into a probability distribution over the vocabulary, and how a decoding strategy picks one token. The piece the model needs to *learn* is the distribution itself — and learning needs a single number that says "this prediction was good" or "this prediction was bad." That number is the **cross-entropy loss** for one example.
+The last two lessons followed the inference loop end to end: logits become a distribution, a decoding strategy picks one token, the KV cache makes the loop fast. But every distribution the model produced was already trained — the weights inside those projections came from somewhere. This lesson pivots from inference to training. The piece the model needs to *learn* is the distribution itself, and learning needs a single number that says "this prediction was good" or "this prediction was bad." That number is the **cross-entropy loss** for one example.
 
 The intuition: if the model put 99% of the probability mass on the right answer, the loss should be very small — the model was almost right. If it put 99% on the wrong answer, the loss should be very large. The loss is the negative log of the probability the model gave to the true token.
 

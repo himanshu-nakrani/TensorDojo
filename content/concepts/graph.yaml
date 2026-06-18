@@ -22,6 +22,8 @@ nodes:
     title: Scaled dot product
   - id: attention-output
     title: Attention output
+  - id: kv-cache
+    title: KV cache
   - id: bpe
     title: Byte-pair encoding
   - id: token-embedding
@@ -141,6 +143,9 @@ nodes:
   - id: sampling-decoding-concept
     title: "Sampling and decoding: from logits to a token"
     lesson: sampling-decoding
+  - id: kv-cache-concept
+    title: "KV cache: making inference fast"
+    lesson: kv-cache
   - id: cross-entropy-concept
     title: "Cross-entropy: how the model knows it was wrong"
     lesson: cross-entropy
@@ -239,6 +244,8 @@ edges:
     to: attention-weight
   - from: feed-forward
     to: gelu
+  - from: attention-output
+    to: kv-cache
   - from: softmax
     to: bpe
   - from: bpe
@@ -292,6 +299,8 @@ edges:
     to: scaled-attention-concept
   - from: bpe
     to: tokenization-concept
+  - from: kv-cache
+    to: kv-cache-concept
   - from: token-embedding
     to: token-embeddings-concept
   - from: positional-encoding
