@@ -17,6 +17,7 @@ import { meta as softmaxMeta } from '@/content/lessons/softmax/meta';
 import { meta as attentionScoresMeta } from '@/content/lessons/attention-scores/meta';
 import { meta as attentionOutputMeta } from '@/content/lessons/attention-output/meta';
 import { meta as scaledAttentionMeta } from '@/content/lessons/scaled-attention/meta';
+import { meta as tokenizationMeta } from '@/content/lessons/tokenization/meta';
 import { meta as tokenEmbeddingsMeta } from '@/content/lessons/token-embeddings/meta';
 import { meta as positionalEncodingMeta } from '@/content/lessons/positional-encoding/meta';
 import { meta as causalMaskMeta } from '@/content/lessons/causal-mask/meta';
@@ -60,6 +61,7 @@ const manifest: readonly LessonMetaEntry[] = [
   { meta: attentionScoresMeta },
   { meta: attentionOutputMeta },
   { meta: scaledAttentionMeta },
+  { meta: tokenizationMeta },
   { meta: tokenEmbeddingsMeta },
   { meta: positionalEncodingMeta },
   { meta: causalMaskMeta },
@@ -130,7 +132,7 @@ export const TRACKS: readonly LessonTrack[] = [
   {
     id: 'tokens-as-inputs',
     label: 'How tokens become inputs',
-    slugs: ['token-embeddings', 'positional-encoding'],
+    slugs: ['tokenization', 'token-embeddings', 'positional-encoding'],
   },
   {
     id: 'transformer-block',

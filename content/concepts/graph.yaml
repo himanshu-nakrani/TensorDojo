@@ -22,6 +22,8 @@ nodes:
     title: Scaled dot product
   - id: attention-output
     title: Attention output
+  - id: bpe
+    title: Byte-pair encoding
   - id: token-embedding
     title: Token embedding
   - id: positional-encoding
@@ -112,6 +114,9 @@ nodes:
   - id: scaled-attention-concept
     title: "Why we scale attention by √d_k"
     lesson: scaled-attention
+  - id: tokenization-concept
+    title: "Tokenization: from strings to ids"
+    lesson: tokenization
   - id: token-embeddings-concept
     title: "Token embeddings: from ids to vectors"
     lesson: token-embeddings
@@ -234,6 +239,10 @@ edges:
     to: attention-weight
   - from: feed-forward
     to: gelu
+  - from: softmax
+    to: bpe
+  - from: bpe
+    to: token-embedding
   - from: token-embedding
     to: attention-score
   - from: token-embedding
@@ -281,6 +290,8 @@ edges:
     to: attention-output-concept
   - from: scaled-dot-product
     to: scaled-attention-concept
+  - from: bpe
+    to: tokenization-concept
   - from: token-embedding
     to: token-embeddings-concept
   - from: positional-encoding

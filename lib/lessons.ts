@@ -99,6 +99,7 @@ export const mdxLessonLoaders: Readonly<
   'attention-output': () =>
     import('@/content/lessons/attention-output/lesson.mdx'),
   'scaled-attention': () => import('@/content/lessons/scaled-attention/lesson.mdx'),
+  tokenization: () => import('@/content/lessons/tokenization/lesson.mdx'),
   'token-embeddings': () =>
     import('@/content/lessons/token-embeddings/lesson.mdx'),
   'positional-encoding': () =>

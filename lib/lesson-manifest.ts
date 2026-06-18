@@ -24,6 +24,7 @@ import { meta as softmaxMeta } from '@/content/lessons/softmax/meta';
 import { meta as attentionScoresMeta } from '@/content/lessons/attention-scores/meta';
 import { meta as attentionOutputMeta } from '@/content/lessons/attention-output/meta';
 import { meta as scaledAttentionMeta } from '@/content/lessons/scaled-attention/meta';
+import { meta as tokenizationMeta } from '@/content/lessons/tokenization/meta';
 import { meta as tokenEmbeddingsMeta } from '@/content/lessons/token-embeddings/meta';
 import { meta as positionalEncodingMeta } from '@/content/lessons/positional-encoding/meta';
 import { meta as causalMaskMeta } from '@/content/lessons/causal-mask/meta';
@@ -65,6 +66,7 @@ const metaBySlug: Readonly<Record<string, LessonMeta>> = {
   'attention-scores': attentionScoresMeta,
   'attention-output': attentionOutputMeta,
   'scaled-attention': scaledAttentionMeta,
+  tokenization: tokenizationMeta,
   'token-embeddings': tokenEmbeddingsMeta,
   'positional-encoding': positionalEncodingMeta,
   'causal-mask': causalMaskMeta,
@@ -118,6 +120,10 @@ const interactivesLoaders: Readonly<Record<string, () => Promise<{
     })),
   'scaled-attention': () =>
     import('@/content/lessons/scaled-attention/interactives').then((m) => ({
+      interactives: m.interactives,
+    })),
+  tokenization: () =>
+    import('@/content/lessons/tokenization/interactives').then((m) => ({
       interactives: m.interactives,
     })),
   'token-embeddings': () =>

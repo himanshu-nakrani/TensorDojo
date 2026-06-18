@@ -4,7 +4,7 @@ export const meta = {
   summary:
     'For one prediction, the loss is the negative log of the probability the model assigned to the true answer. Confident wrong answers are punished much more than uncertain ones — the loss curve is sharply asymmetric.',
   minutes: 7,
-  order: 15,
+  order: 16,
 } as const;
 
 export type LessonMeta = typeof meta;

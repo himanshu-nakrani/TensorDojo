@@ -3,7 +3,7 @@ import { Callout } from '@/components/lesson/Callout';
 
 ## How does a model represent the word "cat"?
 
-A model never sees the word "cat" as a string. It sees an integer id — say, 4231 — that points into a table. The table is a single matrix $E \in \mathbb{R}^{V \times d}$ with one row per token in the vocabulary. The row at index 4231 is the embedding of "cat": a $d$-dimensional vector that the model can do math with.
+A model never sees the word "cat" as a string. The previous lesson covered where the integer comes from — a trained BPE tokenizer turns the string into an id (or a sequence of ids, for longer words). This lesson picks up the moment after: the model has the integer id — say, 4231 — and needs to do math with it. The id points into a table. The table is a single matrix $E \in \mathbb{R}^{V \times d}$ with one row per token in the vocabulary. The row at index 4231 is the embedding of "cat": a $d$-dimensional vector that the model can do math with.
 
 Before training, the rows are random. After training on enough text, the geometry becomes meaningful: similar words end up near each other, and the famous analogy $E[\text{king}] - E[\text{man}] + E[\text{woman}] \approx E[\text{queen}]$ emerges. **We cannot show training in a static page.** What follows is a *hand-placed* 2D layout that mimics the geometry a trained embedding produces — every position is authored, none is learned. The point is to make the geometry tangible. The lesson is the geometry, not the learning.
 
