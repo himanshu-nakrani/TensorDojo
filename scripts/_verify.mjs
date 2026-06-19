@@ -22,6 +22,7 @@ const SLUGS = [
   'rope',
   'causal-mask',
   'multi-head-attention',
+  'grouped-query-attention',
   'residuals-layernorm',
   'feed-forward',
   'transformer-block',

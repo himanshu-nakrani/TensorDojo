@@ -36,6 +36,8 @@ nodes:
     title: Causal mask
   - id: multi-head
     title: Multi-head attention
+  - id: gqa
+    title: Grouped-query attention
   - id: residual
     title: Residual connection
   - id: layer-norm
@@ -136,6 +138,9 @@ nodes:
   - id: multi-head-attention-concept
     title: "Multi-head attention: parallel views"
     lesson: multi-head-attention
+  - id: gqa-concept
+    title: "Grouped-query attention: shrinking the cache"
+    lesson: grouped-query-attention
   - id: residuals-layernorm-concept
     title: "Residual connections + layer normalization"
     lesson: residuals-layernorm
@@ -251,6 +256,10 @@ edges:
     to: gelu
   - from: attention-output
     to: kv-cache
+  - from: multi-head
+    to: gqa
+  - from: kv-cache
+    to: gqa
   - from: softmax
     to: bpe
   - from: bpe
@@ -318,6 +327,8 @@ edges:
     to: causal-mask-concept
   - from: multi-head
     to: multi-head-attention-concept
+  - from: gqa
+    to: gqa-concept
   - from: residual
     to: residuals-layernorm-concept
   - from: feed-forward

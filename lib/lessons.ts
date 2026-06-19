@@ -108,6 +108,8 @@ export const mdxLessonLoaders: Readonly<
   'causal-mask': () => import('@/content/lessons/causal-mask/lesson.mdx'),
   'multi-head-attention': () =>
     import('@/content/lessons/multi-head-attention/lesson.mdx'),
+  'grouped-query-attention': () =>
+    import('@/content/lessons/grouped-query-attention/lesson.mdx'),
   'residuals-layernorm': () =>
     import('@/content/lessons/residuals-layernorm/lesson.mdx'),
   'feed-forward': () => import('@/content/lessons/feed-forward/lesson.mdx'),

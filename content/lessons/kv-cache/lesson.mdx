@@ -66,7 +66,7 @@ Three things to internalize.
 
 **Memory replaces compute.** The cache is roughly $2 \cdot n \cdot d \cdot L \cdot \text{bytes}$ in size — two matrices (K and V), per layer, per token, at fp16 or bf16. For a 7B model with $d = 4096$, $L = 32$ layers, at 2048 tokens, that's ${\sim}0.5$ GB. Per request. Multiply by simultaneous users and you see why serving infrastructure obsesses over cache eviction, paged attention, and quantized caches.
 
-**Context length is a memory budget, not a math budget.** "How long can the model's context be?" reduces to "how much KV cache memory fits in GPU memory?" That's why every architecture shift in the last two years — grouped-query attention, multi-query attention, MLA, sparse attention — has been about reducing the per-token cache footprint, not about getting smarter attention.
+**Context length is a memory budget, not a math budget.** "How long can the model's context be?" reduces to "how much KV cache memory fits in GPU memory?" That's why every architecture shift in the last two years — grouped-query attention, multi-query attention, MLA, sparse attention — has been about reducing the per-token cache footprint, not about getting smarter attention. The standard fix the curriculum covers next is **grouped-query attention**: keep all the query heads, share K and V across groups, shrink the cache by exactly the group factor. It's what LLaMA-2 70B, Mistral, Qwen, and every modern production decoder uses.
 
 ## Recap
 
