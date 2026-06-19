@@ -90,6 +90,8 @@ nodes:
     title: Layer freezing
   - id: catastrophic-forgetting
     title: Catastrophic forgetting
+  - id: quantization
+    title: Weight quantization
   - id: lora
     title: LoRA
   - id: low-rank-update
@@ -201,6 +203,9 @@ nodes:
   - id: catastrophic-forgetting-concept
     title: "Catastrophic forgetting"
     lesson: catastrophic-forgetting
+  - id: quantization-concept
+    title: "Quantization: storing 4 bits per weight"
+    lesson: quantization
   - id: lora-concept
     title: "LoRA: low-rank adaptation"
     lesson: lora
@@ -436,9 +441,17 @@ edges:
   - from: catastrophic-forgetting
     to: catastrophic-forgetting-concept
   - from: fine-tuning
+    to: quantization
+  - from: catastrophic-forgetting-concept
+    to: quantization-concept
+  - from: quantization
+    to: quantization-concept
+  - from: fine-tuning
     to: low-rank-update
   - from: low-rank-update
     to: lora
+  - from: quantization-concept
+    to: lora-concept
   - from: catastrophic-forgetting-concept
     to: lora-concept
   - from: lora

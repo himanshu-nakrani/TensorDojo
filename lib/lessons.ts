@@ -140,6 +140,7 @@ export const mdxLessonLoaders: Readonly<
     import('@/content/lessons/freezing-vs-full-finetuning/lesson.mdx'),
   'catastrophic-forgetting': () =>
     import('@/content/lessons/catastrophic-forgetting/lesson.mdx'),
+  quantization: () => import('@/content/lessons/quantization/lesson.mdx'),
   'lora': () => import('@/content/lessons/lora/lesson.mdx'),
   'instruction-tuning-rlhf': () => import('@/content/lessons/instruction-tuning-rlhf/lesson.mdx'),
 };

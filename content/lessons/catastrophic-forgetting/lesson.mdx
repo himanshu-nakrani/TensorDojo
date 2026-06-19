@@ -66,4 +66,4 @@ Lower both conditions and the forgetting disappears.
 
 **Mitigations are mechanical** — interleave or lower the LR. Both work; together they're robust. Neither requires changing the architecture or the optimizer; they only change what the loss sees.
 
-Another approach is to *not* update every weight. If the update itself lives in a low-rank subspace, the original weights are mostly preserved by construction. That's the trick behind LoRA, next lesson.
+Another approach is to *not* update every weight. If the update itself lives in a low-rank subspace, the original weights are mostly preserved by construction. That's LoRA — coming up in two lessons. Before we get there, one more piece of the fine-tuning story belongs in the picture: the *weights themselves* don't have to be stored at fp16. The next lesson covers **quantization** — store each weight in 4 bits instead of 16, shrink the model by 4×, and set up the QLoRA pairing that makes consumer-grade fine-tuning practical.

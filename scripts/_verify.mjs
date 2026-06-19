@@ -43,6 +43,7 @@ const SLUGS = [
   'pretraining-vs-finetuning',
   'freezing-vs-full-finetuning',
   'catastrophic-forgetting',
+  'quantization',
   'lora',
   'instruction-tuning-rlhf',
 ];

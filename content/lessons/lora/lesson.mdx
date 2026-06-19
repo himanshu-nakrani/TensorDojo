@@ -3,7 +3,7 @@ import { Callout } from '@/components/lesson/Callout';
 
 ## What if the fine-tuning update is low-rank?
 
-The previous lesson showed that catastrophic forgetting is the default behavior when you fine-tune sequentially: the new task's gradient has no way to know it's overwriting structure the model needed for the old task. The freezing lesson showed one response — don't touch most layers at all. LoRA is a third angle.
+A few lessons ago we saw that catastrophic forgetting is the default behavior when you fine-tune sequentially: the new task's gradient has no way to know it's overwriting structure the model needed for the old task. Freezing was one response — don't touch most layers at all. Quantization, just covered, shrinks the base model 4× so it fits in memory but leaves the question of *what* to update untouched. LoRA is a third angle.
 
 The idea is not to restrict *which* parameters get updated, but to restrict the *shape* of the update. Specifically: insist that the change to each weight matrix has low rank. This might sound like an arbitrary constraint, but the motivation is empirical. When researchers measured the rank of the actual $\Delta W$ that emerges from full fine-tuning on real LLMs, they found it was often surprisingly low. Most of the meaningful change lived in a small number of singular directions — the vast majority of the update's apparent degrees of freedom were noise or redundancy. LoRA bakes that observation in as a hard constraint before training begins.
 
