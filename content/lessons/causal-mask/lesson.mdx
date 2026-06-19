@@ -3,7 +3,7 @@ import { Callout } from '@/components/lesson/Callout';
 
 ## Why can't position 3 attend to position 5?
 
-For next-token prediction, the model is given tokens $0, 1, \ldots, i$ and must predict token $i+1$. It is not allowed to peek at the answer. So when position $i$ computes its attention over earlier positions, the model must mask out everything at index $> i$.
+The model now has content (embeddings) and position (sinusoidal PE or RoPE, depending on the architecture). The mechanics of attention can finally run. But there's one remaining structural rule: for next-token prediction, the model is given tokens $0, 1, \ldots, i$ and must predict token $i+1$. It is not allowed to peek at the answer. So when position $i$ computes its attention over earlier positions, the model must mask out everything at index $> i$.
 
 The mechanism is a lower-triangular mask applied to the score matrix *before* softmax: set $\text{scores}_{i,j} = -\infty$ for $j > i$. After softmax, those weights are zero. The post-softmax weight matrix is the strict lower triangle (with the diagonal) — every position attends only to itself and to the past.
 

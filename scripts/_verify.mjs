@@ -19,6 +19,7 @@ const SLUGS = [
   'tokenization',
   'token-embeddings',
   'positional-encoding',
+  'rope',
   'causal-mask',
   'multi-head-attention',
   'residuals-layernorm',

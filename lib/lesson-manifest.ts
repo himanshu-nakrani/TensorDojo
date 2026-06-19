@@ -27,6 +27,7 @@ import { meta as scaledAttentionMeta } from '@/content/lessons/scaled-attention/
 import { meta as tokenizationMeta } from '@/content/lessons/tokenization/meta';
 import { meta as tokenEmbeddingsMeta } from '@/content/lessons/token-embeddings/meta';
 import { meta as positionalEncodingMeta } from '@/content/lessons/positional-encoding/meta';
+import { meta as ropeMeta } from '@/content/lessons/rope/meta';
 import { meta as causalMaskMeta } from '@/content/lessons/causal-mask/meta';
 import { meta as multiHeadAttentionMeta } from '@/content/lessons/multi-head-attention/meta';
 import { meta as residualsLayernormMeta } from '@/content/lessons/residuals-layernorm/meta';
@@ -70,6 +71,7 @@ const metaBySlug: Readonly<Record<string, LessonMeta>> = {
   tokenization: tokenizationMeta,
   'token-embeddings': tokenEmbeddingsMeta,
   'positional-encoding': positionalEncodingMeta,
+  rope: ropeMeta,
   'causal-mask': causalMaskMeta,
   'multi-head-attention': multiHeadAttentionMeta,
   'residuals-layernorm': residualsLayernormMeta,
@@ -134,6 +136,10 @@ const interactivesLoaders: Readonly<Record<string, () => Promise<{
     })),
   'positional-encoding': () =>
     import('@/content/lessons/positional-encoding/interactives').then((m) => ({
+      interactives: m.interactives,
+    })),
+  rope: () =>
+    import('@/content/lessons/rope/interactives').then((m) => ({
       interactives: m.interactives,
     })),
   'causal-mask': () =>

@@ -104,6 +104,7 @@ export const mdxLessonLoaders: Readonly<
     import('@/content/lessons/token-embeddings/lesson.mdx'),
   'positional-encoding': () =>
     import('@/content/lessons/positional-encoding/lesson.mdx'),
+  rope: () => import('@/content/lessons/rope/lesson.mdx'),
   'causal-mask': () => import('@/content/lessons/causal-mask/lesson.mdx'),
   'multi-head-attention': () =>
     import('@/content/lessons/multi-head-attention/lesson.mdx'),

@@ -30,6 +30,8 @@ nodes:
     title: Token embedding
   - id: positional-encoding
     title: Positional encoding
+  - id: rope
+    title: Rotary positional encoding
   - id: causal-mask
     title: Causal mask
   - id: multi-head
@@ -125,6 +127,9 @@ nodes:
   - id: positional-encoding-concept
     title: "Positional encoding: giving order to a bag"
     lesson: positional-encoding
+  - id: rope-concept
+    title: "RoPE: rotation, not addition"
+    lesson: rope
   - id: causal-mask-concept
     title: "Causal masking: don't peek at the future"
     lesson: causal-mask
@@ -254,6 +259,8 @@ edges:
     to: attention-score
   - from: token-embedding
     to: positional-encoding
+  - from: positional-encoding
+    to: rope
   - from: cross-entropy
     to: softmax
   - from: gradient-descent
@@ -305,6 +312,8 @@ edges:
     to: token-embeddings-concept
   - from: positional-encoding
     to: positional-encoding-concept
+  - from: rope
+    to: rope-concept
   - from: causal-mask
     to: causal-mask-concept
   - from: multi-head

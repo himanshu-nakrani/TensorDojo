@@ -20,6 +20,7 @@ import { meta as scaledAttentionMeta } from '@/content/lessons/scaled-attention/
 import { meta as tokenizationMeta } from '@/content/lessons/tokenization/meta';
 import { meta as tokenEmbeddingsMeta } from '@/content/lessons/token-embeddings/meta';
 import { meta as positionalEncodingMeta } from '@/content/lessons/positional-encoding/meta';
+import { meta as ropeMeta } from '@/content/lessons/rope/meta';
 import { meta as causalMaskMeta } from '@/content/lessons/causal-mask/meta';
 import { meta as multiHeadAttentionMeta } from '@/content/lessons/multi-head-attention/meta';
 import { meta as residualsLayernormMeta } from '@/content/lessons/residuals-layernorm/meta';
@@ -65,6 +66,7 @@ const manifest: readonly LessonMetaEntry[] = [
   { meta: tokenizationMeta },
   { meta: tokenEmbeddingsMeta },
   { meta: positionalEncodingMeta },
+  { meta: ropeMeta },
   { meta: causalMaskMeta },
   { meta: multiHeadAttentionMeta },
   { meta: residualsLayernormMeta },
@@ -134,7 +136,7 @@ export const TRACKS: readonly LessonTrack[] = [
   {
     id: 'tokens-as-inputs',
     label: 'How tokens become inputs',
-    slugs: ['tokenization', 'token-embeddings', 'positional-encoding'],
+    slugs: ['tokenization', 'token-embeddings', 'positional-encoding', 'rope'],
   },
   {
     id: 'transformer-block',
