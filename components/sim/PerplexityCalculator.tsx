@@ -18,10 +18,11 @@ import { perplexity } from '@/lib/math/evaluation';
 
 const TOKENS = ['The', 'cat', 'sat', 'on', 'the', 'mat', '.'];
 
-// Per-token "true-token probability under a perfect model" — the
-// model that knows English would assign these. We then warp the
-// distribution with a confidence knob to simulate weaker models.
-const TRUE_PROBS = [0.40, 0.30, 0.25, 0.35, 0.55, 0.22, 0.45] as const;
+// Per-token "true-token probability under a reasonable LM": the
+// number that index of the true token gets at confidence = 1.
+// Mostly above 0.5 so that "sharpen" makes the model better and
+// "flatten" makes it worse — the direction the lesson describes.
+const TRUE_PROBS = [0.65, 0.55, 0.72, 0.58, 0.81, 0.62, 0.74] as const;
 
 export function PerplexityCalculator() {
   // confidence ∈ [0.1, 2.0]; >1 sharpens (model is over-confident),
@@ -29,15 +30,21 @@ export function PerplexityCalculator() {
   const [confidence, setConfidence] = useState(1.0);
 
   const { logProbs, ppl } = useMemo(() => {
-    // Warp each probability by raising to (1/confidence) and
-    // renormalizing in a 2-class "true vs other" space, so the
-    // probability of the true token shifts smoothly.
-    // confidence > 1: probability moves toward 1 (sharper).
-    // confidence < 1: probability moves toward 0.5 (flatter).
+    // Standard softmax temperature applied to the binary
+    // {p, 1-p} distribution. We raise the logit
+    // log(p/(1-p)) by `confidence` (i.e. divide it by
+    // T = 1/confidence) and pass through a sigmoid.
+    //   confidence > 1: temperature < 1, distribution sharpens
+    //     toward the more-likely class (the true token, by
+    //     construction).
+    //   confidence < 1: temperature > 1, distribution flattens
+    //     toward 0.5.
+    //   confidence = 0: degenerate — uniform; we clamp to 0.01
+    //     above to avoid the literal 0 case in the slider.
     const warped = TRUE_PROBS.map((p) => {
-      const x = Math.pow(p, 1 / confidence);
-      const y = Math.pow(1 - p, 1 / confidence);
-      return x / (x + y);
+      const logit = Math.log(p / (1 - p));
+      const warpedLogit = logit * confidence;
+      return 1 / (1 + Math.exp(-warpedLogit));
     });
     const lp = warped.map((p) => Math.log(Math.max(1e-9, p)));
     return { logProbs: lp, ppl: perplexity(lp) };

@@ -1,9 +1,9 @@
 import { MathCode } from '@/components/lesson/MathCode';
 import { Callout } from '@/components/lesson/Callout';
 
-## The cache is half a gigabyte per request. Can we shrink it?
+## The cache is a gigabyte per request. Can we shrink it?
 
-A few lessons ago, the KV cache turned generation from cubic to quadratic. The price was memory: at 2048 tokens of context, a 7B-class model's cache is around half a gigabyte *per request*. Scale to 70B parameters and 32k context and the cache balloons into tens of gigabytes per request. With even a few simultaneous users, the cache — not the model weights — becomes what doesn't fit in GPU memory.
+A few lessons ago, the KV cache turned generation from cubic to quadratic. The price was memory: at 2048 tokens of context, a vanilla 7B-class MHA cache is around 1 GB *per request*. Scale to 70B parameters and 32k context and the cache balloons into tens of gigabytes per request. With even a few simultaneous users, the cache — not the model weights — becomes what doesn't fit in GPU memory.
 
 So the cache memory has to come down. The previous lesson's multi-head attention told you where to look: every head stores its own K and V. Eight heads means eight K matrices and eight V matrices to cache. The natural question is whether all of them need to be distinct.
 

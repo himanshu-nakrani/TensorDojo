@@ -65,11 +65,11 @@ Three things to internalize.
 ## A second look
 
 <Callout targetInteractive="bpe-tokenizer">
-  Switch the vocabulary dropdown to "Trained on -er / -est words." Now type "lowest": one token. Type "newest": one token. Type "elephant": six tokens, character by character. Same string, completely different tokenization depending on what corpus the vocabulary was trained on.
+  Switch the vocabulary dropdown to "Trained on -er / -est words." Now type "newest": one token — it appears often in the training corpus and earned a dedicated merge. Type "lowest": two tokens ("lowe" + "st▁") — close but not collapsed into one. Type "elephant": eight tokens, character by character — nothing about it appears in the training corpus. Same string, completely different tokenization depending on what the vocabulary was trained on.
 </Callout>
 
 <Callout title="What to watch for" targetInteractive="bpe-tokenizer">
-  Switch to "Trained on programming words" and type "function". One token. Now type "fun" — still in the vocabulary as a prefix. Type "funky" — splits because "ky" was never a frequent pair in the programming corpus. The vocabulary's shape mirrors the training distribution; words the corpus never wanted to optimize for stay expensive.
+  Switch to "Trained on programming words" and type "class" — one token. Try "import" and "return" — also one token each. Now type "function" — eight tokens, character by character. The first three appear often enough in the training corpus to earn dedicated merges; "function" never appears enough times to be worth a merge under this budget. The vocabulary's shape mirrors the training distribution; words the corpus never wanted to optimize for stay expensive.
 </Callout>
 
 ## Recap

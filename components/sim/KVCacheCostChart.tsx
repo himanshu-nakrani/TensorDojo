@@ -159,8 +159,8 @@ export function KVCacheCostChart() {
         The speedup grows with sequence length — naive scales as{' '}
         <span className="text-ink">O(n³·d)</span> total, cached as{' '}
         <span className="text-ink">O(n²·d)</span>. The cost paid is memory: a
-        full cache for 2048 tokens of a 7B-class model is roughly half a
-        gigabyte per request. That memory budget is what bounds how long the
+        full cache for 2048 tokens of a 7B-class model is around 1 GB per
+        request. That memory budget is what bounds how long the
         model's context window can be.
       </p>
     </SimFrame>

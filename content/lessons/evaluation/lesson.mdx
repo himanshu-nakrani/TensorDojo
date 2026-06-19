@@ -54,7 +54,7 @@ def pass_at_k(pass_results, k):
 ## Try it
 
 <Callout targetInteractive="perplexity-calculator">
-  Drag the confidence slider to 2.0 (sharp): the probabilities all fatten, log-probs shrink toward 0, perplexity collapses toward 1.0 (a confident, correct model). Drag to 0.1 (flat): probabilities approach 0.5 across the board, perplexity climbs past 1.9 (the model knows almost nothing). The cross-entropy and perplexity numbers are the same number in different units — perplexity = exp(cross-entropy) — so they move together.
+  Drag the confidence slider to 2.0 (sharp): every probability fattens above 0.6, log-probs shrink toward 0, perplexity drops to ~1.3 (a confident, correct model approaching the ideal of 1.0). Drag to 0.1 (flat): probabilities approach 0.5 across the board, perplexity climbs past 1.9 (a model that knows almost nothing — perplexity 2 means binary uncertainty at every token). The cross-entropy and perplexity numbers are the same number in different units — perplexity = exp(cross-entropy) — so they move together.
 </Callout>
 
 <Callout title="Why perplexity isn't enough" targetInteractive="perplexity-calculator">

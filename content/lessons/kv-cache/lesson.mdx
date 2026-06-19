@@ -51,11 +51,11 @@ attn   = softmax(scores) @ v_cache            # 1 × d`}
 ## A second look
 
 <Callout targetInteractive="kv-cache-cost-chart">
-  Slide from 4 → 2048. The "Nx faster" readout grows the whole way: at 32 tokens cached is roughly 2× faster, at 256 it's about 10×, at 2048 it's around 100×. This isn't a constant-factor optimization — the gap widens with sequence length because naive is one polynomial degree higher.
+  Slide from 4 → 2048. The "Nx faster" readout grows the whole way: at 32 tokens cached is already ~16× faster, at 256 it's ~130×, at 2048 it's over 1000×. The numbers are dramatic because the sim defaults to a 4096-dimensional head, where the n²·d term in naive's cost dwarfs everything else; the *qualitative* point is what matters — the gap widens with sequence length because naive is one polynomial degree higher.
 </Callout>
 
 <Callout title="The trade-off is memory" targetInteractive="kv-cache-cost-chart">
-  At sequence length 2048, the cache memory readout is around half a gigabyte for a 7B-class model. For a 70B model with a 32k context, the cache balloons to tens of gigabytes — per request. This is *the* reason context length is a meaningful product axis: not because the math gets harder, but because the cache no longer fits in GPU memory. Variants like grouped-query attention and multi-query attention exist specifically to shrink this number.
+  At sequence length 2048, the cache memory readout is around 1 GB for a 7B-class model (the sim uses d=4096, 32 layers, bf16 — multiply through and you get $2 \cdot 2048 \cdot 4096 \cdot 32 \cdot 2$ bytes = 1 GB). For a 70B model with a 32k context, the cache balloons to tens of gigabytes — per request. This is *the* reason context length is a meaningful product axis: not because the math gets harder, but because the cache no longer fits in GPU memory. Variants like grouped-query attention and multi-query attention exist specifically to shrink this number.
 </Callout>
 
 ## Reading the result
