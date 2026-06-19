@@ -56,6 +56,7 @@ import { meta as freezingVsFullFinetuningMeta } from '@/content/lessons/freezing
 import { meta as catastrophicForgettingMeta } from '@/content/lessons/catastrophic-forgetting/meta';
 import { meta as quantizationMeta } from '@/content/lessons/quantization/meta';
 import { meta as loraMeta } from '@/content/lessons/lora/meta';
+import { meta as evaluationMeta } from '@/content/lessons/evaluation/meta';
 import { meta as instructionTuningRlhfMeta } from '@/content/lessons/instruction-tuning-rlhf/meta';
 
 export interface LessonMeta {
@@ -105,6 +106,7 @@ const metaBySlug: Readonly<Record<string, LessonMeta>> = {
   'catastrophic-forgetting': catastrophicForgettingMeta,
   quantization: quantizationMeta,
   'lora': loraMeta,
+  evaluation: evaluationMeta,
   'instruction-tuning-rlhf': instructionTuningRlhfMeta,
 };
 
@@ -264,6 +266,10 @@ const interactivesLoaders: Readonly<Record<string, () => Promise<{
     })),
   'lora': () =>
     import('@/content/lessons/lora/interactives').then((m) => ({
+      interactives: m.interactives,
+    })),
+  evaluation: () =>
+    import('@/content/lessons/evaluation/interactives').then((m) => ({
       interactives: m.interactives,
     })),
   'instruction-tuning-rlhf': () =>

@@ -3,7 +3,7 @@ import { Callout } from '@/components/lesson/Callout';
 
 ## What if the training signal isn't a label, but a preference?
 
-Every lesson in this module so far has had a clean training signal: cross-entropy against a one-hot label, MSE against a target value, or full fine-tuning against new labeled data. Real LLM training has something different. Human labelers are shown two model outputs and asked: which one is better? The label isn't "the right answer." It's "this is better than that."
+Every lesson in this module so far has had a clean training signal: cross-entropy against a one-hot label, MSE against a target value, or full fine-tuning against new labeled data. The evaluation interlude covered how to *measure* whether a fine-tune worked; this lesson covers a training signal qualitatively different from any we've used. Real LLM assistant training has something different. Human labelers are shown two model outputs and asked: which one is better? The label isn't "the right answer." It's "this is better than that."
 
 This is how instruction-following models are trained in practice. Supervised fine-tuning gets the model close — it learns to follow templates and produce plausible outputs. But "plausible" and "good" are not the same thing. Preference data is what closes the gap: it tells the model, across thousands of examples, which outputs humans actually prefer. The signal is comparative, not absolute.
 

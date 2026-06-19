@@ -48,6 +48,7 @@ const SLUGS = [
   'catastrophic-forgetting',
   'quantization',
   'lora',
+  'evaluation',
   'instruction-tuning-rlhf',
 ];
 

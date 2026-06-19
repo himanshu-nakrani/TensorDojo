@@ -100,6 +100,8 @@ nodes:
     title: Weight quantization
   - id: lora
     title: LoRA
+  - id: evaluation
+    title: Evaluation (perplexity, benchmarks)
   - id: low-rank-update
     title: Low-rank update
   - id: dpo-loss
@@ -224,6 +226,9 @@ nodes:
   - id: lora-concept
     title: "LoRA: low-rank adaptation"
     lesson: lora
+  - id: evaluation-concept
+    title: "Evaluation: how the field measures models"
+    lesson: evaluation
   - id: instruction-tuning-rlhf-concept
     title: "Instruction tuning & RLHF intuition"
     lesson: instruction-tuning-rlhf
@@ -487,6 +492,14 @@ edges:
     to: lora-concept
   - from: lora
     to: lora-concept
+  - from: cross-entropy
+    to: evaluation
+  - from: fine-tuning
+    to: evaluation
+  - from: evaluation
+    to: evaluation-concept
+  - from: lora-concept
+    to: evaluation-concept
   - from: softmax
     to: dpo-loss
   - from: cross-entropy
@@ -496,6 +509,8 @@ edges:
   - from: preference-data
     to: reward-model
   - from: lora-concept
+    to: instruction-tuning-rlhf-concept
+  - from: evaluation-concept
     to: instruction-tuning-rlhf-concept
   - from: dpo-loss
     to: instruction-tuning-rlhf-concept

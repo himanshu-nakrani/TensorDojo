@@ -54,4 +54,4 @@ The budget also makes a different kind of tradeoff visible. Freezing lets you tr
 
 **The budget:** $(m + n) \cdot r$ parameters instead of $m \cdot n$. At $r = 8$ on a $4096 \times 4096$ matrix, that's under $0.4\%$ of the original. The savings hold across all layers simultaneously, so the total trainable-parameter count for a LoRA fine-tune is a small fraction of the full model — even when every weight matrix gets a LoRA pair.
 
-One more step before this module closes. Fine-tuning so far has assumed a label. But what if your training signal is a *preference* — this output is better than that one? Same gradient descent, different loss. Next: instruction tuning and RLHF.
+Two more steps before this module closes. First a brief interlude on something the curriculum has implicitly relied on the whole time: **how do you know if any of this fine-tuning is working?** That's the evaluation lesson — perplexity, benchmarks, and the failure modes of both. Then we move on to preference-based training: instruction tuning and RLHF, the recipe behind every modern assistant model.

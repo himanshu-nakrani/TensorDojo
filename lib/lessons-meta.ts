@@ -49,6 +49,7 @@ import { meta as freezingVsFullFinetuningMeta } from '@/content/lessons/freezing
 import { meta as catastrophicForgettingMeta } from '@/content/lessons/catastrophic-forgetting/meta';
 import { meta as quantizationMeta } from '@/content/lessons/quantization/meta';
 import { meta as loraMeta } from '@/content/lessons/lora/meta';
+import { meta as evaluationMeta } from '@/content/lessons/evaluation/meta';
 import { meta as instructionTuningRlhfMeta } from '@/content/lessons/instruction-tuning-rlhf/meta';
 
 export interface LessonMetaEntry {
@@ -100,6 +101,7 @@ const manifest: readonly LessonMetaEntry[] = [
   { meta: catastrophicForgettingMeta },
   { meta: quantizationMeta },
   { meta: loraMeta },
+  { meta: evaluationMeta },
   { meta: instructionTuningRlhfMeta },
 ];
 
@@ -191,7 +193,7 @@ export const TRACKS: readonly LessonTrack[] = [
   {
     id: 'fine-tuning',
     label: 'Adapting models to new tasks',
-    slugs: ['pretraining-vs-finetuning', 'freezing-vs-full-finetuning', 'catastrophic-forgetting', 'quantization', 'lora', 'instruction-tuning-rlhf'],
+    slugs: ['pretraining-vs-finetuning', 'freezing-vs-full-finetuning', 'catastrophic-forgetting', 'quantization', 'lora', 'evaluation', 'instruction-tuning-rlhf'],
   },
 ];
 
