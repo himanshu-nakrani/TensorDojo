@@ -38,6 +38,7 @@ import { meta as mixtureOfExpertsMeta } from '@/content/lessons/mixture-of-exper
 import { meta as transformerBlockMeta } from '@/content/lessons/transformer-block/meta';
 import { meta as samplingDecodingMeta } from '@/content/lessons/sampling-decoding/meta';
 import { meta as kvCacheMeta } from '@/content/lessons/kv-cache/meta';
+import { meta as speculativeDecodingMeta } from '@/content/lessons/speculative-decoding/meta';
 import { meta as crossEntropyMeta } from '@/content/lessons/cross-entropy/meta';
 import { meta as gradientDescentMeta } from '@/content/lessons/gradient-descent/meta';
 import { meta as backpropagationMeta } from '@/content/lessons/backpropagation/meta';
@@ -86,6 +87,7 @@ const metaBySlug: Readonly<Record<string, LessonMeta>> = {
   'transformer-block': transformerBlockMeta,
   'sampling-decoding': samplingDecodingMeta,
   'kv-cache': kvCacheMeta,
+  'speculative-decoding': speculativeDecodingMeta,
   'cross-entropy': crossEntropyMeta,
   'gradient-descent': gradientDescentMeta,
   'backpropagation': backpropagationMeta,
@@ -188,6 +190,10 @@ const interactivesLoaders: Readonly<Record<string, () => Promise<{
     })),
   'kv-cache': () =>
     import('@/content/lessons/kv-cache/interactives').then((m) => ({
+      interactives: m.interactives,
+    })),
+  'speculative-decoding': () =>
+    import('@/content/lessons/speculative-decoding/interactives').then((m) => ({
       interactives: m.interactives,
     })),
   'cross-entropy': () =>

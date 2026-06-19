@@ -4,7 +4,7 @@ export const meta = {
   summary:
     'You have weight decay and you have dropout. What is left? Two regularizers that are essentially free — keep a validation set and stop at the best checkpoint (early stopping), and expand the training set with label-preserving transformations (data augmentation).',
   minutes: 7,
-  order: 32,
+  order: 33,
 } as const;
 
 export type LessonMeta = typeof meta;

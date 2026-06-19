@@ -24,6 +24,8 @@ nodes:
     title: Attention output
   - id: kv-cache
     title: KV cache
+  - id: speculative-decoding
+    title: Speculative decoding
   - id: bpe
     title: Byte-pair encoding
   - id: token-embedding
@@ -168,6 +170,9 @@ nodes:
   - id: kv-cache-concept
     title: "KV cache: making inference fast"
     lesson: kv-cache
+  - id: speculative-decoding-concept
+    title: "Speculative decoding: a small model drafts, the big one verifies"
+    lesson: speculative-decoding
   - id: cross-entropy-concept
     title: "Cross-entropy: how the model knows it was wrong"
     lesson: cross-entropy
@@ -273,6 +278,10 @@ edges:
     to: moe
   - from: attention-output
     to: kv-cache
+  - from: kv-cache
+    to: speculative-decoding
+  - from: decoding-strategy
+    to: speculative-decoding
   - from: multi-head
     to: gqa
   - from: kv-cache
@@ -338,6 +347,8 @@ edges:
     to: tokenization-concept
   - from: kv-cache
     to: kv-cache-concept
+  - from: speculative-decoding
+    to: speculative-decoding-concept
   - from: token-embedding
     to: token-embeddings-concept
   - from: positional-encoding

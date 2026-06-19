@@ -31,6 +31,7 @@ import { meta as mixtureOfExpertsMeta } from '@/content/lessons/mixture-of-exper
 import { meta as transformerBlockMeta } from '@/content/lessons/transformer-block/meta';
 import { meta as samplingDecodingMeta } from '@/content/lessons/sampling-decoding/meta';
 import { meta as kvCacheMeta } from '@/content/lessons/kv-cache/meta';
+import { meta as speculativeDecodingMeta } from '@/content/lessons/speculative-decoding/meta';
 import { meta as crossEntropyMeta } from '@/content/lessons/cross-entropy/meta';
 import { meta as gradientDescentMeta } from '@/content/lessons/gradient-descent/meta';
 import { meta as backpropagationMeta } from '@/content/lessons/backpropagation/meta';
@@ -81,6 +82,7 @@ const manifest: readonly LessonMetaEntry[] = [
   { meta: transformerBlockMeta },
   { meta: samplingDecodingMeta },
   { meta: kvCacheMeta },
+  { meta: speculativeDecodingMeta },
   { meta: crossEntropyMeta },
   { meta: gradientDescentMeta },
   { meta: backpropagationMeta },
@@ -162,7 +164,7 @@ export const TRACKS: readonly LessonTrack[] = [
   {
     id: 'decoding-and-learning',
     label: 'What the model says, and how it learns',
-    slugs: ['sampling-decoding', 'kv-cache', 'cross-entropy', 'gradient-descent'],
+    slugs: ['sampling-decoding', 'kv-cache', 'speculative-decoding', 'cross-entropy', 'gradient-descent'],
   },
   {
     id: 'training',

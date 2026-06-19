@@ -1,0 +1,97 @@
+import { MathCode } from '@/components/lesson/MathCode';
+import { Callout } from '@/components/lesson/Callout';
+
+## The KV cache made each step cheap. What if we could do multiple steps in parallel?
+
+Autoregressive decoding has an obvious problem: each step depends on the previous one. You can't predict token $t+2$ until you've sampled token $t+1$. The KV cache fixed the *per-step* cost, but it left the *sequential* nature untouched. A 70B model that takes 50 ms per token spends those 50 ms doing one forward pass, sequentially, regardless of how powerful the GPU is.
+
+But look at typical model output: "the cat sat on the mat." Once "the cat sat on the" is fixed, "mat" is almost forced. Most tokens are easy — the model is confident, the context strongly suggests one continuation, the next-token distribution is sharply peaked. Could we predict those easy tokens without paying for a full 70B forward pass per one?
+
+**Speculative decoding** (Leviathan et al., 2023; Chen et al., 2023) is the trick. Use a small draft model — say, a 7B — to propose γ tokens at a time. Then send the entire γ-token sequence to the target 70B *in one forward pass*. The 70B doesn't generate; it *verifies*, scoring the draft against its own preferred distribution. Accepted tokens cost essentially nothing extra (they piggybacked on a parallel verification). On the first rejection, the target's own preferred token at that position takes over, and a new draft round starts from there. Output is **identical to plain autoregressive decoding** — there's no quality cost, just a speedup.
+
+## The math
+
+Let α be the per-token acceptance rate: the probability that the draft's choice agrees with the target's. (For natural text and a well-matched draft, α ≈ 0.7.) Let γ be the draft length per round. Expected tokens produced per round:
+
+$$
+E[\text{accepted}] = \sum_{i=0}^{\gamma} \alpha^i = \frac{1 - \alpha^{\gamma+1}}{1 - \alpha}
+$$
+
+The $\alpha^i$ in the sum is the probability that the first $i$ draft tokens are all accepted; the $+1$ accounts for the target's bonus token when *all* γ are accepted. Each round costs one big-model forward pass (the verification) plus γ small-model passes (the draft), so:
+
+$$
+\text{speedup} = \frac{E[\text{accepted}] \cdot c_{\text{verify}}}{\gamma \cdot c_{\text{draft}} + c_{\text{verify}}}
+$$
+
+When $c_{\text{draft}} \ll c_{\text{verify}}$ (e.g. a 7B drafting for a 70B), the denominator is dominated by $c_{\text{verify}}$ and the speedup approaches $E[\text{accepted}]$, which can easily be 2-3× at realistic α.
+
+<MathCode
+  math="E[\text{accepted}] = \frac{1 - \alpha^{\gamma+1}}{1 - \alpha}, \qquad \text{speedup} \approx E[\text{accepted}]"
+  code={`# Speculative decoding loop. Output is identical to plain
+# greedy or sampling decoding from the target model.
+def speculative_decode(target, draft, prompt, gamma=4, max_tokens=128):
+    tokens = list(prompt)
+    while len(tokens) < max_tokens:
+        # Draft γ tokens sequentially (cheap, small model).
+        draft_tokens = []
+        for _ in range(gamma):
+            d = draft.sample_next(tokens + draft_tokens)
+            draft_tokens.append(d)
+
+        # Verify all γ in one target forward pass (parallel).
+        # target.logits[i] is the target's distribution at position
+        # len(tokens) + i, given everything before it.
+        logits = target(tokens + draft_tokens)
+
+        # Walk the draft. Accept each token where draft choice agrees
+        # with target's argmax (or with appropriate acceptance probability
+        # for sampling); on first rejection, take the target's pick
+        # and break.
+        for i, d in enumerate(draft_tokens):
+            if accepts(d, logits[len(tokens) + i]):
+                tokens.append(d)
+            else:
+                tokens.append(target.sample_from(logits[len(tokens) + i]))
+                break
+        else:
+            # All γ accepted! Bonus +1 token from the target.
+            tokens.append(target.sample_from(logits[-1]))
+    return tokens`}
+  caption="One target forward pass per round, regardless of γ. The draft is sequential; the verification is parallel. The accept rule preserves the target's distribution exactly (Leviathan et al. give the formal sampling correctness proof)."
+/>
+
+## Try it
+
+<Callout targetInteractive="speculative-rounds">
+  Default is γ=4, α=0.7 — a typical 7B-drafts-70B setup. Most rounds reach 4 or 5 tokens (the +1 bonus when all γ accept). Switch α to "easy text" (0.9) and watch the rounds run almost to the full γ every time. Switch to "hostile" (0.3) and watch the rounds truncate early — most rounds produce just 1-2 tokens, and the draft cost starts to hurt. Re-sample with different seeds to see the variance.
+</Callout>
+
+<Callout title="Why this preserves model output exactly" targetInteractive="speculative-rounds">
+  The accept rule is carefully designed: the probability of accepting a draft token at any position is exactly $\min(1, p_{\text{target}}(t)/p_{\text{draft}}(t))$. On rejection, the target's correction is sampled from a renormalized residual distribution $\max(0, p_{\text{target}} - p_{\text{draft}})$. Composed across all positions, the output is bit-for-bit identical to plain sampling from the target alone. The draft is *only* an optimization; it cannot change what the target says.
+</Callout>
+
+## A second look
+
+<Callout targetInteractive="speculative-speedup">
+  At the default 1:10 draft-to-target ratio, the bright cells cluster around α≥0.7 and γ=2-6. At 1:100 (a tiny n-gram draft serving a 70B target), the sweet spot expands rightward — γ=8 or 12 starts to win because the draft cost barely registers. At 1:30 the picture is in between. Pick a ratio that matches your real draft/target pair and read off the optimal γ.
+</Callout>
+
+<Callout title="The fragility of γ" targetInteractive="speculative-speedup">
+  Look at α=0.3 in the default 1:10 ratio. The whole row is red — speedup is below 1 at every γ. That's the regime where speculative decoding loses: the draft is too misaligned, so most draft tokens get rejected, and the γ wasted draft passes per round make every round a net cost. This is why people obsess over "draft quality" — α below ~0.5 means speculative decoding hurts.
+</Callout>
+
+## Reading the result
+
+Three things to internalize.
+
+**Output is identical, speedup is real.** Speculative decoding is mathematically equivalent to plain decoding from the target model — same distribution, same samples. The speedup comes from doing γ forward passes worth of work in *one* target pass, gated by whether the draft agrees. This is what "lossless speedup" means in the literature.
+
+**The acceptance rate determines everything.** A well-matched draft + target pair has α ≈ 0.7 on typical text; that yields ~2× speedup at γ=4 with a 1:10 cost ratio. Code and structured outputs have higher α (think 0.85+) and see 3-4× speedups; adversarial or out-of-distribution text has α ≈ 0.3 and is a net loss. Production systems often choose the draft model specifically to maximize α on the target's expected workload.
+
+**γ has a sweet spot, not a monotonic gain.** Increasing γ helps when most drafts are accepted, but every rejected position wastes γ draft passes. The optimal γ is roughly $1/(1-\alpha)$ — the expected run length before rejection. Below that you're not exploiting easy stretches; above that you're paying for tokens that won't survive verification.
+
+## Recap
+
+Three takeaways. **Speculative decoding produces identical output to plain decoding** — it's an optimization, not an approximation. **A small draft model proposes γ tokens; the target verifies all γ in one parallel forward pass.** Accepted tokens cost ~0 extra; the speedup approaches the expected number of accepted tokens per round. **Real speedup is 2-3× at the typical (α≈0.7, γ≈4, cheap draft) operating point.** Frontier production systems (vLLM, TensorRT-LLM, Llama.cpp's spec) all support it; the engineering challenge is mostly draft-model selection, not the algorithm itself.
+
+We've now covered every major inference-time optimization the field uses: KV cache (one pass per token), GQA (cache fits in memory), flash attention (each pass is fast), and speculative decoding (multiple passes amortized). The next chapter turns around and asks how the model *learned* the weights that made any of this useful. The starting point is the loss function — given a model that predicted a *distribution* over the next token and a ground truth that was a *single* token, how do we measure how wrong it was?

@@ -30,6 +30,7 @@ const SLUGS = [
   'transformer-block',
   'sampling-decoding',
   'kv-cache',
+  'speculative-decoding',
   'cross-entropy',
   'gradient-descent',
   'backpropagation',
