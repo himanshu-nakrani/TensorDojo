@@ -4,7 +4,7 @@ export const meta = {
   summary:
     'Fine-tuning a network on task B can erase what it learned on task A — fast. The condition is sequential exposure at a high learning rate. Mitigations: lower the LR during phase B, or interleave samples from both tasks.',
   minutes: 8,
-  order: 33,
+  order: 34,
 } as const;
 
 export type LessonMeta = typeof meta;

@@ -23,6 +23,7 @@ const SLUGS = [
   'causal-mask',
   'multi-head-attention',
   'grouped-query-attention',
+  'flash-attention',
   'residuals-layernorm',
   'feed-forward',
   'transformer-block',

@@ -110,6 +110,8 @@ export const mdxLessonLoaders: Readonly<
     import('@/content/lessons/multi-head-attention/lesson.mdx'),
   'grouped-query-attention': () =>
     import('@/content/lessons/grouped-query-attention/lesson.mdx'),
+  'flash-attention': () =>
+    import('@/content/lessons/flash-attention/lesson.mdx'),
   'residuals-layernorm': () =>
     import('@/content/lessons/residuals-layernorm/lesson.mdx'),
   'feed-forward': () => import('@/content/lessons/feed-forward/lesson.mdx'),

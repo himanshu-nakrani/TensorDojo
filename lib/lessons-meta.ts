@@ -24,6 +24,7 @@ import { meta as ropeMeta } from '@/content/lessons/rope/meta';
 import { meta as causalMaskMeta } from '@/content/lessons/causal-mask/meta';
 import { meta as multiHeadAttentionMeta } from '@/content/lessons/multi-head-attention/meta';
 import { meta as groupedQueryAttentionMeta } from '@/content/lessons/grouped-query-attention/meta';
+import { meta as flashAttentionMeta } from '@/content/lessons/flash-attention/meta';
 import { meta as residualsLayernormMeta } from '@/content/lessons/residuals-layernorm/meta';
 import { meta as feedForwardMeta } from '@/content/lessons/feed-forward/meta';
 import { meta as transformerBlockMeta } from '@/content/lessons/transformer-block/meta';
@@ -72,6 +73,7 @@ const manifest: readonly LessonMetaEntry[] = [
   { meta: causalMaskMeta },
   { meta: multiHeadAttentionMeta },
   { meta: groupedQueryAttentionMeta },
+  { meta: flashAttentionMeta },
   { meta: residualsLayernormMeta },
   { meta: feedForwardMeta },
   { meta: transformerBlockMeta },
@@ -148,6 +150,7 @@ export const TRACKS: readonly LessonTrack[] = [
     slugs: [
       'multi-head-attention',
       'grouped-query-attention',
+      'flash-attention',
       'residuals-layernorm',
       'feed-forward',
       'transformer-block',

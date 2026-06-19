@@ -31,6 +31,7 @@ import { meta as ropeMeta } from '@/content/lessons/rope/meta';
 import { meta as causalMaskMeta } from '@/content/lessons/causal-mask/meta';
 import { meta as multiHeadAttentionMeta } from '@/content/lessons/multi-head-attention/meta';
 import { meta as groupedQueryAttentionMeta } from '@/content/lessons/grouped-query-attention/meta';
+import { meta as flashAttentionMeta } from '@/content/lessons/flash-attention/meta';
 import { meta as residualsLayernormMeta } from '@/content/lessons/residuals-layernorm/meta';
 import { meta as feedForwardMeta } from '@/content/lessons/feed-forward/meta';
 import { meta as transformerBlockMeta } from '@/content/lessons/transformer-block/meta';
@@ -77,6 +78,7 @@ const metaBySlug: Readonly<Record<string, LessonMeta>> = {
   'causal-mask': causalMaskMeta,
   'multi-head-attention': multiHeadAttentionMeta,
   'grouped-query-attention': groupedQueryAttentionMeta,
+  'flash-attention': flashAttentionMeta,
   'residuals-layernorm': residualsLayernormMeta,
   'feed-forward': feedForwardMeta,
   'transformer-block': transformerBlockMeta,
@@ -156,6 +158,10 @@ const interactivesLoaders: Readonly<Record<string, () => Promise<{
     })),
   'grouped-query-attention': () =>
     import('@/content/lessons/grouped-query-attention/interactives').then((m) => ({
+      interactives: m.interactives,
+    })),
+  'flash-attention': () =>
+    import('@/content/lessons/flash-attention/interactives').then((m) => ({
       interactives: m.interactives,
     })),
   'residuals-layernorm': () =>
