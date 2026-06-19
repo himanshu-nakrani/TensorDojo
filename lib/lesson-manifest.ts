@@ -34,6 +34,7 @@ import { meta as groupedQueryAttentionMeta } from '@/content/lessons/grouped-que
 import { meta as flashAttentionMeta } from '@/content/lessons/flash-attention/meta';
 import { meta as residualsLayernormMeta } from '@/content/lessons/residuals-layernorm/meta';
 import { meta as feedForwardMeta } from '@/content/lessons/feed-forward/meta';
+import { meta as mixtureOfExpertsMeta } from '@/content/lessons/mixture-of-experts/meta';
 import { meta as transformerBlockMeta } from '@/content/lessons/transformer-block/meta';
 import { meta as samplingDecodingMeta } from '@/content/lessons/sampling-decoding/meta';
 import { meta as kvCacheMeta } from '@/content/lessons/kv-cache/meta';
@@ -81,6 +82,7 @@ const metaBySlug: Readonly<Record<string, LessonMeta>> = {
   'flash-attention': flashAttentionMeta,
   'residuals-layernorm': residualsLayernormMeta,
   'feed-forward': feedForwardMeta,
+  'mixture-of-experts': mixtureOfExpertsMeta,
   'transformer-block': transformerBlockMeta,
   'sampling-decoding': samplingDecodingMeta,
   'kv-cache': kvCacheMeta,
@@ -170,6 +172,10 @@ const interactivesLoaders: Readonly<Record<string, () => Promise<{
     })),
   'feed-forward': () =>
     import('@/content/lessons/feed-forward/interactives').then((m) => ({
+      interactives: m.interactives,
+    })),
+  'mixture-of-experts': () =>
+    import('@/content/lessons/mixture-of-experts/interactives').then((m) => ({
       interactives: m.interactives,
     })),
   'transformer-block': () =>

@@ -48,6 +48,8 @@ nodes:
     title: Feed-forward network
   - id: gelu
     title: GELU activation
+  - id: moe
+    title: Mixture of experts
   - id: decoding-strategy
     title: Decoding strategy
   - id: cross-entropy
@@ -154,6 +156,9 @@ nodes:
   - id: feed-forward-concept
     title: "Feed-forward network: per-token rewriting"
     lesson: feed-forward
+  - id: moe-concept
+    title: "Mixture of experts: more parameters at the same compute"
+    lesson: mixture-of-experts
   - id: transformer-block
     title: "The transformer block: putting it all together"
     lesson: transformer-block
@@ -264,6 +269,8 @@ edges:
     to: attention-weight
   - from: feed-forward
     to: gelu
+  - from: feed-forward
+    to: moe
   - from: attention-output
     to: kv-cache
   - from: multi-head
@@ -349,6 +356,8 @@ edges:
     to: residuals-layernorm-concept
   - from: feed-forward
     to: feed-forward-concept
+  - from: moe
+    to: moe-concept
   - from: decoding-strategy
     to: sampling-decoding-concept
   - from: cross-entropy

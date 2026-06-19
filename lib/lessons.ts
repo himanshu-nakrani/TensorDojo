@@ -115,6 +115,8 @@ export const mdxLessonLoaders: Readonly<
   'residuals-layernorm': () =>
     import('@/content/lessons/residuals-layernorm/lesson.mdx'),
   'feed-forward': () => import('@/content/lessons/feed-forward/lesson.mdx'),
+  'mixture-of-experts': () =>
+    import('@/content/lessons/mixture-of-experts/lesson.mdx'),
   'transformer-block': () =>
     import('@/content/lessons/transformer-block/lesson.mdx'),
   'sampling-decoding': () =>

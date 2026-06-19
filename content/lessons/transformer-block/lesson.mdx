@@ -3,7 +3,7 @@ import { Callout } from '@/components/lesson/Callout';
 
 ## How do all the pieces actually fit together?
 
-You've built attention, masking, embeddings, positional encoding, layer normalization, residuals, and the feed-forward network — each in its own lesson, each with its own interactive. The block is six lines of code. The question this lesson answers is the one you've been working toward: when you put them all on one page, what do they actually do?
+You've built attention, masking, embeddings, positional encoding, layer normalization, residuals, and the feed-forward network — each in its own lesson, each with its own interactive. (Production variants might swap the dense FFN for a mixture-of-experts FFN, or use grouped-query attention with a flash-attention kernel, but the *shape* of the block is the same either way.) The block is six lines of code. The question this lesson answers is the one you've been working toward: when you put them all on one page, what do they actually do?
 
 The transformer block is six lines. Take the input, normalize it, attend, add the attention back, normalize that, run a small MLP, add the MLP back, return. Every line is a piece you have already met. The whole point of the prerequisite chain is that nothing here is new.
 

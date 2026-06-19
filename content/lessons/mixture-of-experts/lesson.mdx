@@ -1,0 +1,85 @@
+import { MathCode } from '@/components/lesson/MathCode';
+import { Callout } from '@/components/lesson/Callout';
+
+## The FFN is where the parameters live. What if not all of it has to run?
+
+The feed-forward lesson made a small observation that quietly reshapes modern model design: most of a transformer's parameters live in the FFN, not the attention. At $d_{\text{model}} = 4096$ with a 4× expansion, each FFN is $\sim$33M parameters; across 32 blocks that's a billion parameters in FFNs alone, dwarfing the $\sim$200M in attention projections.
+
+That asymmetry creates an opening. What if you had *more* FFN — say, eight different FFNs sitting side by side, each specialized for different kinds of tokens — but only ran one or two of them per token? You'd carry the parameters but skip most of the compute. Model capacity would grow 8×; compute would only grow 2×. The model would have eight different "thinking styles" available; each token would only use the most relevant two.
+
+This is the **mixture of experts (MoE)** trick, and it's the architectural choice behind Mixtral-8×7B, DeepSeek-V2/V3, GPT-OSS variants, and Switch Transformer. The compute story is simple: more capacity at the same FLOPs. The training story is harder, because you need a *router* that picks the right experts for each token, and the router has to be learned from gradients alone.
+
+## The trick
+
+Replace one big FFN with $N$ smaller "expert" FFNs $E_1, \ldots, E_N$ and a small router $g$. For each token's hidden vector $\mathbf{x}$, the router produces $N$ logits, softmaxes them, picks the top-$k$ experts, and renormalizes their weights. The output is the weighted sum of the chosen experts' outputs.
+
+$$
+\text{MoE}(\mathbf{x}) = \sum_{i \in \text{top-}k(g(\mathbf{x}))} w_i \cdot E_i(\mathbf{x})
+$$
+
+The expert *not* in the top-$k$ doesn't run at all — its FLOPs are skipped. That's where the compute savings come from. The expert parameters still exist in memory; they're just dormant for this token.
+
+<MathCode
+  math="\text{MoE}(\mathbf{x}) = \sum_{i \in \text{top-}k(g(\mathbf{x}))} w_i \cdot E_i(\mathbf{x})"
+  code={`# Mixture of experts: one small router + N expert FFNs.
+class MoE(nn.Module):
+    def __init__(self, d_model, d_ff, n_experts, top_k):
+        super().__init__()
+        self.experts = nn.ModuleList(
+            [FeedForward(d_model, d_ff) for _ in range(n_experts)]
+        )
+        self.router = nn.Linear(d_model, n_experts, bias=False)
+        self.top_k = top_k
+
+    def forward(self, x):
+        logits = self.router(x)               # [B, T, n_experts]
+        weights, indices = topk(softmax(logits), self.top_k)
+        weights = weights / weights.sum(-1, keepdim=True)   # renormalize
+
+        out = torch.zeros_like(x)
+        for i in range(self.top_k):
+            for e in range(len(self.experts)):
+                mask = (indices[..., i] == e)
+                if mask.any():
+                    out[mask] += weights[..., i:i+1][mask] * self.experts[e](x[mask])
+        return out`}
+  caption="The mask gather/scatter is what makes MoE messy in practice — production kernels (Megablocks, Switch) implement it as a sparse matmul. The math above is the reference."
+/>
+
+The load-balancing problem is real: if the router consistently picks the same few experts, the rest never get gradient and the model collapses to a smaller dense one. Production training adds an **auxiliary load-balancing loss** that penalizes uneven utilization, keeping the per-expert load near uniform.
+
+## Try it
+
+<Callout targetInteractive="moe-router">
+  Default is top-2 routing across 8 experts — the Mixtral configuration. Hit "Re-route" a few times. Watch the imbalance number jump around; in a random router (no training signal), some experts almost always get more work than others. Switch to top-1: now every token activates exactly one expert (Switch Transformer style), and imbalance gets worse — there's no "second choice" to spread the load.
+</Callout>
+
+<Callout title="Why the aux loss matters" targetInteractive="moe-router">
+  Imagine the model never updates the lopsided routing. Idle experts get no gradient through this layer (their output is zero-weighted, so $\partial L / \partial E_i = 0$), so they stay random forever. Production training drives the imbalance number toward 1.0 by adding a penalty term: `L += alpha * sum_e (load_e^2)`. The model has to *want* to use every expert, even when it doesn't.
+</Callout>
+
+## A second look
+
+<Callout targetInteractive="moe-cost-bars">
+  Click through the four cards. Mixtral-8×7B has 8× the FFN parameters of dense — the muted bar is 8× longer — but the accent bar (active FLOPs) is only 2× longer because top-2 of 8 = 1/4 of the experts compute per token. That's the whole MoE pitch: 4× more parameters for free relative to a dense model with matched compute.
+</Callout>
+
+<Callout title="The Switch Transformer extreme" targetInteractive="moe-cost-bars">
+  The MoE-64 card is the Switch Transformer (Fedus et al., 2021): 64 experts, top-1. Active compute is just 1× dense; total params are 64× dense. The extreme version of the MoE pitch — most params dormant for any given token. The trade is sharper load-balancing pain and harder training dynamics; the original Switch paper spent significant effort on routing stability.
+</Callout>
+
+## Reading the result
+
+Three things to internalize.
+
+**MoE decouples parameter count from active FLOPs.** A dense model has params ≈ FLOPs (every parameter is touched per token). MoE has params = N × FLOPs / k. This is the only architectural lever that lets you scale model capacity faster than you scale compute, which is why MoE became the default for frontier open-weights models once load-balancing was solved well enough.
+
+**The router is a learned softmax over experts.** Just a small linear projection followed by top-k. No magic. What makes it work is the auxiliary load-balancing loss that forces the router to spread tokens across experts; without it, the router collapses to "always pick the same few experts" and you've trained a smaller dense model with extra parameters wasted.
+
+**Top-2 of 8 is the dominant choice.** Mixtral, DeepSeek-V2, Qwen MoE, GPT-OSS-class — almost all converge near top-2 of 8 (or 16). The reason is empirical: top-1 has worse load balance and lower quality; top-4+ buys little capacity per FLOP. The sweet spot is "a small fraction of experts active, but more than one, so the router gets a useful gradient."
+
+## Recap
+
+Three takeaways. **Replace one FFN with N expert FFNs and a router that picks top-k per token.** Compute scales as k; parameters scale as N. **A learned softmax over N experts plus an auxiliary load-balancing loss is the recipe.** Without the aux loss, training collapses; with it, every expert eventually gets used. **Top-2 of 8 is what production picks** — the sweet spot between active-FLOPs efficiency and trainability.
+
+Two sublayers down (attention and FFN), one block to go. The next lesson assembles every piece — embeddings, RoPE, attention, residuals, layer norm, and now potentially the MoE FFN — into the full transformer block, then stacks dozens of them to make a model.

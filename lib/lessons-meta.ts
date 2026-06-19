@@ -27,6 +27,7 @@ import { meta as groupedQueryAttentionMeta } from '@/content/lessons/grouped-que
 import { meta as flashAttentionMeta } from '@/content/lessons/flash-attention/meta';
 import { meta as residualsLayernormMeta } from '@/content/lessons/residuals-layernorm/meta';
 import { meta as feedForwardMeta } from '@/content/lessons/feed-forward/meta';
+import { meta as mixtureOfExpertsMeta } from '@/content/lessons/mixture-of-experts/meta';
 import { meta as transformerBlockMeta } from '@/content/lessons/transformer-block/meta';
 import { meta as samplingDecodingMeta } from '@/content/lessons/sampling-decoding/meta';
 import { meta as kvCacheMeta } from '@/content/lessons/kv-cache/meta';
@@ -76,6 +77,7 @@ const manifest: readonly LessonMetaEntry[] = [
   { meta: flashAttentionMeta },
   { meta: residualsLayernormMeta },
   { meta: feedForwardMeta },
+  { meta: mixtureOfExpertsMeta },
   { meta: transformerBlockMeta },
   { meta: samplingDecodingMeta },
   { meta: kvCacheMeta },
@@ -153,6 +155,7 @@ export const TRACKS: readonly LessonTrack[] = [
       'flash-attention',
       'residuals-layernorm',
       'feed-forward',
+      'mixture-of-experts',
       'transformer-block',
     ],
   },

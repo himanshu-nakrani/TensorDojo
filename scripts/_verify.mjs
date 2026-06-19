@@ -26,6 +26,7 @@ const SLUGS = [
   'flash-attention',
   'residuals-layernorm',
   'feed-forward',
+  'mixture-of-experts',
   'transformer-block',
   'sampling-decoding',
   'kv-cache',
