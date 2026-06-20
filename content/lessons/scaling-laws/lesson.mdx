@@ -1,0 +1,82 @@
+import { MathCode } from '@/components/lesson/MathCode';
+import { Callout } from '@/components/lesson/Callout';
+
+## You have $10M of compute. How many parameters?
+
+The training loop you built two lessons ago could in principle scale to any model size. What it can't tell you is *which* size you should pick. Before any kernel runs, before any data loads, the very first question is: given a fixed compute budget (which is what a real GPU cluster amounts to), how big should the model be, and how many tokens should you train it on?
+
+For most of the 2010s the answer was "make it bigger." Add parameters; loss falls. GPT-2 was 1.5B parameters trained on ~10B tokens. GPT-3 was 175B parameters trained on 300B tokens. Gopher was 280B trained on 300B. Each step jumped the parameter count by an order of magnitude; each step saw lower loss. The field assumed parameters were what mattered.
+
+Chinchilla (Hoffmann et al., 2022) showed that was wrong. At GPT-3's compute budget, you could have trained a much smaller model on far more tokens and ended up with lower loss. GPT-3 was *under-trained* on its parameter count. Gopher was *worse*-under-trained. The whole pre-2022 frontier was sitting on the wrong half of the trade.
+
+## The functional form
+
+Kaplan et al. (2020) first showed that LM loss decays as a power law in parameter count $N$, token count $D$, and compute $C$ — separately. Chinchilla put the three together into a single fitted surface:
+
+$$
+L(N, D) = E + \frac{A}{N^{\alpha}} + \frac{B}{D^{\beta}}
+$$
+
+Three terms: an irreducible floor $E$ (the entropy of the data itself), a parameter-deficit term that shrinks as $N$ grows, and a data-deficit term that shrinks as $D$ grows. The fitted constants (Approach 3 from the paper) are $E = 1.69$, $A = 406.4$, $B = 410.7$, $\alpha = 0.34$, $\beta = 0.28$.
+
+The compute constraint comes from the standard FLOPs estimate: training a dense transformer takes $C \approx 6 N D$ FLOPs (the 6 is 2 from multiply-accumulate × 3 from forward + backward). Fix $C$, and you're tracing a curve through (N, D) space; minimize loss along that curve and you've found the compute-optimal split.
+
+<MathCode
+  math="L(N, D) = E + \frac{A}{N^{\alpha}} + \frac{B}{D^{\beta}}, \qquad C \approx 6 N D"
+  code={`# Sweep along the C = 6 · N · D constraint and find the optimum.
+def chinchilla_optimum(C, log_n_grid=200):
+    best = (None, float('inf'))
+    for log_n in np.linspace(6, 13, log_n_grid):
+        N = 10**log_n
+        D = C / (6 * N)
+        L = 1.69 + 406.4 * N**-0.34 + 410.7 * D**-0.28
+        if L < best[1]:
+            best = (N, L)
+    N_star = best[0]
+    return N_star, C / (6 * N_star)
+
+# Plugging in Chinchilla's compute budget (~6e23 FLOPs):
+#   N* ≈ 30B params, D* ≈ 3T tokens
+# Chinchilla actually trained 70B / 1.4T at the same budget —
+# their famous "20 tokens per parameter" was derived from a
+# different fitting approach in the same paper. The discrepancy
+# between Approach 3's constants and the paper's headline is a
+# well-documented inconsistency (Besiroglu et al., 2024).`}
+  caption="The loss surface and the FLOPs estimate. The optimization is one-dimensional once you fix C. The constants are Chinchilla's published values; the math is the math."
+/>
+
+## Try it
+
+<Callout targetInteractive="scaling-law-surface">
+  Default budget is around 1e24 FLOPs (Chinchilla / GPT-3 scale). The U-shaped curve is loss along the compute constraint; the dot at the bottom is the optimum. Drag your N slider far to the left — you've picked a tiny model and dumped all your compute into tokens. Loss climbs. Drag far right — huge model, few tokens. Loss also climbs. The optimum sits in between, and the loss penalty for being off-optimum grows fast.
+</Callout>
+
+<Callout title="Why GPT-3 was under-trained" targetInteractive="scaling-law-surface">
+  GPT-3 used 175B parameters and 300B tokens — about 1.7 tokens per parameter. At its compute budget (~3e23 FLOPs), the curve in this sim says the optimum is much further left, with many more tokens per parameter. The loss penalty for sitting at 175B parameters with that budget is real and measurable. Chinchilla repeated the experiment at the same budget with 70B parameters and 1.4T tokens (20 tokens per parameter) and got lower loss — the headline finding of the paper.
+</Callout>
+
+## A second look
+
+<Callout targetInteractive="scaling-law-trade">
+  The heatmap shows the whole loss surface. Lower loss is always down-right (more of both, naturally). The dashed line is the compute-optimal frontier across budgets. GPT-3 and GPT-2 are pinned in the upper-left of the surface — parameter-rich, token-poor, visibly above the frontier. Chinchilla sits on the line; that's the whole pitch of the paper. LLaMA-2 and LLaMA-3 sit *below* the line, especially LLaMA-3 — they deliberately over-trained.
+</Callout>
+
+<Callout title="Why over-train on purpose" targetInteractive="scaling-law-trade">
+  Chinchilla minimizes *training* compute. But once the model is trained, it serves inferences — billions of them, for a successful product. Each inference is roughly proportional to the parameter count. So a 70B model trained on 15T tokens is more expensive to train than a 140B model trained on 7.5T tokens (same total compute), but cheaper to serve. LLaMA-3-70B over-trains by ~10× past Chinchilla-optimal because Meta knew that model would be served at scale, and inference dollars dominate training dollars for any frontier model.
+</Callout>
+
+## Reading the result
+
+Three things to internalize.
+
+**Loss is a smooth, fitted function of N and D.** The Chinchilla functional form $L = E + A/N^\alpha + B/D^\beta$ is an empirical fit, not a theorem. It generalizes well across the 2020-2022 scale range; whether it extrapolates to today's frontier scale is contested. But within its fitting range, it makes a specific testable prediction: given $C$, there is a unique compute-optimal $N$, and being off it costs measurable loss.
+
+**Pre-Chinchilla, the field was systematically wrong in one direction.** GPT-3, Gopher, MT-NLG — all parameter-rich, all under-trained. The intuition that "more parameters = better" wasn't wrong, but the implicit corollary "even at fixed compute" was. Chinchilla showed the trade-off was steeper than people thought, and that smaller-and-longer beat bigger-and-shorter at any reasonable compute budget.
+
+**Post-Chinchilla, production over-trains on purpose.** The Chinchilla optimum minimizes training compute. Real systems minimize total cost = training + inference × queries. For any model that will serve millions of requests, the inference cost dominates, and the right move is to over-train a smaller model. LLaMA-3 (70B, 15T tokens, ~214 tokens per parameter) is the clearest example: ~10× past Chinchilla-optimal, deliberately, because the served-token-count justifies it.
+
+## Recap
+
+Three takeaways. **Loss decays as a power law in N and D**; the Chinchilla functional form is $L = E + A/N^\alpha + B/D^\beta$ with fitted constants from real LM data. **For a fixed compute budget $C \approx 6 N D$, there is a unique compute-optimal split** — pre-Chinchilla models systematically sat on the param-rich, token-poor side of it. **Production over-trains on purpose** because inference cost is its own budget, and a smaller, more-trained model is cheaper to serve. The 20-tokens-per-parameter headline rule from Chinchilla is roughly right at training budgets near theirs; modern production runs at 50–200 tokens per parameter.
+
+Even a Chinchilla-optimal model eventually overfits if you train it long enough on the same tokens. The next lesson backs up from "how big should the model be" to "even with the right size, why does test loss eventually climb?" — the overfitting story the regularization chapter opens with.

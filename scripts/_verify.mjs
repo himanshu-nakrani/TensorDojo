@@ -38,6 +38,7 @@ const SLUGS = [
   'optimizers',
   'lr-schedules',
   'training-end-to-end',
+  'scaling-laws',
   'overfitting',
   'weight-decay',
   'dropout',

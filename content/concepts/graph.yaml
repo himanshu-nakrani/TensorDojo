@@ -72,6 +72,8 @@ nodes:
     title: Cosine learning-rate decay
   - id: training-loop
     title: Training loop
+  - id: scaling-laws
+    title: Scaling laws
 
   # Regularization module
   - id: overfitting
@@ -196,6 +198,9 @@ nodes:
   - id: training-end-to-end-concept
     title: "Training a tiny model, end to end"
     lesson: training-end-to-end
+  - id: scaling-laws-concept
+    title: "Scaling laws: how big should the model be?"
+    lesson: scaling-laws
   - id: overfitting-concept
     title: "Overfitting: when the model memorizes the data"
     lesson: overfitting
@@ -394,6 +399,12 @@ edges:
     to: lr-schedules-concept
   - from: training-loop
     to: training-end-to-end-concept
+  - from: training-loop
+    to: scaling-laws
+  - from: scaling-laws
+    to: scaling-laws-concept
+  - from: training-end-to-end-concept
+    to: scaling-laws-concept
   - from: multi-head
     to: transformer-block
   - from: residual

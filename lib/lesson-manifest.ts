@@ -46,6 +46,7 @@ import { meta as sgdMeta } from '@/content/lessons/sgd/meta';
 import { meta as optimizersMeta } from '@/content/lessons/optimizers/meta';
 import { meta as lrSchedulesMeta } from '@/content/lessons/lr-schedules/meta';
 import { meta as trainingEndToEndMeta } from '@/content/lessons/training-end-to-end/meta';
+import { meta as scalingLawsMeta } from '@/content/lessons/scaling-laws/meta';
 import { meta as overfittingMeta } from '@/content/lessons/overfitting/meta';
 import { meta as weightDecayMeta } from '@/content/lessons/weight-decay/meta';
 import { meta as dropoutMeta } from '@/content/lessons/dropout/meta';
@@ -96,6 +97,7 @@ const metaBySlug: Readonly<Record<string, LessonMeta>> = {
   'optimizers': optimizersMeta,
   'lr-schedules': lrSchedulesMeta,
   'training-end-to-end': trainingEndToEndMeta,
+  'scaling-laws': scalingLawsMeta,
   overfitting: overfittingMeta,
   'weight-decay': weightDecayMeta,
   dropout: dropoutMeta,
@@ -224,6 +226,10 @@ const interactivesLoaders: Readonly<Record<string, () => Promise<{
     })),
   'training-end-to-end': () =>
     import('@/content/lessons/training-end-to-end/interactives').then((m) => ({
+      interactives: m.interactives,
+    })),
+  'scaling-laws': () =>
+    import('@/content/lessons/scaling-laws/interactives').then((m) => ({
       interactives: m.interactives,
     })),
   overfitting: () =>

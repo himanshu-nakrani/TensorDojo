@@ -4,7 +4,7 @@ export const meta = {
   summary:
     'When the training signal is preference rather than label, gradient descent still works — on a preference loss. DPO is the cleanest entry point: one log-ratio loss over the preferred/dispreferred pair, and the standard SGD update. Capstone for the lab.',
   minutes: 9,
-  order: 40,
+  order: 41,
 } as const;
 
 export type LessonMeta = typeof meta;

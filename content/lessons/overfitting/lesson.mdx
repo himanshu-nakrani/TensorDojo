@@ -3,7 +3,7 @@ import { Callout } from '@/components/lesson/Callout';
 
 ## Training loss going down is good. So why does test loss eventually go up?
 
-The previous lessons taught the full training pipeline: backprop, mini-batches, optimizers, schedules, the whole loop. With every knob set sensibly, the training loss falls and the test accuracy climbs. But the *test* curve eventually reverses — and the gap between train and test loss is **overfitting**.
+The previous lessons taught the full training pipeline: backprop, mini-batches, optimizers, schedules, the whole loop — plus how to pick the right model size with scaling laws. With every knob set sensibly, the training loss falls and the test accuracy climbs. But the *test* curve eventually reverses — and the gap between train and test loss is **overfitting**.
 
 The intuition: a model with enough parameters can fit any set of points *exactly*. Zero training loss is a thing. But the same model may be fitting high-frequency noise rather than the underlying signal — the noise is the only thing in the training set that *isn't* the underlying function, and the model dutifully memorizes it. The training set says "fit this"; the model says "yes, all of it." Then on a held-out test point, the noise is different, and the model's fit of the noise doesn't transfer.
 

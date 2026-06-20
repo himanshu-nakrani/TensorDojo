@@ -39,6 +39,7 @@ import { meta as sgdMeta } from '@/content/lessons/sgd/meta';
 import { meta as optimizersMeta } from '@/content/lessons/optimizers/meta';
 import { meta as lrSchedulesMeta } from '@/content/lessons/lr-schedules/meta';
 import { meta as trainingEndToEndMeta } from '@/content/lessons/training-end-to-end/meta';
+import { meta as scalingLawsMeta } from '@/content/lessons/scaling-laws/meta';
 import { meta as overfittingMeta } from '@/content/lessons/overfitting/meta';
 import { meta as weightDecayMeta } from '@/content/lessons/weight-decay/meta';
 import { meta as dropoutMeta } from '@/content/lessons/dropout/meta';
@@ -91,6 +92,7 @@ const manifest: readonly LessonMetaEntry[] = [
   { meta: optimizersMeta },
   { meta: lrSchedulesMeta },
   { meta: trainingEndToEndMeta },
+  { meta: scalingLawsMeta },
   { meta: overfittingMeta },
   { meta: weightDecayMeta },
   { meta: dropoutMeta },
@@ -177,6 +179,7 @@ export const TRACKS: readonly LessonTrack[] = [
       'optimizers',
       'lr-schedules',
       'training-end-to-end',
+      'scaling-laws',
     ],
   },
   {

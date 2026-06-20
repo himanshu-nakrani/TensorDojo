@@ -134,6 +134,7 @@ export const mdxLessonLoaders: Readonly<
   'lr-schedules': () => import('@/content/lessons/lr-schedules/lesson.mdx'),
   'training-end-to-end': () =>
     import('@/content/lessons/training-end-to-end/lesson.mdx'),
+  'scaling-laws': () => import('@/content/lessons/scaling-laws/lesson.mdx'),
   overfitting: () => import('@/content/lessons/overfitting/lesson.mdx'),
   'weight-decay': () => import('@/content/lessons/weight-decay/lesson.mdx'),
   dropout: () => import('@/content/lessons/dropout/lesson.mdx'),
