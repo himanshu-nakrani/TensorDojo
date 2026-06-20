@@ -62,7 +62,7 @@ def chinchilla_optimum(C, log_n_grid=200):
 </Callout>
 
 <Callout title="Why over-train on purpose" targetInteractive="scaling-law-trade">
-  Chinchilla minimizes *training* compute. But once the model is trained, it serves inferences — billions of them, for a successful product. Each inference is roughly proportional to the parameter count. So a 70B model trained on 15T tokens is more expensive to train than a 140B model trained on 7.5T tokens (same total compute), but cheaper to serve. LLaMA-3-70B over-trains by ~10× past Chinchilla-optimal because Meta knew that model would be served at scale, and inference dollars dominate training dollars for any frontier model.
+  Chinchilla minimizes *training* compute. But once the model is trained, it serves inferences — billions of them, for a successful product. Each inference is roughly proportional to the parameter count. So a 70B model trained on 15T tokens is more expensive to train than a 140B model trained on 7.5T tokens (same total compute), but cheaper to serve. LLaMA-3-70B sits at 214 tokens-per-parameter — roughly 2× past what the fitted frontier in this sim says is optimal at the same budget, and ~10× past Chinchilla's headline 20-tokens-per-parameter rule. Meta deliberately picked the over-trained end because that model would be served at scale, and inference dollars dominate training dollars for any frontier model.
 </Callout>
 
 ## Reading the result
@@ -73,7 +73,7 @@ Three things to internalize.
 
 **Pre-Chinchilla, the field was systematically wrong in one direction.** GPT-3, Gopher, MT-NLG — all parameter-rich, all under-trained. The intuition that "more parameters = better" wasn't wrong, but the implicit corollary "even at fixed compute" was. Chinchilla showed the trade-off was steeper than people thought, and that smaller-and-longer beat bigger-and-shorter at any reasonable compute budget.
 
-**Post-Chinchilla, production over-trains on purpose.** The Chinchilla optimum minimizes training compute. Real systems minimize total cost = training + inference × queries. For any model that will serve millions of requests, the inference cost dominates, and the right move is to over-train a smaller model. LLaMA-3 (70B, 15T tokens, ~214 tokens per parameter) is the clearest example: ~10× past Chinchilla-optimal, deliberately, because the served-token-count justifies it.
+**Post-Chinchilla, production over-trains on purpose.** The Chinchilla optimum minimizes training compute. Real systems minimize total cost = training + inference × queries. For any model that will serve millions of requests, the inference cost dominates, and the right move is to over-train a smaller model. LLaMA-3 (70B, 15T tokens, ~214 tokens per parameter) is the clearest example: roughly 2× past where this lesson's fitted frontier puts the compute-optimum at that budget, and an order of magnitude past Chinchilla's headline rule of 20 — deliberately, because the served-token-count justifies it.
 
 ## Recap
 

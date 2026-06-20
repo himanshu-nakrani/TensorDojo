@@ -27,7 +27,7 @@ export const interactives: readonly InteractiveEntry[] = [
     id: 'moe-cost-bars',
     title: 'Total params vs active compute',
     description:
-      'For four real architectures (dense LLaMA, Mixtral 8×7B, DeepSeek-V2 MoE-16, Switch Transformer MoE-64), the side-by-side bars compare total FFN parameter count to active FLOPs per token. Both are relative to a single-expert dense baseline.',
+      'For four real architectures (dense LLaMA, Mixtral 8×7B, DBRX MoE-16, Switch Transformer MoE-64), the side-by-side bars compare total FFN parameter count to active FLOPs per token. Both are relative to a single-expert dense baseline.',
     caption:
       'Click each card. Mixtral-8×7B has 8× the FFN parameters of a dense baseline but the same active compute as a top-2 forward pass — about 2× the dense FLOPs. Switch Transformer is the extreme: 64× the parameters at ~1× the dense compute. MoE decouples params from compute; that\'s the whole point.',
     Component: MoECostBars,

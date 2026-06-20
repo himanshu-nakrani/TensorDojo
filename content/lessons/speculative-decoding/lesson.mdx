@@ -63,7 +63,7 @@ def speculative_decode(target, draft, prompt, gamma=4, max_tokens=128):
 ## Try it
 
 <Callout targetInteractive="speculative-rounds">
-  Default is γ=4, α=0.7 — a typical 7B-drafts-70B setup. Most rounds reach 4 or 5 tokens (the +1 bonus when all γ accept). Switch α to "easy text" (0.9) and watch the rounds run almost to the full γ every time. Switch to "hostile" (0.3) and watch the rounds truncate early — most rounds produce just 1-2 tokens, and the draft cost starts to hurt. Re-sample with different seeds to see the variance.
+  Default is γ=4, α=0.7 — a typical 7B-drafts-70B setup. Most rounds reach 4 or 5 tokens (the +1 bonus when all γ accept). Switch α to "easy text" (0.9) and most rounds run to the full γ — roughly two-thirds of them, since 0.9⁴ ≈ 0.66 is the probability all four drafts pass. Switch to "hostile" (0.3) and watch the rounds truncate early — most produce just 1-2 tokens, and the draft cost starts to hurt. Re-sample with different seeds to see the variance.
 </Callout>
 
 <Callout title="Why this preserves model output exactly" targetInteractive="speculative-rounds">

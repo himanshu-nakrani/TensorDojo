@@ -17,7 +17,7 @@ import { activeFlopsRatio, totalParamsRatio } from '@/lib/math/moe';
 const CONFIGS = [
   { label: 'Dense (LLaMA-style)', nExperts: 1, topK: 1 },
   { label: 'MoE-8 (Mixtral 8×7B)', nExperts: 8, topK: 2 },
-  { label: 'MoE-16 (DeepSeek-V2)', nExperts: 16, topK: 2 },
+  { label: 'MoE-16 (DBRX)', nExperts: 16, topK: 4 },
   { label: 'MoE-64 (Switch Transformer)', nExperts: 64, topK: 1 },
 ] as const;
 

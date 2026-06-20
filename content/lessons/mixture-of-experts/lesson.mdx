@@ -76,7 +76,7 @@ Three things to internalize.
 
 **The router is a learned softmax over experts.** Just a small linear projection followed by top-k. No magic. What makes it work is the auxiliary load-balancing loss that forces the router to spread tokens across experts; without it, the router collapses to "always pick the same few experts" and you've trained a smaller dense model with extra parameters wasted.
 
-**Top-2 of 8 is the dominant choice.** Mixtral, DeepSeek-V2, Qwen MoE, GPT-OSS-class — almost all converge near top-2 of 8 (or 16). The reason is empirical: top-1 has worse load balance and lower quality; top-4+ buys little capacity per FLOP. The sweet spot is "a small fraction of experts active, but more than one, so the router gets a useful gradient."
+**Small-N, small-k is the dominant choice for the "few big experts" branch.** Mixtral-8×7B uses top-2 of 8; DBRX uses top-4 of 16; Qwen MoE variants land in the same neighborhood. The other branch is "many tiny experts": DeepSeek-V2 uses top-6 of 160 (plus 2 shared experts always active); Switch Transformer used top-1 of up to 128. Both branches work; the small-N branch is simpler to train and ship, the many-tiny branch trades complexity for finer-grained specialization.
 
 ## Recap
 
