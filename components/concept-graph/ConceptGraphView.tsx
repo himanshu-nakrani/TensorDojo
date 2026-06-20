@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { getVisited, getLastVisited } from '@/lib/progress/visits';
-import type { TrackSection } from '@/lib/content/map-data';
+import type { CrossTrackEdge, TrackSection } from '@/lib/content/map-data';
 
 /**
  * The concept map is laid out as a single SVG canvas:
@@ -13,19 +13,20 @@ import type { TrackSection } from '@/lib/content/map-data';
  *   - Each lesson is a node positioned at (track column, slot
  *     within track). The longest track sets the canvas height.
  *   - In-track arrows are drawn vertically between consecutive
- *     lessons.
- *   - Cross-track prerequisite edges (from graph.yaml) are drawn
- *     as curved SVG paths from the prerequisite lesson to the
- *     dependent lesson. The curve clears node bounding boxes by
- *     going outside the column.
+ *     lessons inside the same column.
+ *   - Cross-track prerequisite edges (from graph.yaml) are NOT
+ *     drawn as arcs — at 8+ tracks and 40+ lessons the arcs
+ *     produce unreadable spaghetti. Instead each destination
+ *     node carries a small "↗N" badge in its top-right corner;
+ *     hovering the badge reveals the prerequisite list.
  *   - Visit state colors the node fill. The "resume" target
  *     (most recently visited) gets an outline ring and a label.
  *
- * This is a deliberately static layout — no force-directed
- * physics, no zooming, no panning. The grid is what makes the
- * structure scannable. The lesson count is small enough
- * (21 over 6 tracks) that a single screen at 1440 holds the whole
- * map without scrolling.
+ * Deliberately static layout — no force-directed physics, no
+ * zooming, no panning. The grid is what makes the structure
+ * scannable. With 8 tracks × 130 px node + 7 × 22 px gap +
+ * 2 × 24 px padding, the canvas is 1242 px wide — comfortable
+ * inside the 1500 px max-w container.
  */
 export function ConceptMapView({ sections }: { sections: TrackSection[] }) {
   const [visited, setVisited] = useState<Set<string>>(() => new Set());
@@ -59,21 +60,21 @@ export function ConceptMapView({ sections }: { sections: TrackSection[] }) {
 
 /**
  * Layout constants. The map is responsive via the wrapping
- * `[mask-image]`-free SVG with `preserveAspectRatio`; the
- * pixel values below are the *design grid*, not absolute
- * screen positions.
+ * SVG with `preserveAspectRatio`; the pixel values below are
+ * the *design grid*, not absolute screen positions.
  *
- * At seven columns × NODE_W + 6 × COL_GAP + 2 × PADDING_X we
- * need to fit inside 1440 px. With NODE_W=155 and COL_GAP=36
- * the canvas is 7*155 + 6*36 + 48 = 1349 px — comfortably
- * under 1440 with margin for the side gutters. The map page
- * also widens its max-w to 1500 px and uses px-4 / sm:px-6
- * gutter so the canvas sits flush on a 1440 viewport.
+ * At N columns × NODE_W + (N-1) × COL_GAP + 2 × PADDING_X we
+ * need to fit inside the 1500 px max-w of the map page. With
+ * 8 tracks at NODE_W=130 and COL_GAP=22 the canvas is
+ * 8*130 + 7*22 + 48 = 1242 px — well within budget. Up to
+ * 10 tracks at the same dimensions would be 1496 px, still OK.
+ * Past that the page should switch to horizontal scroll, which
+ * the wrapper already supports via `overflow-x-auto`.
  */
-const NODE_W = 155;
-const NODE_H = 88;
-const COL_GAP = 36;
-const ROW_GAP = 28;
+const NODE_W = 130;
+const NODE_H = 84;
+const COL_GAP = 22;
+const ROW_GAP = 24;
 const HEADER_H = 44;
 const PADDING_X = 24;
 const PADDING_Y = 24;
@@ -83,6 +84,7 @@ interface PositionedLesson {
   title: string;
   minutes: number;
   concepts: string[];
+  crossTrackPrereqs: CrossTrackEdge[];
   trackId: string;
   /** Column index in the grid (0-based, left to right). */
   col: number;
@@ -92,12 +94,6 @@ interface PositionedLesson {
   cx: number;
   /** Center y. */
   cy: number;
-}
-
-interface CrossEdge {
-  from: PositionedLesson;
-  to: PositionedLesson;
-  fromTrackLabel: string;
 }
 
 function MapCanvas({
@@ -121,6 +117,7 @@ function MapCanvas({
         title: lesson.title,
         minutes: lesson.minutes,
         concepts: lesson.concepts,
+        crossTrackPrereqs: lesson.crossTrackPrereqs,
         trackId: section.id,
         col,
         row,
@@ -132,21 +129,9 @@ function MapCanvas({
     });
   });
 
-  // 2. Collect cross-track edges, lifting them from each destination
-  //    lesson's crossTrackPrereqs.
-  const crossEdges: CrossEdge[] = [];
-  sections.forEach((section) => {
-    section.lessons.forEach((lesson) => {
-      for (const pre of lesson.crossTrackPrereqs) {
-        const from = bySlug.get(pre.from);
-        const to = bySlug.get(pre.to);
-        if (!from || !to) continue;
-        crossEdges.push({ from, to, fromTrackLabel: pre.fromTrackLabel });
-      }
-    });
-  });
-
-  // 3. Canvas dimensions.
+  // 2. Canvas dimensions. (Cross-track prereqs are rendered as
+  // per-node badges on the destination LessonNode rather than as
+  // SVG arcs — see the design-doc block at the top of the file.)
   const cols = sections.length;
   const maxRows = Math.max(...sections.map((s) => s.lessons.length));
   const width = PADDING_X * 2 + cols * NODE_W + (cols - 1) * COL_GAP;
@@ -182,20 +167,6 @@ function MapCanvas({
               <path
                 d="M 0 0 L 10 5 L 0 10 z"
                 className="fill-fg-subtle"
-              />
-            </marker>
-            <marker
-              id="arrow-cross-track"
-              viewBox="0 0 10 10"
-              refX="9"
-              refY="5"
-              markerWidth="6"
-              markerHeight="6"
-              orient="auto-start-reverse"
-            >
-              <path
-                d="M 0 0 L 10 5 L 0 10 z"
-                className="fill-accent/70"
               />
             </marker>
           </defs>
@@ -244,39 +215,6 @@ function MapCanvas({
             }),
           )}
 
-          {/* Cross-track edges as cubic Bézier arcs from the bottom
-              of the source node to the top of the destination
-              node. The control points pull the curve out of the
-              column band so it doesn't overlap nodes. */}
-          {crossEdges.map((e) => {
-            // Exit the source from its right or left edge (toward the
-            // destination), and enter the destination from the opposite
-            // edge. Curving through the gutter keeps the arc out of
-            // intermediate column bands instead of slicing through
-            // unrelated node boxes.
-            const goingRight = e.to.cx > e.from.cx;
-            const sx = e.from.cx + (goingRight ? NODE_W / 2 : -NODE_W / 2);
-            const sy = e.from.cy;
-            const tx = e.to.cx + (goingRight ? -NODE_W / 2 : NODE_W / 2);
-            const ty = e.to.cy;
-            const dx = tx - sx;
-            const reach = Math.max(40, Math.min(160, Math.abs(dx) * 0.45));
-            const c1x = sx + Math.sign(dx) * reach;
-            const c1y = sy;
-            const c2x = tx - Math.sign(dx) * reach;
-            const c2y = ty;
-            return (
-              <path
-                key={`${e.from.slug}->${e.to.slug}`}
-                d={`M ${sx} ${sy} C ${c1x} ${c1y}, ${c2x} ${c2y}, ${tx} ${ty}`}
-                className="stroke-accent/60"
-                strokeWidth={1.25}
-                fill="none"
-                strokeDasharray="3 3"
-                markerEnd="url(#arrow-cross-track)"
-              />
-            );
-          })}
         </svg>
 
         {/* HTML layer: track headers + lesson nodes, absolutely
@@ -342,16 +280,29 @@ function LessonNode({
   visited: boolean;
   resume: boolean;
 }) {
+  const prereqCount = lesson.crossTrackPrereqs.length;
+  const prereqTitle =
+    prereqCount === 0
+      ? undefined
+      : `Cross-track prerequisite${prereqCount === 1 ? '' : 's'}:\n` +
+        lesson.crossTrackPrereqs
+          .map((p) => `• ${p.fromTitle} (${p.fromTrackLabel})`)
+          .join('\n');
+
   return (
     <Link
       href={`/lessons/${lesson.slug}`}
       aria-label={`Open lesson: ${lesson.title}${
         visited ? ' (visited)' : ''
-      }${resume ? ' — resume here' : ''}`}
+      }${resume ? ' — resume here' : ''}${
+        prereqCount > 0
+          ? `. ${prereqCount} cross-track prerequisite${prereqCount === 1 ? '' : 's'}.`
+          : ''
+      }`}
       data-visited={visited ? 'true' : 'false'}
       data-resume={resume ? 'true' : 'false'}
       className={[
-        'focus-ring group absolute block rounded-lg border bg-bg-elevated p-3 transition-colors card-surface',
+        'focus-ring group absolute block rounded-lg border bg-bg-elevated p-2.5 transition-colors card-surface',
         resume
           ? 'border-accent ring-2 ring-accent/30 hover:bg-bg-elevated-hover'
           : visited
@@ -373,26 +324,28 @@ function LessonNode({
           Resume
         </div>
       )}
-      <div className="flex items-start justify-between gap-2 h-full">
-        <h3 className="text-[0.825rem] font-semibold text-ink leading-snug tracking-[-0.005em] line-clamp-3">
+      <div className="flex items-start justify-between gap-1.5 h-full">
+        <h3 className="text-[0.78rem] font-semibold text-ink leading-snug tracking-[-0.005em] line-clamp-3">
           {lesson.title}
         </h3>
         <span
           aria-hidden="true"
           className={
             visited
-              ? 'inline-block h-2.5 w-2.5 shrink-0 rounded-full bg-accent ring-2 ring-accent/20 mt-1'
-              : 'inline-block h-2.5 w-2.5 shrink-0 rounded-full border border-border-strong mt-1'
+              ? 'inline-block h-2 w-2 shrink-0 rounded-full bg-accent ring-2 ring-accent/20 mt-1'
+              : 'inline-block h-2 w-2 shrink-0 rounded-full border border-border-strong mt-1'
           }
           title={visited ? 'Visited' : 'Not yet visited'}
         />
       </div>
-      <div className="absolute bottom-2 left-3 right-3 flex items-center justify-between text-[9px] font-mono text-fg-subtle pointer-events-none">
+      <div className="absolute bottom-1.5 left-2.5 right-2.5 flex items-center justify-between text-[9px] font-mono text-fg-subtle pointer-events-none">
         <span>{lesson.minutes} min</span>
-        {lesson.concepts.length > 0 && (
-          <span title={lesson.concepts.join(', ')} className="truncate ml-2">
-            {lesson.concepts.length} concept
-            {lesson.concepts.length === 1 ? '' : 's'}
+        {prereqCount > 0 && (
+          <span
+            title={prereqTitle}
+            className="inline-flex items-center gap-0.5 px-1 rounded border border-accent/40 text-accent pointer-events-auto"
+          >
+            ↗{prereqCount}
           </span>
         )}
       </div>
@@ -422,18 +375,10 @@ function Legend({ hasResume }: { hasResume: boolean }) {
         next in track
       </span>
       <span className="inline-flex items-center gap-1.5">
-        <svg width="22" height="6" aria-hidden="true">
-          <line
-            x1="0"
-            y1="3"
-            x2="20"
-            y2="3"
-            className="stroke-accent/60"
-            strokeWidth="1.25"
-            strokeDasharray="3 3"
-          />
-        </svg>
-        cross-track prerequisite
+        <span className="inline-flex items-center px-1 rounded border border-accent/40 text-accent text-[9px] font-mono">
+          ↗N
+        </span>
+        N cross-track prerequisites (hover for list)
       </span>
       {hasResume && (
         <span className="inline-flex items-center gap-1.5">

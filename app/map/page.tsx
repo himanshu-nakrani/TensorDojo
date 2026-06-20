@@ -47,9 +47,10 @@ export default function MapPage() {
           How the pieces connect
         </h1>
         <p className="text-[1rem] text-muted leading-relaxed">
-          Seven tracks, left to right, in reading order. Solid arrows
-          mark the next lesson within a track; dashed arcs mark a
-          prerequisite from another track. If you've started reading,
+          Eight tracks, left to right, in reading order. Arrows mark
+          the next lesson within a track. A small ↗N badge on a
+          lesson means it has N cross-track prerequisites — hover
+          the badge for the list. If you&apos;ve started reading,
           your last lesson is highlighted as the resume point.
         </p>
       </header>
