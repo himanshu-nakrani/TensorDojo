@@ -81,22 +81,27 @@
 }
 
 :root.dark {
-  --bg: 11 13 16;
-  --bg-elevated: 20 24 29;
-  --bg-code: 20 24 29;
+  /* GitHub-inspired dark grey palette. The previous #0B0D10
+     read as near-black and gave the page a heavier feel than
+     intended; #0d1117 / #161b22 are GitHub's canvas + surface
+     pair and provide enough warmth that the page reads as a
+     deliberately dark grey rather than an OLED-black void. */
+  --bg: 13 17 23;
+  --bg-elevated: 22 27 34;
+  --bg-code: 22 27 34;
 
   --fg: 229 231 235;
   --fg-muted: 156 163 175;
   --fg-subtle: 148 163 184;       /* slate-400; ≈5.5:1 on --bg (was 4.02:1) */
 
-  --border: 31 36 42;
-  --border-strong: 42 50 59;
+  --border: 33 38 45;
+  --border-strong: 48 54 61;
 
   --accent: 45 212 191;
   --accent-hover: 94 234 212;
-  --accent-fg: 11 13 16;
+  --accent-fg: 13 17 23;
 
-  --grid: 31 36 42;
+  --grid: 33 38 45;
   --positive: 45 212 191;
   --negative: 248 113 113;
 
@@ -109,13 +114,13 @@
   --accent-faint: rgba(45, 212, 191, 0.10);
   --accent-dim: rgba(45, 212, 191, 0.28);
 
-  --bg-elevated-hover: 26 31 37;
+  --bg-elevated-hover: 29 36 46;
   --accent-shadow: rgba(45, 212, 191, 0.15);
 
   --negative-bg: rgba(248, 113, 113, 0.7);
   --shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.02);
 
-  --cell-halo: 11 13 16;
+  --cell-halo: 13 17 23;
 }
 
 /* ===========================================================================
