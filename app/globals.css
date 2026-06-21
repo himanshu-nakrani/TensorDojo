@@ -460,6 +460,33 @@
 }
 
 /* ===========================================================================
+   Entrance animations — fade-up on first paint. Applied via the
+   .animate-fade-up class with optional --delay custom property.
+   Respects prefers-reduced-motion (elements appear instantly).
+   =========================================================================== */
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-fade-up {
+  animation: fade-up 600ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: var(--delay, 0ms);
+}
+@media (prefers-reduced-motion: reduce) {
+  .animate-fade-up {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ===========================================================================
    Card surface (a small inset highlight on elevated cards).
    Use the .card-surface utility anywhere a sim card wants the
    top-edge highlight. Token resolves per theme.

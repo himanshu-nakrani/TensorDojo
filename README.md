@@ -1,20 +1,81 @@
 # AI Learning Lab
-# AI Learning Lab
 
 > **Learn AI by manipulating it.** Every concept is something you can
 > move, change, and watch respond. Drag a slider, edit a number, read a
-result.
+> result.
 
-Forty-one articles with embedded interactive figures, organized as eight
-tracks that build up from the dot product to backpropagation to a
+![lessons](https://img.shields.io/badge/lessons-41-blue)
+![tests](https://img.shields.io/badge/tests-492-6e9f18)
+![Next.js](https://img.shields.io/badge/Next.js-15-black)
+![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178c6)
+![React](https://img.shields.io/badge/React-19-61dafb)
+![Tailwind](https://img.shields.io/badge/Tailwind-3.4-38bdf8)
+![pnpm](https://img.shields.io/badge/pnpm-9+-f69220)
+
+Forty-one interactive lessons that build up from the dot product to a
 trained, regularized, fine-tuned model — and on through inference
-efficiency, scaling laws, and evaluation. No videos, no quizzes (yet), no
-backend. The companion `design-spec.md` and `technical-spec.md`
-describe the longer arc — notebooks, the sync engine, the AI tutor —
-that this build is the foundation for.
-## What's live
+efficiency, scaling laws, and evaluation. No videos, no quizzes (yet),
+no backend. Every figure is React + SVG you can manipulate; every math
+module is backed by tests that defend against silent numerical breakage.
 
-Forty-one lessons across eight tracks, in reading order:
+The companion `design-spec.md` and `technical-spec.md` describe the
+longer arc — notebooks, the sync engine, the AI tutor — that this build
+is the foundation for.
+
+---
+
+## Highlights
+
+- **Manipulate, don't just read.** Every lesson centers on an
+  interactive figure — sliders, number inputs, live SVG — not a
+  passive diagram. Change an input, watch the math recompute.
+- **No charting library.** Pure React + SVG. No D3, no Canvas, no
+  recharts. The primitives (`VectorCanvas`, `Heatmap`, `BarChart`,
+  `Slider`, `NumberInput`, `SimFrame`, `LossLandscape`) are themed
+  through the same token system as the prose.
+- **Math you can trust.** 40 math modules, 492 tests. Boundary cases —
+  zero vectors, dimension mismatches, NaN propagation — are covered
+  explicitly so a lesson never silently breaks.
+- **Strict end to end.** TypeScript strict, zod-validated lesson
+  metadata at build time, a content linter that rejects cycles and
+  dangling edges, and a headless render-error sweep over all 41 routes.
+- **Light + dark, no flash.** Themes via CSS custom properties with an
+  inline no-flash script. One accent color, reserved exclusively for
+  things you can move or navigate to.
+- **A concept map, not just a list.** `/map` renders the eight tracks
+  as columns with in-track arrows and cross-track prerequisite arcs.
+  Your resume point is highlighted from `localStorage` — no backend.
+
+---
+
+## Table of contents
+
+- [The eight tracks](#the-eight-tracks)
+- [Stack](#stack)
+- [Quick start](#quick-start)
+- [Adding a new lesson](#adding-a-new-lesson)
+- [Project structure](#project-structure)
+- [Design system](#design-system)
+- [Navigation model](#navigation-model)
+- [The longer arc](#the-longer-arc)
+
+---
+
+## The eight tracks
+
+| # | Track | Lessons | What you manipulate |
+|---|-------|:-------:|---------------------|
+| 1 | Foundations of similarity | 2 | Vectors, projections, cosine angles |
+| 2 | How models pick what matters | 5 | Softmax temperature, attention scores, causal masks |
+| 3 | How tokens become inputs | 4 | BPE merges, embedding planes, RoPE rotations |
+| 4 | Building the transformer block | 7 | Heads, residuals, FFN width, MoE routing |
+| 5 | What the model says, and how it learns | 5 | Sampling, KV cache, speculative drafts, loss curves |
+| 6 | How models learn | 6 | Gradients, optimizers, schedules, scaling budgets |
+| 7 | How models don't memorize | 5 | Dropout rate, batchnorm stats, early stopping |
+| 8 | Adapting models to new tasks | 7 | Layer freezing, quantization bits, LoRA rank, RLHF |
+
+<details>
+<summary><strong>Full lesson list (41 lessons, in reading order)</strong></summary>
 
 **Foundations of similarity**
 1. Dot product as alignment
@@ -73,35 +134,37 @@ Forty-one lessons across eight tracks, in reading order:
 40. Evaluation: how the field measures models
 41. Instruction tuning & RLHF intuition
 
-A `/map` page renders the eight tracks as columns on a single canvas.
-Lessons within a track are linked by short vertical arrows;
-cross-track prerequisites are drawn as dashed accent arcs. The lesson
-you most recently visited is highlighted as the resume point — visit
-tracking is `localStorage`-only, no backend.
+</details>
 
-Light and dark themes, with a toggle in the top-right of every page
-(persisted to `localStorage`, no flash on initial paint). The accent
-color is reserved for things you can manipulate — sliders, dominant
-bars, the resume lesson on the map. Static content never uses it.
+A `/map` page renders the eight tracks as columns on a single canvas.
+Lessons within a track are linked by short vertical arrows; cross-track
+prerequisites are drawn as dashed accent arcs. The lesson you most
+recently visited is highlighted as the resume point — visit tracking is
+`localStorage`-only, no backend.
+
+---
 
 ## Stack
 
-- Next.js 15, App Router, TypeScript strict, pnpm
-- Tailwind CSS, themed via CSS custom properties (channel pattern:
-  tokens are bare R G B triplets consumed via `rgb(var(--x) /
-  <alpha-value>)`, so the same Tailwind classes work in both themes)
-- MDX via `@next/mdx`; math via `remark-math` + `rehype-katex`
-- React + SVG (no D3, no Canvas, no charting library)
-- `useState` / `useReducer` only — no state library
-- `zod` validates lesson metadata at build time
+| Layer | Choice |
+|-------|--------|
+| Framework | Next.js 15, App Router, TypeScript strict |
+| Package manager | pnpm |
+| Styling | Tailwind CSS, themed via CSS custom properties (channel pattern: tokens are bare `R G B` triplets consumed via `rgb(var(--x) / <alpha-value>)`, so the same classes work in both themes) |
+| Content | MDX via `@next/mdx`; math via `remark-math` + `rehype-katex` |
+| Figures | React + SVG (no D3, no Canvas, no charting library) |
+| State | `useState` / `useReducer` only — no state library |
+| Validation | `zod` validates lesson metadata at build time |
+| Testing | Vitest, 492 tests across 40 files |
 
 Forty-one lessons, 492 tests, ~118 kB first-load JS on the home page,
 ~141 kB on a lesson route (37 kB page + 104 kB shared; the heavy
 centerpieces — BlockPipeline, TrainingEndToEnd, OptimizerRace,
 OverfittingExplorer, BatchNormExplorer, EarlyStoppingAugmentationExplorer,
-SequentialTaskTrainer —
-are in lazy chunks, so the largest individual lesson chunk stays
-under the brief's 25 kB target). No backend yet.
+SequentialTaskTrainer — are in lazy chunks, so the largest individual
+lesson chunk stays under the brief's 25 kB target). No backend yet.
+
+---
 
 ## Quick start
 
@@ -127,10 +190,15 @@ pnpm build                   # strict TS, full static export
 
 Requires Node 18+ and pnpm 9+.
 
-## How to add the next lesson
+---
+
+## Adding a new lesson
 
 This is the pattern used for all forty-one live lessons — no
 speculation.
+
+<details>
+<summary><strong>Step-by-step (6 steps)</strong></summary>
 
 1. **Create the folder** `content/lessons/<slug>/` with three files:
    - `meta.ts` — exports a const with `slug`, `title`, `summary`,
@@ -165,8 +233,8 @@ speculation.
    `components/sim/primitives/`. The existing primitives
    (`VectorCanvas`, `Heatmap`, `BarChart`, `Slider`, `NumberInput`)
    are themed via the same token system; any new primitive must use
-   the tokens, not hardcoded colors. See the Design system section below for
-   the rationale.
+   the tokens, not hardcoded colors. See the Design system section
+   below for the rationale.
 
 4. **If the lesson needs new math**, put it in
    `lib/math/<name>.ts` with `lib/math/<name>.test.ts` next to it.
@@ -182,6 +250,10 @@ speculation.
 
 6. **Run the gates**: `pnpm lint:content && pnpm test && pnpm build`.
    `lint:content` rejects cycles and dangling edges.
+
+</details>
+
+---
 
 ## Project structure
 
@@ -230,14 +302,16 @@ TensorDojo/
 └── package.json
 ```
 
+---
+
 ## Design system
 
 Themed via CSS custom properties on `:root` (light, default) and
 `:root.dark` (override). Tailwind reads them via the channel pattern:
 each token is stored as a bare `R G B` triplet, then composed in the
 config as `rgb(var(--token) / <alpha-value>)`. Existing classes
-(`bg-bg`, `text-ink`, `border-border`, `bg-bg/40`) work in both
-themes without per-component overrides.
+(`bg-bg`, `text-ink`, `border-border`, `bg-bg/40`) work in both themes
+without per-component overrides.
 
 **Tokens** (excerpt — full set defined in `app/globals.css`):
 
@@ -263,6 +337,8 @@ the headline equation of a section, inline for everything else.
 **Numbers**: `tabular-nums` everywhere a value is read; min-width on
 slider value columns so digit changes don't reflow the row.
 
+---
+
 ## Navigation model
 
 - **Home** (`/`) — eight track groups, each lesson a card. Two
@@ -279,6 +355,10 @@ slider value columns so digit changes don't reflow the row.
   are dashed accent arcs. The most recently visited lesson is
   highlighted with an accent ring and a "Resume" pill.
 - **404** — leads with `← Home`, lists the map as secondary.
+
+---
+
+## The longer arc
 
 The full vision — notebooks, the sync engine, the AI tutor, accounts,
 quizzes with misconception diagnosis, hosted code execution — is in
