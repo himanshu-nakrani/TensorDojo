@@ -32,10 +32,12 @@ import { meta as feedForwardMeta } from '@/content/lessons/feed-forward/meta';
 import { meta as mixtureOfExpertsMeta } from '@/content/lessons/mixture-of-experts/meta';
 import { meta as transformerBlockMeta } from '@/content/lessons/transformer-block/meta';
 import { meta as samplingDecodingMeta } from '@/content/lessons/sampling-decoding/meta';
+import { meta as beamSearchMeta } from '@/content/lessons/beam-search/meta';
 import { meta as kvCacheMeta } from '@/content/lessons/kv-cache/meta';
 import { meta as speculativeDecodingMeta } from '@/content/lessons/speculative-decoding/meta';
 import { meta as crossEntropyMeta } from '@/content/lessons/cross-entropy/meta';
 import { meta as gradientDescentMeta } from '@/content/lessons/gradient-descent/meta';
+import { meta as lossLandscapesMeta } from '@/content/lessons/loss-landscapes/meta';
 import { meta as backpropagationMeta } from '@/content/lessons/backpropagation/meta';
 import { meta as sgdMeta } from '@/content/lessons/sgd/meta';
 import { meta as optimizersMeta } from '@/content/lessons/optimizers/meta';
@@ -87,10 +89,12 @@ const manifest: readonly LessonMetaEntry[] = [
   { meta: mixtureOfExpertsMeta },
   { meta: transformerBlockMeta },
   { meta: samplingDecodingMeta },
+  { meta: beamSearchMeta },
   { meta: kvCacheMeta },
   { meta: speculativeDecodingMeta },
   { meta: crossEntropyMeta },
   { meta: gradientDescentMeta },
+  { meta: lossLandscapesMeta },
   { meta: backpropagationMeta },
   { meta: sgdMeta },
   { meta: optimizersMeta },
@@ -185,7 +189,7 @@ export const TRACKS: readonly LessonTrack[] = [
     label: 'What the model says, and how it learns',
     description:
       'Sampling the next token, caching it, scoring the loss, and feeling the first gradient.',
-    slugs: ['sampling-decoding', 'kv-cache', 'speculative-decoding', 'cross-entropy', 'gradient-descent'],
+    slugs: ['sampling-decoding', 'beam-search', 'kv-cache', 'speculative-decoding', 'cross-entropy', 'gradient-descent', 'loss-landscapes'],
   },
   {
     id: 'training',

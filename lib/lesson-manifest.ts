@@ -39,10 +39,12 @@ import { meta as feedForwardMeta } from '@/content/lessons/feed-forward/meta';
 import { meta as mixtureOfExpertsMeta } from '@/content/lessons/mixture-of-experts/meta';
 import { meta as transformerBlockMeta } from '@/content/lessons/transformer-block/meta';
 import { meta as samplingDecodingMeta } from '@/content/lessons/sampling-decoding/meta';
+import { meta as beamSearchMeta } from '@/content/lessons/beam-search/meta';
 import { meta as kvCacheMeta } from '@/content/lessons/kv-cache/meta';
 import { meta as speculativeDecodingMeta } from '@/content/lessons/speculative-decoding/meta';
 import { meta as crossEntropyMeta } from '@/content/lessons/cross-entropy/meta';
 import { meta as gradientDescentMeta } from '@/content/lessons/gradient-descent/meta';
+import { meta as lossLandscapesMeta } from '@/content/lessons/loss-landscapes/meta';
 import { meta as backpropagationMeta } from '@/content/lessons/backpropagation/meta';
 import { meta as sgdMeta } from '@/content/lessons/sgd/meta';
 import { meta as optimizersMeta } from '@/content/lessons/optimizers/meta';
@@ -92,10 +94,12 @@ const metaBySlug: Readonly<Record<string, LessonMeta>> = {
   'mixture-of-experts': mixtureOfExpertsMeta,
   'transformer-block': transformerBlockMeta,
   'sampling-decoding': samplingDecodingMeta,
+  'beam-search': beamSearchMeta,
   'kv-cache': kvCacheMeta,
   'speculative-decoding': speculativeDecodingMeta,
   'cross-entropy': crossEntropyMeta,
   'gradient-descent': gradientDescentMeta,
+  'loss-landscapes': lossLandscapesMeta,
   'backpropagation': backpropagationMeta,
   'sgd': sgdMeta,
   'optimizers': optimizersMeta,
@@ -206,6 +210,10 @@ const interactivesLoaders: Readonly<Record<string, () => Promise<{
     import('@/content/lessons/sampling-decoding/interactives').then((m) => ({
       interactives: m.interactives,
     })),
+  'beam-search': () =>
+    import('@/content/lessons/beam-search/interactives').then((m) => ({
+      interactives: m.interactives,
+    })),
   'kv-cache': () =>
     import('@/content/lessons/kv-cache/interactives').then((m) => ({
       interactives: m.interactives,
@@ -220,6 +228,10 @@ const interactivesLoaders: Readonly<Record<string, () => Promise<{
     })),
   'gradient-descent': () =>
     import('@/content/lessons/gradient-descent/interactives').then((m) => ({
+      interactives: m.interactives,
+    })),
+  'loss-landscapes': () =>
+    import('@/content/lessons/loss-landscapes/interactives').then((m) => ({
       interactives: m.interactives,
     })),
   'backpropagation': () =>

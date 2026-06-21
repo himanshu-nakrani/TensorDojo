@@ -177,6 +177,9 @@ nodes:
   - id: sampling-decoding-concept
     title: "Sampling and decoding: from logits to a token"
     lesson: sampling-decoding
+  - id: beam-search-concept
+    title: "Beam search: looking k steps ahead"
+    lesson: beam-search
   - id: kv-cache-concept
     title: "KV cache: making inference fast"
     lesson: kv-cache
@@ -189,6 +192,9 @@ nodes:
   - id: gradient-descent-concept
     title: "Gradient descent: walking the loss downhill"
     lesson: gradient-descent
+  - id: loss-landscapes-concept
+    title: "Loss landscapes: what gradient descent walks on"
+    lesson: loss-landscapes
   - id: backpropagation-concept
     title: "Backpropagation: chain rule for the whole network"
     lesson: backpropagation
@@ -393,10 +399,14 @@ edges:
     to: moe-concept
   - from: decoding-strategy
     to: sampling-decoding-concept
+  - from: sampling-decoding-concept
+    to: beam-search-concept
   - from: cross-entropy
     to: cross-entropy-concept
   - from: gradient-descent
     to: gradient-descent-concept
+  - from: gradient-descent-concept
+    to: loss-landscapes-concept
   - from: chain-rule
     to: backpropagation-concept
   - from: mini-batch

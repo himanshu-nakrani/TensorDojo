@@ -4,7 +4,7 @@ export const meta = {
   summary:
     'Fine-tuning weight updates are often intrinsically low-rank. LoRA parametrizes the update as ΔW = A·B where A is m×r, B is r×n, and r ≪ min(m,n). The result: a tiny fraction of the original parameter count adapts the model.',
   minutes: 8,
-  order: 41,
+  order: 43,
 } as const;
 
 export type LessonMeta = typeof meta;

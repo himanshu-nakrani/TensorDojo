@@ -124,12 +124,15 @@ export const mdxLessonLoaders: Readonly<
     import('@/content/lessons/transformer-block/lesson.mdx'),
   'sampling-decoding': () =>
     import('@/content/lessons/sampling-decoding/lesson.mdx'),
+  'beam-search': () => import('@/content/lessons/beam-search/lesson.mdx'),
   'kv-cache': () => import('@/content/lessons/kv-cache/lesson.mdx'),
   'speculative-decoding': () =>
     import('@/content/lessons/speculative-decoding/lesson.mdx'),
   'cross-entropy': () => import('@/content/lessons/cross-entropy/lesson.mdx'),
   'gradient-descent': () =>
     import('@/content/lessons/gradient-descent/lesson.mdx'),
+  'loss-landscapes': () =>
+    import('@/content/lessons/loss-landscapes/lesson.mdx'),
   backpropagation: () =>
     import('@/content/lessons/backpropagation/lesson.mdx'),
   sgd: () => import('@/content/lessons/sgd/lesson.mdx'),
