@@ -114,6 +114,7 @@ export const mdxLessonLoaders: Readonly<
     import('@/content/lessons/flash-attention/lesson.mdx'),
   'residuals-layernorm': () =>
     import('@/content/lessons/residuals-layernorm/lesson.mdx'),
+  activations: () => import('@/content/lessons/activations/lesson.mdx'),
   'feed-forward': () => import('@/content/lessons/feed-forward/lesson.mdx'),
   'mixture-of-experts': () =>
     import('@/content/lessons/mixture-of-experts/lesson.mdx'),

@@ -33,6 +33,7 @@ import { meta as multiHeadAttentionMeta } from '@/content/lessons/multi-head-att
 import { meta as groupedQueryAttentionMeta } from '@/content/lessons/grouped-query-attention/meta';
 import { meta as flashAttentionMeta } from '@/content/lessons/flash-attention/meta';
 import { meta as residualsLayernormMeta } from '@/content/lessons/residuals-layernorm/meta';
+import { meta as activationsMeta } from '@/content/lessons/activations/meta';
 import { meta as feedForwardMeta } from '@/content/lessons/feed-forward/meta';
 import { meta as mixtureOfExpertsMeta } from '@/content/lessons/mixture-of-experts/meta';
 import { meta as transformerBlockMeta } from '@/content/lessons/transformer-block/meta';
@@ -84,6 +85,7 @@ const metaBySlug: Readonly<Record<string, LessonMeta>> = {
   'grouped-query-attention': groupedQueryAttentionMeta,
   'flash-attention': flashAttentionMeta,
   'residuals-layernorm': residualsLayernormMeta,
+  activations: activationsMeta,
   'feed-forward': feedForwardMeta,
   'mixture-of-experts': mixtureOfExpertsMeta,
   'transformer-block': transformerBlockMeta,
@@ -174,6 +176,10 @@ const interactivesLoaders: Readonly<Record<string, () => Promise<{
     })),
   'residuals-layernorm': () =>
     import('@/content/lessons/residuals-layernorm/interactives').then((m) => ({
+      interactives: m.interactives,
+    })),
+  activations: () =>
+    import('@/content/lessons/activations/interactives').then((m) => ({
       interactives: m.interactives,
     })),
   'feed-forward': () =>

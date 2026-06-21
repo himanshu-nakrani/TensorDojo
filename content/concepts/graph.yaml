@@ -159,6 +159,9 @@ nodes:
   - id: residuals-layernorm-concept
     title: "Residual connections + layer normalization"
     lesson: residuals-layernorm
+  - id: activations-concept
+    title: "Activations: the bend that makes a network non-linear"
+    lesson: activations
   - id: feed-forward-concept
     title: "Feed-forward network: per-token rewriting"
     lesson: feed-forward
@@ -375,6 +378,10 @@ edges:
     to: flash-attention-concept
   - from: residual
     to: residuals-layernorm-concept
+  - from: gelu
+    to: activations-concept
+  - from: activations-concept
+    to: feed-forward-concept
   - from: feed-forward
     to: feed-forward-concept
   - from: moe

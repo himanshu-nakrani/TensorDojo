@@ -1,0 +1,103 @@
+import { MathCode } from '@/components/lesson/MathCode';
+import { Callout } from '@/components/lesson/Callout';
+
+## Why a "bend" matters
+
+The residual block we just built has two sublayers: attention, then a feed-forward network (FFN). The FFN is *two* linear layers — expand to $d_{\text{hidden}}$, project back to $d_{\text{model}}$. If you put two linear layers back-to-back with nothing in between, here is what happens:
+
+$$
+W_2 (W_1 \mathbf{x} + \mathbf{b}_1) + \mathbf{b}_2 \;=\; (W_2 W_1)\,\mathbf{x} \;+\; (W_2 \mathbf{b}_1 + \mathbf{b}_2)
+$$
+
+The two linears collapse into a single linear $\mathbf{x} \mapsto W' \mathbf{x} + \mathbf{b}'$. All the expressive power of a billion-parameter transformer would reduce to a single matrix multiply per block. The thing that prevents this collapse is the **activation function** — a small, non-linear bend you apply *between* the two linear layers.
+
+Every activation we will meet is a scalar function $\sigma: \mathbb{R} \to \mathbb{R}$, applied independently to each entry of the pre-activation vector. The whole story of "is this network expressive" lives in that one-dimensional bend.
+
+## ReLU: the simplest possible bend
+
+The 2017 Transformer paper used the rectifier:
+
+$$
+\operatorname{ReLU}(x) \;=\; \max(0, x)
+$$
+
+Positive inputs pass through unchanged. Negative inputs become exactly $0$. Cheap to compute, easy to differentiate (derivative is $0$ for $x < 0$ and $1$ for $x > 0$), and the bend is just one corner at the origin. The catch is the same corner: when a unit's pre-activation slips below $0$ during training, the gradient through that unit is exactly $0$, and the unit can stay dead forever. With enough units this is fine on average, but it is a real loss of capacity.
+
+## GELU and SiLU: smooth ReLUs
+
+Modern transformers replaced ReLU with a smooth function that lets a small negative signal through. There are two common choices, and they look almost identical on a plot.
+
+$$
+\operatorname{GELU}(x) \;=\; \tfrac{1}{2}\, x \left(1 + \operatorname{erf}\!\left(\tfrac{x}{\sqrt{2}}\right)\right)
+\qquad\qquad
+\operatorname{SiLU}(x) \;=\; x \cdot \sigma(x)
+$$
+
+GELU (Gaussian Error Linear Unit) multiplies $x$ by the standard normal CDF — intuitively, "scale $x$ by the probability that a standard normal sample would be less than $x$." SiLU (Sigmoid Linear Unit, also called Swish) multiplies $x$ by the logistic sigmoid $\sigma(x) = 1/(1+e^{-x})$. Both are bounded below by a small negative value near $x \approx -1.3$, and both look like a smoothed elbow.
+
+<MathCode
+  math="\sigma(x) \in \{ \operatorname{ReLU}, \operatorname{GELU}, \operatorname{SiLU} \}"
+  code={`import math
+
+def relu(x):
+    return max(0.0, x)
+
+def gelu(x):
+    return 0.5 * x * (1 + math.erf(x / math.sqrt(2)))
+
+def silu(x):
+    return x / (1 + math.exp(-x))   # x * sigmoid(x)
+
+# All three agree closely for x >> 0.
+for f in (relu, gelu, silu):
+    print(f(2.0))   # ≈ 2.00, 1.95, 1.76
+
+# Below zero they diverge.
+for f in (relu, gelu, silu):
+    print(f(-1.0))  # 0.00, -0.159, -0.269`}
+  caption="Three one-line activations. The full transformer's expressivity rests on which of these you pick."
+/>
+
+<Callout title="Why GPT-3 and BERT use GELU, and the rest of modern open-source uses SiLU" targetInteractive="activation-lab">
+  Pull the slider to $x = -2$. ReLU is exactly $0$. GELU is $-0.046$. SiLU is $-0.238$. None of these numbers individually matter — what matters is that both GELU and SiLU have non-zero derivatives at $x = -2$, so gradient information *flows backward* through small negative pre-activations during training. With the f′(x) overlay on, you can see the ReLU derivative drop off a cliff at $x = 0$ while GELU and SiLU stay smooth. SiLU is the cheaper of the two (no error function), which is part of why LLaMA, Mistral, and Gemma moved to it.
+</Callout>
+
+## SwiGLU: the activation is also a gate
+
+If you look up the FFN layer in LLaMA 2 or Mistral, you will not find a single activation. You will find **SwiGLU** — a two-channel construction.
+
+Standard FFN, with a single projection from $d_{\text{model}}$ to $d_{\text{hidden}}$:
+
+$$
+\operatorname{FFN}(\mathbf{x}) \;=\; W_2\,\sigma(W_1 \mathbf{x} + \mathbf{b}_1) + \mathbf{b}_2
+$$
+
+SwiGLU FFN, with *two* projections from $d_{\text{model}}$ to $d_{\text{hidden}}$:
+
+$$
+\operatorname{FFN}_{\text{SwiGLU}}(\mathbf{x}) \;=\; W_2\,\bigl(\operatorname{SiLU}(W_1 \mathbf{x}) \;\odot\; W_3 \mathbf{x}\bigr)
+$$
+
+Two projections produce two intermediate vectors of length $d_{\text{hidden}}$. One of them is passed through SiLU; the result is then multiplied **elementwise** ($\odot$) with the other. The product is what gets projected back to $d_{\text{model}}$. The "gate" is the first channel — it can scale the second channel up, down, or all the way to zero, per-feature.
+
+Per-token, per-feature the math reduces to a scalar gate on a scalar value:
+
+$$
+\operatorname{SwiGLU}(a, b) \;=\; \operatorname{SiLU}(a) \cdot b
+$$
+
+That is what the second interactive shows.
+
+<Callout title="The gate makes some features disappear" targetInteractive="swiglu-gate">
+  Set $b = 1.5$ (a real signal). Drag $a$ from $+3$ down to $-3$. At $a = 3$, the gate is $\operatorname{SiLU}(3) \approx 2.86$, and the output is roughly $4.3 \cdot$ the signal. At $a = 0$, the gate is $0$ and the output collapses to $0$ regardless of $b$. At $a = -3$, the gate is small and slightly negative — the signal is suppressed and softly inverted. This is the trick: the same FFN that "thinks" about features also chooses which features survive the layer.
+</Callout>
+
+## Cost vs benefit
+
+SwiGLU adds a third weight matrix ($W_3$). To keep the parameter count comparable to a standard FFN, LLaMA and friends *reduce* the hidden dimension — instead of $d_{\text{hidden}} = 4 \cdot d_{\text{model}}$, SwiGLU FFNs typically use $d_{\text{hidden}} = \tfrac{8}{3} \cdot d_{\text{model}}$ so the total parameter count matches. With matched parameters, SwiGLU still consistently improves the loss versus plain SiLU or GELU — the gating buys real capacity.
+
+## Recap
+
+Three takeaways. **Without a non-linearity, deep networks collapse to a single linear layer** — every block, every layer, becomes one matrix. **ReLU is the simple, fast bend that started the modern era**, but its dead-zone derivative below zero leaks capacity. **GELU and SiLU are smooth-at-zero bends** that recover that capacity at almost no extra cost, and SwiGLU layers a multiplicative gate on top to win another increment of quality.
+
+What you should be able to do after this lesson: open any transformer's code, find the FFN, and read off which activation it uses; predict from the name (ReLU vs GELU vs SwiGLU) whether the FFN has one projection or two; and explain why "dying ReLU" is a real failure mode and the smooth alternatives avoid it. The activation is one line of code in a network with billions of parameters — and it controls how much of that capacity actually trains.
