@@ -91,6 +91,8 @@ export const mdxLessonLoaders: Readonly<
   Record<string, () => Promise<{ default: React.ComponentType }>>
 > = {
   'dot-product': () => import('@/content/lessons/dot-product/lesson.mdx'),
+  'matrix-multiplication': () =>
+    import('@/content/lessons/matrix-multiplication/lesson.mdx'),
   'vector-projection': () =>
     import('@/content/lessons/vector-projection/lesson.mdx'),
   softmax: () => import('@/content/lessons/softmax/lesson.mdx'),

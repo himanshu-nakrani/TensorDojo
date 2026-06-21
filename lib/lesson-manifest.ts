@@ -19,6 +19,7 @@
  */
 import type { ComponentType } from 'react';
 import { meta as dotProductMeta } from '@/content/lessons/dot-product/meta';
+import { meta as matrixMultiplicationMeta } from '@/content/lessons/matrix-multiplication/meta';
 import { meta as vectorProjectionMeta } from '@/content/lessons/vector-projection/meta';
 import { meta as softmaxMeta } from '@/content/lessons/softmax/meta';
 import { meta as attentionScoresMeta } from '@/content/lessons/attention-scores/meta';
@@ -71,6 +72,7 @@ export interface LessonMeta {
 
 const metaBySlug: Readonly<Record<string, LessonMeta>> = {
   'dot-product': dotProductMeta,
+  'matrix-multiplication': matrixMultiplicationMeta,
   'vector-projection': vectorProjectionMeta,
   'softmax': softmaxMeta,
   'attention-scores': attentionScoresMeta,
@@ -122,6 +124,12 @@ const interactivesLoaders: Readonly<Record<string, () => Promise<{
     import('@/content/lessons/dot-product/interactives').then((m) => ({
       interactives: m.interactives,
     })),
+  'matrix-multiplication': () =>
+    import('@/content/lessons/matrix-multiplication/interactives').then(
+      (m) => ({
+        interactives: m.interactives,
+      }),
+    ),
   'vector-projection': () =>
     import('@/content/lessons/vector-projection/interactives').then((m) => ({
       interactives: m.interactives,

@@ -4,7 +4,7 @@ export const meta = {
   summary:
     'From any point on a 2D loss surface, the gradient points uphill and the negative gradient points downhill. Take a step proportional to the learning rate, repeat. Too small is slow, too large oscillates or diverges, just right finds the minimum.',
   minutes: 7,
-  order: 24,
+  order: 25,
 } as const;
 
 export type LessonMeta = typeof meta;

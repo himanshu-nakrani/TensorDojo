@@ -117,6 +117,9 @@ nodes:
   - id: dot-product-concept
     title: "Dot product as alignment"
     lesson: dot-product
+  - id: matrix-multiplication-concept
+    title: "Matrix multiplication: dot products, stacked"
+    lesson: matrix-multiplication
   - id: vector-projection-concept
     title: "Vector projection and cosine similarity"
     lesson: vector-projection
@@ -346,6 +349,8 @@ edges:
   # Lesson concept nodes
   - from: dot-product
     to: dot-product-concept
+  - from: dot-product
+    to: matrix-multiplication-concept
   - from: projection
     to: vector-projection-concept
   - from: softmax

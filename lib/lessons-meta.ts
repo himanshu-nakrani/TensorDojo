@@ -12,6 +12,7 @@
  * consumer that actually needs the heavy version.
  */
 import { meta as dotProductMeta } from '@/content/lessons/dot-product/meta';
+import { meta as matrixMultiplicationMeta } from '@/content/lessons/matrix-multiplication/meta';
 import { meta as vectorProjectionMeta } from '@/content/lessons/vector-projection/meta';
 import { meta as softmaxMeta } from '@/content/lessons/softmax/meta';
 import { meta as attentionScoresMeta } from '@/content/lessons/attention-scores/meta';
@@ -66,6 +67,7 @@ export interface LessonMetaEntry {
 
 const manifest: readonly LessonMetaEntry[] = [
   { meta: dotProductMeta },
+  { meta: matrixMultiplicationMeta },
   { meta: vectorProjectionMeta },
   { meta: softmaxMeta },
   { meta: attentionScoresMeta },
@@ -139,8 +141,8 @@ export const TRACKS: readonly LessonTrack[] = [
     id: 'foundations',
     label: 'Foundations of similarity',
     description:
-      'The two-vector operation under every "this is like that" decision a model makes.',
-    slugs: ['dot-product', 'vector-projection'],
+      'The dot product, the matmul that stacks it, and the geometry of projection — the operations under every linear layer.',
+    slugs: ['dot-product', 'matrix-multiplication', 'vector-projection'],
   },
   {
     id: 'pick-what-matters',
