@@ -5,15 +5,16 @@
 > move, change, and watch respond. Drag a slider, edit a number, read a
 result.
 
-Thirty-one articles with embedded interactive figures, organized as eight
+Forty-one articles with embedded interactive figures, organized as eight
 tracks that build up from the dot product to backpropagation to a
-trained, regularized, fine-tuned tiny classifier. No videos, no quizzes (yet), no
+trained, regularized, fine-tuned model — and on through inference
+efficiency, scaling laws, and evaluation. No videos, no quizzes (yet), no
 backend. The companion `design-spec.md` and `technical-spec.md`
 describe the longer arc — notebooks, the sync engine, the AI tutor —
 that this build is the foundation for.
 ## What's live
 
-Thirty-one lessons across eight tracks, in reading order:
+Forty-one lessons across eight tracks, in reading order:
 
 **Foundations of similarity**
 1. Dot product as alignment
@@ -27,40 +28,50 @@ Thirty-one lessons across eight tracks, in reading order:
 7. Causal masking: don't peek at the future
 
 **How tokens become inputs**
-8. Token embeddings: from ids to vectors
-9. Positional encoding: giving order to a bag
+8. Tokenization: from strings to ids
+9. Token embeddings: from ids to vectors
+10. Positional encoding: giving order to a bag
+11. RoPE: rotation, not addition
 
 **Building the transformer block**
-10. Multi-head attention: parallel views
-11. Residual connections + layer normalization
-12. Feed-forward network: per-token rewriting
-13. The transformer block: putting it all together
+12. Multi-head attention: parallel views
+13. Grouped-query attention: shrinking the cache
+14. Flash attention: same math, different memory pattern
+15. Residual connections + layer normalization
+16. Feed-forward network: per-token rewriting
+17. Mixture of experts: more parameters at the same compute
+18. The transformer block: putting it all together
 
 **What the model says, and how it learns**
-14. Sampling and decoding: from logits to a token
-15. Cross-entropy: how the model knows it was wrong
-16. Gradient descent: walking the loss downhill
+19. Sampling and decoding: from logits to a token
+20. KV cache: making inference fast
+21. Speculative decoding: a small model drafts, the big one verifies
+22. Cross-entropy: how the model knows it was wrong
+23. Gradient descent: walking the loss downhill
 
 **How models learn**
-17. Backpropagation: chain rule for the whole network
-18. Stochastic gradient descent: training with batches
-19. Optimizers: SGD, momentum, Adam
-20. Learning-rate schedules: how aggressively to step, over time
-21. Training a tiny model, end to end
+24. Backpropagation: chain rule for the whole network
+25. Stochastic gradient descent: training with batches
+26. Optimizers: SGD, momentum, Adam
+27. Learning-rate schedules: how aggressively to step, over time
+28. Training a tiny model, end to end
+29. Scaling laws: how big should the model be?
 
 **How models don't memorize**
-22. Overfitting: when the model memorizes the data
-23. L2 weight decay: penalizing big weights
-24. Dropout: training an ensemble for free
-25. Batch normalization: stabilizing activations during training
-26. Early stopping + data augmentation: cheap regularization that just works
+30. Overfitting: when the model memorizes the data
+31. L2 weight decay: penalizing big weights
+32. Dropout: training an ensemble for free
+33. Batch normalization: stabilizing activations during training
+34. Early stopping + data augmentation: cheap regularization that just works
 
 **Adapting models to new tasks**
-27. Pretraining vs fine-tuning
-28. Freezing vs full fine-tuning
-29. Catastrophic forgetting
-30. LoRA: low-rank adaptation
-31. Instruction tuning & RLHF intuition
+35. Pretraining vs fine-tuning
+36. Freezing vs full fine-tuning
+37. Catastrophic forgetting
+38. Quantization: storing 4 bits per weight
+39. LoRA: low-rank adaptation
+40. Evaluation: how the field measures models
+41. Instruction tuning & RLHF intuition
 
 A `/map` page renders the eight tracks as columns on a single canvas.
 Lessons within a track are linked by short vertical arrows;
@@ -84,12 +95,12 @@ bars, the resume lesson on the map. Static content never uses it.
 - `useState` / `useReducer` only — no state library
 - `zod` validates lesson metadata at build time
 
-Thirty-one lessons, 333 tests, ~114 kB first-load JS on the home page,
-~130 kB on a lesson route (26 kB page + 104 kB shared; the heavy
+Forty-one lessons, 492 tests, ~118 kB first-load JS on the home page,
+~141 kB on a lesson route (37 kB page + 104 kB shared; the heavy
 centerpieces — BlockPipeline, TrainingEndToEnd, OptimizerRace,
 OverfittingExplorer, BatchNormExplorer, EarlyStoppingAugmentationExplorer,
 SequentialTaskTrainer —
-are in lazy chunks, so the largest individual lesson chunk is well
+are in lazy chunks, so the largest individual lesson chunk stays
 under the brief's 25 kB target). No backend yet.
 
 ## Quick start
@@ -118,7 +129,7 @@ Requires Node 18+ and pnpm 9+.
 
 ## How to add the next lesson
 
-This is the pattern used for all thirty-one live lessons — no
+This is the pattern used for all forty-one live lessons — no
 speculation.
 
 1. **Create the folder** `content/lessons/<slug>/` with three files:
@@ -154,7 +165,7 @@ speculation.
    `components/sim/primitives/`. The existing primitives
    (`VectorCanvas`, `Heatmap`, `BarChart`, `Slider`, `NumberInput`)
    are themed via the same token system; any new primitive must use
-   the tokens, not hardcoded colors. See `PHASE_NOTES_THEME.md` for
+   the tokens, not hardcoded colors. See the Design system section below for
    the rationale.
 
 4. **If the lesson needs new math**, put it in
@@ -185,11 +196,11 @@ TensorDojo/
 │   └── map/page.tsx               # concept map
 ├── components/
 │   ├── lesson/                    # LessonShell, Workbench, WorkbenchItem,
-│   │                              # Callout, MathCode, PrevNext, VisitTracker
+│   │                              # Callout, MathCode, PrevNext, VisitTracker, InteractiveSkeleton
 │   ├── sim/                       # Interactive figures (one per lesson)
 │   │   ├── primitives/            # VectorCanvas, Heatmap, BarChart,
-│   │   │                          # Slider, NumberInput
-│   │   └── …                      # 52 lesson-specific composers
+│   │   │                          # Slider, NumberInput, SimFrame, LossLandscape
+│   │   └── …                      # 72 lesson-specific composers
 │   ├── concept-graph/             # ConceptGraphView (SVG 2D map)
 │   ├── home/                      # LessonCardList for the landing
 │   └── theme/                     # ThemeToggle
@@ -200,11 +211,11 @@ TensorDojo/
 │   │   └── lesson.mdx
 │   └── concepts/graph.yaml
 ├── lib/
-│   ├── math/                      # 30 modules: softmax, linalg, attention,
-│   │                              # multihead, layernorm, ffn, gelu, mask,
-│   │                              # positional, random, sampling,
-│   │                              # cross-entropy, gradient-descent,
-│   │                              # transformer-block
+│   ├── math/                      # 40 modules: softmax, linalg, attention,
+│   │                              # multihead, gqa, flashattn, layernorm, ffn,
+│   │                              # gelu, mask, positional, rope, sampling,
+│   │                              # cross-entropy, gradient-descent, kvcache,
+│   │                              # specdecode, moe, scalinglaws, transformer-block
 │   ├── content/                   # YAML loaders + zod schemas + map-data
 │   ├── progress/                  # visits.ts (localStorage tracking)
 │   ├── theme/                     # use-theme hook
@@ -212,7 +223,9 @@ TensorDojo/
 │   ├── lessons.ts                 # server-side registry + MDX loaders
 │   └── lesson-manifest.ts         # interactives manifest
 ├── scripts/
-│   └── lint-content.ts            # zod-validated cross-reference check
+│   ├── lint-content.ts            # zod-validated cross-reference check
+│   ├── _verify.mjs                # headless render-error sweep (puppeteer)
+│   └── …                          # screenshot + baseline capture helpers
 ├── docs/screenshots/              # before/after captures, by phase
 └── package.json
 ```
@@ -226,7 +239,7 @@ config as `rgb(var(--token) / <alpha-value>)`. Existing classes
 (`bg-bg`, `text-ink`, `border-border`, `bg-bg/40`) work in both
 themes without per-component overrides.
 
-**Tokens** (excerpt — full table in `PHASE_NOTES_THEME.md`):
+**Tokens** (excerpt — full set defined in `app/globals.css`):
 
 | Token | Role |
 |-------|------|
