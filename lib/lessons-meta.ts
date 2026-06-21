@@ -127,6 +127,8 @@ export function listLessonSlugs(): string[] {
 export interface LessonTrack {
   id: string;
   label: string;
+  /** One-line description of the track, used on the landing page. */
+  description: string;
   slugs: readonly string[];
 }
 
@@ -134,11 +136,15 @@ export const TRACKS: readonly LessonTrack[] = [
   {
     id: 'foundations',
     label: 'Foundations of similarity',
+    description:
+      'The two-vector operation under every "this is like that" decision a model makes.',
     slugs: ['dot-product', 'vector-projection'],
   },
   {
     id: 'pick-what-matters',
     label: 'How models pick what matters',
+    description:
+      'Softmax, attention scores, masking — the machinery for choosing what to read.',
     slugs: [
       'softmax',
       'attention-scores',
@@ -150,11 +156,15 @@ export const TRACKS: readonly LessonTrack[] = [
   {
     id: 'tokens-as-inputs',
     label: 'How tokens become inputs',
+    description:
+      'From raw text to the dense vectors a transformer actually sees on its input row.',
     slugs: ['tokenization', 'token-embeddings', 'positional-encoding', 'rope'],
   },
   {
     id: 'transformer-block',
     label: 'Building the transformer block',
+    description:
+      'Multi-head attention, residuals, MLP, MoE — every piece that stacks into a full layer.',
     slugs: [
       'multi-head-attention',
       'grouped-query-attention',
@@ -168,11 +178,15 @@ export const TRACKS: readonly LessonTrack[] = [
   {
     id: 'decoding-and-learning',
     label: 'What the model says, and how it learns',
+    description:
+      'Sampling the next token, caching it, scoring the loss, and feeling the first gradient.',
     slugs: ['sampling-decoding', 'kv-cache', 'speculative-decoding', 'cross-entropy', 'gradient-descent'],
   },
   {
     id: 'training',
     label: 'How models learn',
+    description:
+      'Backprop, optimizers, schedules, and the scaling laws that say how big to go.',
     slugs: [
       'backpropagation',
       'sgd',
@@ -185,6 +199,8 @@ export const TRACKS: readonly LessonTrack[] = [
   {
     id: 'regularization',
     label: 'How models don\'t memorize',
+    description:
+      'Weight decay, dropout, batch norm — the dials that keep a model from cheating on its own training set.',
     slugs: [
       'overfitting',
       'weight-decay',
@@ -196,6 +212,8 @@ export const TRACKS: readonly LessonTrack[] = [
   {
     id: 'fine-tuning',
     label: 'Adapting models to new tasks',
+    description:
+      'Take a pretrained model and steer it: full fine-tuning, freezing, LoRA, quantization, RLHF.',
     slugs: ['pretraining-vs-finetuning', 'freezing-vs-full-finetuning', 'catastrophic-forgetting', 'quantization', 'lora', 'evaluation', 'instruction-tuning-rlhf'],
   },
 ];

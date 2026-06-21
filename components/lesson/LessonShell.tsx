@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import { ReactNode } from 'react';
 
 interface LessonShellProps {
@@ -18,12 +17,6 @@ interface LessonShellProps {
 export function LessonShell({ title, minutes, summary, children }: LessonShellProps) {
   return (
     <article id="main" className="mx-auto px-6 sm:px-10 py-12 sm:py-16 max-w-[1320px]">
-      <Link
-        href="/"
-        className="focus-ring inline-flex items-center min-h-[44px] -ml-2 px-2 text-[13px] text-muted hover:text-ink transition-colors font-mono mb-4 rounded"
-      >
-        ← Home
-      </Link>
       <header className="mb-10 max-w-prose">
         <div className="flex items-center gap-3 text-[12px] uppercase tracking-[0.18em] text-fg-muted font-mono mb-5">
           <span>Lesson</span>

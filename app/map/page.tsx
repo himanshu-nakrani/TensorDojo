@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import { ConceptMapView } from '@/components/concept-graph/ConceptGraphView';
 import { loadConceptGraph } from '@/lib/content/loaders';
 import { listLessonMeta } from '@/lib/lessons-meta';
@@ -34,13 +33,7 @@ export default function MapPage() {
   return (
     <main id="main" className="mx-auto px-4 sm:px-6 py-12 sm:py-16 max-w-[1500px]">
       <header className="mb-10 max-w-prose">
-        <Link
-          href="/"
-          className="focus-ring inline-flex items-center min-h-[44px] -ml-2 px-2 text-[13px] text-muted hover:text-ink transition-colors font-mono mb-4 rounded"
-        >
-          ← Home
-        </Link>
-        <div className="text-[11px] uppercase tracking-[0.18em] text-dim font-mono mb-3">
+        <div className="text-[12px] uppercase tracking-[0.18em] text-fg-muted font-mono mb-3">
           Concept map
         </div>
         <h1 className="text-[2.25rem] sm:text-[2.5rem] font-semibold text-ink leading-[1.1] tracking-[-0.01em] mb-4">
