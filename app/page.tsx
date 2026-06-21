@@ -14,7 +14,7 @@ export default function HomePage() {
         </p>
         <Link
           href="/map"
-          className="focus-ring text-[11px] text-muted hover:text-ink transition-colors font-mono inline-flex items-center gap-1.5 border-b border-border-strong pb-0.5 hover:border-accent"
+          className="focus-ring inline-flex items-center min-h-[44px] gap-2 px-4 py-2.5 text-[13px] font-mono text-accent border border-accent/40 rounded-md hover:bg-accent-soft hover:border-accent transition-colors"
         >
           View concept map
           <span aria-hidden="true">→</span>

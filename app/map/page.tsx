@@ -36,7 +36,7 @@ export default function MapPage() {
       <header className="mb-10 max-w-prose">
         <Link
           href="/"
-          className="text-[11px] text-muted hover:text-ink transition-colors font-mono inline-block mb-6"
+          className="focus-ring inline-flex items-center min-h-[44px] -ml-2 px-2 text-[13px] text-muted hover:text-ink transition-colors font-mono mb-4 rounded"
         >
           ← Home
         </Link>
@@ -47,11 +47,12 @@ export default function MapPage() {
           How the pieces connect
         </h1>
         <p className="text-[1rem] text-muted leading-relaxed">
-          Eight tracks, left to right, in reading order. Arrows mark
-          the next lesson within a track. A small ↗N badge on a
-          lesson means it has N cross-track prerequisites — hover
-          the badge for the list. If you&apos;ve started reading,
-          your last lesson is highlighted as the resume point.
+          Eight tracks, in reading order. Within a track, the next
+          lesson is one step along. A small ↗N marker on a lesson
+          means it has N cross-track prerequisites — tap or click
+          the marker to see the list. If you&apos;ve started
+          reading, your last lesson is highlighted as the resume
+          point.
         </p>
       </header>
 

@@ -85,11 +85,11 @@ export function PrevNext({ slug }: PrevNextProps) {
               ←
             </span>
             <span className="min-w-0">
-              <span className="block text-[10px] uppercase tracking-[0.18em] text-dim font-mono mb-0.5">
+              <span className="block text-[12px] uppercase tracking-[0.18em] text-fg-muted font-mono mb-0.5">
                 {prevIsNewTrack ? (
                   <>
                     <span className="text-accent">New track</span>
-                    <span className="text-dim"> · previous</span>
+                    <span className="text-fg-muted"> · previous</span>
                   </>
                 ) : (
                   'Previous lesson'
@@ -109,11 +109,11 @@ export function PrevNext({ slug }: PrevNextProps) {
             className="group flex items-start gap-3 text-muted hover:text-ink transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg focus-visible:text-ink min-w-0 rounded-sm text-right ml-auto max-w-[48%]"
           >
             <span className="min-w-0">
-              <span className="block text-[10px] uppercase tracking-[0.18em] text-dim font-mono mb-0.5">
+              <span className="block text-[12px] uppercase tracking-[0.18em] text-fg-muted font-mono mb-0.5">
                 {nextIsNewTrack ? (
                   <>
                     <span className="text-accent">New track</span>
-                    <span className="text-dim"> · next</span>
+                    <span className="text-fg-muted"> · next</span>
                   </>
                 ) : (
                   'Next lesson'

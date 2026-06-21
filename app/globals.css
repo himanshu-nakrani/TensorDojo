@@ -90,12 +90,12 @@
   --bg-elevated: 22 27 34;
   --bg-code: 22 27 34;
 
-  --fg: 229 231 235;
-  --fg-muted: 156 163 175;
-  --fg-subtle: 148 163 184;       /* slate-400; ≈5.5:1 on --bg (was 4.02:1) */
+  --fg: 230 233 239;              /* slightly warmer/brighter than slate-200 */
+  --fg-muted: 184 191 204;         /* was 156 163 175 — bumped for readability on the lighter bg */
+  --fg-subtle: 168 178 196;        /* was 148 163 184 — same reason */
 
-  --border: 33 38 45;
-  --border-strong: 48 54 61;
+  --border: 41 48 56;              /* was 33 38 45 — visible against #161b22 */
+  --border-strong: 62 70 80;       /* was 48 54 61 */
 
   --accent: 45 212 191;
   --accent-hover: 94 234 212;

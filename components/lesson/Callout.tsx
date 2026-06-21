@@ -81,7 +81,7 @@ export function Callout({
         <button
           type="button"
           onClick={handleOpen}
-          className="focus-ring mt-3 text-[11px] uppercase tracking-[0.18em] font-mono text-accent hover:text-accent-hover transition-colors rounded-sm"
+          className="focus-ring mt-3 inline-flex items-center min-h-[44px] px-3 py-2 text-[12px] uppercase tracking-[0.18em] font-mono text-accent hover:text-accent-hover hover:bg-accent-soft rounded-md transition-colors -mx-3"
         >
           {isNarrow && inlineEntry ? 'Try it here →' : 'Open in workbench →'}
         </button>

@@ -48,12 +48,122 @@ export function ConceptMapView({ sections }: { sections: TrackSection[] }) {
 
   return (
     <div className="space-y-8">
-      <MapCanvas
-        sections={sections}
-        visited={visited}
-        resumeSlug={resumeSlug}
-      />
+      {/* Mobile / narrow viewports: render a stacked list per track.
+          The 1242 px design grid is unusable below ~md (768 px) —
+          it scales down to ~360 px and the labels become tiny. The
+          list view preserves the same information without the
+          spatial encoding. */}
+      <div className="md:hidden">
+        <MapList sections={sections} visited={visited} resumeSlug={resumeSlug} />
+      </div>
+
+      <div className="hidden md:block">
+        <MapCanvas
+          sections={sections}
+          visited={visited}
+          resumeSlug={resumeSlug}
+        />
+      </div>
       <Legend hasResume={resumeSlug !== null} />
+    </div>
+  );
+}
+
+/**
+ * Stacked list view for mobile / narrow viewports. One section per
+ * track, lessons rendered as full-width cards with a chevron and
+ * cross-track-prereq summary inline.
+ */
+function MapList({
+  sections,
+  visited,
+  resumeSlug,
+}: {
+  sections: TrackSection[];
+  visited: Set<string>;
+  resumeSlug: string | null;
+}) {
+  return (
+    <div className="space-y-6">
+      {sections.map((section) => (
+        <section key={section.id}>
+          <h2 className="text-[12px] uppercase tracking-[0.18em] text-ink font-mono font-semibold mb-1">
+            {section.label}
+          </h2>
+          <div className="text-[11px] text-fg-muted font-mono mb-3">
+            {section.lessons.length} lesson
+            {section.lessons.length === 1 ? '' : 's'}
+          </div>
+          <ol className="space-y-2">
+            {section.lessons.map((lesson) => {
+              const isVisited = visited.has(lesson.slug);
+              const isResume = resumeSlug === lesson.slug;
+              const prereqCount = lesson.crossTrackPrereqs.length;
+              return (
+                <li key={lesson.slug}>
+                  <Link
+                    href={`/lessons/${lesson.slug}`}
+                    className={[
+                      'block rounded-lg border bg-bg-elevated p-3 transition-colors focus-ring card-surface',
+                      // 44px+ min-height for touch comfort
+                      'min-h-[64px]',
+                      isResume
+                        ? 'border-accent ring-2 ring-accent/30'
+                        : isVisited
+                          ? 'border-accent/40'
+                          : 'border-border',
+                    ].join(' ')}
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center gap-2">
+                          <span
+                            aria-hidden="true"
+                            className={
+                              isVisited
+                                ? 'inline-block h-2 w-2 shrink-0 rounded-full bg-accent ring-2 ring-accent/20'
+                                : 'inline-block h-2 w-2 shrink-0 rounded-full border border-border-strong'
+                            }
+                          />
+                          <h3 className="text-sm font-semibold text-ink leading-snug">
+                            {lesson.title}
+                          </h3>
+                        </div>
+                        <div className="mt-1 flex items-center gap-3 text-[12px] font-mono text-fg-muted">
+                          <span>{lesson.minutes} min</span>
+                          {prereqCount > 0 && (
+                            <span className="inline-flex items-center gap-1 text-accent">
+                              ↗ {prereqCount} cross-track prereq
+                              {prereqCount === 1 ? '' : 's'}
+                            </span>
+                          )}
+                          {isResume && (
+                            <span className="px-1.5 py-0.5 rounded bg-accent text-accent-fg uppercase tracking-[0.18em] text-[10px]">
+                              Resume
+                            </span>
+                          )}
+                        </div>
+                        {prereqCount > 0 && (
+                          <ul className="mt-2 space-y-0.5 text-[12px] text-muted">
+                            {lesson.crossTrackPrereqs.map((p) => (
+                              <li key={`${p.from}->${p.to}`}>
+                                ↗ {p.fromTitle}{' '}
+                                <span className="text-fg-subtle">
+                                  ({p.fromTrackLabel})
+                                </span>
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                      </div>
+                    </div>
+                  </Link>
+                </li>
+              );
+            })}
+          </ol>
+        </section>
+      ))}
     </div>
   );
 }
@@ -234,10 +344,10 @@ function MapCanvas({
                   width: `${NODE_W}px`,
                 }}
               >
-                <h2 className="text-[11px] uppercase tracking-[0.18em] text-ink font-mono font-semibold leading-snug">
+                <h2 className="text-[12px] uppercase tracking-[0.18em] text-ink font-mono font-semibold leading-snug">
                   {section.label}
                 </h2>
-                <div className="text-[10px] text-fg-subtle font-mono mt-0.5">
+                <div className="text-[11px] text-fg-muted font-mono mt-0.5">
                   {section.lessons.length} lesson
                   {section.lessons.length === 1 ? '' : 's'}
                 </div>
@@ -281,34 +391,30 @@ function LessonNode({
   resume: boolean;
 }) {
   const prereqCount = lesson.crossTrackPrereqs.length;
-  const prereqTitle =
-    prereqCount === 0
-      ? undefined
-      : `Cross-track prerequisite${prereqCount === 1 ? '' : 's'}:\n` +
-        lesson.crossTrackPrereqs
-          .map((p) => `• ${p.fromTitle} (${p.fromTrackLabel})`)
-          .join('\n');
+  const [prereqOpen, setPrereqOpen] = useState(false);
+
+  // Close the popover on outside click / Escape.
+  useEffect(() => {
+    if (!prereqOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setPrereqOpen(false);
+    };
+    const onDoc = () => setPrereqOpen(false);
+    window.addEventListener('keydown', onKey);
+    // Use a microtask so the click that opened it doesn't immediately close.
+    const t = window.setTimeout(() => {
+      document.addEventListener('click', onDoc);
+    }, 0);
+    return () => {
+      window.removeEventListener('keydown', onKey);
+      window.clearTimeout(t);
+      document.removeEventListener('click', onDoc);
+    };
+  }, [prereqOpen]);
 
   return (
-    <Link
-      href={`/lessons/${lesson.slug}`}
-      aria-label={`Open lesson: ${lesson.title}${
-        visited ? ' (visited)' : ''
-      }${resume ? ' — resume here' : ''}${
-        prereqCount > 0
-          ? `. ${prereqCount} cross-track prerequisite${prereqCount === 1 ? '' : 's'}.`
-          : ''
-      }`}
-      data-visited={visited ? 'true' : 'false'}
-      data-resume={resume ? 'true' : 'false'}
-      className={[
-        'focus-ring group absolute block rounded-lg border bg-bg-elevated p-2.5 transition-colors card-surface',
-        resume
-          ? 'border-accent ring-2 ring-accent/30 hover:bg-bg-elevated-hover'
-          : visited
-            ? 'border-accent/40 hover:border-accent hover:bg-bg-elevated-hover'
-            : 'border-border hover:border-accent hover:bg-bg-elevated-hover',
-      ].join(' ')}
+    <div
+      className="absolute"
       style={{
         left: `${left}px`,
         top: `${top}px`,
@@ -316,46 +422,100 @@ function LessonNode({
         height: `${NODE_H}px`,
       }}
     >
-      {resume && (
-        <div
-          className="absolute -top-2.5 left-3 text-[9px] uppercase tracking-[0.18em] font-mono px-1.5 py-0.5 rounded bg-accent text-accent-fg"
-          aria-hidden="true"
-        >
-          Resume
-        </div>
-      )}
-      <div className="flex items-start justify-between gap-1.5 h-full">
-        <h3 className="text-[0.78rem] font-semibold text-ink leading-snug tracking-[-0.005em] line-clamp-3">
-          {lesson.title}
-        </h3>
-        <span
-          aria-hidden="true"
-          className={
-            visited
-              ? 'inline-block h-2 w-2 shrink-0 rounded-full bg-accent ring-2 ring-accent/20 mt-1'
-              : 'inline-block h-2 w-2 shrink-0 rounded-full border border-border-strong mt-1'
-          }
-          title={visited ? 'Visited' : 'Not yet visited'}
-        />
-      </div>
-      <div className="absolute bottom-1.5 left-2.5 right-2.5 flex items-center justify-between text-[9px] font-mono text-fg-subtle pointer-events-none">
-        <span>{lesson.minutes} min</span>
-        {prereqCount > 0 && (
+      <Link
+        href={`/lessons/${lesson.slug}`}
+        aria-label={`Open lesson: ${lesson.title}${
+          visited ? ' (visited)' : ''
+        }${resume ? ' — resume here' : ''}${
+          prereqCount > 0
+            ? `. ${prereqCount} cross-track prerequisite${prereqCount === 1 ? '' : 's'}.`
+            : ''
+        }`}
+        data-visited={visited ? 'true' : 'false'}
+        data-resume={resume ? 'true' : 'false'}
+        className={[
+          'focus-ring group absolute inset-0 block rounded-lg border bg-bg-elevated p-2.5 transition-colors card-surface',
+          resume
+            ? 'border-accent ring-2 ring-accent/30 hover:bg-bg-elevated-hover'
+            : visited
+              ? 'border-accent/40 hover:border-accent hover:bg-bg-elevated-hover'
+              : 'border-border hover:border-accent hover:bg-bg-elevated-hover',
+        ].join(' ')}
+      >
+        {resume && (
+          <div
+            className="absolute -top-2.5 left-3 text-[10px] uppercase tracking-[0.18em] font-mono px-1.5 py-0.5 rounded bg-accent text-accent-fg"
+            aria-hidden="true"
+          >
+            Resume
+          </div>
+        )}
+        <div className="flex items-start justify-between gap-1.5 h-full">
+          <h3 className="text-[0.82rem] font-semibold text-ink leading-snug tracking-[-0.005em] line-clamp-3">
+            {lesson.title}
+          </h3>
           <span
-            title={prereqTitle}
-            className="inline-flex items-center gap-0.5 px-1 rounded border border-accent/40 text-accent pointer-events-auto"
+            aria-hidden="true"
+            className={
+              visited
+                ? 'inline-block h-2 w-2 shrink-0 rounded-full bg-accent ring-2 ring-accent/20 mt-1'
+                : 'inline-block h-2 w-2 shrink-0 rounded-full border border-border-strong mt-1'
+            }
+            title={visited ? 'Visited' : 'Not yet visited'}
+          />
+        </div>
+        <div className="absolute bottom-1.5 left-2.5 text-[10px] font-mono text-fg-muted">
+          {lesson.minutes} min
+        </div>
+      </Link>
+      {prereqCount > 0 && (
+        <div className="absolute bottom-1.5 right-2.5 z-10">
+          <button
+            type="button"
+            aria-expanded={prereqOpen}
+            aria-label={`Show ${prereqCount} cross-track prerequisite${
+              prereqCount === 1 ? '' : 's'
+            }`}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              setPrereqOpen((o) => !o);
+            }}
+            className="focus-ring inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded border border-accent/40 bg-bg-elevated text-accent text-[10px] font-mono hover:bg-accent-soft transition-colors"
           >
             ↗{prereqCount}
-          </span>
-        )}
-      </div>
-    </Link>
+          </button>
+          {prereqOpen && (
+            <div
+              role="dialog"
+              aria-label="Cross-track prerequisites"
+              onClick={(e) => e.stopPropagation()}
+              className="absolute right-0 bottom-full mb-2 w-[220px] rounded-md border border-border-strong bg-bg-elevated p-3 shadow-lg text-left"
+            >
+              <div className="text-[10px] uppercase tracking-[0.18em] font-mono text-dim mb-2">
+                Cross-track prereqs
+              </div>
+              <ul className="space-y-1 text-[12px] text-muted">
+                {lesson.crossTrackPrereqs.map((p) => (
+                  <li key={`${p.from}->${p.to}`}>
+                    ↗ {p.fromTitle}{' '}
+                    <span className="text-fg-subtle">
+                      ({p.fromTrackLabel})
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
   );
 }
 
 function Legend({ hasResume }: { hasResume: boolean }) {
   return (
-    <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-[10px] font-mono text-fg-subtle pt-4 border-t border-border">
+    <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-[11px] font-mono text-fg-muted pt-4 border-t border-border">
       <span className="uppercase tracking-[0.18em] text-dim">Legend</span>
       <span className="inline-flex items-center gap-1.5">
         <span aria-hidden="true" className="inline-block h-2.5 w-2.5 rounded-full bg-accent ring-2 ring-accent/20" />
@@ -375,10 +535,10 @@ function Legend({ hasResume }: { hasResume: boolean }) {
         next in track
       </span>
       <span className="inline-flex items-center gap-1.5">
-        <span className="inline-flex items-center px-1 rounded border border-accent/40 text-accent text-[9px] font-mono">
+        <span className="inline-flex items-center px-1 rounded border border-accent/40 text-accent text-[10px] font-mono">
           ↗N
         </span>
-        N cross-track prerequisites (hover for list)
+        N cross-track prerequisites (tap to view)
       </span>
       {hasResume && (
         <span className="inline-flex items-center gap-1.5">

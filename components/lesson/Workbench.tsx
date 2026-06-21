@@ -86,7 +86,16 @@ export function Workbench({
   defaultActive,
   prose,
 }: WorkbenchProps) {
-  const [active, setActive] = useState<string>(defaultActive);
+  // `defaultActive` is passed from the server page (loads via
+  // `loadLessonInteractives`), but client-marked interactives modules
+  // come back as opaque references on the server boundary, so the
+  // server-derived `interactives[0]?.id` may be `''`. Fall back to the
+  // first id we can see *as a client*. This means the initial
+  // expanded item is correct both during SSR (where defaultActive
+  // happens to round-trip) and on first client render.
+  const [active, setActive] = useState<string>(
+    defaultActive || interactives[0]?.id || '',
+  );
   const [pulse, setPulse] = useState<{ id: string; version: number } | null>(
     null,
   );
