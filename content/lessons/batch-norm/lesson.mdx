@@ -3,7 +3,7 @@ import { Callout } from '@/components/lesson/Callout';
 
 ## Layernorm normalizes each token's vector independently. What if we normalized across the batch instead?
 
-The transformer block normalizes per-token (layernorm) — each token's vector is independently centered and scaled, which was the residuals + layernorm lesson. This lesson is the contrast: *batch* normalization, the older approach that dominated the conv/CNN era. The math is the same — subtract the mean, divide by the std, apply a learned scale and shift — but the statistics are computed *across the N examples in the mini-batch* instead of *across the feature dimension of a single example*.
+Dropout and weight decay both attacked overfitting by *changing* what the model sees during training — random sub-networks, big-weight penalties. **Batch normalization** is a different kind of regularizer: it doesn't touch the loss or the connectivity, only the *scale* of the activations themselves. The math is the same shape as the layernorm from the transformer-block track — subtract the mean, divide by the std, apply a learned scale and shift — but the statistics are computed *across the N examples in the mini-batch* instead of *across the feature dimension of a single example*. This is the older approach that dominated the conv/CNN era; we cover it now because the regularizing side effect is what made it standard.
 
 The result is a regularizer that keeps the activations on a consistent scale across training. Without it, the activation distributions drift; with it, they stay anchored.
 

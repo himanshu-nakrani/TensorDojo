@@ -3,7 +3,7 @@ import { Callout } from '@/components/lesson/Callout';
 
 ## Attention mixes tokens. What rewrites the *content* of each token after that?
 
-The previous lesson closed the residual-stream idea: each sublayer reads from the residual stream and writes back, never replaces. Attention is the cross-token sublayer — it produces a per-token output that mixes value vectors across the sequence. The *content* of each token, however, is mostly preserved by attention (a token attends heavily to itself, so the output is close to the input).
+The previous lessons gave the residual block its structure (residuals + norm) and its non-linearity (ReLU, GELU, SiLU, SwiGLU). The block's first sublayer — attention — is the cross-token one: it produces a per-token output that mixes value vectors across the sequence. The *content* of each token, however, is mostly preserved by attention (a token attends heavily to itself, so the output is close to the input).
 
 The piece that *rewrites* the content of each token is the **feed-forward network** — a two-layer MLP with a non-linearity, applied *independently* to each token's vector.
 

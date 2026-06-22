@@ -79,3 +79,5 @@ Three practical consequences fall out of this picture:
 Three takeaways. **The loss surface is not a bowl** — saddles, sharp basins, and flat basins all show up in real networks, and they behave very differently under the same SGD update. **High-dimensional optimization is dominated by saddles, not local minima**, which is why momentum-based and adaptive optimizers win. **Flat minima generalize better than sharp ones**, and the noise injected by small-batch SGD is part of what biases training toward them.
 
 What you should walk away with: the next time you see a training curve plateau, your first guess shouldn't be "stuck in a local minimum" — it should be "stuck near a saddle." And when someone says "the LR is too high," you now know what curvature they mean.
+
+The next track begins by zooming back out to the *product* of $N$ Jacobians that gradient descent has to navigate across a deep stack — **vanishing and exploding gradients**, the structural problem that residuals and normalization exist to solve.

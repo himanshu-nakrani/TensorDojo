@@ -7,7 +7,7 @@ The curriculum so far has been all about *making* models — attention, training
 
 Two kinds of metrics carry that weight. **Intrinsic** metrics measure how well the model models its training distribution — perplexity is the canonical example, and it's literally exp of the loss the model was trained on. **Extrinsic** metrics measure how well the model performs on downstream tasks the field cares about — MMLU on knowledge, HellaSwag on commonsense, HumanEval on code, GSM8K on math. Each kind has well-known failure modes; modern practice uses both and trusts neither completely.
 
-Before LoRA closes the fine-tuning chapter and instruction tuning opens the alignment one, this lesson covers the measurement infrastructure both rely on. You cannot improve what you cannot evaluate.
+Before the rest of the fine-tuning track turns to alignment — instruction tuning, RLHF, DPO, distillation — this lesson covers the measurement infrastructure all of them rely on. You cannot improve what you cannot evaluate.
 
 ## Perplexity, in one line
 

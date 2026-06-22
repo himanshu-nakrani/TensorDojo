@@ -3,7 +3,7 @@ import { Callout } from '@/components/lesson/Callout';
 
 ## You have $10M of compute. How many parameters?
 
-The training loop you built two lessons ago could in principle scale to any model size. What it can't tell you is *which* size you should pick. Before any kernel runs, before any data loads, the very first question is: given a fixed compute budget (which is what a real GPU cluster amounts to), how big should the model be, and how many tokens should you train it on?
+The training loop from the previous lesson could in principle scale to any model size. What it can't tell you is *which* size you should pick. Before any kernel runs, before any data loads, the very first question is: given a fixed compute budget (which is what a real GPU cluster amounts to), how big should the model be, and how many tokens should you train it on?
 
 For most of the 2010s the answer was "make it bigger." Add parameters; loss falls. GPT-2 was 1.5B parameters trained on ~10B tokens. GPT-3 was 175B parameters trained on 300B tokens. Gopher was 280B trained on 300B. Each step jumped the parameter count by an order of magnitude; each step saw lower loss. The field assumed parameters were what mattered.
 

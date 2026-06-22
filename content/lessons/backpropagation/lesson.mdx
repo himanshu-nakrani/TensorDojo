@@ -3,7 +3,7 @@ import { Callout } from '@/components/lesson/Callout';
 
 ## Knowing the gradient at one point is one thing. How does the gradient get computed for a network with thousands of parameters?
 
-The previous lesson walked downhill on a 2D loss surface. The gradient was a 2-vector, the function `gradient(p)` returned a 2-vector, and gradient descent subtracted `η · gradient(p)` to get the next point. A real network has thousands — millions — of parameters. How does the gradient get computed for *all* of them at once?
+The previous lessons gave us a loss surface and the architectural fixes (residuals, norm, careful init) that keep gradients well-behaved across depth. What none of those lessons answered: *how* does the gradient at any single parameter actually get computed? A toy demo had `gradient(p)` return a 2-vector. A real network has thousands — millions — of parameters. How does the gradient get computed for *all* of them at once?
 
 The answer is the **chain rule**, applied layer by layer, in reverse. Forward pass computes activations layer-by-layer; backward pass propagates $\partial L / \partial z$ layer-by-layer in reverse, using the local Jacobian of each layer. Cost is one forward + one backward, roughly 2× a forward pass. No magic, no autodiff library — just the chain rule applied systematically.
 

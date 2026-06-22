@@ -68,4 +68,4 @@ For open-ended generation — chat, story writing, anything where "interesting" 
 
 Three takeaways. **Greedy decoding is short-sighted** — picking the locally best token at each step can lock you out of globally better paths. **Beam search keeps the top-k partial sequences alive** and lets a slightly worse short-term choice survive long enough to win on the full sequence. **The cost is roughly $k \times$ the forward passes**, plus a built-in bias toward short outputs that length normalization patches over. Greedy is the cheap baseline; beam is the principled improvement; sampling is what you do when you want output that doesn't sound like a textbook.
 
-Next we look at **KV cache** — the trick that makes any decoding strategy (greedy, beam, sampled) usable in production by avoiding a quadratic recompute on every token.
+The next lesson steps back from the algorithm and asks about the *prompt*: a frozen model with the same weights can do translation, classification, or arithmetic depending only on what you put in front of the question. That's **in-context learning**.
