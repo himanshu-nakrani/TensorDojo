@@ -63,11 +63,11 @@ export function LessonCardList() {
             <div className="flex items-baseline gap-3 mb-3">
               <span
                 id={`track-${bucket.id}`}
-                className="text-[11px] uppercase tracking-[0.18em] text-dim font-mono"
+                className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono"
               >
                 {bucket.label}
               </span>
-              <span className="text-[10px] text-dim font-mono tabular-nums">
+              <span className="text-[11px] text-dim font-mono tabular-nums">
                 {doneCount > 0
                   ? `${doneCount} / ${bucket.lessons.length} read`
                   : `${bucket.lessons.length} lesson${
@@ -102,7 +102,7 @@ export function LessonCardList() {
                           </h3>
                         </div>
                         <div className="flex items-center gap-3 shrink-0">
-                          <span className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono tabular-nums">
+                          <span className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono tabular-nums">
                             {lesson.meta.minutes} min
                           </span>
                           <span
@@ -140,13 +140,14 @@ function ResumeCard({
   return (
     <Link
       href={`/lessons/${slug}`}
+      aria-label={`Resume: ${title} (${minutes} min)`}
       className="group block rounded-lg border border-accent bg-accent-faint p-5 transition-colors hover:bg-accent-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
     >
       <div className="flex items-baseline justify-between gap-4 mb-1.5">
-        <span className="text-[10px] uppercase tracking-[0.18em] text-accent font-mono">
+        <span className="text-[11px] uppercase tracking-[0.12em] text-accent font-mono">
           Resume where you left off
         </span>
-        <span className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono tabular-nums">
+        <span className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono tabular-nums">
           {minutes} min
         </span>
       </div>

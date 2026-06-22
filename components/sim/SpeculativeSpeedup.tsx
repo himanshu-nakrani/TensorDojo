@@ -53,8 +53,9 @@ export function SpeculativeSpeedup() {
     <SimFrame
       title="Speedup heatmap: γ × α"
       onReset={reset}
+      headerWrap
       headerAction={
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 flex-wrap">
           <div className="flex border border-border rounded overflow-hidden font-mono text-[11px]">
             {RATIOS.map((r, i) => (
               <button
@@ -75,7 +76,7 @@ export function SpeculativeSpeedup() {
           <button
             type="button"
             onClick={reset}
-            className="text-[11px] uppercase tracking-[0.18em] font-mono text-muted hover:text-ink focus-ring transition-colors"
+            className="text-[11px] uppercase tracking-[0.12em] font-mono text-muted hover:text-ink focus-ring transition-colors"
           >
             Reset
           </button>

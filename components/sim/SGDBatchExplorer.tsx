@@ -103,7 +103,7 @@ export function SGDBatchExplorer() {
             marker={{ x: 0.8, y: -0.4, color: 'rgb(var(--fg-muted))' }}
             ariaLabel="2D loss surface (a, b) with SGD trajectories at four batch sizes."
           />
-          <div className="flex flex-wrap items-center gap-3 mt-3 font-mono text-[10px]">
+          <div className="flex flex-wrap items-center gap-3 mt-3 font-mono text-[11px]">
             {BATCH_PRESETS.map((bp, i) => (
               <span key={bp.value} className="inline-flex items-center gap-1.5">
                 <span
@@ -129,7 +129,7 @@ export function SGDBatchExplorer() {
         <div className="space-y-4 font-mono text-[12px]">
           <div>
             <div className="flex items-baseline justify-between mb-1">
-              <span className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono">
+              <span className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono">
                 Batch size
               </span>
               <span className="text-ink tabular-nums">
@@ -143,7 +143,7 @@ export function SGDBatchExplorer() {
                   type="button"
                   onClick={() => setBatchSize(bp.value)}
                   className={
-                    'text-[10px] uppercase tracking-[0.18em] font-mono py-1 rounded border focus-ring transition-colors ' +
+                    'text-[11px] uppercase tracking-[0.12em] font-mono py-1 rounded border focus-ring transition-colors ' +
                     (batchSize === bp.value
                       ? 'border-accent text-accent'
                       : 'border-border text-muted hover:text-ink')
@@ -158,7 +158,7 @@ export function SGDBatchExplorer() {
 
           <div>
             <div className="flex items-baseline justify-between mb-1">
-              <span className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono">
+              <span className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono">
                 Steps
               </span>
               <span className="text-ink tabular-nums">{runLength}</span>
@@ -237,7 +237,7 @@ function LossTrace({
     .join(' ');
   return (
     <div className="pt-3 border-t border-border">
-      <div className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono mb-1">
+      <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-1">
         {label}
       </div>
       <svg viewBox={`0 0 ${w} ${h}`} className="w-full h-auto" aria-label={label}>
@@ -320,18 +320,18 @@ export function SGDVarianceHistogram() {
               );
             })()}
           </svg>
-          <div className="flex items-center justify-between text-[10px] text-dim font-mono mt-1">
+          <div className="flex items-center justify-between text-[11px] text-dim font-mono mt-1">
             <span className="tabular-nums">{lo.toFixed(3)}</span>
             <span>gradient estimate (a)</span>
             <span className="tabular-nums">{hi.toFixed(3)}</span>
           </div>
-          <div className="text-[10px] text-fg-subtle font-mono mt-1">
+          <div className="text-[11px] text-fg-subtle font-mono mt-1">
             Vertical line: true full-batch gradient. Bars: 100 mini-batch estimates.
           </div>
         </div>
         <div className="space-y-3 font-mono text-[12px]">
           <div>
-            <div className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono mb-1">
+            <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-1">
               Batch size
             </div>
             <div className="grid grid-cols-4 gap-1">
@@ -341,7 +341,7 @@ export function SGDVarianceHistogram() {
                   type="button"
                   onClick={() => setBatchSize(n)}
                   className={
-                    'text-[10px] uppercase tracking-[0.18em] font-mono py-1 rounded border focus-ring transition-colors ' +
+                    'text-[11px] uppercase tracking-[0.12em] font-mono py-1 rounded border focus-ring transition-colors ' +
                     (batchSize === n
                       ? 'border-accent text-accent'
                       : 'border-border text-muted hover:text-ink')

@@ -42,10 +42,10 @@ export function ResumeStrip() {
       aria-label={`Resume: ${entry.meta.title}`}
     >
       <div className="flex items-center gap-4 min-w-0">
-        <span className="hidden sm:inline-block text-[11px] uppercase tracking-[0.18em] font-mono text-accent shrink-0">
+        <span className="hidden sm:inline-block text-[11px] uppercase tracking-[0.12em] font-mono text-accent shrink-0">
           Resume →
         </span>
-        <span className="sm:hidden text-[11px] uppercase tracking-[0.18em] font-mono text-accent shrink-0">
+        <span className="sm:hidden text-[11px] uppercase tracking-[0.12em] font-mono text-accent shrink-0">
           Resume
         </span>
         <span className="text-[15px] sm:text-[16px] font-semibold text-ink truncate">
@@ -53,7 +53,7 @@ export function ResumeStrip() {
         </span>
       </div>
       <div className="flex items-center gap-3 shrink-0">
-        <span className="text-[11px] uppercase tracking-[0.18em] font-mono text-fg-muted tabular-nums">
+        <span className="text-[11px] uppercase tracking-[0.12em] font-mono text-fg-muted tabular-nums">
           {entry.meta.minutes} min
         </span>
         <span

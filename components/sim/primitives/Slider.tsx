@@ -9,7 +9,7 @@ interface SliderProps {
   step?: number;
   onChange: (value: number) => void;
   formatValue?: (value: number) => string;
-  ariaLabel?: string;
+  ariaLabel: string;
   /**
    * Min-width for the value column. Defaults to 6ch which fits
    * any value up to ~6 characters in tabular-nums (e.g. "5.00e-3").

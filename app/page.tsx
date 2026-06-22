@@ -14,7 +14,7 @@ export default function HomePage() {
       className="mx-auto px-6 sm:px-10 pt-12 sm:pt-16 max-w-wide"
     >
       {/* HERO ----------------------------------------------------- */}
-      <section className="relative grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-10 lg:gap-16 items-center pb-16 sm:pb-24">
+      <section className="relative grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-10 lg:gap-16 items-center pb-16 sm:pb-24 overflow-hidden">
         {/* Ambient accent glow — soft halo behind the hero that adds
             depth without putting accent on static text. */}
         <div

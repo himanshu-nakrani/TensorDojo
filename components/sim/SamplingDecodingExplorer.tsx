@@ -142,7 +142,7 @@ export function SamplingDecodingExplorer() {
             setEmpirical(sample100());
             setSeed((s) => s + 1);
           }}
-          className="focus-ring text-[11px] uppercase tracking-[0.18em] font-mono text-accent hover:text-accent-hover transition-colors border border-accent px-2 py-0.5 rounded"
+          className="focus-ring text-[11px] uppercase tracking-[0.12em] font-mono text-accent hover:text-accent-hover transition-colors border border-accent px-2 py-0.5 rounded"
         >
           Sample 100 times
         </button>
@@ -156,7 +156,7 @@ export function SamplingDecodingExplorer() {
 
       {/* Strategy tabs */}
       <div className="mb-5 flex flex-wrap items-center gap-2">
-        <span className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono mr-1">
+        <span className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mr-1">
           Strategy
         </span>
         {(
@@ -172,7 +172,7 @@ export function SamplingDecodingExplorer() {
             type="button"
             onClick={() => setStrategy(s.id)}
             className={
-              'text-[10px] uppercase tracking-[0.18em] font-mono px-2 py-0.5 rounded border focus-ring transition-colors ' +
+              'text-[11px] uppercase tracking-[0.12em] font-mono px-2 py-0.5 rounded border focus-ring transition-colors ' +
               (strategy === s.id
                 ? 'border-accent text-accent'
                 : 'border-border text-muted hover:text-ink')
@@ -189,7 +189,7 @@ export function SamplingDecodingExplorer() {
         {strategy !== 'greedy' && (
           <div>
             <div className="flex items-baseline justify-between mb-1">
-              <span className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono">
+              <span className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono">
                 Temperature
               </span>
               <span className="text-ink font-mono tabular-nums text-[12px]">
@@ -212,7 +212,7 @@ export function SamplingDecodingExplorer() {
         {strategy === 'top-k' && (
           <div>
             <div className="flex items-baseline justify-between mb-1">
-              <span className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono">
+              <span className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono">
                 Top-k
               </span>
               <span className="text-ink font-mono tabular-nums text-[12px]">
@@ -233,7 +233,7 @@ export function SamplingDecodingExplorer() {
         {strategy === 'top-p' && (
           <div>
             <div className="flex items-baseline justify-between mb-1">
-              <span className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono">
+              <span className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono">
                 Top-p
               </span>
               <span className="text-ink font-mono tabular-nums text-[12px]">
@@ -256,10 +256,10 @@ export function SamplingDecodingExplorer() {
       {/* Distribution bars */}
       <section aria-label="Effective sampling distribution" className="mb-4">
         <div className="flex items-baseline justify-between mb-2">
-          <div className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono">
+          <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono">
             Effective sampling distribution
           </div>
-          <div className="text-[10px] text-dim font-mono tabular-nums">
+          <div className="text-[11px] text-dim font-mono tabular-nums">
             mode ={' '}
             <span className="text-accent">{NEXT_TOKEN_CANDIDATES[dominant]}</span>
           </div>
@@ -276,7 +276,7 @@ export function SamplingDecodingExplorer() {
       {/* Empirical */}
       {empirical && (
         <section aria-label="Empirical distribution" className="mb-4">
-          <div className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono mb-2">
+          <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-2">
             Empirical distribution (100 samples)
           </div>
           <BarChart

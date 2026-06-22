@@ -115,14 +115,14 @@ export function FlashAttentionTiling() {
           <button
             type="button"
             onClick={() => setPlaying((p) => !p)}
-            className="text-[11px] uppercase tracking-[0.18em] font-mono text-muted hover:text-ink focus-ring transition-colors"
+            className="text-[11px] uppercase tracking-[0.12em] font-mono text-muted hover:text-ink focus-ring transition-colors"
           >
             {playing ? 'Pause' : 'Play'}
           </button>
           <button
             type="button"
             onClick={reset}
-            className="text-[11px] uppercase tracking-[0.18em] font-mono text-muted hover:text-ink focus-ring transition-colors"
+            className="text-[11px] uppercase tracking-[0.12em] font-mono text-muted hover:text-ink focus-ring transition-colors"
           >
             Reset
           </button>
@@ -160,7 +160,7 @@ export function FlashAttentionTiling() {
               strokeWidth={2}
             />
           </svg>
-          <div className="text-[10px] text-dim font-mono text-center mt-2 tabular-nums">
+          <div className="text-[11px] text-dim font-mono text-center mt-2 tabular-nums">
             tile {tileIdx + 1} / {nTiles}
           </div>
         </div>

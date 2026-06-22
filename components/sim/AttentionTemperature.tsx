@@ -33,10 +33,10 @@ export function AttentionTemperature({ preset }: { preset?: AttentionTemperature
     >
 
       <div className="mb-3 flex items-baseline justify-between">
-        <div className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono">
+        <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono">
           Temperature
         </div>
-        <div className="text-[10px] text-dim font-mono tabular-nums">
+        <div className="text-[11px] text-dim font-mono tabular-nums">
           T = {temperature.toFixed(2)}
         </div>
       </div>
@@ -49,7 +49,7 @@ export function AttentionTemperature({ preset }: { preset?: AttentionTemperature
         formatValue={(v) => v.toFixed(2)}
         ariaLabel="Temperature"
       />
-      <div className="flex justify-between mt-2 text-[10px] text-dim font-mono tabular-nums">
+      <div className="flex justify-between mt-2 text-[11px] text-dim font-mono tabular-nums">
         <span>{TEMP_MIN.toFixed(1)} sharp</span>
         <span>{TEMP_MAX.toFixed(1)} flat</span>
       </div>

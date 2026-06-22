@@ -29,13 +29,13 @@ export function MathCode({ math, code, caption, className }: MathCodeProps) {
   return (
     <figure
       className={clsx(
-        'my-10 border border-border rounded-lg overflow-hidden bg-surface',
+        'my-10 border border-border rounded-lg bg-surface',
         className,
       )}
     >
       <div className="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-border">
         <div className="p-6 flex flex-col">
-          <div className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono mb-4">
+          <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-4">
             Math
           </div>
           <div
@@ -44,7 +44,7 @@ export function MathCode({ math, code, caption, className }: MathCodeProps) {
           />
         </div>
         <div className="p-6 flex flex-col bg-surface-2/40">
-          <div className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono mb-4">
+          <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-4">
             Code
           </div>
           <pre className="m-0 font-mono text-[13px] leading-relaxed text-ink overflow-x-auto">

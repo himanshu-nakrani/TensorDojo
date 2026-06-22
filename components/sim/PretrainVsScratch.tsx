@@ -32,7 +32,7 @@ const STEPS = 200;
 
 function Legend() {
   return (
-    <div className="flex flex-wrap items-center gap-4 font-mono text-[10px]">
+    <div className="flex flex-wrap items-center gap-4 font-mono text-[11px]">
       <span className="inline-flex items-center gap-1.5">
         <span
           aria-hidden="true"
@@ -171,7 +171,7 @@ function FinalAccuracyBars({
 
   return (
     <div className="space-y-2">
-      <div className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono">
+      <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono">
         Final test accuracy
       </div>
       {rows.map(({ label, acc, color }) => (
@@ -331,7 +331,7 @@ export function PretrainVsScratch() {
       <div className="space-y-4">
         {/* Loss curves */}
         <div>
-          <div className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono mb-2">
+          <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-2">
             Training loss vs step
           </div>
           <LossCurves
@@ -354,7 +354,7 @@ export function PretrainVsScratch() {
 
         {/* Step counter */}
         {(running || showBars) && (
-          <div className="font-mono text-[10px] text-fg-subtle tabular-nums">
+          <div className="font-mono text-[11px] text-fg-subtle tabular-nums">
             step {displayStep} / {STEPS}
           </div>
         )}

@@ -188,7 +188,7 @@ export function ResidualStackExplorer({ preset }: { preset?: ResidualStackExplor
           <button
             type="button"
             onClick={reset}
-            className="text-[11px] uppercase tracking-[0.18em] font-mono text-muted hover:text-ink focus-ring transition-colors"
+            className="text-[11px] uppercase tracking-[0.12em] font-mono text-muted hover:text-ink focus-ring transition-colors"
           >
             Reset
           </button>
@@ -197,13 +197,13 @@ export function ResidualStackExplorer({ preset }: { preset?: ResidualStackExplor
     >
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
-          <div className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono mb-2">
+          <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-2">
             Per-layer activation ‖x‖
           </div>
           <PlotLine data={actNorms} width={WIDTH} height={HEIGHT} pad={PAD} color="rgb(var(--accent))" />
         </div>
         <div>
-          <div className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono mb-2">
+          <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-2">
             Per-layer gradient ‖∂L/∂x‖
           </div>
           <PlotLine data={gradNormsArray} width={WIDTH} height={HEIGHT} pad={PAD} color="rgb(var(--negative))" />
@@ -211,7 +211,7 @@ export function ResidualStackExplorer({ preset }: { preset?: ResidualStackExplor
       </div>
 
       <div className="mt-4 flex items-baseline gap-3 font-mono text-[12px]">
-        <span className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono">
+        <span className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono">
           Stack depth N
         </span>
         <Slider
@@ -243,7 +243,7 @@ function Toggle({
       type="button"
       onClick={() => onChange(!on)}
       className={clsx(
-        'text-[10px] uppercase tracking-[0.18em] font-mono px-2 py-0.5 rounded border focus-ring transition-colors',
+        'text-[11px] uppercase tracking-[0.12em] font-mono px-2 py-0.5 rounded border focus-ring transition-colors',
         on
           ? 'border-accent text-accent'
           : 'border-border text-muted hover:text-ink',

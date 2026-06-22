@@ -82,13 +82,13 @@ export function BatchNormTrainVsInference() {
       title="Train vs inference"
       headerAction={
         <div className="flex items-center gap-3">
-          <div className="text-[10px] text-dim font-mono">
+          <div className="text-[11px] text-dim font-mono">
             the classic batchnorm footgun
           </div>
           <button
             type="button"
             onClick={reset}
-            className="text-[11px] uppercase tracking-[0.18em] font-mono text-muted hover:text-ink focus-ring transition-colors"
+            className="text-[11px] uppercase tracking-[0.12em] font-mono text-muted hover:text-ink focus-ring transition-colors"
           >
             Reset
           </button>
@@ -99,7 +99,7 @@ export function BatchNormTrainVsInference() {
       <div className="space-y-3 font-mono text-[12px]">
         <div>
           <div className="flex items-baseline justify-between mb-1">
-            <span className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono">
+            <span className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono">
               Batch size
             </span>
             <span className="text-ink tabular-nums">{batch}</span>
@@ -109,7 +109,7 @@ export function BatchNormTrainVsInference() {
               type="button"
               onClick={() => setBatch(1)}
               className={
-                'text-[10px] uppercase tracking-[0.18em] font-mono px-2 py-0.5 rounded border focus-ring transition-colors ' +
+                'text-[11px] uppercase tracking-[0.12em] font-mono px-2 py-0.5 rounded border focus-ring transition-colors ' +
                 (batch === 1
                   ? 'border-accent text-accent'
                   : 'border-border text-muted hover:text-ink')
@@ -122,7 +122,7 @@ export function BatchNormTrainVsInference() {
               type="button"
               onClick={() => setBatch(4)}
               className={
-                'text-[10px] uppercase tracking-[0.18em] font-mono px-2 py-0.5 rounded border focus-ring transition-colors ' +
+                'text-[11px] uppercase tracking-[0.12em] font-mono px-2 py-0.5 rounded border focus-ring transition-colors ' +
                 (batch === 4
                   ? 'border-accent text-accent'
                   : 'border-border text-muted hover:text-ink')
@@ -152,7 +152,7 @@ export function BatchNormTrainVsInference() {
         {yTrain && yInf && (
           <div className="pt-3 border-t border-border space-y-2 text-[11px]">
             <div>
-              <div className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono mb-1">
+              <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-1">
                 Output at training (batch stats)
               </div>
               <div className="space-y-0.5">
@@ -168,7 +168,7 @@ export function BatchNormTrainVsInference() {
               </div>
             </div>
             <div>
-              <div className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono mb-1">
+              <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-1">
                 Output at inference (running stats)
               </div>
               <div className="space-y-0.5">
@@ -184,7 +184,7 @@ export function BatchNormTrainVsInference() {
               </div>
             </div>
             {batch === 1 && (
-              <p className="text-[10px] text-[rgb(var(--negative))] font-mono leading-relaxed">
+              <p className="text-[11px] text-[rgb(var(--negative))] font-mono leading-relaxed">
                 ⚠ With batch size 1 the per-feature variance in
                 the batch is 0, so the training-time output is
                 just the learned bias β — the activations carry

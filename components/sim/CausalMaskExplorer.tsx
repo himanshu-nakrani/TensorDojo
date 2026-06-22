@@ -56,7 +56,7 @@ export function CausalMaskExplorer({ preset }: { preset?: CausalMaskExplorerPres
             type="button"
             onClick={() => setMaskOn((s) => !s)}
             className={clsx(
-              'text-[10px] uppercase tracking-[0.18em] font-mono px-2 py-0.5 rounded border focus-ring transition-colors',
+              'text-[11px] uppercase tracking-[0.12em] font-mono px-2 py-0.5 rounded border focus-ring transition-colors',
               maskOn
                 ? 'border-accent text-accent'
                 : 'border-border text-muted hover:text-ink',
@@ -68,7 +68,7 @@ export function CausalMaskExplorer({ preset }: { preset?: CausalMaskExplorerPres
           <button
             type="button"
             onClick={reset}
-            className="text-[11px] uppercase tracking-[0.18em] font-mono text-muted hover:text-ink focus-ring transition-colors"
+            className="text-[11px] uppercase tracking-[0.12em] font-mono text-muted hover:text-ink focus-ring transition-colors"
           >
             Reset
           </button>
@@ -77,7 +77,7 @@ export function CausalMaskExplorer({ preset }: { preset?: CausalMaskExplorerPres
     >
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
-          <div className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono mb-2">
+          <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-2">
             Scores
           </div>
           <div className="relative">
@@ -128,7 +128,7 @@ export function CausalMaskExplorer({ preset }: { preset?: CausalMaskExplorerPres
         </div>
 
         <div>
-          <div className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono mb-2">
+          <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-2">
             Weights (post-softmax)
           </div>
           <Heatmap
@@ -138,14 +138,14 @@ export function CausalMaskExplorer({ preset }: { preset?: CausalMaskExplorerPres
             cellSize={56}
             ariaLabel="Post-softmax attention weights"
           />
-          <div className="text-[10px] text-dim font-mono mt-1">
+          <div className="text-[11px] text-dim font-mono mt-1">
             Each row sums to 1.00; the upper triangle {maskOn ? 'is zero' : 'is not'}.
           </div>
         </div>
       </div>
 
       <div className="mt-4 flex items-baseline gap-3 font-mono text-[12px]">
-        <span className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono">
+        <span className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono">
           Sequence length
         </span>
         <Slider

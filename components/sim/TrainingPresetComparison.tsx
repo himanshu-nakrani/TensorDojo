@@ -73,7 +73,7 @@ export function TrainingPresetComparison() {
             setTimeout(run, 0);
           }}
           disabled={running}
-          className="text-[11px] uppercase tracking-[0.18em] font-mono text-muted hover:text-ink focus-ring transition-colors disabled:opacity-40"
+          className="text-[11px] uppercase tracking-[0.12em] font-mono text-muted hover:text-ink focus-ring transition-colors disabled:opacity-40"
         >
           {running ? 'Running…' : 'Re-run'}
         </button>
@@ -143,7 +143,7 @@ export function TrainingPresetComparison() {
                     className="inline-block w-2 h-2 rounded-full"
                     style={{ background: COLORS[i % COLORS.length] }}
                   />
-                  <span className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono">
+                  <span className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono">
                     {p.label}
                   </span>
                 </div>

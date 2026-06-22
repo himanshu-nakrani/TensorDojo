@@ -112,13 +112,13 @@ export function WeightDecayExplorer() {
       title="Weight decay (L2)"
       headerAction={
         <div className="flex items-center gap-3">
-          <div className="text-[10px] text-dim font-mono">
+          <div className="text-[11px] text-dim font-mono">
             degree {DEG} · fit on {xsTrain.length} of {xsTrain.length + xsTest.length} points
           </div>
           <button
             type="button"
             onClick={reset}
-            className="text-[11px] uppercase tracking-[0.18em] font-mono text-muted hover:text-ink focus-ring transition-colors"
+            className="text-[11px] uppercase tracking-[0.12em] font-mono text-muted hover:text-ink focus-ring transition-colors"
           >
             Reset
           </button>
@@ -184,7 +184,7 @@ export function WeightDecayExplorer() {
 
           {fit && (
             <div className="mt-3">
-              <div className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono mb-1">
+              <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-1">
                 Polynomial coefficients |w<sub>i</sub>|
               </div>
               <CoefficientBars w={fit.w} coefMax={coefMax} />
@@ -195,7 +195,7 @@ export function WeightDecayExplorer() {
         <div className="space-y-3 font-mono text-[12px]">
           <div>
             <div className="flex items-baseline justify-between mb-1">
-              <span className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono">
+              <span className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono">
                 λ (weight decay)
               </span>
               <span className="text-ink tabular-nums">{lambda.toExponential(1)}</span>
@@ -210,7 +210,7 @@ export function WeightDecayExplorer() {
               ariaLabel="Weight-decay coefficient"
               valueMinWidth="7ch"
             />
-            <div className="flex justify-between text-[10px] text-dim font-mono mt-1 tabular-nums">
+            <div className="flex justify-between text-[11px] text-dim font-mono mt-1 tabular-nums">
               <span>0 (no decay)</span>
               <span>1 (heavy decay)</span>
             </div>
@@ -235,7 +235,7 @@ export function WeightDecayExplorer() {
                 {fit ? fit.testMse.toFixed(3) : '—'}
               </span>
             </div>
-            <p className="text-[10px] text-fg-subtle font-mono mt-2 leading-relaxed">
+            <p className="text-[11px] text-fg-subtle font-mono mt-2 leading-relaxed">
               λ = 0 reproduces the unregularized high-degree fit
               (the overfitting baseline). Push λ up and watch the
               higher-order coefficients shrink first.

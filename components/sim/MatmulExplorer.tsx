@@ -114,7 +114,7 @@ export function MatmulExplorer() {
 
       {/* Expansion line */}
       <div className="rounded-md border border-border bg-bg/40 px-4 py-3">
-        <div className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono mb-1.5">
+        <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-1.5">
           c
           <sub>{focused.i + 1},{focused.j + 1}</sub>{' '}
           = row {focused.i + 1} of A · col {focused.j + 1} of B
@@ -153,7 +153,7 @@ function GridLabel({
       >
         {label}
       </div>
-      <div className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono">
+      <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono">
         {sub}
       </div>
     </div>

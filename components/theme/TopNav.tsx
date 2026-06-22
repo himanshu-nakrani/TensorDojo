@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import clsx from 'clsx';
@@ -38,6 +38,9 @@ const LINKS: readonly NavLink[] = [
 export function TopNav() {
   const pathname = usePathname() ?? '/';
   const [open, setOpen] = useState(false);
+  const drawerRef = useRef<HTMLDivElement>(null);
+  const toggleRef = useRef<HTMLButtonElement>(null);
+  const wasOpen = useRef(false);
 
   // Close the drawer whenever the route changes.
   useEffect(() => {
@@ -63,6 +66,46 @@ export function TopNav() {
       document.body.style.overflow = prev;
     };
   }, [open]);
+
+  // Focus trap: when open, move focus into the drawer; when closed,
+  // return focus to the toggle button. Tab/Shift+Tab cycle within.
+  useEffect(() => {
+    if (open) {
+      wasOpen.current = true;
+      const drawer = drawerRef.current;
+      if (!drawer) return;
+      const focusable = drawer.querySelectorAll<HTMLElement>(
+        'a[href], button:not([disabled])',
+      );
+      focusable[0]?.focus();
+    } else if (wasOpen.current) {
+      wasOpen.current = false;
+      toggleRef.current?.focus();
+    }
+  }, [open]);
+
+  const trapKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key !== 'Tab') return;
+    const drawer = drawerRef.current;
+    if (!drawer) return;
+    const focusable = Array.from(
+      drawer.querySelectorAll<HTMLElement>('a[href], button:not([disabled])'),
+    );
+    if (focusable.length === 0) return;
+    const first = focusable[0]!;
+    const last = focusable[focusable.length - 1]!;
+    if (e.shiftKey) {
+      if (document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      }
+    } else {
+      if (document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    }
+  };
 
   return (
     <>
@@ -107,6 +150,7 @@ export function TopNav() {
           <div className="flex items-center gap-1 md:hidden">
             <ThemeToggle />
             <button
+              ref={toggleRef}
               type="button"
               aria-label={open ? 'Close menu' : 'Open menu'}
               aria-expanded={open}
@@ -123,9 +167,11 @@ export function TopNav() {
       {open && (
         <div
           id="top-nav-drawer"
+          ref={drawerRef}
           role="dialog"
           aria-modal="true"
           aria-label="Navigation"
+          onKeyDown={trapKeyDown}
           className="fixed inset-0 top-12 z-30 md:hidden bg-bg/95 backdrop-blur-md"
         >
           <nav

@@ -13,7 +13,7 @@ export function InteractiveSkeleton() {
       aria-label="Loading interactive…"
       role="status"
     >
-      <span className="text-[11px] uppercase tracking-[0.18em] font-mono text-dim">
+      <span className="text-[11px] uppercase tracking-[0.12em] font-mono text-dim">
         loading…
       </span>
     </div>

@@ -27,11 +27,13 @@ The velocity $v$ is the exponential moving average of past gradients. $\beta = 0
 
 **Adam** (Kingma & Ba, 2014):
 $$
+\begin{aligned}
 m_{t+1} \;=\; \beta_1 \cdot m_t + (1 - \beta_1) \cdot g_t \\
 v_{t+1} \;=\; \beta_2 \cdot v_t + (1 - \beta_2) \cdot g_t^2 \\
 \hat{m}_{t+1} \;=\; m_{t+1} / (1 - \beta_1^{t+1}) \\
 \hat{v}_{t+1} \;=\; v_{t+1} / (1 - \beta_2^{t+1}) \\
 \theta_{t+1} \;=\; \theta_t - \eta \cdot \hat{m}_{t+1} / (\sqrt{\hat{v}_{t+1}} + \epsilon)
+\end{aligned}
 $$
 
 The two running averages $m$ and $v$ estimate the first and second moments of the gradient. The bias-correction $\hat{m}, \hat{v}$ matters at the start of training when $m$ and $v$ are still small (initialized at zero); without it, the first few steps would be biased small. Once $m$ and $v$ have settled (after a handful of steps), the step is the bias-corrected mean divided by the bias-corrected standard deviation — approximately $\eta \cdot \text{sign}(g)$ per parameter when the gradient direction has been roughly stable.

@@ -126,7 +126,7 @@ export function OptimizerRace() {
             marker={{ x: 0.8, y: -0.4, color: 'rgb(var(--fg-muted))' }}
             ariaLabel="2D loss surface (narrow valley) with three optimizer trajectories."
           />
-          <div className="flex flex-wrap items-center gap-3 mt-3 font-mono text-[10px]">
+          <div className="flex flex-wrap items-center gap-3 mt-3 font-mono text-[11px]">
             {traces.map((tr) => (
               <span key={tr.id} className="inline-flex items-center gap-1.5">
                 <span
@@ -149,7 +149,7 @@ export function OptimizerRace() {
         </div>
 
         <div className="space-y-3 font-mono text-[12px]">
-          <div className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono mb-1">
+          <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-1">
             Final loss (after {NUM_STEPS} steps)
           </div>
           {traces.map((tr) => (
@@ -196,7 +196,7 @@ function LossTrace({
   const range = Math.max(max - min, 1e-6);
   return (
     <div className="pt-3 border-t border-border">
-      <div className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono mb-1">
+      <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-1">
         Loss vs step
       </div>
       <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-auto" aria-label="Loss vs step (all three optimizers).">
@@ -264,7 +264,7 @@ export function MomentumSweep() {
         <div className="space-y-3 font-mono text-[12px]">
           <div>
             <div className="flex items-baseline justify-between mb-1">
-              <span className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono">
+              <span className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono">
                 β
               </span>
               <span className="text-ink tabular-nums">{beta.toFixed(2)}</span>
@@ -298,7 +298,7 @@ export function MomentumSweep() {
                 {trace.losses[trace.losses.length - 1]!.toExponential(2)}
               </span>
             </div>
-            <p className="text-[10px] text-fg-subtle mt-2">
+            <p className="text-[11px] text-fg-subtle mt-2">
               β=0 reduces to plain SGD. β close to 1 damps out new
               information and the velocity accumulates slowly. The
               sweet spot is usually around 0.9.

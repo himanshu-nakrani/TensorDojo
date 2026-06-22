@@ -88,7 +88,7 @@ function Slider({
         <label
           htmlFor={id}
           className={clsx(
-            'text-[10px] uppercase tracking-[0.18em] font-mono',
+            'text-[11px] uppercase tracking-[0.12em] font-mono',
             accent ? 'text-[rgb(var(--negative))]' : 'text-dim',
           )}
         >
@@ -140,7 +140,7 @@ function ShapeBox({
         )}
       >
         {label}{' '}
-        <span className="text-[10px] font-mono text-fg-muted">
+        <span className="text-[11px] font-mono text-fg-muted">
           ({rows}×{cols})
         </span>
       </div>

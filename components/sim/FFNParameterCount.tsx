@@ -60,7 +60,7 @@ export function FFNParameterCount() {
       <div className="space-y-4 font-mono text-[12px] mb-4">
         <div>
           <div className="flex items-baseline justify-between mb-1">
-            <span className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono">
+            <span className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono">
               d_model
             </span>
             <span className="text-ink tabular-nums">{dModel}</span>
@@ -77,7 +77,7 @@ export function FFNParameterCount() {
         </div>
         <div>
           <div className="flex items-baseline justify-between mb-1">
-            <span className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono">
+            <span className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono">
               d_hidden
             </span>
             <span className="text-ink tabular-nums">
@@ -91,7 +91,7 @@ export function FFNParameterCount() {
                 type="button"
                 onClick={() => setDHiddenIdx(i)}
                 className={
-                  'text-[10px] uppercase tracking-[0.18em] font-mono px-2 py-0.5 rounded border focus-ring transition-colors ' +
+                  'text-[11px] uppercase tracking-[0.12em] font-mono px-2 py-0.5 rounded border focus-ring transition-colors ' +
                   (dHiddenIdx === i
                     ? 'border-accent text-accent'
                     : 'border-border text-muted hover:text-ink')
@@ -124,7 +124,7 @@ export function FFNParameterCount() {
         </div>
       </dl>
 
-      <p className="mt-4 text-[10px] text-dim font-mono leading-relaxed">
+      <p className="mt-4 text-[11px] text-dim font-mono leading-relaxed">
         At d_model = {dModel} and d_hidden = {dHidden} ({dHidden / dModel}×), the FFN
         is {(counts.ffnFraction * 100).toFixed(0)}% of the block's parameters. In
         real transformers (d_model = 512, 1024, 4096), the FFN is

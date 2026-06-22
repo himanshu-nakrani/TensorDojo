@@ -207,7 +207,7 @@ function GapChart({
 
 function Legend() {
   return (
-    <div className="flex flex-wrap items-center gap-4 font-mono text-[10px]">
+    <div className="flex flex-wrap items-center gap-4 font-mono text-[11px]">
       <span className="inline-flex items-center gap-1.5">
         <span
           aria-hidden="true"
@@ -319,7 +319,7 @@ export function DataSizeSlider() {
       <div className="space-y-4">
         {/* Slider */}
         <div>
-          <div className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono mb-2">
+          <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-2">
             Fine-tune dataset size
           </div>
           <Slider
@@ -336,7 +336,7 @@ export function DataSizeSlider() {
 
         {/* Gap chart */}
         <div>
-          <div className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono mb-2">
+          <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-2">
             Final loss vs N
           </div>
           <GapChart cache={cache} activeN={activeN} />
@@ -346,7 +346,7 @@ export function DataSizeSlider() {
         <Legend />
 
         {/* Status line */}
-        <div className="font-mono text-[10px] text-fg-subtle tabular-nums h-4">
+        <div className="font-mono text-[11px] text-fg-subtle tabular-nums h-4">
           {pending
             ? `training at N=${activeN}…`
             : divergedAt !== null && divergedAt === activeN

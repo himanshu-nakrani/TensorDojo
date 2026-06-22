@@ -72,7 +72,7 @@ export const WorkbenchItem = forwardRef<HTMLDivElement, WorkbenchItemProps>(
         >
           <Chevron open={isActive} />
           <span className="flex-1 min-w-0">
-            <span className="block text-[12px] uppercase tracking-[0.18em] text-dim font-mono">
+            <span className="block text-[12px] uppercase tracking-[0.12em] text-dim font-mono">
               {isActive ? 'Active · Interactive' : 'Interactive'}
             </span>
             <span className="block text-sm font-semibold text-ink tracking-[-0.005em]">

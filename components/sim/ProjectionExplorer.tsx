@@ -71,7 +71,7 @@ export function ProjectionExplorer({ preset }: { preset?: ProjectionExplorerPres
             type="button"
             onClick={() => setShowUnit((s) => !s)}
             className={clsx(
-              'text-[10px] uppercase tracking-[0.18em] font-mono px-2 py-0.5 rounded border focus-ring transition-colors',
+              'text-[11px] uppercase tracking-[0.12em] font-mono px-2 py-0.5 rounded border focus-ring transition-colors',
               showUnit
                 ? 'border-accent text-accent'
                 : 'border-border text-muted hover:text-ink',
@@ -86,7 +86,7 @@ export function ProjectionExplorer({ preset }: { preset?: ProjectionExplorerPres
               setA([...DEFAULT_A] as [number, number]);
               setB([...DEFAULT_B] as [number, number]);
             }}
-            className="text-[11px] uppercase tracking-[0.18em] font-mono text-muted hover:text-ink focus-ring transition-colors"
+            className="text-[11px] uppercase tracking-[0.12em] font-mono text-muted hover:text-ink focus-ring transition-colors"
           >
             Reset
           </button>
@@ -175,7 +175,7 @@ export function ProjectionExplorer({ preset }: { preset?: ProjectionExplorerPres
           <Readout label="‖residual‖" value={fmt(resMag)} />
           <Readout label="cos θ" value={fmt(cos)} accent />
           <Readout label="a · b" value={fmt(a[0] * b[0] + a[1] * b[1])} />
-          <div className="pt-3 border-t border-border text-[10px] text-dim leading-relaxed">
+          <div className="pt-3 border-t border-border text-[11px] text-dim leading-relaxed">
             <div>
               <span className="inline-block w-3 h-px align-middle bg-accent mr-1" />
               teal dashed = projection of a onto b

@@ -56,7 +56,7 @@ export function BPETrainer({ preset }: { preset?: CorpusPreset }) {
             type="button"
             onClick={() => setStep((s) => Math.max(0, s - 1))}
             disabled={step === 0}
-            className="text-[11px] uppercase tracking-[0.18em] font-mono px-2 py-0.5 rounded border border-border text-muted hover:text-ink focus-ring transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+            className="text-[11px] uppercase tracking-[0.12em] font-mono px-2 py-0.5 rounded border border-border text-muted hover:text-ink focus-ring transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
           >
             Back
           </button>
@@ -64,14 +64,14 @@ export function BPETrainer({ preset }: { preset?: CorpusPreset }) {
             type="button"
             onClick={() => setStep((s) => Math.min(totalSteps, s + 1))}
             disabled={step >= totalSteps}
-            className="text-[11px] uppercase tracking-[0.18em] font-mono px-2 py-0.5 rounded border border-accent text-accent hover:text-accent-hover focus-ring transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+            className="text-[11px] uppercase tracking-[0.12em] font-mono px-2 py-0.5 rounded border border-accent text-accent hover:text-accent-hover focus-ring transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
           >
             Step
           </button>
           <button
             type="button"
             onClick={reset}
-            className="text-[11px] uppercase tracking-[0.18em] font-mono text-muted hover:text-ink focus-ring transition-colors"
+            className="text-[11px] uppercase tracking-[0.12em] font-mono text-muted hover:text-ink focus-ring transition-colors"
           >
             Reset
           </button>
@@ -82,10 +82,10 @@ export function BPETrainer({ preset }: { preset?: CorpusPreset }) {
         {/* Left: per-word symbol state. */}
         <div>
           <div className="flex items-baseline justify-between mb-2">
-            <div className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono">
+            <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono">
               Corpus (split into symbols)
             </div>
-            <div className="text-[10px] text-dim font-mono tabular-nums">
+            <div className="text-[11px] text-dim font-mono tabular-nums">
               step <span className="text-ink">{step}</span>
               {' / '}
               <span className="text-ink">{totalSteps}</span>
@@ -144,10 +144,10 @@ export function BPETrainer({ preset }: { preset?: CorpusPreset }) {
         {/* Right: vocabulary list. */}
         <div>
           <div className="flex items-baseline justify-between mb-2">
-            <div className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono">
+            <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono">
               Vocabulary
             </div>
-            <div className="text-[10px] text-dim font-mono tabular-nums">
+            <div className="text-[11px] text-dim font-mono tabular-nums">
               <span className="text-ink">{vocabNow.length}</span> tokens
             </div>
           </div>

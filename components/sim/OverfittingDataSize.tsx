@@ -81,13 +81,13 @@ export function OverfittingDataSize() {
       title="Same model, more or less data"
       headerAction={
         <div className="flex items-center gap-3">
-          <div className="text-[10px] text-dim font-mono">
+          <div className="text-[11px] text-dim font-mono">
             degree {DEG} · test set is fixed at the last 6 points
           </div>
           <button
             type="button"
             onClick={reset}
-            className="text-[11px] uppercase tracking-[0.18em] font-mono text-muted hover:text-ink focus-ring transition-colors"
+            className="text-[11px] uppercase tracking-[0.12em] font-mono text-muted hover:text-ink focus-ring transition-colors"
           >
             Reset
           </button>
@@ -98,7 +98,7 @@ export function OverfittingDataSize() {
       <div className="space-y-3 font-mono text-[12px]">
         <div>
           <div className="flex items-baseline justify-between mb-1">
-            <span className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono">
+            <span className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono">
               Training-set size
             </span>
             <span className="text-ink tabular-nums">{n}</span>
@@ -137,14 +137,14 @@ export function OverfittingDataSize() {
 
         {finite.length > 1 && (
           <div className="pt-3 border-t border-border">
-            <div className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono mb-1">
+            <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-1">
               Test loss as the training set grows
             </div>
             <SizeSweep sweep={finite} currentN={n} />
           </div>
         )}
 
-        <p className="text-[10px] text-fg-subtle font-mono leading-relaxed pt-2">
+        <p className="text-[11px] text-fg-subtle font-mono leading-relaxed pt-2">
           Same high-variance fit (degree {DEG}). Drag the size slider; the
           test-loss trace below records every n you visit. More data
           closes the train-test gap.

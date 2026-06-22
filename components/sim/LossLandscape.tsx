@@ -111,7 +111,7 @@ export function LossLandscape() {
         <button
           type="button"
           onClick={() => setStart(null)}
-          className="text-[11px] uppercase tracking-[0.18em] font-mono text-muted hover:text-ink focus-ring transition-colors"
+          className="text-[11px] uppercase tracking-[0.12em] font-mono text-muted hover:text-ink focus-ring transition-colors"
         >
           Reset
         </button>
@@ -132,7 +132,7 @@ export function LossLandscape() {
               aria-checked={active}
               onClick={() => setSurfaceId(s.id)}
               className={clsx(
-                'focus-ring text-[11px] uppercase tracking-[0.18em] font-mono px-2.5 py-1 rounded border transition-colors',
+                'focus-ring text-[11px] uppercase tracking-[0.12em] font-mono px-2.5 py-1 rounded border transition-colors',
                 active
                   ? 'border-accent text-accent bg-accent-soft'
                   : 'border-border text-muted hover:text-ink hover:border-border-strong',
@@ -155,11 +155,10 @@ export function LossLandscape() {
           <svg
             viewBox={`0 0 ${W} ${H}`}
             width="100%"
-            height="auto"
+            className="cursor-crosshair block h-auto"
             onClick={handleClick}
             role="img"
             aria-label="Loss surface heatmap. Click anywhere to drop a starting point for SGD."
-            className="cursor-crosshair block"
           >
             {cells.flatMap((row, i) =>
               row.map((v, j) => {
@@ -249,7 +248,7 @@ export function LossLandscape() {
             <div className="flex items-baseline justify-between mb-1.5">
               <label
                 htmlFor="lr-slider"
-                className="text-[11px] uppercase tracking-[0.18em] text-dim font-mono"
+                className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono"
               >
                 learning rate
               </label>
@@ -267,7 +266,7 @@ export function LossLandscape() {
               onChange={(e) => setLR(parseFloat(e.target.value))}
               className="w-full accent-[rgb(var(--accent))]"
             />
-            <div className="flex justify-between text-[10px] text-fg-subtle font-mono tabular-nums mt-0.5">
+            <div className="flex justify-between text-[11px] text-fg-subtle font-mono tabular-nums mt-0.5">
               <span>0.005</span>
               <span>1.5</span>
             </div>

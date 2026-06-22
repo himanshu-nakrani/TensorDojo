@@ -81,13 +81,13 @@ export function WeightDecaySweep() {
       title="Train + test loss vs λ"
       headerAction={
         <div className="flex items-center gap-3">
-          <div className="text-[10px] text-dim font-mono">
+          <div className="text-[11px] text-dim font-mono">
             degree 12 · log-scale x-axis · the recorded sweep persists
           </div>
           <button
             type="button"
             onClick={reset}
-            className="text-[11px] uppercase tracking-[0.18em] font-mono text-muted hover:text-ink focus-ring transition-colors"
+            className="text-[11px] uppercase tracking-[0.12em] font-mono text-muted hover:text-ink focus-ring transition-colors"
           >
             Reset
           </button>
@@ -98,7 +98,7 @@ export function WeightDecaySweep() {
       <div className="space-y-3 font-mono text-[12px]">
         <div>
           <div className="flex items-baseline justify-between mb-1">
-            <span className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono">
+            <span className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono">
               λ
             </span>
             <span className="text-ink tabular-nums">{lambda.toExponential(1)}</span>
@@ -146,7 +146,7 @@ export function WeightDecaySweep() {
           </div>
         )}
 
-        <p className="text-[10px] text-fg-subtle font-mono leading-relaxed pt-2">
+        <p className="text-[11px] text-fg-subtle font-mono leading-relaxed pt-2">
           Visit three or four λ values to see the curve. The sweet
           spot is where the test loss (red) is lowest while the
           train loss (teal) is still small.

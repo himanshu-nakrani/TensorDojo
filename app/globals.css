@@ -132,6 +132,28 @@
 }
 .katex-display {
   margin: 1.5rem 0 !important;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 2px;
+}
+/* The MathML annotation layer is visually hidden but can cause
+   horizontal overflow on narrow viewports. The .katex container
+   must clip it so absolutely-positioned MathML children don't
+   extend the scroll width. */
+.katex {
+  overflow: hidden;
+}
+.katex-mathml,
+.katex-mathml math {
+  overflow: hidden;
+  max-width: 100%;
+  position: absolute;
+  clip-path: inset(50%);
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  border: 0;
 }
 
 /* Selection — same accent on both themes. */

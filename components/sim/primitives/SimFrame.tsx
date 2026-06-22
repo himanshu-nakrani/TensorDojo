@@ -36,7 +36,7 @@ export function SimFrame({
       <button
         type="button"
         onClick={onReset}
-        className="text-[11px] uppercase tracking-[0.18em] font-mono text-muted hover:text-ink focus-ring transition-colors"
+        className="text-[11px] uppercase tracking-[0.12em] font-mono text-muted hover:text-ink focus-ring transition-colors"
       >
         {resetLabel}
       </button>
@@ -55,7 +55,7 @@ export function SimFrame({
           headerWrap && 'flex-wrap gap-3',
         )}
       >
-        <h3 className="text-[11px] uppercase tracking-[0.18em] text-dim font-mono">
+        <h3 className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono">
           {title}
         </h3>
         {action}

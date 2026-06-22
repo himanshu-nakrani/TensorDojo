@@ -90,7 +90,7 @@ function ResumeButton({
       data-cta={variant}
       className="focus-ring group inline-flex items-baseline gap-3 rounded-lg border border-accent bg-accent-soft px-5 py-4 transition-colors hover:border-accent hover:bg-accent-faint"
     >
-      <span className="text-[10px] uppercase tracking-[0.18em] text-accent font-mono">
+      <span className="text-[11px] uppercase tracking-[0.12em] text-accent font-mono">
         {prefix}
       </span>
       <span className="text-[1.05rem] font-semibold text-ink tracking-[-0.005em]">

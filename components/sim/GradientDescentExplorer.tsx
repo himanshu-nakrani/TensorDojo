@@ -148,7 +148,7 @@ export function GradientDescentExplorer() {
     >
       {/* Presets */}
       <div className="mb-5 flex flex-wrap items-center gap-2">
-        <span className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono mr-1">
+        <span className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mr-1">
           Preset
         </span>
         {PRESETS.map((p) => (
@@ -157,7 +157,7 @@ export function GradientDescentExplorer() {
             type="button"
             onClick={() => setPreset(p.id)}
             className={
-              'text-[10px] uppercase tracking-[0.18em] font-mono px-2 py-0.5 rounded border focus-ring transition-colors ' +
+              'text-[11px] uppercase tracking-[0.12em] font-mono px-2 py-0.5 rounded border focus-ring transition-colors ' +
               (presetId === p.id
                 ? 'border-accent text-accent'
                 : 'border-border text-muted hover:text-ink')
@@ -268,7 +268,7 @@ export function GradientDescentExplorer() {
         <div className="space-y-4 font-mono text-[12px]">
           <div>
             <div className="flex items-baseline justify-between mb-1">
-              <span className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono">
+              <span className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono">
                 Learning rate η
               </span>
               <span className="text-ink tabular-nums">{eta.toFixed(2)}</span>
@@ -286,7 +286,7 @@ export function GradientDescentExplorer() {
 
           <div>
             <div className="flex items-baseline justify-between mb-1">
-              <span className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono">
+              <span className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono">
                 Steps
               </span>
               <span className="text-ink tabular-nums">{numSteps}</span>
@@ -332,7 +332,7 @@ export function GradientDescentExplorer() {
               </span>
             </div>
             {diverged && (
-              <p className="text-[10px] text-[rgb(var(--negative))] mt-1">
+              <p className="text-[11px] text-[rgb(var(--negative))] mt-1">
                 Diverged at step {runResult.divergedAt}.
               </p>
             )}

@@ -73,7 +73,7 @@ export function PositionalSineWave({ preset }: { preset?: PositionalSineWavePres
         </div>
         <div className="space-y-2 font-mono text-[12px]">
           <div>
-            <div className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono mb-1">
+            <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-1">
               Dimension index
             </div>
             <input
@@ -90,7 +90,7 @@ export function PositionalSineWave({ preset }: { preset?: PositionalSineWavePres
             <div className="text-ink tabular-nums text-right">{dim}</div>
           </div>
           <div>
-            <div className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono mb-1">
+            <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-1">
               Max position
             </div>
             <input

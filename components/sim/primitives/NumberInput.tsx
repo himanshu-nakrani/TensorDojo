@@ -16,7 +16,7 @@ interface NumberInputProps {
   step?: number;
   min?: number;
   max?: number;
-  ariaLabel?: string;
+  ariaLabel: string;
   className?: string;
 }
 

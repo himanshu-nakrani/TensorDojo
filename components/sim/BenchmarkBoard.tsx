@@ -78,7 +78,7 @@ export function BenchmarkBoard() {
         <button
           type="button"
           onClick={reset}
-          className="text-[11px] uppercase tracking-[0.18em] font-mono text-muted hover:text-ink focus-ring transition-colors"
+          className="text-[11px] uppercase tracking-[0.12em] font-mono text-muted hover:text-ink focus-ring transition-colors"
         >
           Reset weights
         </button>
@@ -87,7 +87,7 @@ export function BenchmarkBoard() {
       <div className="grid grid-cols-1 md:grid-cols-[1fr_1fr] gap-6">
         {/* Per-benchmark scores */}
         <div className="border border-border rounded p-3 bg-surface">
-          <div className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono mb-3">
+          <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-3">
             Per-benchmark scores
           </div>
           <div className="overflow-x-auto">
@@ -99,7 +99,7 @@ export function BenchmarkBoard() {
                     <th key={b.id} className="text-center pb-1 px-1">
                       {b.label}
                       {b.saturated && (
-                        <span className="block text-[9px] text-dim opacity-70">
+                        <span className="block text-[11px] text-dim opacity-70">
                           saturated
                         </span>
                       )}
@@ -130,12 +130,12 @@ export function BenchmarkBoard() {
           </div>
 
           <div className="mt-4 space-y-2">
-            <div className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono">
+            <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono">
               Benchmark weights
             </div>
             {BENCHMARKS.map((b) => (
               <label key={b.id} className="block">
-                <div className="flex items-baseline justify-between text-[10px] font-mono mb-0.5">
+                <div className="flex items-baseline justify-between text-[11px] font-mono mb-0.5">
                   <span className="text-dim">{b.label}</span>
                   <span className="text-ink tabular-nums">
                     {weights[b.id].toFixed(1)}
@@ -160,7 +160,7 @@ export function BenchmarkBoard() {
 
         {/* Composite ranking */}
         <div className="border border-border rounded p-3 bg-surface">
-          <div className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono mb-3">
+          <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-3">
             Composite ranking (weighted mean)
           </div>
           <div className="space-y-2">

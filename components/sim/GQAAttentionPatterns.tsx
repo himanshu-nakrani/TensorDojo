@@ -132,14 +132,14 @@ export function GQAAttentionPatterns() {
           <button
             type="button"
             onClick={() => setSeed((s) => s + 1)}
-            className="text-[11px] uppercase tracking-[0.18em] font-mono text-muted hover:text-ink focus-ring transition-colors"
+            className="text-[11px] uppercase tracking-[0.12em] font-mono text-muted hover:text-ink focus-ring transition-colors"
           >
             Re-sample
           </button>
           <button
             type="button"
             onClick={reset}
-            className="text-[11px] uppercase tracking-[0.18em] font-mono text-muted hover:text-ink focus-ring transition-colors"
+            className="text-[11px] uppercase tracking-[0.12em] font-mono text-muted hover:text-ink focus-ring transition-colors"
           >
             Reset
           </button>
@@ -148,7 +148,7 @@ export function GQAAttentionPatterns() {
     >
       <div className="space-y-1.5">
         {/* Header row: token indices */}
-        <div className="grid grid-cols-[60px_24px_repeat(6,1fr)] gap-1 items-center font-mono text-[10px] text-dim">
+        <div className="grid grid-cols-[60px_24px_repeat(6,1fr)] gap-1 items-center font-mono text-[11px] text-dim">
           <div></div>
           <div></div>
           {Array.from({ length: N_TOKENS }, (_, i) => (
@@ -164,7 +164,7 @@ export function GQAAttentionPatterns() {
             className="grid grid-cols-[60px_24px_repeat(6,1fr)] gap-1 items-center"
           >
             <span className="text-[11px] font-mono text-ink">Q{qh}</span>
-            <span className="text-[10px] font-mono text-dim text-right">
+            <span className="text-[11px] font-mono text-dim text-right">
               ↘KV{kvIdx}
             </span>
             {weights.map((w, t) => (

@@ -165,7 +165,7 @@ export function BackpropCrossSection() {
               strokeWidth={1.5}
             />
           </svg>
-          <div className="flex items-center justify-between text-[10px] text-dim font-mono mt-1">
+          <div className="flex items-center justify-between text-[11px] text-dim font-mono mt-1">
             <span>−2</span>
             <span className="tabular-nums">{choice.label} = {currentValue.toFixed(2)}</span>
             <span>+2</span>
@@ -173,7 +173,7 @@ export function BackpropCrossSection() {
         </div>
         <div className="space-y-3 font-mono text-[12px]">
           <div>
-            <div className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono mb-1">
+            <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-1">
               Parameter
             </div>
             <div className="grid grid-cols-2 gap-1">
@@ -183,7 +183,7 @@ export function BackpropCrossSection() {
                   type="button"
                   onClick={() => setChoice(c)}
                   className={
-                    'text-[10px] uppercase tracking-[0.18em] font-mono py-1 rounded border focus-ring transition-colors ' +
+                    'text-[11px] uppercase tracking-[0.12em] font-mono py-1 rounded border focus-ring transition-colors ' +
                     (choice.label === c.label
                       ? 'border-accent text-accent'
                       : 'border-border text-muted hover:text-ink')
@@ -214,7 +214,7 @@ export function BackpropCrossSection() {
                 {gradNumerical.toFixed(4)}
               </span>
             </div>
-            <p className="text-[10px] text-fg-subtle font-mono mt-2">
+            <p className="text-[11px] text-fg-subtle font-mono mt-2">
               The dashed line is the tangent at the marker with
               slope = ∂L/∂. The two gradient values match to
               within numerical precision.

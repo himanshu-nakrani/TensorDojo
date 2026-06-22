@@ -76,7 +76,7 @@ export function BPETokenizer() {
       <div className="space-y-4 font-mono text-[12px]">
         <div className="grid grid-cols-1 md:grid-cols-[1fr_240px] gap-3">
           <div>
-            <div className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono mb-1">
+            <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-1">
               Input string
             </div>
             <input
@@ -88,7 +88,7 @@ export function BPETokenizer() {
             />
           </div>
           <div>
-            <div className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono mb-1">
+            <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-1">
               Vocabulary
             </div>
             <select
@@ -108,10 +108,10 @@ export function BPETokenizer() {
 
         <div className="pt-3 border-t border-border">
           <div className="flex items-baseline justify-between mb-2">
-            <div className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono">
+            <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono">
               Tokens
             </div>
-            <div className="text-[10px] text-dim font-mono tabular-nums">
+            <div className="text-[11px] text-dim font-mono tabular-nums">
               <span className="text-ink">{tokens.length}</span> tokens
               {' · '}
               <span className="text-ink">{vocabDef.numMerges}</span> merges in this vocab
@@ -137,7 +137,7 @@ export function BPETokenizer() {
           </div>
         </div>
 
-        <p className="text-[10px] text-dim font-mono leading-relaxed pt-2">
+        <p className="text-[11px] text-dim font-mono leading-relaxed pt-2">
           Type any word. With fewer merges, every word breaks into more,
           smaller pieces. With more merges trained on the right corpus,
           common subwords collapse to single tokens. <span className="text-ink">{EOW}</span> marks

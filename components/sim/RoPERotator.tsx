@@ -115,7 +115,7 @@ export function RoPERotator() {
           <button
             type="button"
             onClick={reset}
-            className="text-[11px] uppercase tracking-[0.18em] font-mono text-muted hover:text-ink focus-ring transition-colors"
+            className="text-[11px] uppercase tracking-[0.12em] font-mono text-muted hover:text-ink focus-ring transition-colors"
           >
             Reset
           </button>
@@ -150,19 +150,19 @@ export function RoPERotator() {
       {/* Headline readouts. */}
       <div className="grid grid-cols-3 gap-4 pt-4 border-t border-border font-mono text-[11px]">
         <div>
-          <div className="text-[10px] uppercase tracking-[0.18em] text-dim mb-1">
+          <div className="text-[11px] uppercase tracking-[0.12em] text-dim mb-1">
             Unrotated q · k
           </div>
           <div className="text-ink tabular-nums">{dotRaw.toFixed(3)}</div>
         </div>
         <div>
-          <div className="text-[10px] uppercase tracking-[0.18em] text-dim mb-1">
+          <div className="text-[11px] uppercase tracking-[0.12em] text-dim mb-1">
             Rotated rope(q, m) · rope(k, n)
           </div>
           <div className="text-accent tabular-nums">{dotRot.toFixed(3)}</div>
         </div>
         <div>
-          <div className="text-[10px] uppercase tracking-[0.18em] text-dim mb-1">
+          <div className="text-[11px] uppercase tracking-[0.12em] text-dim mb-1">
             Relative offset m − n
           </div>
           <div className="text-ink tabular-nums">{posQ - posK}</div>
@@ -265,10 +265,10 @@ function VectorPanel({
   return (
     <div>
       <div className="flex items-baseline justify-between mb-2">
-        <div className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono">
+        <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono">
           {label} (pair shown)
         </div>
-        <div className="text-[10px] text-dim font-mono tabular-nums">
+        <div className="text-[11px] text-dim font-mono tabular-nums">
           pos <span className="text-ink">{pos}</span> · θ{' '}
           <span className="text-ink">{theta.toFixed(2)}</span> rad
         </div>
@@ -299,7 +299,7 @@ function PositionSlider({
   return (
     <label className="block">
       <div className="flex items-baseline justify-between mb-1">
-        <span className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono">
+        <span className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono">
           {label}
         </span>
         <span className="text-[11px] font-mono tabular-nums text-ink">{value}</span>

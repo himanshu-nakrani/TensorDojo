@@ -116,7 +116,7 @@ export function PreferencePolicyTrainer() {
       <div className="space-y-5">
       {/* Prompt */}
       <div className="rounded border border-border bg-bg/50 px-3 py-2">
-        <span className="text-[10px] uppercase tracking-[0.14em] text-dim font-mono mr-2">
+        <span className="text-[11px] uppercase tracking-[0.14em] text-dim font-mono mr-2">
           Prompt
         </span>
         <span className="font-mono text-[12px] text-ink">{PROMPT}</span>
@@ -124,7 +124,7 @@ export function PreferencePolicyTrainer() {
 
       {/* Probability bars */}
       <section aria-label="Policy probabilities">
-        <div className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono mb-3">
+        <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-3">
           Policy probabilities
         </div>
         <div className="space-y-2">
@@ -162,7 +162,7 @@ export function PreferencePolicyTrainer() {
 
       {/* Next preference preview */}
       <div className="rounded border border-border bg-bg/40 px-3 py-2 font-mono text-[11px] text-muted">
-        <span className="text-dim uppercase tracking-[0.14em] text-[10px] mr-2">
+        <span className="text-dim uppercase tracking-[0.14em] text-[11px] mr-2">
           Next preference
         </span>
         response {nextPref.preferred} preferred over response{' '}

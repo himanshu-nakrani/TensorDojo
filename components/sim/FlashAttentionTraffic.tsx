@@ -51,7 +51,7 @@ export function FlashAttentionTraffic() {
         <button
           type="button"
           onClick={reset}
-          className="text-[11px] uppercase tracking-[0.18em] font-mono text-muted hover:text-ink focus-ring transition-colors"
+          className="text-[11px] uppercase tracking-[0.12em] font-mono text-muted hover:text-ink focus-ring transition-colors"
         >
           Reset
         </button>
@@ -59,7 +59,7 @@ export function FlashAttentionTraffic() {
     >
       <label className="block mb-5">
         <div className="flex items-baseline justify-between mb-1">
-          <span className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono">
+          <span className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono">
             Sequence length
           </span>
           <span className="text-[11px] font-mono tabular-nums">
@@ -77,7 +77,7 @@ export function FlashAttentionTraffic() {
           className="w-full focus-ring"
           aria-label="Sequence length"
         />
-        <div className="flex justify-between text-[9px] text-dim font-mono mt-1 tabular-nums">
+        <div className="flex justify-between text-[11px] text-dim font-mono mt-1 tabular-nums">
           {SEQ_STEPS.map((n) => (
             <span key={n}>{n}</span>
           ))}
@@ -105,7 +105,7 @@ export function FlashAttentionTraffic() {
 
       <div className="grid grid-cols-2 gap-4 pt-4 border-t border-border font-mono text-[11px]">
         <div>
-          <div className="text-[10px] uppercase tracking-[0.18em] text-dim mb-1">
+          <div className="text-[11px] uppercase tracking-[0.12em] text-dim mb-1">
             HBM traffic ratio
           </div>
           <div className="text-accent text-[14px] tabular-nums">
@@ -113,7 +113,7 @@ export function FlashAttentionTraffic() {
           </div>
         </div>
         <div>
-          <div className="text-[10px] uppercase tracking-[0.18em] text-dim mb-1">
+          <div className="text-[11px] uppercase tracking-[0.12em] text-dim mb-1">
             Naive peak SRAM (n² scores)
           </div>
           <div className={clsx('text-[14px] tabular-nums', naive.fitsInSram ? 'text-ink' : 'text-[rgb(var(--negative))]')}>
@@ -168,7 +168,7 @@ function TrafficBar({
         />
       </div>
       {warn && (
-        <div className="mt-1 text-[10px] text-[rgb(var(--negative))] font-mono">
+        <div className="mt-1 text-[11px] text-[rgb(var(--negative))] font-mono">
           {warnText}
         </div>
       )}

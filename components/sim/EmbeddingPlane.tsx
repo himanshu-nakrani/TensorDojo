@@ -125,7 +125,7 @@ export function EmbeddingPlane({ preset }: { preset?: EmbeddingPlanePreset }) {
             type="button"
             onClick={() => setShowAnalogy((s) => !s)}
             className={clsx(
-              'text-[10px] uppercase tracking-[0.18em] font-mono px-2 py-0.5 rounded border focus-ring transition-colors',
+              'text-[11px] uppercase tracking-[0.12em] font-mono px-2 py-0.5 rounded border focus-ring transition-colors',
               showAnalogy
                 ? 'border-accent text-accent'
                 : 'border-border text-muted hover:text-ink',
@@ -137,7 +137,7 @@ export function EmbeddingPlane({ preset }: { preset?: EmbeddingPlanePreset }) {
           <button
             type="button"
             onClick={reset}
-            className="text-[11px] uppercase tracking-[0.18em] font-mono text-muted hover:text-ink focus-ring transition-colors"
+            className="text-[11px] uppercase tracking-[0.12em] font-mono text-muted hover:text-ink focus-ring transition-colors"
           >
             Reset
           </button>
@@ -228,7 +228,7 @@ export function EmbeddingPlane({ preset }: { preset?: EmbeddingPlanePreset }) {
         <div className="space-y-3 font-mono text-[12px]">
           <div>
             <label className="block">
-              <div className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono mb-1">
+              <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-1">
                 Find nearest to
               </div>
               <input
@@ -256,7 +256,7 @@ export function EmbeddingPlane({ preset }: { preset?: EmbeddingPlanePreset }) {
 
           {showAnalogy && analogyHit && (
             <div className="pt-3 border-t border-border">
-              <div className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono mb-1">
+              <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-1">
                 Analogy: {analogyHit.a.label} − {analogyHit.b.label} + {analogyHit.c.label}
               </div>
               {analogyHit.nearest && (

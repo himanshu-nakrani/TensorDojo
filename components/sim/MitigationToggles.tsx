@@ -252,7 +252,7 @@ function AccuracyPlot({
 
 function Legend() {
   return (
-    <div className="flex flex-wrap items-center gap-4 font-mono text-[10px]">
+    <div className="flex flex-wrap items-center gap-4 font-mono text-[11px]">
       {/* accent = task A here (retention is the story) */}
       <span className="inline-flex items-center gap-1.5">
         <span
@@ -394,7 +394,7 @@ export function MitigationToggles() {
       <div className="space-y-5">
         {/* Toggle switches */}
         <div>
-          <div className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono mb-2">
+          <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-2">
             Mitigations
           </div>
           <div className="flex flex-col gap-3">
@@ -409,7 +409,7 @@ export function MitigationToggles() {
               <span className={lowLrB ? 'text-ink' : 'text-dim'}>
                 Lower learning rate in phase B
               </span>
-              <span className="text-[10px] text-dim tabular-nums">
+              <span className="text-[11px] text-dim tabular-nums">
                 (lr={lowLrB ? LR_B_LOW : LR_B_HIGH})
               </span>
             </label>
@@ -429,13 +429,13 @@ export function MitigationToggles() {
         </div>
 
         {/* Status line */}
-        <div className="font-mono text-[10px] text-fg-subtle">
+        <div className="font-mono text-[11px] text-fg-subtle">
           {statusLabel}
         </div>
 
         {/* Accuracy plot */}
         <div>
-          <div className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono mb-2">
+          <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-2">
             Accuracy vs step
           </div>
           <AccuracyPlot
@@ -450,7 +450,7 @@ export function MitigationToggles() {
 
         {/* Step counter */}
         {currentResult !== null && (
-          <div className="font-mono text-[10px] text-fg-subtle tabular-nums">
+          <div className="font-mono text-[11px] text-fg-subtle tabular-nums">
             step {displayStep} / {TOTAL_STEPS}
             {!animating && (
               <span className="ml-3 text-dim">

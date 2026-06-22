@@ -186,7 +186,7 @@ export function CrossEntropyCurve() {
           formatValue={(v) => v.toFixed(3)}
           ariaLabel="p(true) for the loss curve marker"
         />
-        <div className="mt-2 flex items-baseline justify-between text-[10px] text-dim font-mono tabular-nums">
+        <div className="mt-2 flex items-baseline justify-between text-[11px] text-dim font-mono tabular-nums">
           <span>p(true) = {pTrue.toFixed(3)}</span>
           <span>
             H(p) = {Number.isFinite(current) ? current.toFixed(3) : '∞'}

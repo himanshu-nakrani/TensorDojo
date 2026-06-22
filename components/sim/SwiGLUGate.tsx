@@ -71,7 +71,7 @@ function SliderRow({
       <div className="flex items-baseline justify-between mb-2">
         <label
           htmlFor={id}
-          className="text-[11px] uppercase tracking-[0.18em] text-dim font-mono"
+          className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono"
         >
           {label}
         </label>
@@ -114,7 +114,7 @@ function SignedBar({
   return (
     <div>
       <div className="flex items-baseline justify-between mb-1.5">
-        <span className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono">
+        <span className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono">
           {label}
         </span>
         <span

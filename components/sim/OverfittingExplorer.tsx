@@ -113,14 +113,14 @@ export function OverfittingExplorer() {
       title="Overfitting"
       headerAction={
         <div className="flex items-center gap-3">
-          <div className="text-[10px] text-dim font-mono">
+          <div className="text-[11px] text-dim font-mono">
             fit on {split.xsTrain.length} of {split.xsAll.length} points · test set size{' '}
             {split.xsTest.length}
           </div>
           <button
             type="button"
             onClick={reset}
-            className="text-[11px] uppercase tracking-[0.18em] font-mono text-muted hover:text-ink focus-ring transition-colors"
+            className="text-[11px] uppercase tracking-[0.12em] font-mono text-muted hover:text-ink focus-ring transition-colors"
           >
             Reset
           </button>
@@ -140,7 +140,7 @@ export function OverfittingExplorer() {
             ysTest={split.ysTest}
           />
           <div className="mt-3">
-            <div className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono mb-1">
+            <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-1">
               Train + test loss vs degree
             </div>
             <LossSweep
@@ -153,7 +153,7 @@ export function OverfittingExplorer() {
         <div className="space-y-3 font-mono text-[12px]">
           <div>
             <div className="flex items-baseline justify-between mb-1">
-              <span className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono">
+              <span className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono">
                 Polynomial degree
               </span>
               <span className="text-ink tabular-nums">{degree}</span>
@@ -188,7 +188,7 @@ export function OverfittingExplorer() {
                 {Number.isFinite(currentTest) ? currentTest.toFixed(3) : '—'}
               </span>
             </div>
-            <p className="text-[10px] text-fg-subtle font-mono mt-2 leading-relaxed">
+            <p className="text-[11px] text-fg-subtle font-mono mt-2 leading-relaxed">
               Gray dashed is the true sin(2x) curve. The teal line is the
               polynomial fit; circles are the data. Train = filled teal,
               test = filled red.

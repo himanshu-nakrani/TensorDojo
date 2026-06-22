@@ -60,14 +60,14 @@ export function PerplexityCalculator() {
         <button
           type="button"
           onClick={reset}
-          className="text-[11px] uppercase tracking-[0.18em] font-mono text-muted hover:text-ink focus-ring transition-colors"
+          className="text-[11px] uppercase tracking-[0.12em] font-mono text-muted hover:text-ink focus-ring transition-colors"
         >
           Reset
         </button>
       }
     >
       <div className="border border-border rounded p-4 bg-surface mb-4">
-        <div className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono mb-3">
+        <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-3">
           Predicted next-token probability per position
         </div>
         <div className="space-y-1.5 font-mono text-[11px]">
@@ -100,7 +100,7 @@ export function PerplexityCalculator() {
 
       <label className="block mb-5">
         <div className="flex items-baseline justify-between mb-1">
-          <span className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono">
+          <span className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono">
             Model confidence (1.0 = baseline, &gt;1 sharper, &lt;1 flatter)
           </span>
           <span className="text-[11px] font-mono tabular-nums text-ink">
@@ -117,7 +117,7 @@ export function PerplexityCalculator() {
           className="w-full focus-ring"
           aria-label="Model confidence"
         />
-        <div className="flex justify-between text-[9px] text-dim font-mono mt-1">
+        <div className="flex justify-between text-[11px] text-dim font-mono mt-1">
           <span>flat</span>
           <span>baseline</span>
           <span>sharp</span>
@@ -126,7 +126,7 @@ export function PerplexityCalculator() {
 
       <div className="grid grid-cols-2 gap-4 pt-3 border-t border-border font-mono text-[11px]">
         <div>
-          <div className="text-[10px] uppercase tracking-[0.18em] text-dim mb-1">
+          <div className="text-[11px] uppercase tracking-[0.12em] text-dim mb-1">
             Mean cross-entropy (nats)
           </div>
           <div className="text-ink tabular-nums">
@@ -134,7 +134,7 @@ export function PerplexityCalculator() {
           </div>
         </div>
         <div>
-          <div className="text-[10px] uppercase tracking-[0.18em] text-dim mb-1">
+          <div className="text-[11px] uppercase tracking-[0.12em] text-dim mb-1">
             Perplexity (exp of the above)
           </div>
           <div className="text-accent text-[14px] tabular-nums">

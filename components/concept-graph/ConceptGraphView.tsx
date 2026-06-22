@@ -63,6 +63,14 @@ export function ConceptMapView({ sections }: { sections: TrackSection[] }) {
           visited={visited}
           resumeSlug={resumeSlug}
         />
+        <details className="mt-8">
+          <summary className="focus-ring cursor-pointer text-[12px] uppercase tracking-[0.12em] text-fg-muted font-mono hover:text-ink transition-colors">
+            Show accessible list view
+          </summary>
+          <div className="mt-4">
+            <MapList sections={sections} visited={visited} resumeSlug={resumeSlug} />
+          </div>
+        </details>
       </div>
       <Legend hasResume={resumeSlug !== null} />
     </div>
@@ -87,7 +95,7 @@ function MapList({
     <div className="space-y-6">
       {sections.map((section) => (
         <section key={section.id}>
-          <h2 className="text-[12px] uppercase tracking-[0.18em] text-ink font-mono font-semibold mb-1">
+          <h2 className="text-[12px] uppercase tracking-[0.12em] text-ink font-mono font-semibold mb-1">
             {section.label}
           </h2>
           <div className="text-[11px] text-fg-muted font-mono mb-3">
@@ -138,7 +146,7 @@ function MapList({
                             </span>
                           )}
                           {isResume && (
-                            <span className="px-1.5 py-0.5 rounded bg-accent text-accent-fg uppercase tracking-[0.18em] text-[10px]">
+                            <span className="px-1.5 py-0.5 rounded bg-accent text-accent-fg uppercase tracking-[0.12em] text-[11px]">
                               Resume
                             </span>
                           )}
@@ -175,14 +183,14 @@ function MapList({
  *
  * At N columns × NODE_W + (N-1) × COL_GAP + 2 × PADDING_X we
  * need to fit inside the 1500 px max-w of the map page. With
- * 8 tracks at NODE_W=130 and COL_GAP=22 the canvas is
- * 8*130 + 7*22 + 48 = 1242 px — well within budget. Up to
+ * 8 tracks at NODE_W=150 and COL_GAP=22 the canvas is
+ * 8*150 + 7*22 + 48 = 1402 px — within the 1500 px budget. Up to
  * 10 tracks at the same dimensions would be 1496 px, still OK.
  * Past that the page should switch to horizontal scroll, which
  * the wrapper already supports via `overflow-x-auto`.
  */
-const NODE_W = 130;
-const NODE_H = 84;
+const NODE_W = 150;
+const NODE_H = 104;
 const COL_GAP = 22;
 const ROW_GAP = 24;
 const HEADER_H = 44;
@@ -344,7 +352,7 @@ function MapCanvas({
                   width: `${NODE_W}px`,
                 }}
               >
-                <h2 className="text-[12px] uppercase tracking-[0.18em] text-ink font-mono font-semibold leading-snug">
+                <h2 className="text-[12px] uppercase tracking-[0.12em] text-ink font-mono font-semibold leading-snug">
                   {section.label}
                 </h2>
                 <div className="text-[11px] text-fg-muted font-mono mt-0.5">
@@ -419,7 +427,7 @@ function LessonNode({
         left: `${left}px`,
         top: `${top}px`,
         width: `${NODE_W}px`,
-        height: `${NODE_H}px`,
+        minHeight: `${NODE_H}px`,
       }}
     >
       <Link
@@ -444,14 +452,14 @@ function LessonNode({
       >
         {resume && (
           <div
-            className="absolute -top-2.5 left-3 text-[10px] uppercase tracking-[0.18em] font-mono px-1.5 py-0.5 rounded bg-accent text-accent-fg"
+            className="absolute -top-2.5 left-3 text-[11px] uppercase tracking-[0.12em] font-mono px-1.5 py-0.5 rounded bg-accent text-accent-fg"
             aria-hidden="true"
           >
             Resume
           </div>
         )}
         <div className="flex items-start justify-between gap-1.5 h-full">
-          <h3 className="text-[0.82rem] font-semibold text-ink leading-snug tracking-[-0.005em] line-clamp-3">
+          <h3 className="text-[0.82rem] font-semibold text-ink leading-snug tracking-[-0.005em]">
             {lesson.title}
           </h3>
           <span
@@ -464,7 +472,7 @@ function LessonNode({
             title={visited ? 'Visited' : 'Not yet visited'}
           />
         </div>
-        <div className="absolute bottom-1.5 left-2.5 text-[10px] font-mono text-fg-muted">
+        <div className="absolute bottom-1.5 left-2.5 text-[11px] font-mono text-fg-muted">
           {lesson.minutes} min
         </div>
       </Link>
@@ -481,7 +489,7 @@ function LessonNode({
               e.stopPropagation();
               setPrereqOpen((o) => !o);
             }}
-            className="focus-ring inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded border border-accent/40 bg-bg-elevated text-accent text-[10px] font-mono hover:bg-accent-soft transition-colors"
+            className="focus-ring inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded border border-accent/40 bg-bg-elevated text-accent text-[11px] font-mono hover:bg-accent-soft transition-colors"
           >
             ↗{prereqCount}
           </button>
@@ -492,7 +500,7 @@ function LessonNode({
               onClick={(e) => e.stopPropagation()}
               className="absolute right-0 bottom-full mb-2 w-[220px] rounded-md border border-border-strong bg-bg-elevated p-3 shadow-lg text-left"
             >
-              <div className="text-[10px] uppercase tracking-[0.18em] font-mono text-dim mb-2">
+              <div className="text-[11px] uppercase tracking-[0.12em] font-mono text-dim mb-2">
                 Cross-track prereqs
               </div>
               <ul className="space-y-1 text-[12px] text-muted">
@@ -516,7 +524,7 @@ function LessonNode({
 function Legend({ hasResume }: { hasResume: boolean }) {
   return (
     <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-[11px] font-mono text-fg-muted pt-4 border-t border-border">
-      <span className="uppercase tracking-[0.18em] text-dim">Legend</span>
+      <span className="uppercase tracking-[0.12em] text-dim">Legend</span>
       <span className="inline-flex items-center gap-1.5">
         <span aria-hidden="true" className="inline-block h-2.5 w-2.5 rounded-full bg-accent ring-2 ring-accent/20" />
         visited
@@ -535,14 +543,14 @@ function Legend({ hasResume }: { hasResume: boolean }) {
         next in track
       </span>
       <span className="inline-flex items-center gap-1.5">
-        <span className="inline-flex items-center px-1 rounded border border-accent/40 text-accent text-[10px] font-mono">
+        <span className="inline-flex items-center px-1 rounded border border-accent/40 text-accent text-[11px] font-mono">
           ↗N
         </span>
         N cross-track prerequisites (tap to view)
       </span>
       {hasResume && (
         <span className="inline-flex items-center gap-1.5">
-          <span className="inline-block px-1 py-0.5 rounded bg-accent text-accent-fg uppercase tracking-[0.18em]">
+          <span className="inline-block px-1 py-0.5 rounded bg-accent text-accent-fg uppercase tracking-[0.12em]">
             Resume
           </span>
           where you left off

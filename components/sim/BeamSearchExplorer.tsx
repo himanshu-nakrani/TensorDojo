@@ -72,7 +72,7 @@ export function BeamSearchExplorer() {
         <button
           type="button"
           onClick={reset}
-          className="text-[11px] uppercase tracking-[0.18em] font-mono text-muted hover:text-ink focus-ring transition-colors"
+          className="text-[11px] uppercase tracking-[0.12em] font-mono text-muted hover:text-ink focus-ring transition-colors"
         >
           Reset
         </button>
@@ -84,7 +84,7 @@ export function BeamSearchExplorer() {
           <div className="flex items-baseline justify-between mb-2">
             <label
               htmlFor="beam-k"
-              className="text-[11px] uppercase tracking-[0.18em] text-dim font-mono"
+              className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono"
             >
               beam width  k
             </label>
@@ -136,13 +136,13 @@ export function BeamSearchExplorer() {
 
       {/* Step header */}
       <div className="flex items-baseline justify-between mb-3">
-        <div className="text-[11px] uppercase tracking-[0.18em] text-dim font-mono">
+        <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono">
           Step {step} of ≤ {MAX_STEPS}
           {' · '}
           {sorted.length} active beam{sorted.length === 1 ? '' : 's'}
         </div>
         {atEnd && (
-          <div className="text-[11px] uppercase tracking-[0.18em] text-accent font-mono">
+          <div className="text-[11px] uppercase tracking-[0.12em] text-accent font-mono">
             {allFinished ? '✓ All beams reached <eos>' : 'Step limit'}
           </div>
         )}
@@ -166,7 +166,7 @@ export function BeamSearchExplorer() {
                 <div className="flex items-baseline justify-between gap-3 mb-1.5">
                   <span
                     className={clsx(
-                      'text-[10px] uppercase tracking-[0.18em] font-mono',
+                      'text-[11px] uppercase tracking-[0.12em] font-mono',
                       isBest ? 'text-accent' : 'text-fg-muted',
                     )}
                   >

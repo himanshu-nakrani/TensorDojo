@@ -340,13 +340,13 @@ export function EarlyStoppingAugmentationExplorer() {
       title="Early stopping + data augmentation"
       headerAction={
         <div className="flex items-center gap-3">
-          <div className="text-[10px] text-dim font-mono">
+          <div className="text-[11px] text-dim font-mono">
             2 → 8 → 8 → 3 MLP · 60 train / 60 val · same init for all three
           </div>
           <button
             type="button"
             onClick={reset}
-            className="text-[11px] uppercase tracking-[0.18em] font-mono text-muted hover:text-ink focus-ring transition-colors"
+            className="text-[11px] uppercase tracking-[0.12em] font-mono text-muted hover:text-ink focus-ring transition-colors"
           >
             Reset
           </button>
@@ -362,7 +362,7 @@ export function EarlyStoppingAugmentationExplorer() {
         <div className="space-y-3 font-mono text-[12px]">
           <div>
             <div className="flex items-baseline justify-between mb-1">
-              <span className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono">
+              <span className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono">
                 Patience
               </span>
               <span className="text-ink tabular-nums">{patience}</span>
@@ -376,7 +376,7 @@ export function EarlyStoppingAugmentationExplorer() {
               formatValue={(v) => String(Math.round(v))}
               ariaLabel="Early-stopping patience"
             />
-            <div className="flex justify-between text-[10px] text-dim font-mono mt-1 tabular-nums">
+            <div className="flex justify-between text-[11px] text-dim font-mono mt-1 tabular-nums">
               <span>2 (aggressive)</span>
               <span>80 (patient)</span>
             </div>
@@ -402,7 +402,7 @@ export function EarlyStoppingAugmentationExplorer() {
                   {results.aug.bestValLoss.toFixed(3)}
                 </span>
               </div>
-              <p className="text-[10px] text-fg-subtle font-mono mt-2 leading-relaxed">
+              <p className="text-[11px] text-fg-subtle font-mono mt-2 leading-relaxed">
                 Each curve has a dot at the best-validation
                 checkpoint. Patience = how many non-improving
                 val-loss steps to tolerate before stopping.
@@ -446,7 +446,7 @@ function ThreeCurves({
 
   return (
     <div>
-      <div className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono mb-1">
+      <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-1">
         (a) No regularization — val bottoms and climbs
       </div>
       <svg
@@ -472,7 +472,7 @@ function ThreeCurves({
         <BestDot step={r.baseline.bestStep} N={N} x0={x0} x1={x1} y0={y0} yMax={yMax} val={r.baseline.valLoss[r.baseline.bestStep] ?? 0} />
       </svg>
 
-      <div className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono mb-1">
+      <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-1">
         (b) Early stopping
       </div>
       <svg
@@ -498,7 +498,7 @@ function ThreeCurves({
         <BestDot step={r.earlyStop.bestStep} N={N} x0={x0} x1={x1} y0={y0} yMax={yMax} val={r.earlyStop.valLoss[r.earlyStop.bestStep] ?? 0} />
       </svg>
 
-      <div className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono mb-1">
+      <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-1">
         (c) Early stopping + augmentation
       </div>
       <svg

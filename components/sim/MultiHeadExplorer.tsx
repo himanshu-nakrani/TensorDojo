@@ -69,13 +69,13 @@ export function MultiHeadExplorer({ preset }: { preset?: MultiHeadExplorerPreset
       <div className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <div className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono mb-2">
+            <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-2">
               Per-head attention weights ({n} tokens × {n} positions)
             </div>
             <div className="grid grid-cols-2 gap-2">
               {headWeights.map((w, head) => (
                 <div key={head} className="rounded border border-border p-1.5 bg-bg/30">
-                  <div className="text-[9px] uppercase tracking-[0.18em] text-dim font-mono mb-1">head {head + 1}</div>
+                  <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-1">head {head + 1}</div>
                   <div
                     className="grid gap-px"
                     style={{ gridTemplateColumns: `repeat(${n}, minmax(0, 1fr))` }}
@@ -103,7 +103,7 @@ export function MultiHeadExplorer({ preset }: { preset?: MultiHeadExplorerPreset
           </div>
 
           <div>
-            <div className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono mb-2">
+            <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-2">
               Per-head Q rotation (rad)
             </div>
             <div className="space-y-1.5">
@@ -129,7 +129,7 @@ export function MultiHeadExplorer({ preset }: { preset?: MultiHeadExplorerPreset
                 </div>
               ))}
             </div>
-            <div className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono mb-2 mt-3">
+            <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-2 mt-3">
               Per-head K rotation (rad)
             </div>
             <div className="space-y-1.5">
@@ -160,7 +160,7 @@ export function MultiHeadExplorer({ preset }: { preset?: MultiHeadExplorerPreset
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3 pt-3 border-t border-border">
           <div>
-            <div className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono mb-1">Sequence length n</div>
+            <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-1">Sequence length n</div>
             <input
               type="range"
               min={2}
@@ -175,7 +175,7 @@ export function MultiHeadExplorer({ preset }: { preset?: MultiHeadExplorerPreset
             <div className="text-ink tabular-nums text-right text-[11px]">{n}</div>
           </div>
           <div>
-            <div className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono mb-1">Heads h</div>
+            <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-1">Heads h</div>
             <input
               type="range"
               min={1}

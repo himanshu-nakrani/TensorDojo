@@ -103,7 +103,7 @@ export function QuantizationDistribution() {
           <button
             type="button"
             onClick={reset}
-            className="text-[11px] uppercase tracking-[0.18em] font-mono text-muted hover:text-ink focus-ring transition-colors"
+            className="text-[11px] uppercase tracking-[0.12em] font-mono text-muted hover:text-ink focus-ring transition-colors"
           >
             Reset
           </button>
@@ -135,7 +135,7 @@ export function QuantizationDistribution() {
         <div className="border border-border rounded p-4 bg-surface space-y-4">
           <div>
             <div className="flex items-baseline justify-between mb-2">
-              <span className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono">
+              <span className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono">
                 Model size
               </span>
               <div className="flex border border-border rounded overflow-hidden font-mono text-[11px]">
@@ -175,7 +175,7 @@ export function QuantizationDistribution() {
 
           <div className="pt-3 border-t border-border space-y-2 font-mono text-[11px]">
             <div>
-              <div className="text-[10px] uppercase tracking-[0.18em] text-dim mb-0.5">
+              <div className="text-[11px] uppercase tracking-[0.12em] text-dim mb-0.5">
                 Memory ratio
               </div>
               <div className="text-accent tabular-nums text-[14px]">
@@ -183,7 +183,7 @@ export function QuantizationDistribution() {
               </div>
             </div>
             <div>
-              <div className="text-[10px] uppercase tracking-[0.18em] text-dim mb-0.5">
+              <div className="text-[11px] uppercase tracking-[0.12em] text-dim mb-0.5">
                 RMS quantization error
               </div>
               <div className="text-ink tabular-nums">{rms.toFixed(4)}</div>
@@ -232,7 +232,7 @@ function DistributionStrip({
 
   return (
     <div>
-      <div className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono mb-1">
+      <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-1">
         {label}
       </div>
       <div className="border border-border rounded bg-surface">

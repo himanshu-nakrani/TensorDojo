@@ -105,7 +105,7 @@ export function ScalingLawSurface() {
         <button
           type="button"
           onClick={reset}
-          className="text-[11px] uppercase tracking-[0.18em] font-mono text-muted hover:text-ink focus-ring transition-colors"
+          className="text-[11px] uppercase tracking-[0.12em] font-mono text-muted hover:text-ink focus-ring transition-colors"
         >
           Reset
         </button>
@@ -113,7 +113,7 @@ export function ScalingLawSurface() {
     >
       <label className="block mb-4">
         <div className="flex items-baseline justify-between mb-1">
-          <span className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono">
+          <span className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono">
             Compute budget C (FLOPs)
           </span>
           <span className="text-[11px] font-mono tabular-nums text-ink">
@@ -137,7 +137,7 @@ export function ScalingLawSurface() {
           className="w-full focus-ring"
           aria-label="Compute budget"
         />
-        <div className="flex justify-between text-[9px] text-dim font-mono mt-1">
+        <div className="flex justify-between text-[11px] text-dim font-mono mt-1">
           {BUDGET_STEPS.map((b) => (
             <span key={b.label}>{b.label.split(' ')[0]}</span>
           ))}
@@ -268,7 +268,7 @@ export function ScalingLawSurface() {
       {/* User N slider */}
       <label className="block mb-4">
         <div className="flex items-baseline justify-between mb-1">
-          <span className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono">
+          <span className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono">
             Your N (the model size you'd pick)
           </span>
           <span className="text-[11px] font-mono tabular-nums text-ink">
@@ -289,19 +289,19 @@ export function ScalingLawSurface() {
 
       <div className="grid grid-cols-3 gap-4 pt-3 border-t border-border font-mono text-[11px]">
         <div>
-          <div className="text-[10px] uppercase tracking-[0.18em] text-dim mb-1">
+          <div className="text-[11px] uppercase tracking-[0.12em] text-dim mb-1">
             Loss at your choice
           </div>
           <div className="text-ink tabular-nums">{userLoss.toFixed(3)}</div>
         </div>
         <div>
-          <div className="text-[10px] uppercase tracking-[0.18em] text-dim mb-1">
+          <div className="text-[11px] uppercase tracking-[0.12em] text-dim mb-1">
             Loss at optimum
           </div>
           <div className="text-accent tabular-nums">{optimal.loss.toFixed(3)}</div>
         </div>
         <div>
-          <div className="text-[10px] uppercase tracking-[0.18em] text-dim mb-1">
+          <div className="text-[11px] uppercase tracking-[0.12em] text-dim mb-1">
             Loss gap
           </div>
           <div

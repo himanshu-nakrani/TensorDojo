@@ -91,14 +91,14 @@ export function MoERouter() {
           <button
             type="button"
             onClick={() => setSeed((s) => s + 1)}
-            className="text-[11px] uppercase tracking-[0.18em] font-mono text-muted hover:text-ink focus-ring transition-colors"
+            className="text-[11px] uppercase tracking-[0.12em] font-mono text-muted hover:text-ink focus-ring transition-colors"
           >
             Re-route
           </button>
           <button
             type="button"
             onClick={reset}
-            className="text-[11px] uppercase tracking-[0.18em] font-mono text-muted hover:text-ink focus-ring transition-colors"
+            className="text-[11px] uppercase tracking-[0.12em] font-mono text-muted hover:text-ink focus-ring transition-colors"
           >
             Reset
           </button>
@@ -212,7 +212,7 @@ export function MoERouter() {
 
       <div className="grid grid-cols-3 gap-4 pt-3 border-t border-border font-mono text-[11px]">
         <div>
-          <div className="text-[10px] uppercase tracking-[0.18em] text-dim mb-1">
+          <div className="text-[11px] uppercase tracking-[0.12em] text-dim mb-1">
             Active experts per token
           </div>
           <div className="text-accent tabular-nums">
@@ -220,7 +220,7 @@ export function MoERouter() {
           </div>
         </div>
         <div>
-          <div className="text-[10px] uppercase tracking-[0.18em] text-dim mb-1">
+          <div className="text-[11px] uppercase tracking-[0.12em] text-dim mb-1">
             Imbalance (max load / mean)
           </div>
           <div
@@ -235,7 +235,7 @@ export function MoERouter() {
           </div>
         </div>
         <div>
-          <div className="text-[10px] uppercase tracking-[0.18em] text-dim mb-1">
+          <div className="text-[11px] uppercase tracking-[0.12em] text-dim mb-1">
             Idle experts
           </div>
           <div className="text-ink tabular-nums">

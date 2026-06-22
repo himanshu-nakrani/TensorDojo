@@ -314,13 +314,13 @@ export function BatchNormExplorer() {
       title="Batch normalization"
       headerAction={
         <div className="flex items-center gap-3">
-          <div className="text-[10px] text-dim font-mono">
+          <div className="text-[11px] text-dim font-mono">
             2 → 8 → 8 → 3 MLP · 150 SGD steps · same init for both runs
           </div>
           <button
             type="button"
             onClick={reset}
-            className="text-[11px] uppercase tracking-[0.18em] font-mono text-muted hover:text-ink focus-ring transition-colors"
+            className="text-[11px] uppercase tracking-[0.12em] font-mono text-muted hover:text-ink focus-ring transition-colors"
           >
             Reset
           </button>
@@ -333,7 +333,7 @@ export function BatchNormExplorer() {
           {result && <LossChart onResult={result.on} offResult={result.off} useBN={useBN} />}
           {result && (
             <div className="mt-3">
-              <div className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono mb-1">
+              <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-1">
                 Per-layer activation norm
               </div>
               <ActivationNormChart on={result.on.layer1Norm} off={result.off.layer1Norm} />
@@ -343,7 +343,7 @@ export function BatchNormExplorer() {
 
         <div className="space-y-3 font-mono text-[12px]">
           <div>
-            <div className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono mb-1">
+            <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-1">
               BatchNorm
             </div>
             <div className="flex items-center gap-1">
@@ -351,7 +351,7 @@ export function BatchNormExplorer() {
                 type="button"
                 onClick={() => setUseBN(true)}
                 className={
-                  'text-[10px] uppercase tracking-[0.18em] font-mono px-2 py-0.5 rounded border focus-ring transition-colors ' +
+                  'text-[11px] uppercase tracking-[0.12em] font-mono px-2 py-0.5 rounded border focus-ring transition-colors ' +
                   (useBN
                     ? 'border-accent text-accent'
                     : 'border-border text-muted hover:text-ink')
@@ -364,7 +364,7 @@ export function BatchNormExplorer() {
                 type="button"
                 onClick={() => setUseBN(false)}
                 className={
-                  'text-[10px] uppercase tracking-[0.18em] font-mono px-2 py-0.5 rounded border focus-ring transition-colors ' +
+                  'text-[11px] uppercase tracking-[0.12em] font-mono px-2 py-0.5 rounded border focus-ring transition-colors ' +
                   (!useBN
                     ? 'border-accent text-accent'
                     : 'border-border text-muted hover:text-ink')
@@ -400,7 +400,7 @@ export function BatchNormExplorer() {
                   ]!.toFixed(3)}
                 </span>
               </div>
-              <p className="text-[10px] text-fg-subtle font-mono mt-2 leading-relaxed">
+              <p className="text-[11px] text-fg-subtle font-mono mt-2 leading-relaxed">
                 Toggle off: the per-layer activation norm grows
                 without bound as the model tries to fit the data.
                 Toggle on: BN anchors the activation scale at

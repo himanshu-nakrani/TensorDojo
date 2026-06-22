@@ -192,7 +192,7 @@ function HeatmapWithLabel({
 }) {
   return (
     <div className="flex flex-col items-center gap-2">
-      <div className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono text-center">
+      <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono text-center">
         {label}
       </div>
       <Heatmap
@@ -249,7 +249,7 @@ export function LoRAFinetuneLoss() {
       {/* Rank slider */}
       <div>
         <div className="flex items-baseline justify-between mb-1">
-          <span className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono">
+          <span className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono">
             rank r
           </span>
           <span className="text-ink font-mono text-sm tabular-nums">{r}</span>
@@ -291,7 +291,7 @@ export function LoRAFinetuneLoss() {
       {/* Loss curve */}
       {fitResult && fitResult.losses.length > 1 && (
         <div className="pt-2">
-          <div className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono mb-2">
+          <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-2">
             MSE vs gradient step
           </div>
           <LossCurve losses={fitResult.losses} />

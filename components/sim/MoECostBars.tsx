@@ -36,7 +36,7 @@ export function MoECostBars() {
         <button
           type="button"
           onClick={reset}
-          className="text-[11px] uppercase tracking-[0.18em] font-mono text-muted hover:text-ink focus-ring transition-colors"
+          className="text-[11px] uppercase tracking-[0.12em] font-mono text-muted hover:text-ink focus-ring transition-colors"
         >
           Reset
         </button>
@@ -114,7 +114,7 @@ function BarRow({
 }) {
   return (
     <div>
-      <div className="flex items-baseline justify-between text-[10px] font-mono mb-0.5">
+      <div className="flex items-baseline justify-between text-[11px] font-mono mb-0.5">
         <span className={variant === 'muted' ? 'text-dim' : 'text-accent'}>{label}</span>
         <span className="text-dim tabular-nums">{value}</span>
       </div>

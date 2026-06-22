@@ -224,7 +224,7 @@ export function BackpropExplorer() {
             type="button"
             onClick={() => setShowBackward((b) => !b)}
             className={
-              'text-[10px] uppercase tracking-[0.18em] font-mono px-2 py-0.5 rounded border focus-ring transition-colors ' +
+              'text-[11px] uppercase tracking-[0.12em] font-mono px-2 py-0.5 rounded border focus-ring transition-colors ' +
               (showBackward
                 ? 'border-accent text-accent'
                 : 'border-border text-muted hover:text-ink')
@@ -236,7 +236,7 @@ export function BackpropExplorer() {
           <button
             type="button"
             onClick={onRandomize}
-            className="text-[11px] uppercase tracking-[0.18em] font-mono text-muted hover:text-ink focus-ring transition-colors"
+            className="text-[11px] uppercase tracking-[0.12em] font-mono text-muted hover:text-ink focus-ring transition-colors"
           >
             Re-init
           </button>
@@ -247,7 +247,7 @@ export function BackpropExplorer() {
         {/* Activations + loss */}
         <div className="space-y-3 font-mono text-[12px]">
           <div>
-            <div className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono mb-1">
+            <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-1">
               Activations
             </div>
             <div className="space-y-1">
@@ -287,7 +287,7 @@ export function BackpropExplorer() {
           </div>
 
           <div className="pt-3 border-t border-border">
-            <div className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono mb-1">
+            <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-1">
               Input
             </div>
             <div className="grid grid-cols-2 gap-2">
@@ -335,7 +335,7 @@ export function BackpropExplorer() {
         <div className="space-y-3 max-h-[480px] overflow-y-auto pr-1">
           {(['W1', 'b1', 'W2', 'b2', 'W3', 'b3'] as const).map((layer) => (
             <div key={layer}>
-              <div className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono mb-1">
+              <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-1">
                 {layer}
               </div>
               <div className="space-y-1.5">
@@ -369,7 +369,7 @@ export function BackpropExplorer() {
                         >
                           {s.label}
                         </span>
-                        <span className="text-[10px] text-fg-subtle tabular-nums">
+                        <span className="text-[11px] text-fg-subtle tabular-nums">
                           ∂L/∂ = {g.toFixed(3)}
                         </span>
                       </div>

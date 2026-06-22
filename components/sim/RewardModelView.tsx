@@ -85,10 +85,10 @@ function PolicyBars({ probs }: { probs: number[] }) {
         const pct = probs[i]! * 100;
         return (
           <div key={i} className="flex items-center gap-2 min-w-0">
-            <span className="font-mono text-[10px] text-muted w-4 shrink-0 tabular-nums">
+            <span className="font-mono text-[11px] text-muted w-4 shrink-0 tabular-nums">
               {i}
             </span>
-            <span className="font-mono text-[10px] text-ink flex-1 truncate min-w-0">
+            <span className="font-mono text-[11px] text-ink flex-1 truncate min-w-0">
               {resp}
             </span>
             <div className="w-28 bg-bg/60 rounded-sm overflow-hidden h-3 shrink-0">
@@ -101,7 +101,7 @@ function PolicyBars({ probs }: { probs: number[] }) {
                 }}
               />
             </div>
-            <span className="font-mono text-[10px] text-ink tabular-nums w-10 text-right shrink-0">
+            <span className="font-mono text-[11px] text-ink tabular-nums w-10 text-right shrink-0">
               {pct.toFixed(1)}%
             </span>
           </div>
@@ -124,10 +124,10 @@ function RewardBars({ scores }: { scores: number[] }) {
         const pct = Math.min(100, (Math.abs(score) / absMax) * 100);
         return (
           <div key={i} className="flex items-center gap-2 min-w-0">
-            <span className="font-mono text-[10px] text-muted w-4 shrink-0 tabular-nums">
+            <span className="font-mono text-[11px] text-muted w-4 shrink-0 tabular-nums">
               {i}
             </span>
-            <span className="font-mono text-[10px] text-ink flex-1 truncate min-w-0">
+            <span className="font-mono text-[11px] text-ink flex-1 truncate min-w-0">
               {resp}
             </span>
             <div className="w-28 bg-bg/60 rounded-sm overflow-hidden h-3 shrink-0">
@@ -143,7 +143,7 @@ function RewardBars({ scores }: { scores: number[] }) {
                 }}
               />
             </div>
-            <span className="font-mono text-[10px] text-ink tabular-nums w-12 text-right shrink-0">
+            <span className="font-mono text-[11px] text-ink tabular-nums w-12 text-right shrink-0">
               {score >= 0 ? '+' : ''}{score.toFixed(2)}
             </span>
           </div>
@@ -242,7 +242,7 @@ export function RewardModelView() {
       <div className="space-y-5">
       {/* Prompt */}
       <div className="rounded border border-border bg-bg/50 px-3 py-2">
-        <span className="text-[10px] uppercase tracking-[0.14em] text-dim font-mono mr-2">
+        <span className="text-[11px] uppercase tracking-[0.14em] text-dim font-mono mr-2">
           Prompt
         </span>
         <span className="font-mono text-[12px] text-ink">{PROMPT}</span>
@@ -252,7 +252,7 @@ export function RewardModelView() {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
         {/* Left: policy */}
         <section aria-label="Policy probabilities">
-          <div className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono mb-3">
+          <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-3">
             Policy &pi;(y|x)
           </div>
           <PolicyBars probs={probs} />
@@ -260,7 +260,7 @@ export function RewardModelView() {
 
         {/* Right: reward model */}
         <section aria-label="Reward model scores">
-          <div className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono mb-3">
+          <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-3">
             Reward model r(y|x)
           </div>
           <RewardBars scores={rewardScores} />
@@ -269,7 +269,7 @@ export function RewardModelView() {
 
       {/* Next preference preview */}
       <div className="rounded border border-border bg-bg/40 px-3 py-2 font-mono text-[11px] text-muted">
-        <span className="text-dim uppercase tracking-[0.14em] text-[10px] mr-2">
+        <span className="text-dim uppercase tracking-[0.14em] text-[11px] mr-2">
           Next preference
         </span>
         response {nextPref.preferred} preferred over response{' '}

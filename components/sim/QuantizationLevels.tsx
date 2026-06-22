@@ -111,7 +111,7 @@ export function QuantizationLevels() {
           <button
             type="button"
             onClick={reset}
-            className="text-[11px] uppercase tracking-[0.18em] font-mono text-muted hover:text-ink focus-ring transition-colors"
+            className="text-[11px] uppercase tracking-[0.12em] font-mono text-muted hover:text-ink focus-ring transition-colors"
           >
             Reset
           </button>
@@ -120,7 +120,7 @@ export function QuantizationLevels() {
     >
       {/* Distribution chooser */}
       <div className="mb-4">
-        <div className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono mb-2">
+        <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-2">
           Source distribution
         </div>
         <div className="flex gap-2 font-mono text-[11px]">
@@ -153,7 +153,7 @@ export function QuantizationLevels() {
 
       <label className="block mt-4">
         <div className="flex items-baseline justify-between mb-1">
-          <span className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono">
+          <span className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono">
             Pick an input value
           </span>
           <span className="text-[11px] font-mono tabular-nums">
@@ -226,7 +226,7 @@ function NumberLine({
           x={PAD}
           y={14}
           fontSize={9}
-          className="fill-dim font-mono uppercase tracking-[0.18em]"
+          className="fill-dim font-mono uppercase tracking-[0.12em]"
         >
           data
         </text>
@@ -262,7 +262,7 @@ function NumberLine({
           x={PAD}
           y={axisY + 30}
           fontSize={9}
-          className="fill-accent font-mono uppercase tracking-[0.18em]"
+          className="fill-accent font-mono uppercase tracking-[0.12em]"
         >
           levels ({levels.length})
         </text>

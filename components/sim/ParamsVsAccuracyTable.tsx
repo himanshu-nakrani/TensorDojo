@@ -91,7 +91,7 @@ function ConfigBar({ row, maxAcc }: { row: ConfigResult; maxAcc: number }) {
       </div>
       {/* Params updated */}
       <div
-        className="w-12 shrink-0 text-right font-mono text-[10px] tabular-nums"
+        className="w-12 shrink-0 text-right font-mono text-[11px] tabular-nums"
         style={{ color: 'rgb(var(--dim))' }}
       >
         {row.paramsUpdated}
@@ -115,7 +115,7 @@ function ConfigBar({ row, maxAcc }: { row: ConfigResult; maxAcc: number }) {
       </div>
       {/* Accuracy label */}
       <div
-        className="w-12 shrink-0 font-mono text-[10px] tabular-nums"
+        className="w-12 shrink-0 font-mono text-[11px] tabular-nums"
         style={{ color: row.diverged ? 'rgb(var(--dim))' : 'rgb(var(--ink))' }}
       >
         {row.diverged ? 'diverged' : `${(row.finalAccuracy * 100).toFixed(1)}%`}
@@ -218,14 +218,14 @@ export function ParamsVsAccuracyTable() {
     <SimFrame title="Params updated vs final accuracy — all 8 freeze configs">
       <div className="space-y-4">
         {/* Note */}
-        <p className="font-mono text-[10px] text-fg-subtle leading-relaxed">
+        <p className="font-mono text-[11px] text-fg-subtle leading-relaxed">
           Each row is one full training run. Configs are ordered by params
           updated.
         </p>
 
         {/* Progress / chart */}
         {!isDone && (
-          <div className="font-mono text-[10px] text-fg-subtle tabular-nums">
+          <div className="font-mono text-[11px] text-fg-subtle tabular-nums">
             {mods
               ? `training config ${progress} / ${ALL_MASKS.length}…`
               : 'loading…'}
@@ -236,16 +236,16 @@ export function ParamsVsAccuracyTable() {
           <>
             {/* Column headers */}
             <div className="flex items-center gap-3 border-b border-border pb-1.5 mb-1">
-              <div className="w-28 shrink-0 font-mono text-[9px] uppercase tracking-[0.15em] text-dim">
+              <div className="w-28 shrink-0 font-mono text-[11px] uppercase tracking-[0.15em] text-dim">
                 config
               </div>
-              <div className="w-12 shrink-0 text-right font-mono text-[9px] uppercase tracking-[0.15em] text-dim">
+              <div className="w-12 shrink-0 text-right font-mono text-[11px] uppercase tracking-[0.15em] text-dim">
                 params
               </div>
-              <div className="flex-1 font-mono text-[9px] uppercase tracking-[0.15em] text-dim">
+              <div className="flex-1 font-mono text-[11px] uppercase tracking-[0.15em] text-dim">
                 test accuracy
               </div>
-              <div className="w-12 shrink-0 font-mono text-[9px] uppercase tracking-[0.15em] text-dim">
+              <div className="w-12 shrink-0 font-mono text-[11px] uppercase tracking-[0.15em] text-dim">
                 &nbsp;
               </div>
             </div>
@@ -265,7 +265,7 @@ export function ParamsVsAccuracyTable() {
             <div className="flex items-center gap-3">
               <div className="w-28 shrink-0" />
               <div className="w-12 shrink-0" />
-              <div className="flex-1 flex justify-between font-mono text-[9px] text-dim tabular-nums">
+              <div className="flex-1 flex justify-between font-mono text-[11px] text-dim tabular-nums">
                 <span>0%</span>
                 <span>{(maxAcc * 100).toFixed(0)}%</span>
               </div>
@@ -273,7 +273,7 @@ export function ParamsVsAccuracyTable() {
             </div>
 
             {/* Total params reminder */}
-            <div className="font-mono text-[10px] text-fg-subtle tabular-nums">
+            <div className="font-mono text-[11px] text-fg-subtle tabular-nums">
               Total params: {N_PARAMS_TOTAL}
             </div>
           </>

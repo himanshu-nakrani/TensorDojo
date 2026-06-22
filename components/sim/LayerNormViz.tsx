@@ -68,7 +68,7 @@ export function LayerNormViz() {
         <div>
           <div className="grid grid-cols-2 gap-3" style={{ transform: 'translate(0, 0)' }}>
             <div>
-              <div className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono mb-1">Before</div>
+              <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-1">Before</div>
               <svg viewBox={`0 0 ${plotW} ${plotH}`} className="w-full h-auto bg-bg/40 rounded">
                 <line x1={0} y1={plotH / 2} x2={plotW} y2={plotH / 2} className="text-border" stroke="currentColor" strokeWidth={1} vectorEffect="non-scaling-stroke" />
                 <line x1={plotW / 2} y1={0} x2={plotW / 2} y2={plotH} className="text-border" stroke="currentColor" strokeWidth={1} vectorEffect="non-scaling-stroke" />
@@ -76,12 +76,12 @@ export function LayerNormViz() {
                   {drawArrow(x, 'rgb(var(--fg-muted))')}
                 </g>
               </svg>
-              <div className="text-[10px] text-dim font-mono text-center tabular-nums">
+              <div className="text-[11px] text-dim font-mono text-center tabular-nums">
                 ‖x‖ = {Math.sqrt((x[0] ?? 0) ** 2 + (x[1] ?? 0) ** 2).toFixed(2)}
               </div>
             </div>
             <div>
-              <div className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono mb-1">After layernorm</div>
+              <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-1">After layernorm</div>
               <svg viewBox={`0 0 ${plotW} ${plotH}`} className="w-full h-auto bg-bg/40 rounded">
                 <line x1={0} y1={plotH / 2} x2={plotW} y2={plotH / 2} className="text-border" stroke="currentColor" strokeWidth={1} vectorEffect="non-scaling-stroke" />
                 <line x1={plotW / 2} y1={0} x2={plotW / 2} y2={plotH} className="text-border" stroke="currentColor" strokeWidth={1} vectorEffect="non-scaling-stroke" />
@@ -89,7 +89,7 @@ export function LayerNormViz() {
                   {drawArrow(y, 'rgb(var(--accent))')}
                 </g>
               </svg>
-              <div className="text-[10px] text-dim font-mono text-center tabular-nums">
+              <div className="text-[11px] text-dim font-mono text-center tabular-nums">
                 ‖y‖ = {Math.sqrt((y[0] ?? 0) ** 2 + (y[1] ?? 0) ** 2).toFixed(2)}
               </div>
             </div>
@@ -97,7 +97,7 @@ export function LayerNormViz() {
         </div>
         <div className="space-y-2 font-mono text-[12px]">
           <div>
-            <div className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono mb-1">
+            <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-1">
               Input scale
             </div>
             <input
@@ -113,7 +113,7 @@ export function LayerNormViz() {
             />
             <div className="text-ink tabular-nums text-right">{scale.toFixed(1)}×</div>
           </div>
-          <p className="text-[10px] text-dim leading-relaxed">
+          <p className="text-[11px] text-dim leading-relaxed">
             Drag the input scale; the "after" arrow always ends at the same length (≈ 1.41) and the same zero-mean offset. The direction is preserved.
           </p>
         </div>

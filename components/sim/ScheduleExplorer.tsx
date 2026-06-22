@@ -104,7 +104,7 @@ export function ScheduleExplorer() {
         <div className="space-y-4">
           {/* LR schedule plot */}
           <div>
-            <div className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono mb-1">
+            <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-1">
               Learning rate over time
             </div>
             <LineChart
@@ -119,7 +119,7 @@ export function ScheduleExplorer() {
           </div>
           {/* Loss trajectory */}
           <div>
-            <div className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono mb-1">
+            <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-1">
               Simulated loss trajectory
             </div>
             <LineChart
@@ -136,7 +136,7 @@ export function ScheduleExplorer() {
 
         <div className="space-y-4 font-mono text-[12px]">
           <div>
-            <div className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono mb-1">
+            <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-1">
               Schedule
             </div>
             <div className="grid grid-cols-2 gap-1">
@@ -146,7 +146,7 @@ export function ScheduleExplorer() {
                   type="button"
                   onClick={() => setSchedule(s.value)}
                   className={
-                    'text-[10px] uppercase tracking-[0.18em] font-mono py-1 rounded border focus-ring transition-colors ' +
+                    'text-[11px] uppercase tracking-[0.12em] font-mono py-1 rounded border focus-ring transition-colors ' +
                     (schedule === s.value
                       ? 'border-accent text-accent'
                       : 'border-border text-muted hover:text-ink')
@@ -161,7 +161,7 @@ export function ScheduleExplorer() {
 
           <div>
             <div className="flex items-baseline justify-between mb-1">
-              <span className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono">
+              <span className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono">
                 Total steps
               </span>
               <span className="text-ink tabular-nums">{total}</span>
@@ -179,7 +179,7 @@ export function ScheduleExplorer() {
 
           <div>
             <div className="flex items-baseline justify-between mb-1">
-              <span className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono">
+              <span className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono">
                 Peak LR
               </span>
               <span className="text-ink tabular-nums">{peak.toFixed(3)}</span>
@@ -198,7 +198,7 @@ export function ScheduleExplorer() {
           {schedule === 'warmup-cosine' && (
             <div>
               <div className="flex items-baseline justify-between mb-1">
-                <span className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono">
+                <span className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono">
                   Warmup steps
                 </span>
                 <span className="text-ink tabular-nums">{warmupSteps}</span>
@@ -325,7 +325,7 @@ export function ScheduleComparison() {
       <div className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 font-mono text-[12px]">
           <div>
-            <div className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono mb-1">
+            <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-1">
               Total steps
             </div>
             <Slider
@@ -339,7 +339,7 @@ export function ScheduleComparison() {
             />
           </div>
           <div>
-            <div className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono mb-1 tabular-nums">
+            <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-1 tabular-nums">
               Peak LR ({peak.toFixed(3)})
             </div>
             <Slider
@@ -366,7 +366,7 @@ export function ScheduleComparison() {
                     : 'border-border bg-bg-elevated')
                 }
               >
-                <div className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono mb-2">
+                <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-2">
                   {r.label}
                 </div>
                 <div
@@ -378,14 +378,14 @@ export function ScheduleComparison() {
                 >
                   {r.final.toFixed(3)}
                 </div>
-                <div className="text-[10px] text-fg-subtle font-mono mt-1">
+                <div className="text-[11px] text-fg-subtle font-mono mt-1">
                   final loss{isBest ? ' (best)' : ''}
                 </div>
               </div>
             );
           })}
         </div>
-        <p className="text-[10px] text-fg-subtle font-mono">
+        <p className="text-[11px] text-fg-subtle font-mono">
           The same synthetic loss problem, three schedules,
           same total steps and peak LR. Warmup + cosine lets
           the model reach a better minimum because the LR is

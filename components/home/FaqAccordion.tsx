@@ -35,7 +35,7 @@ export function FaqAccordion() {
   return (
     <section aria-labelledby="faq-heading">
       <div className="mb-8">
-        <div className="text-[12px] uppercase tracking-[0.18em] text-fg-muted font-mono mb-3">
+        <div className="text-[12px] uppercase tracking-[0.12em] text-fg-muted font-mono mb-3">
           Questions
         </div>
         <h2

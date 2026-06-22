@@ -158,7 +158,7 @@ export function BlockDepth() {
   return (
     <SimFrame title="Block depth" onReset={reset}>
       <div className="space-y-3 mb-5">
-        <label className="flex items-center gap-2 text-[10px] uppercase tracking-[0.18em] text-dim font-mono">
+        <label className="flex items-center gap-2 text-[11px] uppercase tracking-[0.12em] text-dim font-mono">
           Sentence
           <select
             value={sentenceId}
@@ -174,7 +174,7 @@ export function BlockDepth() {
           </select>
         </label>
         <div className="flex items-center gap-2 font-mono text-[12px]">
-          <span className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono shrink-0">
+          <span className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono shrink-0">
             Run
           </span>
           <div className="flex-1 min-w-0">
@@ -190,7 +190,7 @@ export function BlockDepth() {
           </div>
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          <span className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono mr-1">
+          <span className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mr-1">
             Toggles
           </span>
           <MiniToggle label="LN 1" on={useLN1} onChange={setUseLN1} />
@@ -200,7 +200,7 @@ export function BlockDepth() {
         </div>
       </div>
 
-      <div className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono mb-2">
+      <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-2">
         Stacked output at each block
       </div>
       <div className="space-y-2 overflow-x-auto">
@@ -208,7 +208,7 @@ export function BlockDepth() {
           className="rounded border border-border bg-bg/30 p-2 flex items-center gap-2"
           title="input x (embed + PE), shape (4, 8)"
         >
-          <span className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono shrink-0 w-16">
+          <span className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono shrink-0 w-16">
             input
           </span>
           <Heatmap
@@ -227,7 +227,7 @@ export function BlockDepth() {
             className="rounded border border-border bg-bg/30 p-2 flex items-center gap-2"
             title={`output of block ${b + 1}, shape (4, 8)`}
           >
-            <span className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono shrink-0 w-16">
+            <span className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono shrink-0 w-16">
               block {b + 1}
             </span>
             <Heatmap
@@ -245,7 +245,7 @@ export function BlockDepth() {
 
       <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div className="rounded border border-border bg-bg/30 p-3">
-          <div className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono mb-2">
+          <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-2">
             Cosine to input
           </div>
           <div className="space-y-1 font-mono text-[11px]">
@@ -295,7 +295,7 @@ function MiniToggle({
       type="button"
       onClick={() => onChange(!on)}
       className={
-        'text-[10px] uppercase tracking-[0.18em] font-mono px-2 py-0.5 rounded border focus-ring transition-colors ' +
+        'text-[11px] uppercase tracking-[0.12em] font-mono px-2 py-0.5 rounded border focus-ring transition-colors ' +
         (on
           ? 'border-accent text-accent'
           : 'border-border text-muted hover:text-ink')

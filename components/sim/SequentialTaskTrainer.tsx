@@ -249,7 +249,7 @@ function AccuracyPlot({
 
 function Legend() {
   return (
-    <div className="flex flex-wrap items-center gap-4 font-mono text-[10px]">
+    <div className="flex flex-wrap items-center gap-4 font-mono text-[11px]">
       <span className="inline-flex items-center gap-1.5">
         <span
           aria-hidden="true"
@@ -395,7 +395,7 @@ export function SequentialTaskTrainer() {
       <div className="space-y-4">
         {/* Accuracy plot */}
         <div>
-          <div className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono mb-2">
+          <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-2">
             Accuracy vs step
           </div>
           <AccuracyPlot result={result} displayStep={displayStep} />
@@ -406,7 +406,7 @@ export function SequentialTaskTrainer() {
 
         {/* Step counter */}
         {(running || result !== null) && (
-          <div className="font-mono text-[10px] text-fg-subtle tabular-nums">
+          <div className="font-mono text-[11px] text-fg-subtle tabular-nums">
             step {displayStep} / {TOTAL_STEPS}
             {result && !running && (
               <span className="ml-3 text-dim">

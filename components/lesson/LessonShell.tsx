@@ -18,7 +18,7 @@ export function LessonShell({ title, minutes, summary, children }: LessonShellPr
   return (
     <article id="main" className="mx-auto px-6 sm:px-10 py-12 sm:py-16 max-w-[1320px]">
       <header className="mb-10 max-w-prose">
-        <div className="flex items-center gap-3 text-[12px] uppercase tracking-[0.18em] text-fg-muted font-mono mb-5">
+        <div className="flex items-center gap-3 text-[12px] uppercase tracking-[0.12em] text-fg-muted font-mono mb-5">
           <span>Lesson</span>
           <span className="text-border-strong">·</span>
           <span>{minutes} min</span>

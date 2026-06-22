@@ -431,7 +431,7 @@ export function LayerFreezeExplorer() {
       <div className="space-y-5">
         {/* Layer checkboxes */}
         <div>
-          <div className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono mb-2">
+          <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-2">
             Freeze layers
           </div>
           <div className="flex flex-wrap gap-4">
@@ -458,14 +458,14 @@ export function LayerFreezeExplorer() {
                 <span className={mask[key] ? 'text-dim' : 'text-ink'}>
                   {label}
                 </span>
-                <span className="text-[10px] text-dim tabular-nums">
+                <span className="text-[11px] text-dim tabular-nums">
                   ({count} params)
                 </span>
               </label>
             ))}
           </div>
           {paramsUpdated !== null && (
-            <div className="mt-1.5 font-mono text-[10px] text-fg-subtle tabular-nums">
+            <div className="mt-1.5 font-mono text-[11px] text-fg-subtle tabular-nums">
               Params updated:{' '}
               <span className="text-ink">{paramsUpdated}</span> / 123
             </div>
@@ -474,12 +474,12 @@ export function LayerFreezeExplorer() {
 
         {/* Loss curve */}
         <div>
-          <div className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono mb-2">
+          <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-2">
             Training loss vs step
           </div>
           <LossCurve result={result} displayStep={displayStep} />
           {(running || showBars) && (
-            <div className="mt-1 font-mono text-[10px] text-fg-subtle tabular-nums">
+            <div className="mt-1 font-mono text-[11px] text-fg-subtle tabular-nums">
               step {displayStep} / {STEPS}
             </div>
           )}
@@ -487,7 +487,7 @@ export function LayerFreezeExplorer() {
 
         {/* Gradient norm bars */}
         <div>
-          <div className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono mb-2">
+          <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-2">
             Gradient norms per layer{' '}
             <span className="normal-case">(at init, before mask)</span>
           </div>
@@ -497,11 +497,11 @@ export function LayerFreezeExplorer() {
         {/* Final accuracy */}
         {showBars && result && (
           <div className="space-y-2">
-            <div className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono">
+            <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono">
               Final test accuracy
             </div>
             {result.diverged && (
-              <div className="inline-flex items-center gap-1.5 rounded border border-border bg-bg-elevated px-2 py-0.5 font-mono text-[10px] text-dim">
+              <div className="inline-flex items-center gap-1.5 rounded border border-border bg-bg-elevated px-2 py-0.5 font-mono text-[11px] text-dim">
                 diverged
               </div>
             )}

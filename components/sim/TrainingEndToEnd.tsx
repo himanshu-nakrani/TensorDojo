@@ -149,7 +149,7 @@ export function TrainingEndToEnd() {
 
         <div className="space-y-3 font-mono text-[12px]">
           <div>
-            <div className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono mb-1">
+            <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-1">
               Optimizer
             </div>
             <div className="grid grid-cols-3 gap-1">
@@ -159,7 +159,7 @@ export function TrainingEndToEnd() {
                   type="button"
                   onClick={() => setOptimizer(o)}
                   className={
-                    'text-[10px] uppercase tracking-[0.18em] font-mono py-1 rounded border focus-ring transition-colors ' +
+                    'text-[11px] uppercase tracking-[0.12em] font-mono py-1 rounded border focus-ring transition-colors ' +
                     (optimizer === o
                       ? 'border-accent text-accent'
                       : 'border-border text-muted hover:text-ink')
@@ -172,7 +172,7 @@ export function TrainingEndToEnd() {
             </div>
           </div>
           <div>
-            <div className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono mb-1">
+            <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-1">
               Schedule
             </div>
             <div className="grid grid-cols-3 gap-1">
@@ -182,7 +182,7 @@ export function TrainingEndToEnd() {
                   type="button"
                   onClick={() => setSchedule(s)}
                   className={
-                    'text-[10px] uppercase tracking-[0.18em] font-mono py-1 rounded border focus-ring transition-colors ' +
+                    'text-[11px] uppercase tracking-[0.12em] font-mono py-1 rounded border focus-ring transition-colors ' +
                     (schedule === s
                       ? 'border-accent text-accent'
                       : 'border-border text-muted hover:text-ink')
@@ -196,7 +196,7 @@ export function TrainingEndToEnd() {
           </div>
           <div>
             <div className="flex items-baseline justify-between mb-1">
-              <span className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono">
+              <span className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono">
                 Batch size
               </span>
               <span className="text-ink tabular-nums">{batchSize}</span>
@@ -213,7 +213,7 @@ export function TrainingEndToEnd() {
           </div>
           <div>
             <div className="flex items-baseline justify-between mb-1">
-              <span className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono">
+              <span className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono">
                 Peak LR
               </span>
               <span className="text-ink tabular-nums">{peakLr.toExponential(2)}</span>
@@ -235,7 +235,7 @@ export function TrainingEndToEnd() {
               type="button"
               onClick={onTrain}
               disabled={!train}
-              className="focus-ring w-full text-[11px] uppercase tracking-[0.18em] font-mono py-2 rounded border border-accent text-accent hover:bg-accent-soft transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+              className="focus-ring w-full text-[11px] uppercase tracking-[0.12em] font-mono py-2 rounded border border-accent text-accent hover:bg-accent-soft transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
             >
               {progress && !progress.finished ? 'Training…' : 'Train'}
             </button>
@@ -292,7 +292,7 @@ function PresetButton({
     <button
       type="button"
       onClick={onClick}
-      className="focus-ring text-[10px] uppercase tracking-[0.18em] font-mono px-2 py-0.5 rounded border border-border text-muted hover:text-ink hover:border-accent transition-colors"
+      className="focus-ring text-[11px] uppercase tracking-[0.12em] font-mono px-2 py-0.5 rounded border border-border text-muted hover:text-ink hover:border-accent transition-colors"
     >
       {labels[id]}
     </button>
@@ -313,7 +313,7 @@ function LossChart({
   if (losses.length === 0) {
     return (
       <div
-        className="rounded border border-border bg-bg/40 flex items-center justify-center font-mono text-[10px] text-dim"
+        className="rounded border border-border bg-bg/40 flex items-center justify-center font-mono text-[11px] text-dim"
         style={{ width: '100%', height }}
       >
         Press Train to start
@@ -324,7 +324,7 @@ function LossChart({
   if (finite.length === 0) {
     return (
       <div
-        className="rounded border border-border bg-bg/40 flex items-center justify-center font-mono text-[10px] text-[rgb(var(--negative))]"
+        className="rounded border border-border bg-bg/40 flex items-center justify-center font-mono text-[11px] text-[rgb(var(--negative))]"
         style={{ width: '100%', height }}
       >
         Loss diverged
@@ -345,7 +345,7 @@ function LossChart({
     .join(' ');
   return (
     <div>
-      <div className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono mb-1">
+      <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-1">
         Loss vs step
       </div>
       <svg
@@ -408,7 +408,7 @@ function DecisionBoundary({
   if (!progress || !progress.finished) {
     return (
       <div>
-        <div className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono mb-1">
+        <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-1">
           True class boundaries (ground truth)
         </div>
         <div
@@ -432,7 +432,7 @@ function DecisionBoundary({
   // the same import path as the train.
   return (
     <div>
-      <div className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono mb-1">
+      <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-1">
         Test-set predictions (after training)
       </div>
       <PredictedGrid

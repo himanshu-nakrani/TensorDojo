@@ -359,13 +359,13 @@ export function DropoutExplorer() {
       title="Dropout"
       headerAction={
         <div className="flex items-center gap-3">
-          <div className="text-[10px] text-dim font-mono">
+          <div className="text-[11px] text-dim font-mono">
             2 → 4 → 2 → 1 MLP · same init for both runs
           </div>
           <button
             type="button"
             onClick={reset}
-            className="text-[11px] uppercase tracking-[0.18em] font-mono text-muted hover:text-ink focus-ring transition-colors"
+            className="text-[11px] uppercase tracking-[0.12em] font-mono text-muted hover:text-ink focus-ring transition-colors"
           >
             Reset
           </button>
@@ -382,7 +382,7 @@ export function DropoutExplorer() {
             />
           )}
           <div className="mt-3">
-            <div className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono mb-1">
+            <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-1">
               Active sub-network (one snapshot)
             </div>
             <NetworkDiagram mask1={mask1} />
@@ -392,7 +392,7 @@ export function DropoutExplorer() {
         <div className="space-y-3 font-mono text-[12px]">
           <div>
             <div className="flex items-baseline justify-between mb-1">
-              <span className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono">
+              <span className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono">
                 Dropout p
               </span>
               <span className="text-ink tabular-nums">{pDrop.toFixed(2)}</span>
@@ -406,7 +406,7 @@ export function DropoutExplorer() {
               formatValue={(v) => v.toFixed(2)}
               ariaLabel="Dropout probability"
             />
-            <div className="flex justify-between text-[10px] text-dim font-mono mt-1 tabular-nums">
+            <div className="flex justify-between text-[11px] text-dim font-mono mt-1 tabular-nums">
               <span>0 (off)</span>
               <span>0.5 (heavy)</span>
             </div>
@@ -445,7 +445,7 @@ export function DropoutExplorer() {
                 )}
               </>
             )}
-            <p className="text-[10px] text-fg-subtle font-mono mt-2 leading-relaxed">
+            <p className="text-[11px] text-fg-subtle font-mono mt-2 leading-relaxed">
               Each training step samples a fresh Bernoulli mask. The
               diagram above is one snapshot — in practice every step
               drops a different subset. Dropout-on is noisier per

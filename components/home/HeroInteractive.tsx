@@ -16,12 +16,12 @@ export function HeroInteractive() {
       <CornerTicks />
       <div className="rounded-xl border border-border-strong bg-bg-elevated p-5 sm:p-6 card-surface relative">
         <div className="flex items-baseline justify-between gap-3 mb-4">
-          <span className="text-[11px] uppercase tracking-[0.18em] font-mono text-accent">
+          <span className="text-[11px] uppercase tracking-[0.12em] font-mono text-accent">
             <span aria-hidden="true">◆ </span>
             <span className="hidden sm:inline">Live · drag a vector tip</span>
             <span className="sm:hidden">Live · drag a tip</span>
           </span>
-          <span className="text-[11px] uppercase tracking-[0.18em] font-mono text-fg-muted shrink-0">
+          <span className="text-[11px] uppercase tracking-[0.12em] font-mono text-fg-muted shrink-0">
             Lesson 01
           </span>
         </div>

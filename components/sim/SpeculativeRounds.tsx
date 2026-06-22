@@ -101,8 +101,9 @@ export function SpeculativeRounds() {
     <SimFrame
       title="Speculative draft rounds: accept, reject, correct"
       onReset={reset}
+      headerWrap
       headerAction={
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 flex-wrap">
           <div className="flex border border-border rounded overflow-hidden font-mono text-[11px]">
             {GAMMA_OPTIONS.map((g) => (
               <button
@@ -140,14 +141,14 @@ export function SpeculativeRounds() {
           <button
             type="button"
             onClick={() => setSeed((s) => s + 1)}
-            className="text-[11px] uppercase tracking-[0.18em] font-mono text-muted hover:text-ink focus-ring transition-colors"
+            className="text-[11px] uppercase tracking-[0.12em] font-mono text-muted hover:text-ink focus-ring transition-colors"
           >
             Re-sample
           </button>
           <button
             type="button"
             onClick={reset}
-            className="text-[11px] uppercase tracking-[0.18em] font-mono text-muted hover:text-ink focus-ring transition-colors"
+            className="text-[11px] uppercase tracking-[0.12em] font-mono text-muted hover:text-ink focus-ring transition-colors"
           >
             Reset
           </button>
@@ -186,19 +187,19 @@ export function SpeculativeRounds() {
 
       <div className="grid grid-cols-3 gap-4 pt-3 border-t border-border font-mono text-[11px]">
         <div>
-          <div className="text-[10px] uppercase tracking-[0.18em] text-dim mb-1">
+          <div className="text-[11px] uppercase tracking-[0.12em] text-dim mb-1">
             Rounds
           </div>
           <div className="text-ink tabular-nums">{rounds}</div>
         </div>
         <div>
-          <div className="text-[10px] uppercase tracking-[0.18em] text-dim mb-1">
+          <div className="text-[11px] uppercase tracking-[0.12em] text-dim mb-1">
             Tokens produced
           </div>
           <div className="text-ink tabular-nums">{totalAccepted}</div>
         </div>
         <div>
-          <div className="text-[10px] uppercase tracking-[0.18em] text-dim mb-1">
+          <div className="text-[11px] uppercase tracking-[0.12em] text-dim mb-1">
             Tokens per round (this run)
           </div>
           <div className="text-accent tabular-nums">

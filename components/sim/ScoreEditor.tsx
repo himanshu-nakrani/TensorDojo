@@ -62,27 +62,27 @@ export function ScoreEditor({ preset }: { preset?: ScoreEditorPreset }) {
     <SimFrame title="Score Editor" onReset={reset}>
       <p className="text-[12px] text-muted mb-5 font-mono">
         Focus a cell and nudge with{' '}
-        <kbd className="px-1.5 py-0.5 rounded border border-border-strong text-ink bg-surface-2 text-[10px]">
+        <kbd className="px-1.5 py-0.5 rounded border border-border-strong text-ink bg-surface-2 text-[11px]">
           ↑
         </kbd>{' '}
-        <kbd className="px-1.5 py-0.5 rounded border border-border-strong text-ink bg-surface-2 text-[10px]">
+        <kbd className="px-1.5 py-0.5 rounded border border-border-strong text-ink bg-surface-2 text-[11px]">
           ↓
         </kbd>
         . Hold{' '}
-        <kbd className="px-1.5 py-0.5 rounded border border-border-strong text-ink bg-surface-2 text-[10px]">
+        <kbd className="px-1.5 py-0.5 rounded border border-border-strong text-ink bg-surface-2 text-[11px]">
           Shift
         </kbd>{' '}
         for a 10× step.
       </p>
 
       <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,2fr)_minmax(0,2.5rem)] gap-x-4 gap-y-3 items-center font-mono text-[13px]">
-        <div className="text-[10px] uppercase tracking-[0.18em] text-dim">
+        <div className="text-[11px] uppercase tracking-[0.12em] text-dim">
           Score
         </div>
-        <div className="text-[10px] uppercase tracking-[0.18em] text-dim">
+        <div className="text-[11px] uppercase tracking-[0.12em] text-dim">
           Probability
         </div>
-        <div className="text-[10px] uppercase tracking-[0.18em] text-dim text-right">
+        <div className="text-[11px] uppercase tracking-[0.12em] text-dim text-right">
           p
         </div>
 

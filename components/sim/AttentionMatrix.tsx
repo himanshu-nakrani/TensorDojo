@@ -105,7 +105,7 @@ export function AttentionMatrix({ preset }: { preset?: AttentionMatrixPreset }) 
     >
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
-          <div className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono mb-2">
+          <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-2">
             Q & K vectors
           </div>
           <VectorCanvas
@@ -123,14 +123,14 @@ export function AttentionMatrix({ preset }: { preset?: AttentionMatrixPreset }) 
         <div className="space-y-5">
           <div>
             <div className="flex items-baseline justify-between mb-2">
-              <div className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono">
+              <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono">
                 Scores = QKᵀ
               </div>
               <button
                 type="button"
                 onClick={() => setShowMath((s) => !s)}
                 className={clsx(
-                  'text-[10px] uppercase tracking-[0.18em] font-mono px-2 py-0.5 rounded border focus-ring transition-colors',
+                  'text-[11px] uppercase tracking-[0.12em] font-mono px-2 py-0.5 rounded border focus-ring transition-colors',
                   showMath
                     ? 'border-accent text-accent'
                     : 'border-border text-muted hover:text-ink',
@@ -157,7 +157,7 @@ export function AttentionMatrix({ preset }: { preset?: AttentionMatrixPreset }) 
           </div>
 
           <div>
-            <div className="text-[10px] uppercase tracking-[0.18em] text-dim font-mono mb-2">
+            <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-2">
               Weights = softmax(scores)
             </div>
             <Heatmap
