@@ -11,7 +11,7 @@ The previous lesson was the building block (dot product). This one is the next l
 
 ## The formula
 
-For a row of $n$ query vectors $Q \in \mathbb{R}^{n \times d}$ and a row of $n$ key vectors $K \in \mathbb{R}^{n \times d}$:
+For a stack of $n$ query vectors $Q \in \mathbb{R}^{n \times d}$ and a stack of $n$ key vectors $K \in \mathbb{R}^{n \times d}$ (one row per token):
 
 $$
 \text{scores} = Q K^\top \in \mathbb{R}^{n \times n}, \qquad
@@ -60,4 +60,4 @@ The same matrix with a temperature slider on the softmax. The score matrix is un
 
 ## Recap
 
-Three takeaways. **For a row of queries and a row of keys, the score matrix is one dot product per (query, key) pair** — $\text{scores} = Q K^\top$, an $n \times n$ matrix. **The weight matrix is the row-wise softmax of the score matrix.** The two are not the same thing; confusing them is the most common slip in attention code. **Scores can be any real number; weights are non-negative and sum to one across each row.** This is why the model can probe with raw scores but must route information with weights. The next lesson uses the weights: multiplying $W$ by the value vectors $V$ gives a per-token mix — the attention output, which is what each token actually receives.
+Three takeaways. **For a stack of queries and a stack of keys, the score matrix is one dot product per (query, key) pair** — $\text{scores} = Q K^\top$, an $n \times n$ matrix. **The weight matrix is the row-wise softmax of the score matrix.** The two are not the same thing; confusing them is the most common slip in attention code. **Scores can be any real number; weights are non-negative and sum to one across each row.** This is why the model can probe with raw scores but must route information with weights. The next lesson uses the weights: multiplying $W$ by the value vectors $V$ gives a per-token mix — the attention output, which is what each token actually receives.

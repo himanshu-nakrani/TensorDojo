@@ -3,7 +3,7 @@ import { Callout } from '@/components/lesson/Callout';
 
 ## The cache is a gigabyte per request. Can we shrink it?
 
-A few lessons ago, the KV cache turned generation from cubic to quadratic. The price was memory: at 2048 tokens of context, a vanilla 7B-class MHA cache is around 1 GB *per request*. Scale to 70B parameters and 32k context and the cache balloons into tens of gigabytes per request. With even a few simultaneous users, the cache — not the model weights — becomes what doesn't fit in GPU memory.
+Look ahead a few lessons: an inference-time optimization called the **KV cache** stores every previous token's K and V so the model doesn't have to recompute them. The price is memory — at 2048 tokens of context, a vanilla 7B-class MHA cache is around 1 GB *per request*. Scale to 70B parameters and 32k context and the cache balloons into tens of gigabytes per request. With even a few simultaneous users, the cache — not the model weights — becomes what doesn't fit in GPU memory.
 
 So the cache memory has to come down. The previous lesson's multi-head attention told you where to look: every head stores its own K and V. Eight heads means eight K matrices and eight V matrices to cache. The natural question is whether all of them need to be distinct.
 
@@ -64,7 +64,7 @@ Three things to internalize.
 
 **Cache shrinkage equals the group factor.** GQA-8 shrinks the cache by 8×. GQA-4 by 4×. MQA — the extreme of GQA where there's a single KV head shared by every query head — shrinks it by $h$. Memory savings are linear and exact; there's no fine print.
 
-**Every production LLM uses it.** LLaMA-2 70B uses GQA-8 (64 query heads, 8 KV heads). Mistral 7B uses GQA-8 (32 query heads, 4 KV heads — wait, that's GQA-8 by the standard "G = n_Q / n_KV" convention). Qwen, DeepSeek, and GPT-OSS-class models follow the same pattern. The cost is essentially nothing for the quality the cache savings buy.
+**Every production LLM uses it.** LLaMA-2 70B uses GQA-8 (64 query heads, 8 KV heads). Mistral 7B uses GQA-4 (32 query heads, 8 KV heads). Qwen, DeepSeek, and GPT-OSS-class models follow the same pattern. The cost is essentially nothing for the quality the cache savings buy.
 
 ## Recap
 
