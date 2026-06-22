@@ -20,12 +20,14 @@ import { meta as attentionOutputMeta } from '@/content/lessons/attention-output/
 import { meta as scaledAttentionMeta } from '@/content/lessons/scaled-attention/meta';
 import { meta as tokenizationMeta } from '@/content/lessons/tokenization/meta';
 import { meta as tokenEmbeddingsMeta } from '@/content/lessons/token-embeddings/meta';
+import { meta as weightTyingMeta } from '@/content/lessons/weight-tying/meta';
 import { meta as positionalEncodingMeta } from '@/content/lessons/positional-encoding/meta';
 import { meta as ropeMeta } from '@/content/lessons/rope/meta';
 import { meta as causalMaskMeta } from '@/content/lessons/causal-mask/meta';
 import { meta as multiHeadAttentionMeta } from '@/content/lessons/multi-head-attention/meta';
 import { meta as groupedQueryAttentionMeta } from '@/content/lessons/grouped-query-attention/meta';
 import { meta as flashAttentionMeta } from '@/content/lessons/flash-attention/meta';
+import { meta as slidingWindowAttentionMeta } from '@/content/lessons/sliding-window-attention/meta';
 import { meta as residualsLayernormMeta } from '@/content/lessons/residuals-layernorm/meta';
 import { meta as rmsNormMeta } from '@/content/lessons/rms-norm/meta';
 import { meta as activationsMeta } from '@/content/lessons/activations/meta';
@@ -59,8 +61,10 @@ import { meta as freezingVsFullFinetuningMeta } from '@/content/lessons/freezing
 import { meta as catastrophicForgettingMeta } from '@/content/lessons/catastrophic-forgetting/meta';
 import { meta as quantizationMeta } from '@/content/lessons/quantization/meta';
 import { meta as loraMeta } from '@/content/lessons/lora/meta';
+import { meta as qloraMeta } from '@/content/lessons/qlora/meta';
 import { meta as evaluationMeta } from '@/content/lessons/evaluation/meta';
 import { meta as instructionTuningRlhfMeta } from '@/content/lessons/instruction-tuning-rlhf/meta';
+import { meta as dpoMeta } from '@/content/lessons/dpo/meta';
 import { meta as distillationMeta } from '@/content/lessons/distillation/meta';
 
 export interface LessonMetaEntry {
@@ -83,12 +87,14 @@ const manifest: readonly LessonMetaEntry[] = [
   { meta: scaledAttentionMeta },
   { meta: tokenizationMeta },
   { meta: tokenEmbeddingsMeta },
+  { meta: weightTyingMeta },
   { meta: positionalEncodingMeta },
   { meta: ropeMeta },
   { meta: causalMaskMeta },
   { meta: multiHeadAttentionMeta },
   { meta: groupedQueryAttentionMeta },
   { meta: flashAttentionMeta },
+  { meta: slidingWindowAttentionMeta },
   { meta: residualsLayernormMeta },
   { meta: rmsNormMeta },
   { meta: activationsMeta },
@@ -122,8 +128,10 @@ const manifest: readonly LessonMetaEntry[] = [
   { meta: catastrophicForgettingMeta },
   { meta: quantizationMeta },
   { meta: loraMeta },
+  { meta: qloraMeta },
   { meta: evaluationMeta },
   { meta: instructionTuningRlhfMeta },
+  { meta: dpoMeta },
   { meta: distillationMeta },
 ];
 
@@ -178,7 +186,7 @@ export const TRACKS: readonly LessonTrack[] = [
     label: 'How tokens become inputs',
     description:
       'From raw text to the dense vectors a transformer actually sees on its input row.',
-    slugs: ['tokenization', 'token-embeddings', 'positional-encoding', 'rope'],
+    slugs: ['tokenization', 'token-embeddings', 'weight-tying', 'positional-encoding', 'rope'],
   },
   {
     id: 'transformer-block',
@@ -189,6 +197,7 @@ export const TRACKS: readonly LessonTrack[] = [
       'multi-head-attention',
       'grouped-query-attention',
       'flash-attention',
+      'sliding-window-attention',
       'residuals-layernorm',
       'rms-norm',
       'activations',
@@ -238,7 +247,7 @@ export const TRACKS: readonly LessonTrack[] = [
     label: 'Adapting models to new tasks',
     description:
       'Take a pretrained model and steer it: full fine-tuning, freezing, LoRA, quantization, RLHF.',
-    slugs: ['pretraining-vs-finetuning', 'freezing-vs-full-finetuning', 'catastrophic-forgetting', 'quantization', 'lora', 'evaluation', 'instruction-tuning-rlhf', 'distillation'],
+    slugs: ['pretraining-vs-finetuning', 'freezing-vs-full-finetuning', 'catastrophic-forgetting', 'quantization', 'lora', 'qlora', 'evaluation', 'instruction-tuning-rlhf', 'dpo', 'distillation'],
   },
 ];
 

@@ -104,6 +104,7 @@ export const mdxLessonLoaders: Readonly<
   tokenization: () => import('@/content/lessons/tokenization/lesson.mdx'),
   'token-embeddings': () =>
     import('@/content/lessons/token-embeddings/lesson.mdx'),
+  'weight-tying': () => import('@/content/lessons/weight-tying/lesson.mdx'),
   'positional-encoding': () =>
     import('@/content/lessons/positional-encoding/lesson.mdx'),
   rope: () => import('@/content/lessons/rope/lesson.mdx'),
@@ -114,6 +115,8 @@ export const mdxLessonLoaders: Readonly<
     import('@/content/lessons/grouped-query-attention/lesson.mdx'),
   'flash-attention': () =>
     import('@/content/lessons/flash-attention/lesson.mdx'),
+  'sliding-window-attention': () =>
+    import('@/content/lessons/sliding-window-attention/lesson.mdx'),
   'residuals-layernorm': () =>
     import('@/content/lessons/residuals-layernorm/lesson.mdx'),
   'rms-norm': () => import('@/content/lessons/rms-norm/lesson.mdx'),
@@ -164,7 +167,9 @@ export const mdxLessonLoaders: Readonly<
     import('@/content/lessons/catastrophic-forgetting/lesson.mdx'),
   quantization: () => import('@/content/lessons/quantization/lesson.mdx'),
   'lora': () => import('@/content/lessons/lora/lesson.mdx'),
+  qlora: () => import('@/content/lessons/qlora/lesson.mdx'),
   evaluation: () => import('@/content/lessons/evaluation/lesson.mdx'),
   'instruction-tuning-rlhf': () => import('@/content/lessons/instruction-tuning-rlhf/lesson.mdx'),
+  dpo: () => import('@/content/lessons/dpo/lesson.mdx'),
   distillation: () => import('@/content/lessons/distillation/lesson.mdx'),
 };

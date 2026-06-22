@@ -27,12 +27,14 @@ import { meta as attentionOutputMeta } from '@/content/lessons/attention-output/
 import { meta as scaledAttentionMeta } from '@/content/lessons/scaled-attention/meta';
 import { meta as tokenizationMeta } from '@/content/lessons/tokenization/meta';
 import { meta as tokenEmbeddingsMeta } from '@/content/lessons/token-embeddings/meta';
+import { meta as weightTyingMeta } from '@/content/lessons/weight-tying/meta';
 import { meta as positionalEncodingMeta } from '@/content/lessons/positional-encoding/meta';
 import { meta as ropeMeta } from '@/content/lessons/rope/meta';
 import { meta as causalMaskMeta } from '@/content/lessons/causal-mask/meta';
 import { meta as multiHeadAttentionMeta } from '@/content/lessons/multi-head-attention/meta';
 import { meta as groupedQueryAttentionMeta } from '@/content/lessons/grouped-query-attention/meta';
 import { meta as flashAttentionMeta } from '@/content/lessons/flash-attention/meta';
+import { meta as slidingWindowAttentionMeta } from '@/content/lessons/sliding-window-attention/meta';
 import { meta as residualsLayernormMeta } from '@/content/lessons/residuals-layernorm/meta';
 import { meta as rmsNormMeta } from '@/content/lessons/rms-norm/meta';
 import { meta as activationsMeta } from '@/content/lessons/activations/meta';
@@ -66,8 +68,10 @@ import { meta as freezingVsFullFinetuningMeta } from '@/content/lessons/freezing
 import { meta as catastrophicForgettingMeta } from '@/content/lessons/catastrophic-forgetting/meta';
 import { meta as quantizationMeta } from '@/content/lessons/quantization/meta';
 import { meta as loraMeta } from '@/content/lessons/lora/meta';
+import { meta as qloraMeta } from '@/content/lessons/qlora/meta';
 import { meta as evaluationMeta } from '@/content/lessons/evaluation/meta';
 import { meta as instructionTuningRlhfMeta } from '@/content/lessons/instruction-tuning-rlhf/meta';
+import { meta as dpoMeta } from '@/content/lessons/dpo/meta';
 import { meta as distillationMeta } from '@/content/lessons/distillation/meta';
 
 export interface LessonMeta {
@@ -88,12 +92,14 @@ const metaBySlug: Readonly<Record<string, LessonMeta>> = {
   'scaled-attention': scaledAttentionMeta,
   tokenization: tokenizationMeta,
   'token-embeddings': tokenEmbeddingsMeta,
+  'weight-tying': weightTyingMeta,
   'positional-encoding': positionalEncodingMeta,
   rope: ropeMeta,
   'causal-mask': causalMaskMeta,
   'multi-head-attention': multiHeadAttentionMeta,
   'grouped-query-attention': groupedQueryAttentionMeta,
   'flash-attention': flashAttentionMeta,
+  'sliding-window-attention': slidingWindowAttentionMeta,
   'residuals-layernorm': residualsLayernormMeta,
   'rms-norm': rmsNormMeta,
   activations: activationsMeta,
@@ -127,8 +133,10 @@ const metaBySlug: Readonly<Record<string, LessonMeta>> = {
   'catastrophic-forgetting': catastrophicForgettingMeta,
   quantization: quantizationMeta,
   'lora': loraMeta,
+  qlora: qloraMeta,
   evaluation: evaluationMeta,
   'instruction-tuning-rlhf': instructionTuningRlhfMeta,
+  dpo: dpoMeta,
   distillation: distillationMeta,
 };
 
@@ -174,6 +182,10 @@ const interactivesLoaders: Readonly<Record<string, () => Promise<{
     import('@/content/lessons/token-embeddings/interactives').then((m) => ({
       interactives: m.interactives,
     })),
+  'weight-tying': () =>
+    import('@/content/lessons/weight-tying/interactives').then((m) => ({
+      interactives: m.interactives,
+    })),
   'positional-encoding': () =>
     import('@/content/lessons/positional-encoding/interactives').then((m) => ({
       interactives: m.interactives,
@@ -198,6 +210,12 @@ const interactivesLoaders: Readonly<Record<string, () => Promise<{
     import('@/content/lessons/flash-attention/interactives').then((m) => ({
       interactives: m.interactives,
     })),
+  'sliding-window-attention': () =>
+    import('@/content/lessons/sliding-window-attention/interactives').then(
+      (m) => ({
+        interactives: m.interactives,
+      }),
+    ),
   'residuals-layernorm': () =>
     import('@/content/lessons/residuals-layernorm/interactives').then((m) => ({
       interactives: m.interactives,
@@ -336,12 +354,20 @@ const interactivesLoaders: Readonly<Record<string, () => Promise<{
     import('@/content/lessons/lora/interactives').then((m) => ({
       interactives: m.interactives,
     })),
+  qlora: () =>
+    import('@/content/lessons/qlora/interactives').then((m) => ({
+      interactives: m.interactives,
+    })),
   evaluation: () =>
     import('@/content/lessons/evaluation/interactives').then((m) => ({
       interactives: m.interactives,
     })),
   'instruction-tuning-rlhf': () =>
     import('@/content/lessons/instruction-tuning-rlhf/interactives').then((m) => ({
+      interactives: m.interactives,
+    })),
+  dpo: () =>
+    import('@/content/lessons/dpo/interactives').then((m) => ({
       interactives: m.interactives,
     })),
   distillation: () =>

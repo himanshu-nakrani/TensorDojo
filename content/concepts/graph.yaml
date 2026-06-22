@@ -267,6 +267,18 @@ nodes:
   - id: chain-of-thought-concept
     title: "Chain-of-thought: thinking step by step"
     lesson: chain-of-thought
+  - id: sliding-window-attention-concept
+    title: "Sliding-window attention"
+    lesson: sliding-window-attention
+  - id: weight-tying-concept
+    title: "Weight tying: shared embedding/output"
+    lesson: weight-tying
+  - id: dpo-concept
+    title: "DPO: direct preference optimization"
+    lesson: dpo
+  - id: qlora-concept
+    title: "QLoRA: 4-bit base + LoRA"
+    lesson: qlora
 
 edges:
   # Atomic prerequisite chain
@@ -330,6 +342,10 @@ edges:
     to: flash-attention
   - from: gqa
     to: flash-attention
+  - from: flash-attention
+    to: sliding-window-attention-concept
+  - from: causal-mask
+    to: sliding-window-attention-concept
   - from: softmax
     to: bpe
   - from: bpe
@@ -393,6 +409,10 @@ edges:
     to: speculative-decoding-concept
   - from: token-embedding
     to: token-embeddings-concept
+  - from: token-embeddings-concept
+    to: weight-tying-concept
+  - from: dot-product-concept
+    to: weight-tying-concept
   - from: positional-encoding
     to: positional-encoding-concept
   - from: rope
@@ -589,6 +609,16 @@ edges:
     to: instruction-tuning-rlhf-concept
   - from: reward-model
     to: instruction-tuning-rlhf-concept
+  - from: instruction-tuning-rlhf-concept
+    to: dpo-concept
+  - from: cross-entropy
+    to: dpo-concept
+  - from: dpo-concept
+    to: distillation-concept
+  - from: lora-concept
+    to: qlora-concept
+  - from: quantization-concept
+    to: qlora-concept
   - from: instruction-tuning-rlhf-concept
     to: distillation-concept
   - from: cross-entropy

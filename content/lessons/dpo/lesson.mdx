@@ -1,0 +1,100 @@
+import { MathCode } from '@/components/lesson/MathCode';
+import { Callout } from '@/components/lesson/Callout';
+
+## RLHF had two networks too many
+
+The instruction-tuning lesson sketched the classical RLHF pipeline:
+
+1. **Supervised fine-tune** (SFT) the base model on instruction-following demonstrations.
+2. Train a **reward model** $r_\phi$ on pairs of model outputs labeled by humans as "this one is better than that one."
+3. Use **PPO** to update the policy $\pi_\theta$ against the reward model — gradient steps that maximize $\mathbb{E}[r_\phi(\pi_\theta)]$ minus a KL penalty against the SFT model so the policy doesn't drift.
+
+It works, and it's how InstructGPT, the early ChatGPT, and Claude were originally aligned. But it has *two* trained models in the loop (the policy and the reward model) and a notoriously fragile RL stage — PPO needs careful hyperparameters, on-policy sampling, value-function tricks, and the whole pipeline is hard to reproduce.
+
+**Direct Preference Optimization** (DPO), introduced in 2023, took a step back and noticed that the reward model and the PPO step can be **collapsed together algebraically**. With the right reformulation, the policy can be trained directly on the preference pairs — no reward model, no RL — with a single supervised-style loss. The result has the same alignment quality on most benchmarks, but with one model instead of two and standard supervised optimization instead of PPO.
+
+This is now the default alignment recipe for most open-source LLMs: Llama-3, Mistral, Zephyr, and many others use DPO (or close cousins like IPO, KTO, ORPO).
+
+## The formula
+
+DPO starts from the same Bradley-Terry preference model RLHF uses — the probability that a human prefers completion $y_w$ ("winner") over $y_l$ ("loser") given prompt $x$ is $\sigma(r(x, y_w) - r(x, y_l))$ for some reward $r$. RLHF learns $r$ explicitly. DPO substitutes the *closed-form solution* for the KL-constrained reward, then expresses everything as a function of the policy's log-probabilities relative to a frozen reference.
+
+The result: one loss that depends only on $\pi_\theta$ (the policy being trained), $\pi_\text{ref}$ (the frozen reference, usually the SFT model), and the preference pairs $(x, y_w, y_l)$:
+
+$$
+\mathcal{L}_{\text{DPO}} = -\log \sigma\!\left(\beta \cdot \left[\log \frac{\pi_\theta(y_w \mid x)}{\pi_\text{ref}(y_w \mid x)} - \log \frac{\pi_\theta(y_l \mid x)}{\pi_\text{ref}(y_l \mid x)}\right]\right)
+$$
+
+Read this slowly. The bracketed term is the **log-ratio of log-ratios**:
+
+- $\log \frac{\pi_\theta(y_w \mid x)}{\pi_\text{ref}(y_w \mid x)}$ — how much more likely is the winning completion under the trained policy than under the reference?
+- $\log \frac{\pi_\theta(y_l \mid x)}{\pi_\text{ref}(y_l \mid x)}$ — same for the losing completion.
+
+DPO pushes the winner's ratio up and the loser's ratio down. $\beta$ controls how aggressively (analogous to PPO's KL penalty weight).
+
+<MathCode
+  math="\mathcal{L}_{\text{DPO}} = -\log \sigma\!\left(\beta \left[\log \tfrac{\pi_\theta(y_w \mid x)}{\pi_\text{ref}(y_w \mid x)} - \log \tfrac{\pi_\theta(y_l \mid x)}{\pi_\text{ref}(y_l \mid x)}\right]\right)"
+  code={`import torch.nn.functional as F
+
+def dpo_loss(
+    policy_logp_chosen,    # log π_θ(y_w | x): sum of token log-probs for the chosen completion
+    policy_logp_rejected,  # log π_θ(y_l | x)
+    ref_logp_chosen,       # log π_ref(y_w | x), no gradients
+    ref_logp_rejected,     # log π_ref(y_l | x)
+    beta=0.1,              # KL strength; typical range 0.05 – 0.5
+):
+    # The "logits" the sigmoid sees.
+    pi_logratios = policy_logp_chosen - policy_logp_rejected
+    ref_logratios = ref_logp_chosen - ref_logp_rejected
+    logits = beta * (pi_logratios - ref_logratios)
+    # -log σ(logits) = log(1 + exp(-logits)) is binary-cross-entropy
+    # against an implicit label of 1 ("chosen is preferred").
+    return -F.logsigmoid(logits).mean()
+
+# Two forward passes per batch (policy and reference). No reward
+# model, no RL. The reference policy provides the regularizer that
+# replaces PPO's KL penalty.`}
+  caption="The full RLHF pipeline collapses into one loss. The reference model is needed but never trained — it's the frozen SFT checkpoint, used only to compute log-probabilities."
+/>
+
+<Callout title="Why this works" targetInteractive="dpo-loss-explorer">
+  The 2023 DPO paper proves that the KL-constrained reward maximization that PPO solves *has a closed-form solution* in terms of the policy and reference. Once you write the reward as $r(x, y) = \beta \log \frac{\pi_\theta(y \mid x)}{\pi_\text{ref}(y \mid x)} + c(x)$ (where $c(x)$ depends only on $x$ and cancels in the preference probability), the entire RLHF objective reduces to the binary-cross-entropy DPO loss. The math is exact — DPO isn't an approximation to RLHF, it's a re-parameterization.
+</Callout>
+
+## Try it
+
+The centerpiece is a 2D loss explorer. The two axes are the **policy-vs-reference log-ratios** for the chosen and rejected completions. Drag the point; the DPO loss is plotted as a heatmap.
+
+<Callout targetInteractive="dpo-loss-explorer">
+  Start at $(0, 0)$ — the policy is identical to the reference. The loss is $-\log \sigma(0) = \log 2 \approx 0.69$. The model has no preference for chosen over rejected. Move the point to the upper-left: chosen's ratio is high, rejected's is low. The loss drops toward 0 — the model is now strongly preferring the chosen completion.
+</Callout>
+
+<Callout title="What to watch for" targetInteractive="dpo-loss-explorer">
+  Move the point to the lower-right: chosen's ratio is low, rejected's is high. The loss climbs steeply — the model is preferring the *wrong* completion, and the gradient is large and points back toward the correct quadrant. Try the $\beta$ slider: high $\beta$ makes the loss surface steeper (aggressive optimization), low $\beta$ makes it gentler (closer to the reference). $\beta = 0.1$ is a typical real-world setting.
+</Callout>
+
+<Callout targetInteractive="dpo-loss-explorer">
+  Notice that the loss only depends on the *difference* between the chosen and rejected log-ratios — not their absolute levels. The policy is free to drift in any direction *jointly* (the model can become slightly more or less likely to emit either completion), as long as the *gap* between chosen and rejected grows. This is the KL-penalty story in disguise: the reference keeps the policy from drifting too far, but only along the directions that matter for preferences.
+</Callout>
+
+## Reading the result
+
+**One model, one loss, standard supervised optimization.** This is the practical win. DPO training looks like fine-tuning: forward pass → loss → backward pass → step, repeated. No on-policy sampling, no value function, no PPO. Standard AdamW. The infrastructure for DPO is much simpler and the runs are much more reproducible.
+
+**No reward model.** RLHF's reward model is a separate network trained on the same preference data. DPO does without it — the preference signal is consumed directly. This saves training compute and removes a layer of approximation (the reward model is itself a fit to noisy human labels; DPO uses the labels in place of the model).
+
+**Quality is comparable on most benchmarks.** The original DPO paper showed quality matched or exceeded PPO-based RLHF on summarization and dialog tasks. Subsequent work has found similar results across many evaluation settings, though edge cases exist where PPO still outperforms (notably tasks with very long completions where PPO's per-token rewards may help).
+
+**The recipe in practice.** Take a SFT checkpoint as both the trained policy *and* the frozen reference. Train on preference pairs $(x, y_w, y_l)$ — usually 10K to 1M pairs. Set $\beta$ in $[0.05, 0.5]$. Run for a few epochs at a low learning rate (typical: $5 \times 10^{-7}$ to $5 \times 10^{-6}$). Stop when the preference accuracy on a held-out set plateaus. This is roughly the recipe for Llama-3-Instruct and Zephyr.
+
+## A second look
+
+DPO is a great example of mathematics paying off. The 2023 paper didn't invent a new training algorithm; it derived an equivalent of an existing one with a simpler computational structure. The full RLHF pipeline ran for ~2 years before someone noticed the reward could be absorbed into the policy parameterization. After the paper, the field switched fast — within 6 months, most new open-source alignment recipes were DPO-based.
+
+<Callout title="Variants worth knowing" targetInteractive="dpo-loss-explorer">
+  **IPO** (Identity Preference Optimization, 2023) replaces the sigmoid with a quadratic to avoid DPO's tendency to overfit to outlier preference pairs. **KTO** (Kahneman-Tversky Optimization, 2024) drops the paired requirement — it works with single-completion human ratings ("good" / "bad"), no chosen-rejected pairs needed. **ORPO** (Odds-Ratio Preference Optimization, 2024) doesn't need a reference model at all; the SFT loss and the preference loss are combined into one. Each is a small variation on the DPO insight — the field is iterating fast.
+</Callout>
+
+## Recap
+
+Three takeaways. **DPO trains a policy directly on (chosen, rejected) preference pairs**, with a binary-cross-entropy-style loss over the policy's log-ratios against a frozen reference. **No reward model, no PPO** — the RL stage of RLHF is replaced by standard supervised optimization, making the pipeline simpler and more reproducible. **It's the modern default**: Llama-3, Mistral, Zephyr, and most open-source aligned models now use DPO or its descendants (IPO, KTO, ORPO). The next lesson revisits **LoRA** with a quantization twist: stacking 4-bit base weights underneath a small trainable adapter is the recipe that lets you fine-tune a 70B model on a single GPU.

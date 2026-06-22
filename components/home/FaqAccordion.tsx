@@ -18,7 +18,7 @@ const FAQS: readonly FaqEntry[] = [
   },
   {
     q: 'How long is the whole curriculum?',
-    a: 'Roughly 8–10 hours of reading and tinkering across fifty-one lessons, but each lesson stands on its own. The concept map shows what depends on what.',
+    a: 'Roughly 8–10 hours of reading and tinkering across fifty-five lessons, but each lesson stands on its own. The concept map shows what depends on what.',
   },
   {
     q: 'Can I skip around?',
