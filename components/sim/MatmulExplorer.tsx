@@ -72,7 +72,7 @@ export function MatmulExplorer() {
   };
 
   return (
-    <SimFrame title="Matmul Explorer" onReset={reset}>
+    <SimFrame title="A · B = AB · hover AB to see the dot product" onReset={reset}>
       <div className="grid grid-cols-[auto_auto_auto_auto_auto] items-start justify-center gap-x-4 gap-y-2 mb-5 font-mono text-[13px]">
         <GridLabel label="A" sub="2×3" />
         <span aria-hidden="true" />

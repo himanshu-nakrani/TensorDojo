@@ -65,11 +65,11 @@ export function CandidateSort({ preset }: { preset?: CandidateSortPreset }) {
 
   return (
     <SimFrame
-      title="Candidate Sort"
+      title="Re-rank 5 candidates by q · c"
       onReset={() => setQuery([...DEFAULT_QUERY])}
     >
       <p className="text-[12px] text-muted mb-5 font-mono">
-        Drag <span className="text-accent">q</span> — the 5 candidates re-sort by{' '}
+        Drag <span className="text-accent">q</span> (only q is draggable). The 5 fixed candidates re-sort by{' '}
         <span className="text-ink">q · cᵢ</span> in real time.
       </p>
 

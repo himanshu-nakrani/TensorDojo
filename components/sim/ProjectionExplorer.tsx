@@ -64,7 +64,7 @@ export function ProjectionExplorer({ preset }: { preset?: ProjectionExplorerPres
 
   return (
     <SimFrame
-      title="Projection Explorer"
+      title="The shadow of a on b · and the leftover residual"
       headerAction={
         <div className="flex items-center gap-3">
           <button

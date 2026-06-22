@@ -121,7 +121,7 @@ export function CandidateCosine({ preset }: { preset?: CandidateCosinePreset }) 
 
   return (
     <SimFrame
-      title="Candidate Cosine"
+      title="Rank by dot product vs by cosine, side by side"
       onReset={() => {
         setQ([...DEFAULT_Q] as [number, number]);
         setResizableLen(DEFAULT_RESIZABLE_LEN);
@@ -130,7 +130,7 @@ export function CandidateCosine({ preset }: { preset?: CandidateCosinePreset }) 
       <div className="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-6">
         <div>
           <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-2">
-            Query (drag) and 5 fixed candidates
+            Query <span className="text-accent">q</span> (drag) · 5 fixed candidates · c_R has a length slider below
           </div>
           <VectorCanvas
             vectors={vectors}
@@ -139,9 +139,7 @@ export function CandidateCosine({ preset }: { preset?: CandidateCosinePreset }) 
             ariaLabel="Query vector q and 5 fixed candidate vectors. Drag q to recompute."
           />
           <p className="mt-2 text-[11px] text-muted font-mono">
-            The cyan resizable arrow c_R has a length slider below — drag
-            the query, then change c_R's length to see dot product change
-            while cosine similarity does not.
+            Drag <span className="text-accent">q</span>, then slide c_R's length below. The dot product changes with c_R's length; the cosine similarity does not.
           </p>
         </div>
 

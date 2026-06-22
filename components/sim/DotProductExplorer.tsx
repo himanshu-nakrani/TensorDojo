@@ -68,7 +68,7 @@ export function DotProductExplorer({ preset }: { preset?: DotProductPreset }) {
   const widthPct = Math.abs(barFrac) * half;
 
   return (
-    <SimFrame title="Dot Product Explorer" onReset={reset}>
+    <SimFrame title="Drag a or b · watch a · b" onReset={reset}>
       <VectorCanvas
         vectors={vectors}
         onChange={setVector}
