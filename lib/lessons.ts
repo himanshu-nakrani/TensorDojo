@@ -116,6 +116,7 @@ export const mdxLessonLoaders: Readonly<
     import('@/content/lessons/flash-attention/lesson.mdx'),
   'residuals-layernorm': () =>
     import('@/content/lessons/residuals-layernorm/lesson.mdx'),
+  'rms-norm': () => import('@/content/lessons/rms-norm/lesson.mdx'),
   activations: () => import('@/content/lessons/activations/lesson.mdx'),
   'feed-forward': () => import('@/content/lessons/feed-forward/lesson.mdx'),
   'mixture-of-experts': () =>
@@ -125,6 +126,10 @@ export const mdxLessonLoaders: Readonly<
   'sampling-decoding': () =>
     import('@/content/lessons/sampling-decoding/lesson.mdx'),
   'beam-search': () => import('@/content/lessons/beam-search/lesson.mdx'),
+  'in-context-learning': () =>
+    import('@/content/lessons/in-context-learning/lesson.mdx'),
+  'chain-of-thought': () =>
+    import('@/content/lessons/chain-of-thought/lesson.mdx'),
   'kv-cache': () => import('@/content/lessons/kv-cache/lesson.mdx'),
   'speculative-decoding': () =>
     import('@/content/lessons/speculative-decoding/lesson.mdx'),
@@ -133,6 +138,10 @@ export const mdxLessonLoaders: Readonly<
     import('@/content/lessons/gradient-descent/lesson.mdx'),
   'loss-landscapes': () =>
     import('@/content/lessons/loss-landscapes/lesson.mdx'),
+  'vanishing-exploding-gradients': () =>
+    import('@/content/lessons/vanishing-exploding-gradients/lesson.mdx'),
+  'weight-initialization': () =>
+    import('@/content/lessons/weight-initialization/lesson.mdx'),
   backpropagation: () =>
     import('@/content/lessons/backpropagation/lesson.mdx'),
   sgd: () => import('@/content/lessons/sgd/lesson.mdx'),
@@ -157,4 +166,5 @@ export const mdxLessonLoaders: Readonly<
   'lora': () => import('@/content/lessons/lora/lesson.mdx'),
   evaluation: () => import('@/content/lessons/evaluation/lesson.mdx'),
   'instruction-tuning-rlhf': () => import('@/content/lessons/instruction-tuning-rlhf/lesson.mdx'),
+  distillation: () => import('@/content/lessons/distillation/lesson.mdx'),
 };

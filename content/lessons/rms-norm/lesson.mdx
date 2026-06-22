@@ -1,0 +1,77 @@
+import { MathCode } from '@/components/lesson/MathCode';
+import { Callout } from '@/components/lesson/Callout';
+
+## Same job, fewer ops
+
+The previous lesson introduced **LayerNorm**: re-center each token's vector to zero mean, divide by its standard deviation, then apply a learned scale $\gamma$ and shift $\beta$. That keeps activations on a stable scale across depth, which is why a 24-layer transformer can train.
+
+But every term in that formula costs something. **Subtracting the mean** costs a reduction across the feature dimension. **Adding the learned shift $\beta$** costs an extra parameter vector per layer. And on long-context, large-$d_{\text{model}}$ models, those two extras add up — both in FLOPs and in memory bandwidth on every forward and backward pass.
+
+In 2019 Zhang and Sennrich asked the obvious question: *do we actually need them?* They tried dropping the mean step (and the shift), keeping only the variance step (with no mean subtraction) and the learned scale. Empirically: equivalent quality, ~10–30% faster norm, no instability. The simplified version is **RMSNorm**, and it's what Llama, Mistral, Gemma, Qwen, and most modern LLMs use today.
+
+## The formula
+
+LayerNorm normalizes by the standard deviation — which requires first computing a mean. RMSNorm normalizes by the **root mean square** instead, which is the same formula *without* the mean subtraction:
+
+$$
+\operatorname{RMSNorm}(\mathbf{x}) = \gamma \cdot \frac{\mathbf{x}}{\operatorname{RMS}(\mathbf{x})}, \qquad
+\operatorname{RMS}(\mathbf{x}) = \sqrt{\frac{1}{d}\sum_{i=1}^{d} x_i^2 + \epsilon}
+$$
+
+Compare side by side:
+
+<MathCode
+  math="\operatorname{LN}(\mathbf{x}) = \gamma \cdot \frac{\mathbf{x} - \mu}{\sqrt{\sigma^2 + \epsilon}} + \beta \qquad\text{vs}\qquad \operatorname{RMS}(\mathbf{x}) = \gamma \cdot \frac{\mathbf{x}}{\sqrt{\overline{x^2} + \epsilon}}"
+  code={`import numpy as np
+
+def layer_norm(x, gamma, beta, eps=1e-5):
+    mu = x.mean(axis=-1, keepdims=True)              # one extra reduction
+    var = x.var(axis=-1, keepdims=True)
+    x_hat = (x - mu) / np.sqrt(var + eps)
+    return gamma * x_hat + beta                       # one extra parameter
+
+def rms_norm(x, gamma, eps=1e-5):
+    rms = np.sqrt((x ** 2).mean(axis=-1, keepdims=True) + eps)
+    return gamma * (x / rms)                          # no mean, no beta`}
+  caption="Two reductions become one. The bias parameter beta is also gone — modern transformers run with no bias on attention/MLP linears either, for the same reason: cheaper, no quality hit."
+/>
+
+<Callout title="The arithmetic difference is tiny" targetInteractive="rms-norm-compare">
+  When $\mathbf{x}$ already has near-zero mean (which is the typical case mid-network because the previous norm and the residual stream center things out), $\mu \approx 0$ and the two formulas produce nearly identical vectors. That's the empirical reason RMSNorm "just works" — the mean it would have subtracted was already close to zero anyway.
+</Callout>
+
+## Try it
+
+The centerpiece shows the same input vector pushed through both normalizers, with sliders to add a mean offset and tweak the scale.
+
+<Callout targetInteractive="rms-norm-compare">
+  Start with the default zero-mean input. The two output vectors are visually identical — both normalize the input to a vector of roughly unit RMS, and with $\mu \approx 0$ there is nothing for LayerNorm's mean-subtract step to do. The "diff" panel below shows residual differences in the third decimal.
+</Callout>
+
+<Callout title="What to watch for" targetInteractive="rms-norm-compare">
+  Drag "mean offset" to $+2$. Now the inputs all sit around 2 instead of 0. LayerNorm subtracts the mean and produces a centered output. RMSNorm does not — its output sits at a non-zero mean. Both are still numerically bounded (the RMS denominator grew to absorb the offset), but RMSNorm preserves the offset's *direction* while LayerNorm erases it. For most modern training runs this turns out not to matter, because $\mu$ in real residual streams is already ~0.
+</Callout>
+
+<Callout targetInteractive="rms-norm-compare">
+  Look at the op count under each formula. LayerNorm: two reductions (mean + variance), one subtract, one divide, one multiply, one add. RMSNorm: one reduction (mean of squares), one divide, one multiply. That's a real ~30% reduction in arithmetic on the norm itself — small per layer, meaningful when there are 80 layers and you're running on every token of a 128k context.
+</Callout>
+
+## Reading the result
+
+**Mathematically: RMSNorm = LayerNorm with the mean term deleted.** That is the entire change. The learned shift $\beta$ goes with it (with no mean to absorb, there's nothing for $\beta$ to compensate against, and removing it has no measurable effect). Everything else is identical: per-token, per-position normalization, learned scale, $\epsilon$ for numerical safety.
+
+**Empirically: same quality, faster.** The 2019 paper showed equivalent perplexity on translation and language modeling. Every subsequent large-model paper that compared the two has found the same: no quality loss, ~10–30% wall-clock speedup on the norm op. The norm is a small fraction of total runtime, but on a model that runs for months, every percent counts.
+
+**Why it caught on.** Llama (2023) shipped with RMSNorm and pre-norm placement (norm before the sublayer, not after). Every modern open-weights LLM family — Llama, Mistral, Gemma, Qwen, DeepSeek — uses the same recipe. The "norm" in a 2025 transformer almost certainly means RMSNorm; "LayerNorm" is still common in older or smaller models, and in production code you'll see both.
+
+## A second look
+
+The geometric difference is small but real. LayerNorm projects an input vector onto the hyperplane through the origin perpendicular to the all-ones direction (subtracting the mean), then renormalizes. RMSNorm just renormalizes. In high dimensions and zero-mean residual streams, these produce nearly identical outputs.
+
+<Callout title="Why this works at all" targetInteractive="rms-norm-compare">
+  The intuition: a norm's job is to keep the magnitude of the residual stream bounded across depth. Re-centering the mean was a secondary effect — useful for numerical conditioning but not load-bearing. Once people noticed, dropping it was free.
+</Callout>
+
+## Recap
+
+Three takeaways. **RMSNorm = LayerNorm without the mean.** Divide by root-mean-square instead of standard deviation, keep the learned scale $\gamma$, drop the learned shift $\beta$. **Same quality, fewer ops.** Empirically equivalent perplexity, ~10–30% faster norm wall-clock. **It's the modern default.** Llama, Mistral, Gemma, Qwen — every major recent LLM family uses it. When you see "norm" in a transformer paper from 2023 onward, assume RMSNorm unless told otherwise. The next lesson zooms further into the gradient story that residuals and norms exist to fix — the **vanishing and exploding gradient** problem that motivates every architectural choice in this track.

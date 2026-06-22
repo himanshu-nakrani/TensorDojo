@@ -1,0 +1,91 @@
+import { MathCode } from '@/components/lesson/MathCode';
+import { Callout } from '@/components/lesson/Callout';
+
+## Why deep networks were hard to train at all
+
+Gradient descent and loss landscapes gave us the picture: pick a starting weight, follow $-\nabla L$ downhill, eventually arrive at a minimum. That picture is honest for a single weight. Add depth — stack $N$ layers between input and loss — and the gradient that the optimizer sees at layer 1 is no longer a clean derivative of the loss against the weight. It is the **chain rule's product of $N$ Jacobians**, and that product is almost never well-behaved.
+
+Specifically: every layer is a function $\mathbf{x}_{l+1} = f_l(\mathbf{x}_l)$ with a Jacobian $\mathbf{J}_l = \partial \mathbf{x}_{l+1} / \partial \mathbf{x}_l$. The gradient of the loss with respect to the *input* of layer 1 is
+
+$$
+\nabla_{\mathbf{x}_1} L = \mathbf{J}_N \cdot \mathbf{J}_{N-1} \cdots \mathbf{J}_2 \cdot \mathbf{J}_1^{\!\top} \nabla_{\mathbf{x}_{N+1}} L.
+$$
+
+The thing to internalize: this is a product of $N$ matrices. If the **spectral norm** $\sigma_l = \|\mathbf{J}_l\|_2$ of each Jacobian is slightly less than 1, the product has magnitude $\prod_l \sigma_l \to 0$ — gradients **vanish**. If slightly greater than 1, $\prod_l \sigma_l \to \infty$ — gradients **explode**. Only the knife-edge case $\sigma_l \approx 1$ leaves the early layers with a usable gradient.
+
+That knife-edge is hard to land on. For decades before residuals and layer normalization, a 10-layer feedforward network was already at the edge of trainability. The hacks to push past 10 — pre-training layer by layer, "skip connections" between distant layers, exotic initializations — were patches on this same problem.
+
+## The formula
+
+$$
+\nabla_{\mathbf{x}_1} L = \prod_{l=1}^{N} \mathbf{J}_l, \qquad
+\bigl\|\nabla_{\mathbf{x}_1} L\bigr\| \leq \prod_{l=1}^{N} \|\mathbf{J}_l\|.
+$$
+
+For a stack of identical linear layers with Jacobian spectral norm $\sigma$, the input gradient magnitude is bounded by $\sigma^N$. The numbers are bracing: at $N = 24$, a per-layer spectral norm of $0.9$ leaves the input gradient at $0.9^{24} \approx 0.08\times$ the output gradient; $0.8$ leaves it at $0.005\times$; $1.1$ amplifies by $10\times$. Stack 96 layers and even tiny deviations from 1 destroy or explode the gradient.
+
+<MathCode
+  math="\bigl\|\nabla_{\mathbf{x}_1} L\bigr\| \approx \sigma^N \cdot \bigl\|\nabla_{\mathbf{x}_{N+1}} L\bigr\|"
+  code={`import numpy as np
+
+def stacked_jacobian_norm(sigma, n_layers):
+    """Magnitude of the gradient that reaches layer 1 in a stack of
+    identical layers with per-layer Jacobian spectral norm sigma."""
+    return sigma ** n_layers
+
+# At depth 24, what gradient reaches layer 1?
+for s in [0.8, 0.9, 1.0, 1.1, 1.2]:
+    print(f"sigma={s}: layer-1 grad magnitude = {stacked_jacobian_norm(s, 24):.4e}")
+
+# Output:
+# sigma=0.8: layer-1 grad magnitude = 4.7224e-03   (vanishing)
+# sigma=0.9: layer-1 grad magnitude = 7.9766e-02   (vanishing)
+# sigma=1.0: layer-1 grad magnitude = 1.0000e+00   (knife edge)
+# sigma=1.1: layer-1 grad magnitude = 9.8497e+00   (exploding)
+# sigma=1.2: layer-1 grad magnitude = 7.9497e+01   (exploding)`}
+  caption="The arithmetic is brutal. At any reasonable depth, even a 10% deviation from spectral norm 1 either kills or detonates the gradient at the input."
+/>
+
+<Callout title="The same number, two ways" targetInteractive="grad-product">
+  Vanishing and exploding are not two distinct problems — they are the same product, on opposite sides of 1. The cure is also the same: keep each layer's effective Jacobian close to spectral norm 1. Residual connections do this by adding $+\mathbf{I}$ to each layer's Jacobian. Normalization does this by bounding the scale of activations the Jacobian acts on. Careful initialization does it by starting weights at variance matched to the layer width.
+</Callout>
+
+## Try it
+
+The centerpiece is a stack of $N$ identical layers with adjustable per-layer spectral norm $\sigma$. The bars show the gradient magnitude at each layer, walking backward from the output (right) toward the input (left).
+
+<Callout targetInteractive="grad-product">
+  Start with the default: $\sigma = 0.9$, $N = 12$. The bars decay exponentially from right to left. By layer 1, the gradient is roughly $0.9^{12} \approx 0.28\times$ the output gradient. Already a 4× attenuation — and that is with $\sigma$ a generous $0.9$. Real un-normalized transformer-style sublayers are typically smaller.
+</Callout>
+
+<Callout title="The exploding side" targetInteractive="grad-product">
+  Crank $\sigma$ to $1.2$. The bars grow exponentially from right to left. By layer 12, the layer-1 gradient is ~9×; by layer 24, ~80×. In a real training run this is what causes gradient norms to explode mid-step and the loss to spike to NaN. The fix — **gradient clipping** — caps $\|\nabla L\|$ at a threshold, which is a runtime tourniquet for a problem that should be solved architecturally.
+</Callout>
+
+<Callout targetInteractive="grad-product">
+  Toggle "residual connections" on. Each layer's effective Jacobian becomes $\mathbf{I} + \mathbf{J}_l$ — the identity plus the sublayer's Jacobian. The spectral norm is now bounded below by 1 (the identity's norm) plus the sublayer's contribution. The bars stay roughly flat across depth, regardless of $\sigma$. **This is the entire point of residual connections.** They don't make the sublayer better — they give the gradient an unconditional path home.
+</Callout>
+
+## Reading the result
+
+**The problem is structural, not a bug.** No matter how well you choose the weights, the chain rule turns depth into a product, and products of numbers slightly off 1 explode or collapse. Any architecture that wants to be deep has to fight this directly.
+
+**Three fixes, all simultaneous, in modern transformers:**
+
+1. **Initialization.** Xavier (Glorot) and Kaiming initialization set the initial weight variance so that the activations' variance stays roughly constant across layers at the start of training. Get this wrong by an order of magnitude and the first forward pass already has vanished or exploded activations, well before the gradient computation matters.
+2. **Normalization (LayerNorm, RMSNorm, BatchNorm).** Re-scale activations to bounded magnitude every layer. This bounds what the Jacobian can act on, which bounds the Jacobian's effective spectral norm.
+3. **Residual connections.** Add $\mathbf{I}$ to the Jacobian of every sublayer. The gradient now always has a direct path back through the identity, independent of what the sublayer's Jacobian does.
+
+**And one runtime backstop:** gradient clipping. When training does spike, cap $\|\nabla L\|$ at a fixed threshold and rescale. This is what catches the rare-but-still-real exploding-gradient event in production training. It is a tourniquet — used in every real training run, but always alongside the three architectural fixes, not as a substitute.
+
+## A second look
+
+The graph also makes one historical point concrete: **why deeper was better, but only after residuals.** Pre-residuals, networks deeper than ~10 layers actively trained *worse* than shallow ones — not because they overfit, but because the early layers got no gradient signal at all and effectively didn't learn. The 2015 ResNet paper showed that with residual connections, 152-layer networks trained reliably and outperformed shallow ones. Transformers inherited the same trick; without it, "stack 96 layers" would be a nonsense recipe.
+
+<Callout title="Why depth needed plumbing first" targetInteractive="grad-product">
+  Compare a stack of 24 plain layers at $\sigma = 0.9$ (layer-1 gradient ≈ 0.08×) with the same stack with residuals on (layer-1 gradient ≈ 1×). The model with no residuals is *not* learning at its early layers. It's effectively a 4-layer model with 20 layers of frozen dead weight, paying the compute cost for none of the depth's benefit.
+</Callout>
+
+## Recap
+
+Three takeaways. **The gradient at the input is a product of $N$ Jacobians**, so any deviation of per-layer spectral norm from 1 either vanishes or explodes the signal. **Modern depth is possible only because of three architectural fixes** — initialization that targets variance 1, normalization that bounds activation magnitude, and residual connections that add $\mathbf{I}$ to every Jacobian. **Gradient clipping is the runtime tourniquet** — used everywhere, but a backstop, not a cure. The next lesson, **backpropagation**, walks through how the gradient is actually computed layer by layer — making the product-of-Jacobians story concrete with one chain-rule step at a time.

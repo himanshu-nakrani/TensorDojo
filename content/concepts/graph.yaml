@@ -162,6 +162,9 @@ nodes:
   - id: residuals-layernorm-concept
     title: "Residual connections + layer normalization"
     lesson: residuals-layernorm
+  - id: rms-norm-concept
+    title: "RMSNorm: layer norm without the mean"
+    lesson: rms-norm
   - id: activations-concept
     title: "Activations: the bend that makes a network non-linear"
     lesson: activations
@@ -195,6 +198,9 @@ nodes:
   - id: loss-landscapes-concept
     title: "Loss landscapes: what gradient descent walks on"
     lesson: loss-landscapes
+  - id: vanishing-exploding-gradients-concept
+    title: "Vanishing and exploding gradients"
+    lesson: vanishing-exploding-gradients
   - id: backpropagation-concept
     title: "Backpropagation: chain rule for the whole network"
     lesson: backpropagation
@@ -249,6 +255,18 @@ nodes:
   - id: instruction-tuning-rlhf-concept
     title: "Instruction tuning & RLHF intuition"
     lesson: instruction-tuning-rlhf
+  - id: distillation-concept
+    title: "Knowledge distillation: small model learns from big model"
+    lesson: distillation
+  - id: weight-initialization-concept
+    title: "Weight initialization: starting at variance 1"
+    lesson: weight-initialization
+  - id: in-context-learning-concept
+    title: "In-context learning: few-shot prompting"
+    lesson: in-context-learning
+  - id: chain-of-thought-concept
+    title: "Chain-of-thought: thinking step by step"
+    lesson: chain-of-thought
 
 edges:
   # Atomic prerequisite chain
@@ -389,6 +407,10 @@ edges:
     to: flash-attention-concept
   - from: residual
     to: residuals-layernorm-concept
+  - from: residuals-layernorm-concept
+    to: rms-norm-concept
+  - from: layer-norm
+    to: rms-norm-concept
   - from: gelu
     to: activations-concept
   - from: activations-concept
@@ -401,12 +423,30 @@ edges:
     to: sampling-decoding-concept
   - from: sampling-decoding-concept
     to: beam-search-concept
+  - from: beam-search-concept
+    to: in-context-learning-concept
+  - from: attention-output-concept
+    to: in-context-learning-concept
+  - from: in-context-learning-concept
+    to: chain-of-thought-concept
+  - from: sampling-decoding-concept
+    to: chain-of-thought-concept
   - from: cross-entropy
     to: cross-entropy-concept
   - from: gradient-descent
     to: gradient-descent-concept
   - from: gradient-descent-concept
     to: loss-landscapes-concept
+  - from: loss-landscapes-concept
+    to: vanishing-exploding-gradients-concept
+  - from: residuals-layernorm-concept
+    to: vanishing-exploding-gradients-concept
+  - from: vanishing-exploding-gradients-concept
+    to: backpropagation-concept
+  - from: vanishing-exploding-gradients-concept
+    to: weight-initialization-concept
+  - from: weight-initialization-concept
+    to: backpropagation-concept
   - from: chain-rule
     to: backpropagation-concept
   - from: mini-batch
@@ -549,3 +589,11 @@ edges:
     to: instruction-tuning-rlhf-concept
   - from: reward-model
     to: instruction-tuning-rlhf-concept
+  - from: instruction-tuning-rlhf-concept
+    to: distillation-concept
+  - from: cross-entropy
+    to: distillation-concept
+  - from: softmax
+    to: distillation-concept
+  - from: temperature
+    to: distillation-concept

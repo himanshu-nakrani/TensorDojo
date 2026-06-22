@@ -1,0 +1,96 @@
+import { MathCode } from '@/components/lesson/MathCode';
+import { Callout } from '@/components/lesson/Callout';
+
+## Where the deep-network problem starts: step zero
+
+The previous lesson showed that the gradient at the input is a **product of $N$ Jacobians**, and any per-layer norm $\ne 1$ vanishes or explodes that product. Residual connections, normalization, and gradient clipping are the architectural and runtime fixes. There is one more fix that comes earlier than all of those — earlier than the first gradient step, before training has even started.
+
+It is **how the weights are initialized**. Set them too small and the *forward* signal collapses through the layers; the model emits near-zero logits and the loss carries no useful gradient. Set them too large and the forward signal saturates the non-linearities; the gradient is zero on the flat side of every activation. Either way, the first training step is wasted on a network that can't talk to itself.
+
+The right scale is narrow. For a linear layer $\mathbf{y} = \mathbf{W}\mathbf{x}$ with $\mathbf{x} \in \mathbb{R}^{d_{\text{in}}}$ whose components have variance 1, the output $\mathbf{y}$ has component variance $d_{\text{in}} \cdot \operatorname{Var}(W_{ij})$. To preserve variance 1 across the layer, the weight variance must be exactly $1 / d_{\text{in}}$. Stack 24 layers and any deviation compounds — exactly the same product-of-numbers-off-1 trap as gradient vanishing, applied to the *forward* pass.
+
+## The formula
+
+The single principle, written for one linear layer: $\operatorname{Var}(W_{ij}) = c / d_{\text{in}}$, where $c$ is an activation-specific constant. The classical schemes pick $c$ to keep activation variance constant *after* the non-linearity:
+
+- **Xavier / Glorot** ($c = 1$): designed for tanh/sigmoid networks. Symmetric activations preserve variance, so $c = 1$ works.
+- **Kaiming / He** ($c = 2$): designed for ReLU. ReLU zeros half the inputs, halving the variance, so $c$ doubles to compensate.
+- **Naive small** ($c \ll 1$, e.g. $0.01$): a hand-picked small constant. Vanishes through depth.
+- **Naive large** ($c \gg 1$): a hand-picked large constant. Explodes (or saturates) through depth.
+
+The full formulas:
+
+$$
+\text{Xavier: } W_{ij} \sim \mathcal{N}\!\left(0,\ \frac{1}{d_{\text{in}}}\right), \qquad \text{Kaiming: } W_{ij} \sim \mathcal{N}\!\left(0,\ \frac{2}{d_{\text{in}}}\right)
+$$
+
+For modern transformers the practical default is Kaiming-style with a scale tuned to the specific layer — for instance, GPT-3 and Llama use a normal with std $0.02$ for the in-projection and a smaller, depth-dependent scale for the out-projection. The principle behind the numbers is the same one.
+
+<MathCode
+  math="W_{ij} \sim \mathcal{N}\!\left(0,\ c / d_{\text{in}}\right),\quad c = \begin{cases} 1 & \text{Xavier (tanh)} \\ 2 & \text{Kaiming (ReLU)} \end{cases}"
+  code={`import numpy as np
+
+def init_xavier(d_in, d_out):
+    """Symmetric activations preserve variance; c = 1 keeps Var(y) = Var(x)."""
+    return np.random.randn(d_out, d_in) * np.sqrt(1.0 / d_in)
+
+def init_kaiming(d_in, d_out):
+    """ReLU zeros half the inputs, halving variance; c = 2 to compensate."""
+    return np.random.randn(d_out, d_in) * np.sqrt(2.0 / d_in)
+
+def init_small(d_in, d_out, scale=0.01):
+    """A common pre-2010 default. Vanishes through depth — DO NOT USE."""
+    return np.random.randn(d_out, d_in) * scale
+
+# Forward pass through 24 layers, tracking activation variance per layer.
+x = np.random.randn(256)                              # input variance ~ 1
+for i in range(24):
+    W = init_kaiming(256, 256)
+    x = np.maximum(W @ x, 0)                          # ReLU
+    print(f"layer {i}: var(x) = {x.var():.4f}")        # stays ~ 1
+
+# With init_small(scale=0.01), var(x) drops below 1e-30 by layer 4.`}
+  caption="Two of these run; two of them don't. The variance ratio between consecutive layers is determined entirely by W's variance and d_in."
+/>
+
+<Callout title="Why the constant matters" targetInteractive="weight-init-explorer">
+  ReLU's half-the-inputs-zero behavior is what makes $c = 2$ correct for it. SiLU, GELU, and other modern activations sit between tanh and ReLU in their variance-preserving behavior, so practical inits use $c \in [1, 2]$ chosen empirically. The takeaway: every activation has its own correct $c$, and getting it wrong shifts your starting variance by a multiplicative factor that compounds with depth.
+</Callout>
+
+## Try it
+
+The centerpiece runs a 12-layer ReLU MLP forward pass and plots **per-layer activation variance** for each initialization scheme. The x-axis is layer depth; the y-axis is log-variance.
+
+<Callout targetInteractive="weight-init-explorer">
+  Start with "Kaiming". Watch the line stay roughly flat across all 12 layers — variance stays near 1, exactly as the math predicts. This is the network state in which training can begin. Now switch to "Xavier" (same model, same activation). The line drifts steadily downward — at layer 12 the variance is already small, because Xavier was tuned for tanh and undershoots for ReLU by exactly the factor of 2 the math says.
+</Callout>
+
+<Callout title="The failure modes" targetInteractive="weight-init-explorer">
+  Switch to "Small ($\sigma = 0.01$)". The line drops off a cliff — by layer 4, log-variance is already past $-20$, meaning activation magnitudes are effectively zero. The forward pass emits all-zero logits no matter what the input is; the loss is constant; the gradient is zero. Now try "Large ($\sigma = 0.5$)". The line shoots upward — variance explodes by orders of magnitude per layer. The ReLU saturates, the forward pass overflows in fp16, and the model is unusable.
+</Callout>
+
+<Callout targetInteractive="weight-init-explorer">
+  Slide depth to 24, then 48. Watch how badly even small deviations from $c = 2$ compound: the gap between Kaiming and Xavier doubles, doubles again, doubles again. At depth 96 — the size of a real frontier transformer — Xavier-on-ReLU would have activations roughly $2^{-48} \approx 10^{-14}$ times their starting magnitude. This is why "just pick something small and hope it trains" failed for decades.
+</Callout>
+
+## Reading the result
+
+**The forward pass is the same product-of-Jacobians problem, in disguise.** Yesterday's lesson was about the backward pass; this lesson is about the forward pass. Both fail by the same mechanism: a stack of $N$ layers turns any per-step deviation from "unit" into an exponential drift. The fix is the same: design the layer so the per-step ratio is exactly 1.
+
+**Initialization is not a hyperparameter — it is a formula.** Once you know $d_{\text{in}}$ and the activation, Xavier and Kaiming give you the right weight variance with one division. There's no tuning. Modern frameworks default to one of these (PyTorch's default for `nn.Linear` is Kaiming uniform with a scale tuned for Leaky ReLU); the only choice is which.
+
+**Initialization doesn't fix bad architecture.** If the model has no residuals, no normalization, and exhibits gradient vanishing during training, no clever init helps after step zero. Init only gets the network to a *trainable starting point*. The rest of the stack (residuals, norm, well-chosen LR) is what keeps it trainable through the training run.
+
+**Modern transformers specialize the recipe.** GPT-2/3 use a normal with std $0.02$ for most weights, and scale the residual-output projections by $1/\sqrt{2N}$ (where $N$ is the layer count) so that the residual stream's variance doesn't accumulate. Llama and Mistral use similar tuned constants. The principle behind the numbers is still Kaiming's — "preserve variance" — but the constants are tuned empirically because the architecture is no longer a plain MLP.
+
+## A second look
+
+Init is one of the cheapest training interventions and also one of the easiest to forget. If a brand-new architecture isn't training — loss flat, gradients dead — the first thing to check (after "did you set the learning rate") is the init. A single misplaced $\sqrt{2}$ in a custom layer can mean nothing trains.
+
+<Callout title="Initialization vs normalization" targetInteractive="weight-init-explorer">
+  Init solves the variance problem at step 0. LayerNorm/RMSNorm/BatchNorm re-solve it at every step, every layer. The two are complements: good init makes the first forward pass work; norm keeps subsequent passes working as weights drift during training. A modern transformer uses both; dropping either is a regression.
+</Callout>
+
+## Recap
+
+Three takeaways. **A linear layer with input variance 1 has output variance $d_{\text{in}} \cdot \operatorname{Var}(W)$**, so to preserve variance 1 you set $\operatorname{Var}(W) = c / d_{\text{in}}$ with $c$ matched to the activation. **Xavier ($c = 1$) is for tanh/sigmoid; Kaiming ($c = 2$) is for ReLU.** Modern transformers use Kaiming-flavored inits with empirically tuned constants. **Init only gets you to a trainable starting point** — the same product-of-numbers-off-1 problem that vanished or exploded the gradient also vanishes or explodes the forward pass, and the fix is the same in both directions. The next lesson, **backpropagation**, makes the gradient computation explicit and shows how the chain rule turns into the per-layer update step.

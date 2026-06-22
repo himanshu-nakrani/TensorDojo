@@ -27,17 +27,22 @@ import { meta as multiHeadAttentionMeta } from '@/content/lessons/multi-head-att
 import { meta as groupedQueryAttentionMeta } from '@/content/lessons/grouped-query-attention/meta';
 import { meta as flashAttentionMeta } from '@/content/lessons/flash-attention/meta';
 import { meta as residualsLayernormMeta } from '@/content/lessons/residuals-layernorm/meta';
+import { meta as rmsNormMeta } from '@/content/lessons/rms-norm/meta';
 import { meta as activationsMeta } from '@/content/lessons/activations/meta';
 import { meta as feedForwardMeta } from '@/content/lessons/feed-forward/meta';
 import { meta as mixtureOfExpertsMeta } from '@/content/lessons/mixture-of-experts/meta';
 import { meta as transformerBlockMeta } from '@/content/lessons/transformer-block/meta';
 import { meta as samplingDecodingMeta } from '@/content/lessons/sampling-decoding/meta';
 import { meta as beamSearchMeta } from '@/content/lessons/beam-search/meta';
+import { meta as inContextLearningMeta } from '@/content/lessons/in-context-learning/meta';
+import { meta as chainOfThoughtMeta } from '@/content/lessons/chain-of-thought/meta';
 import { meta as kvCacheMeta } from '@/content/lessons/kv-cache/meta';
 import { meta as speculativeDecodingMeta } from '@/content/lessons/speculative-decoding/meta';
 import { meta as crossEntropyMeta } from '@/content/lessons/cross-entropy/meta';
 import { meta as gradientDescentMeta } from '@/content/lessons/gradient-descent/meta';
 import { meta as lossLandscapesMeta } from '@/content/lessons/loss-landscapes/meta';
+import { meta as vanishingExplodingGradientsMeta } from '@/content/lessons/vanishing-exploding-gradients/meta';
+import { meta as weightInitializationMeta } from '@/content/lessons/weight-initialization/meta';
 import { meta as backpropagationMeta } from '@/content/lessons/backpropagation/meta';
 import { meta as sgdMeta } from '@/content/lessons/sgd/meta';
 import { meta as optimizersMeta } from '@/content/lessons/optimizers/meta';
@@ -56,6 +61,7 @@ import { meta as quantizationMeta } from '@/content/lessons/quantization/meta';
 import { meta as loraMeta } from '@/content/lessons/lora/meta';
 import { meta as evaluationMeta } from '@/content/lessons/evaluation/meta';
 import { meta as instructionTuningRlhfMeta } from '@/content/lessons/instruction-tuning-rlhf/meta';
+import { meta as distillationMeta } from '@/content/lessons/distillation/meta';
 
 export interface LessonMetaEntry {
   meta: {
@@ -84,17 +90,22 @@ const manifest: readonly LessonMetaEntry[] = [
   { meta: groupedQueryAttentionMeta },
   { meta: flashAttentionMeta },
   { meta: residualsLayernormMeta },
+  { meta: rmsNormMeta },
   { meta: activationsMeta },
   { meta: feedForwardMeta },
   { meta: mixtureOfExpertsMeta },
   { meta: transformerBlockMeta },
   { meta: samplingDecodingMeta },
   { meta: beamSearchMeta },
+  { meta: inContextLearningMeta },
+  { meta: chainOfThoughtMeta },
   { meta: kvCacheMeta },
   { meta: speculativeDecodingMeta },
   { meta: crossEntropyMeta },
   { meta: gradientDescentMeta },
   { meta: lossLandscapesMeta },
+  { meta: vanishingExplodingGradientsMeta },
+  { meta: weightInitializationMeta },
   { meta: backpropagationMeta },
   { meta: sgdMeta },
   { meta: optimizersMeta },
@@ -113,6 +124,7 @@ const manifest: readonly LessonMetaEntry[] = [
   { meta: loraMeta },
   { meta: evaluationMeta },
   { meta: instructionTuningRlhfMeta },
+  { meta: distillationMeta },
 ];
 
 export function listLessonMeta(): readonly LessonMetaEntry[] {
@@ -178,6 +190,7 @@ export const TRACKS: readonly LessonTrack[] = [
       'grouped-query-attention',
       'flash-attention',
       'residuals-layernorm',
+      'rms-norm',
       'activations',
       'feed-forward',
       'mixture-of-experts',
@@ -189,7 +202,7 @@ export const TRACKS: readonly LessonTrack[] = [
     label: 'What the model says, and how it learns',
     description:
       'Sampling the next token, caching it, scoring the loss, and feeling the first gradient.',
-    slugs: ['sampling-decoding', 'beam-search', 'kv-cache', 'speculative-decoding', 'cross-entropy', 'gradient-descent', 'loss-landscapes'],
+    slugs: ['sampling-decoding', 'beam-search', 'in-context-learning', 'chain-of-thought', 'kv-cache', 'speculative-decoding', 'cross-entropy', 'gradient-descent', 'loss-landscapes'],
   },
   {
     id: 'training',
@@ -197,6 +210,8 @@ export const TRACKS: readonly LessonTrack[] = [
     description:
       'Backprop, optimizers, schedules, and the scaling laws that say how big to go.',
     slugs: [
+      'vanishing-exploding-gradients',
+      'weight-initialization',
       'backpropagation',
       'sgd',
       'optimizers',
@@ -223,7 +238,7 @@ export const TRACKS: readonly LessonTrack[] = [
     label: 'Adapting models to new tasks',
     description:
       'Take a pretrained model and steer it: full fine-tuning, freezing, LoRA, quantization, RLHF.',
-    slugs: ['pretraining-vs-finetuning', 'freezing-vs-full-finetuning', 'catastrophic-forgetting', 'quantization', 'lora', 'evaluation', 'instruction-tuning-rlhf'],
+    slugs: ['pretraining-vs-finetuning', 'freezing-vs-full-finetuning', 'catastrophic-forgetting', 'quantization', 'lora', 'evaluation', 'instruction-tuning-rlhf', 'distillation'],
   },
 ];
 

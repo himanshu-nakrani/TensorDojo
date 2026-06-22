@@ -1,0 +1,98 @@
+import { MathCode } from '@/components/lesson/MathCode';
+import { Callout } from '@/components/lesson/Callout';
+
+## A frozen model that does new tasks anyway
+
+Decoding takes logits and emits a token. Sampling and beam search choose which token. None of that touches the model's weights. So how does the *same* frozen model handle "translate English to French," "classify this review," and "what's 17 + 29" — three completely different tasks, none of which it was explicitly trained to do?
+
+The answer is **in-context learning** (ICL). The model wasn't trained on those tasks. It was trained on a vast pile of text, which happens to contain billions of examples of patterns that *look like* those tasks: parallel translations, reviews with sentiment labels, math worksheets, code with comments. The pretraining objective — predict the next token — forced the model to compress the patterns. At inference, when you arrange the prompt like one of those patterns, the model's "predict the next token" forward pass naturally completes the pattern.
+
+The 2020 GPT-3 paper made this explicit. The same 175B-parameter network, with no weight updates, did:
+
+- **Zero-shot**: just the question. `"Translate to French: cheese"` → low accuracy.
+- **One-shot**: one example + the question. `"sea otter => loutre de mer / cheese => "` → better.
+- **Few-shot**: 3–32 examples + the question. → close to fine-tuned models on many tasks.
+
+The model isn't "learning" in the gradient-descent sense — there's no training. The model is **conditioning** on the examples: the pattern in the prompt shifts the probability mass of the predicted distribution toward the kind of answer the examples imply.
+
+## The formula
+
+For a pretrained autoregressive model $p_\theta$, the next-token distribution depends only on what came before:
+
+$$
+p_\theta(y \mid \text{question}) \quad \text{vs.} \quad p_\theta(y \mid \text{example}_1, \ldots, \text{example}_k, \text{question})
+$$
+
+The model's weights $\theta$ don't change. The conditioning context does, and that's enough to dramatically shift the distribution. The mechanism is the **attention mechanism we already saw**: every token in the prompt is read by every token after it, and the examples create features that the question's representation can attend to.
+
+<MathCode
+  math="\hat{y} = \arg\max_y\ p_\theta\bigl(y \,\big|\, \underbrace{\text{ex}_1, \ldots, \text{ex}_k}_{\text{context}},\ \text{question}\bigr)"
+  code={`# Same model. Same weights. Different prompt; different answer.
+
+prompt_0shot = "Question: What is the opposite of hot?\\nAnswer:"
+# Likely answer: "cold" (works for common antonyms; brittle for rarer ones)
+
+prompt_1shot = """Q: What is the opposite of fast?
+A: slow
+
+Q: What is the opposite of hot?
+A:"""
+# Now the model knows: lowercase, one word, no punctuation. Probability
+# of the desired answer format is much higher.
+
+prompt_3shot = """Q: What is the opposite of fast?
+A: slow
+Q: What is the opposite of up?
+A: down
+Q: What is the opposite of hot?
+A:"""
+# Three examples lock the format. The model emits "cold" with high probability.
+
+# Pseudocode:
+for prompt in [prompt_0shot, prompt_1shot, prompt_3shot]:
+    out = model.generate(prompt, max_new_tokens=1)
+    print(out)`}
+  caption="The model never changes. The prompt is the entire knob, and it's a powerful one."
+/>
+
+<Callout title="The trick isn't memorization" targetInteractive="icl-explorer">
+  The examples don't have to be in the training data. The model learns a *general* pattern from billions of demonstration-style snippets during pretraining: "when the prompt looks like Q/A pairs, emit a short answer in the same shape as previous answers." That meta-pattern then transfers to any new Q/A task, even ones the model has never seen. This is the "emergent" capability that surprised the field in 2020 — it was a free lunch from scale.
+</Callout>
+
+## Try it
+
+The centerpiece is a toy ICL demo. The task: predict the next color in a sequence where each shape maps to a color (`◆ → red`, `● → blue`, `▲ → green`). The "model" has a soft prior over the three colors and updates the prior based on how many in-context examples are visible. You can pick the number of shots (0, 1, 2, 3) and see the next-token distribution change.
+
+<Callout targetInteractive="icl-explorer">
+  Start with 0 shots. The distribution over colors is roughly uniform — the model has no information about which mapping applies, so it hedges. The "answer" is a guess. Now add 1 shot: ◆→red. The probability mass on "red" spikes for queries with ◆; the others stay near uniform.
+</Callout>
+
+<Callout title="What to watch for" targetInteractive="icl-explorer">
+  Add 2 more shots, one for each color. Now the model has a complete demonstration of all three mappings. Its prediction for any query shape becomes confident — peaked, low-entropy. The same "model" (the same prior weights) is now reliable at a task it wasn't designed for. This is ICL in miniature: more demonstrations → tighter posterior → better answer.
+</Callout>
+
+<Callout targetInteractive="icl-explorer">
+  Try the "noisy demo" toggle. Some of the example labels are swapped (◆ paired with "blue"). The model's confidence drops *and* it gets the wrong answer. This is also realistic: ICL is sensitive to demonstration quality. A few mislabeled examples can be worse than zero examples, because the model commits to the wrong pattern.
+</Callout>
+
+## Reading the result
+
+**No weights change — the *context* changes.** The model that does few-shot translation, sentiment classification, and arithmetic is the same model that completes "the cat sat on the ___". The pretraining objective forced it to internalize the patterns; the prompt is the input that selects which pattern fires.
+
+**Attention is the mechanism.** Examples in the prompt produce keys and values that the question token's query can attend to. The model literally re-reads the demonstrations for every new prediction. This is also why ICL is bounded by **context length** — with a 4K context window you can fit ~10 short examples; with 200K you can fit thousands. Longer contexts unlock larger few-shot regimes.
+
+**ICL is brittle.** A few common failure modes: example order changes the answer; the choice of demonstration labels matters more than the demonstrations themselves; some tasks improve with examples and some don't; some get *worse*. The 2022 "Rethinking Demonstrations" paper showed that for many tasks, the format of the prompt mattered more than the correctness of the labels. ICL is a useful tool, not a magic spell.
+
+**This is why "prompt engineering" became a job.** When you can change a model's effective behavior just by changing the input, the prompt becomes a software interface. Choosing the right examples, the right format, the right phrasing — none of it touches weights, but all of it changes outputs. The whole prompt-engineering practice is the engineering of in-context conditioning.
+
+## A second look
+
+ICL is the cleanest answer to the question "why are LLMs general-purpose?" A fine-tuned model can do one task well. A frozen LLM can do thousands of tasks at varying quality, conditioned on the right prompt. That generality is the entire value proposition of the foundation-model era — and it falls out of "predict the next token" plus enough scale.
+
+<Callout title="When ICL beats fine-tuning" targetInteractive="icl-explorer">
+  For small numbers of examples and rapid iteration, ICL is dramatically cheaper than fine-tuning: no gradient steps, no infrastructure, no model checkpoints. For thousands of examples on a stable task, fine-tuning beats ICL on quality. The break-even point depends on the model and the task; "try few-shot first, fine-tune if it's not good enough" is the modern starting point.
+</Callout>
+
+## Recap
+
+Three takeaways. **In-context learning is conditioning, not learning.** The model's weights don't change; the prompt provides examples that the model attends to when predicting the next token. **More demonstrations sharpen the posterior** — zero-shot is rough, few-shot is much better, but quality has diminishing returns past 8–16 examples for most tasks. **The mechanism is attention, the limit is context length.** Modern long-context models (100K, 1M tokens) push the few-shot frontier from ~10 examples to thousands. The next lesson, **chain-of-thought**, takes ICL one step further: instead of just demonstrating Q/A pairs, you can demonstrate *reasoning steps*, and the model's behavior improves disproportionately on tasks that need them.

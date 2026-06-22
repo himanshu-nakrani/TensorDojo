@@ -34,17 +34,22 @@ import { meta as multiHeadAttentionMeta } from '@/content/lessons/multi-head-att
 import { meta as groupedQueryAttentionMeta } from '@/content/lessons/grouped-query-attention/meta';
 import { meta as flashAttentionMeta } from '@/content/lessons/flash-attention/meta';
 import { meta as residualsLayernormMeta } from '@/content/lessons/residuals-layernorm/meta';
+import { meta as rmsNormMeta } from '@/content/lessons/rms-norm/meta';
 import { meta as activationsMeta } from '@/content/lessons/activations/meta';
 import { meta as feedForwardMeta } from '@/content/lessons/feed-forward/meta';
 import { meta as mixtureOfExpertsMeta } from '@/content/lessons/mixture-of-experts/meta';
 import { meta as transformerBlockMeta } from '@/content/lessons/transformer-block/meta';
 import { meta as samplingDecodingMeta } from '@/content/lessons/sampling-decoding/meta';
 import { meta as beamSearchMeta } from '@/content/lessons/beam-search/meta';
+import { meta as inContextLearningMeta } from '@/content/lessons/in-context-learning/meta';
+import { meta as chainOfThoughtMeta } from '@/content/lessons/chain-of-thought/meta';
 import { meta as kvCacheMeta } from '@/content/lessons/kv-cache/meta';
 import { meta as speculativeDecodingMeta } from '@/content/lessons/speculative-decoding/meta';
 import { meta as crossEntropyMeta } from '@/content/lessons/cross-entropy/meta';
 import { meta as gradientDescentMeta } from '@/content/lessons/gradient-descent/meta';
 import { meta as lossLandscapesMeta } from '@/content/lessons/loss-landscapes/meta';
+import { meta as vanishingExplodingGradientsMeta } from '@/content/lessons/vanishing-exploding-gradients/meta';
+import { meta as weightInitializationMeta } from '@/content/lessons/weight-initialization/meta';
 import { meta as backpropagationMeta } from '@/content/lessons/backpropagation/meta';
 import { meta as sgdMeta } from '@/content/lessons/sgd/meta';
 import { meta as optimizersMeta } from '@/content/lessons/optimizers/meta';
@@ -63,6 +68,7 @@ import { meta as quantizationMeta } from '@/content/lessons/quantization/meta';
 import { meta as loraMeta } from '@/content/lessons/lora/meta';
 import { meta as evaluationMeta } from '@/content/lessons/evaluation/meta';
 import { meta as instructionTuningRlhfMeta } from '@/content/lessons/instruction-tuning-rlhf/meta';
+import { meta as distillationMeta } from '@/content/lessons/distillation/meta';
 
 export interface LessonMeta {
   slug: string;
@@ -89,17 +95,22 @@ const metaBySlug: Readonly<Record<string, LessonMeta>> = {
   'grouped-query-attention': groupedQueryAttentionMeta,
   'flash-attention': flashAttentionMeta,
   'residuals-layernorm': residualsLayernormMeta,
+  'rms-norm': rmsNormMeta,
   activations: activationsMeta,
   'feed-forward': feedForwardMeta,
   'mixture-of-experts': mixtureOfExpertsMeta,
   'transformer-block': transformerBlockMeta,
   'sampling-decoding': samplingDecodingMeta,
   'beam-search': beamSearchMeta,
+  'in-context-learning': inContextLearningMeta,
+  'chain-of-thought': chainOfThoughtMeta,
   'kv-cache': kvCacheMeta,
   'speculative-decoding': speculativeDecodingMeta,
   'cross-entropy': crossEntropyMeta,
   'gradient-descent': gradientDescentMeta,
   'loss-landscapes': lossLandscapesMeta,
+  'vanishing-exploding-gradients': vanishingExplodingGradientsMeta,
+  'weight-initialization': weightInitializationMeta,
   'backpropagation': backpropagationMeta,
   'sgd': sgdMeta,
   'optimizers': optimizersMeta,
@@ -118,6 +129,7 @@ const metaBySlug: Readonly<Record<string, LessonMeta>> = {
   'lora': loraMeta,
   evaluation: evaluationMeta,
   'instruction-tuning-rlhf': instructionTuningRlhfMeta,
+  distillation: distillationMeta,
 };
 
 /** Map of slug → dynamic importer for the per-lesson interactives. */
@@ -190,6 +202,10 @@ const interactivesLoaders: Readonly<Record<string, () => Promise<{
     import('@/content/lessons/residuals-layernorm/interactives').then((m) => ({
       interactives: m.interactives,
     })),
+  'rms-norm': () =>
+    import('@/content/lessons/rms-norm/interactives').then((m) => ({
+      interactives: m.interactives,
+    })),
   activations: () =>
     import('@/content/lessons/activations/interactives').then((m) => ({
       interactives: m.interactives,
@@ -214,6 +230,14 @@ const interactivesLoaders: Readonly<Record<string, () => Promise<{
     import('@/content/lessons/beam-search/interactives').then((m) => ({
       interactives: m.interactives,
     })),
+  'in-context-learning': () =>
+    import('@/content/lessons/in-context-learning/interactives').then((m) => ({
+      interactives: m.interactives,
+    })),
+  'chain-of-thought': () =>
+    import('@/content/lessons/chain-of-thought/interactives').then((m) => ({
+      interactives: m.interactives,
+    })),
   'kv-cache': () =>
     import('@/content/lessons/kv-cache/interactives').then((m) => ({
       interactives: m.interactives,
@@ -234,6 +258,18 @@ const interactivesLoaders: Readonly<Record<string, () => Promise<{
     import('@/content/lessons/loss-landscapes/interactives').then((m) => ({
       interactives: m.interactives,
     })),
+  'vanishing-exploding-gradients': () =>
+    import(
+      '@/content/lessons/vanishing-exploding-gradients/interactives'
+    ).then((m) => ({
+      interactives: m.interactives,
+    })),
+  'weight-initialization': () =>
+    import('@/content/lessons/weight-initialization/interactives').then(
+      (m) => ({
+        interactives: m.interactives,
+      }),
+    ),
   'backpropagation': () =>
     import('@/content/lessons/backpropagation/interactives').then((m) => ({
       interactives: m.interactives,
@@ -306,6 +342,10 @@ const interactivesLoaders: Readonly<Record<string, () => Promise<{
     })),
   'instruction-tuning-rlhf': () =>
     import('@/content/lessons/instruction-tuning-rlhf/interactives').then((m) => ({
+      interactives: m.interactives,
+    })),
+  distillation: () =>
+    import('@/content/lessons/distillation/interactives').then((m) => ({
       interactives: m.interactives,
     })),
 };
