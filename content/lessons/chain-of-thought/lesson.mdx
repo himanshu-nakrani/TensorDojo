@@ -63,7 +63,7 @@ prompt_zero_shot_cot = "Q: ... how many apples now?\\nA: Let's think step by ste
 
 ## Try it
 
-The centerpiece shows two parallel decodes of the same toy problem: "13 × 4 + 27 = ?". The "model" assigns probabilities to candidate answers under two prompting strategies — direct and chain-of-thought. The CoT version unrolls a few intermediate steps before answering. Hit Step to advance each one and watch how the final-token distribution sharpens as the trace progresses.
+The centerpiece runs the same toy problem ("13 × 4 + 27 = ?") under two prompting strategies, toggled by the header switch. **Direct** asks for the answer in one token; **Chain-of-thought** unrolls intermediate steps. In CoT mode, hit *Step* to advance one token at a time and watch how the distribution sharpens as the trace grows.
 
 <Callout targetInteractive="cot-explorer">
   Run "Direct" first. The model emits a single answer-token distribution. The right answer (79) has some mass, but so do 78, 80, 52, 81 — close-but-wrong values that share a digit pattern with the correct answer. The probability of getting the right answer in one shot is mediocre.
@@ -97,4 +97,4 @@ CoT and ICL are siblings. Both work because the prompt is a software interface t
 
 ## Recap
 
-Three takeaways. **Chain-of-thought is a prompting trick — no weights change.** The model emits intermediate reasoning tokens before committing to the answer; the answer is then conditioned on the trace. **The mechanism is amortization.** A hard problem needs more compute than one forward pass can provide; CoT spreads the computation across multiple forward passes, each conditioned on the last. **CoT helps multi-step tasks at scale.** Small models don't benefit; large models benefit dramatically; reasoning-tuned models benefit most. The next lesson begins the regularization track: how to keep a model from memorizing the data it was trained on.
+Three takeaways. **Chain-of-thought is a prompting trick — no weights change.** The model emits intermediate reasoning tokens before committing to the answer; the answer is then conditioned on the trace. **The mechanism is amortization.** A hard problem needs more compute than one forward pass can provide; CoT spreads the computation across multiple forward passes, each conditioned on the last. **CoT helps multi-step tasks at scale.** Small models don't benefit; large models benefit dramatically; reasoning-tuned models benefit most. The next lesson turns from *how* the model decodes to *how it decodes fast* — the **KV cache**, the single most important inference-time optimization in modern LLMs.

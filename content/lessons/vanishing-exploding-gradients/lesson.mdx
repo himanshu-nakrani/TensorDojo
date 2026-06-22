@@ -8,7 +8,7 @@ Gradient descent and loss landscapes gave us the picture: pick a starting weight
 Specifically: every layer is a function $\mathbf{x}_{l+1} = f_l(\mathbf{x}_l)$ with a Jacobian $\mathbf{J}_l = \partial \mathbf{x}_{l+1} / \partial \mathbf{x}_l$. The gradient of the loss with respect to the *input* of layer 1 is
 
 $$
-\nabla_{\mathbf{x}_1} L = \mathbf{J}_N \cdot \mathbf{J}_{N-1} \cdots \mathbf{J}_2 \cdot \mathbf{J}_1^{\!\top} \nabla_{\mathbf{x}_{N+1}} L.
+\nabla_{\mathbf{x}_1} L = \mathbf{J}_1^{\!\top} \mathbf{J}_2^{\!\top} \cdots \mathbf{J}_N^{\!\top} \, \nabla_{\mathbf{x}_{N+1}} L.
 $$
 
 The thing to internalize: this is a product of $N$ matrices. If the **spectral norm** $\sigma_l = \|\mathbf{J}_l\|_2$ of each Jacobian is slightly less than 1, the product has magnitude $\prod_l \sigma_l \to 0$ — gradients **vanish**. If slightly greater than 1, $\prod_l \sigma_l \to \infty$ — gradients **explode**. Only the knife-edge case $\sigma_l \approx 1$ leaves the early layers with a usable gradient.
@@ -88,4 +88,4 @@ The graph also makes one historical point concrete: **why deeper was better, but
 
 ## Recap
 
-Three takeaways. **The gradient at the input is a product of $N$ Jacobians**, so any deviation of per-layer spectral norm from 1 either vanishes or explodes the signal. **Modern depth is possible only because of three architectural fixes** — initialization that targets variance 1, normalization that bounds activation magnitude, and residual connections that add $\mathbf{I}$ to every Jacobian. **Gradient clipping is the runtime tourniquet** — used everywhere, but a backstop, not a cure. The next lesson, **backpropagation**, walks through how the gradient is actually computed layer by layer — making the product-of-Jacobians story concrete with one chain-rule step at a time.
+Three takeaways. **The gradient at the input is a product of $N$ Jacobians**, so any deviation of per-layer spectral norm from 1 either vanishes or explodes the signal. **Modern depth is possible only because of three architectural fixes** — initialization that targets variance 1, normalization that bounds activation magnitude, and residual connections that add $\mathbf{I}$ to every Jacobian. **Gradient clipping is the runtime tourniquet** — used everywhere, but a backstop, not a cure. The next lesson zooms in on the *earliest* of those fixes — **weight initialization** — and shows that the same product-of-numbers-off-1 trap also vanishes or explodes the *forward* pass on step zero.

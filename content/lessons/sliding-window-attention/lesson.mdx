@@ -48,7 +48,7 @@ def sliding_window_mask(n, w):
 #   sliding-window pairs: ~537M  (16x cheaper)
 
 # The savings grow linearly with n once w is fixed.`}
-  caption="The band keeps a fixed number of nonzero columns per row. The full causal mask, by contrast, has row i with i nonzero columns — so the per-row cost grows with depth."
+  caption="The band keeps a fixed number of nonzero columns per row. The full causal mask, by contrast, has row i with i + 1 nonzero columns — so the per-row cost grows with the row index, which is what gives the quadratic n²/2 total."
 />
 
 <Callout title="The receptive field still grows with depth" targetInteractive="sliding-window-explorer">
@@ -60,15 +60,15 @@ def sliding_window_mask(n, w):
 The centerpiece shows the attention mask side by side: causal on the left, sliding-window on the right. Drag the context length and window size; watch the band stay constant-width while the full mask grows quadratically.
 
 <Callout targetInteractive="sliding-window-explorer">
-  Start with context $n = 32$ and window $w = 8$. The full causal mask fills the lower triangle — 528 attended pairs. The sliding-window mask is a band along the diagonal — 252 attended pairs, roughly half. Now drag $n$ to 64. The causal mask has 2080 pairs; sliding-window has 508. The gap is widening.
+  Start with context $n = 32$ and window $w = 8$. The full causal mask fills the lower triangle — 528 attended pairs. The sliding-window mask is a band along the diagonal — 252 attended pairs, roughly half. Now drag $n$ to 64: full causal climbs to 2080 pairs, sliding-window only to 540. The gap is widening.
 </Callout>
 
 <Callout title="What to watch for" targetInteractive="sliding-window-explorer">
-  Drag $n$ to 128 with $w = 8$. The full mask now has 8256 pairs; sliding-window has 1020 — an 8× saving. At $n = 256$, the gap is 16×. This is the linear-in-$n$ scaling: the band's width stays $w + 1$ no matter how tall the matrix gets. The full mask's row size grows with $i$; the sliding-window's does not.
+  Drag $n$ to 128 with $w = 8$. The full mask now has 8256 pairs; sliding-window has 1116 — a 7× saving. Push $n$ higher and the gap keeps widening: at $n = 1024$ it would be 64×. This is the linear-in-$n$ scaling: the band's width stays $w + 1$ no matter how tall the matrix gets, while the full mask's row size grows with $i$.
 </Callout>
 
 <Callout targetInteractive="sliding-window-explorer">
-  Now toggle "effective receptive field" with $L$ slider. Each layer's sliding-window output is read by the next layer's window, so the effective reach grows with depth. With $L = 8$ layers and $w = 8$, the effective receptive field is 64 tokens — twice what one layer can see, eight times if you stack eight layers. Real models stack 24-80 layers; the math says the receptive field comfortably covers the training context.
+  Now slide $L$ up. Each layer's sliding-window output is read by the next layer's window, so the effective reach grows roughly as $L \cdot w$. With $L = 8$ and $w = 8$, the receptive field is 65 tokens — eight times what a single layer can see. Real transformers stack 24–80 such layers, so the receptive field comfortably covers their training context window even when each individual layer reads only a few thousand tokens.
 </Callout>
 
 ## Reading the result
@@ -91,4 +91,4 @@ Sliding-window attention is the natural counterpart of RoPE and other positional
 
 ## Recap
 
-Three takeaways. **Sliding-window attention restricts each token to read the previous $w$ tokens**, dropping per-layer cost from $O(n^2)$ to $O(n \cdot w)$. **The effective receptive field is $L \cdot w$ after $L$ stacked layers**, so distant tokens still influence the output through the depth of the network. **Modern long-context models use it everywhere** — Mistral, Mixtral, Gemma 2, recent Llamas — often hybridized with a few dense layers to preserve global reasoning. The next lesson revisits the input/output story: how the embedding matrix and the output projection share weights to save parameters without hurting quality.
+Three takeaways. **Sliding-window attention restricts each token to read the previous $w$ tokens**, dropping per-layer cost from $O(n^2)$ to $O(n \cdot w)$. **The effective receptive field is $L \cdot w$ after $L$ stacked layers**, so distant tokens still influence the output through the depth of the network. **Modern long-context models use it everywhere** — Mistral, Mixtral, Gemma 2, recent Llamas — often hybridized with a few dense layers to preserve global reasoning. The next lesson moves from "who attends to whom" to "how do gradients survive depth at all" — **residual connections + layer normalization**, the two ideas that make stacking 12, 32, 96 layers possible without the signal collapsing.

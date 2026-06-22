@@ -3,7 +3,7 @@ import { Callout } from '@/components/lesson/Callout';
 
 ## Why train against a one-hot when the teacher knows the whole distribution?
 
-The instruction tuning lesson closed the fine-tuning track with a question of *intent* — how do you get the model to follow instructions. **Distillation** answers a question of *size* — how do you fit the capability of a 70B-parameter model into something small enough to run on a phone.
+The previous lessons closed the alignment story: instruction tuning, RLHF, and DPO are all answers to "how do you get the model to follow instructions." **Distillation** answers a different question — one of *size*: how do you fit the capability of a 70B-parameter model into something small enough to run on a phone.
 
 Distillation came from a 2015 Hinton, Vinyals, and Dean paper with a clean observation. When you train a classifier with cross-entropy against a one-hot label like `[0, 0, 1, 0, 0]`, the model learns the right answer — but it learns *nothing* about the structure of the wrong answers. A teacher model's full output distribution, in contrast, might look like `[0.02, 0.05, 0.85, 0.07, 0.01]`. That tells the student: "the answer is index 2, but if you were going to be wrong, indices 1 and 3 are far more plausible than 0 and 4." That ranking-among-wrong-answers is the **dark knowledge** that a one-hot target throws away.
 
@@ -55,15 +55,15 @@ def distillation_loss(student_logits, teacher_logits, y, T=4.0, alpha=0.5):
 The centerpiece shows a teacher distribution (5 classes) and a student distribution side by side, with sliders for temperature $T$ and mix $\alpha$. The student is initialized to a noisy starting point and updated toward the chosen loss target.
 
 <Callout targetInteractive="distillation-explorer">
-  Start with $T = 1$, $\alpha = 0$ (hard label only). Click "Train 50 steps." The student converges to a near-one-hot on the correct class — and that's all it learns. The relative scores of the wrong classes are noise.
+  Start with $T = 1$, $\alpha = 0$ (hard label only). Hit *Train* and let it run for a moment. The student converges to a near-one-hot on the correct class — and that's all it learns. The relative scores of the wrong classes are noise.
 </Callout>
 
 <Callout title="What to watch for" targetInteractive="distillation-explorer">
-  Crank $T = 4$, $\alpha = 1$ (teacher soft only). Now click "Train 50 steps." The student converges to the teacher's *softened* distribution — including the ranking among the wrong answers. The student now "knows" which wrong answer is the second-best guess, which is the worst, etc. That information transfers downstream into better calibration and (empirically) better fine-tuned performance.
+  Reset, then set $T = 4$, $\alpha = 1$ (teacher soft only). Hit *Train* again. The student converges to the teacher's *softened* distribution — including the ranking among the wrong answers. The student now "knows" which wrong answer is the second-best guess, which is the worst, etc. That information transfers downstream into better calibration and (empirically) better fine-tuned performance.
 </Callout>
 
 <Callout targetInteractive="distillation-explorer">
-  Try $T = 4$, $\alpha = 0.5$. The student matches the teacher's shape while still being anchored to the true label. In practice this is roughly where most distillation recipes live — $\alpha \in [0.3, 0.7]$, $T \in [2, 8]$, tuned on a validation set. The hard label keeps the student honest when the teacher is wrong; the soft label transfers the dark knowledge when the teacher is right.
+  Reset, then try $T = 4$, $\alpha = 0.5$ and train again. The student matches the teacher's shape while still being anchored to the true label. In practice this is roughly where most distillation recipes live — $\alpha \in [0.3, 0.7]$, $T \in [2, 8]$, tuned on a validation set. The hard label keeps the student honest when the teacher is wrong; the soft label transfers the dark knowledge when the teacher is right.
 </Callout>
 
 ## Reading the result

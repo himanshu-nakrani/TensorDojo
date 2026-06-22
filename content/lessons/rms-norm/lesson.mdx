@@ -52,8 +52,8 @@ The centerpiece shows the same input vector pushed through both normalizers, wit
   Drag "mean offset" to $+2$. Now the inputs all sit around 2 instead of 0. LayerNorm subtracts the mean and produces a centered output. RMSNorm does not — its output sits at a non-zero mean. Both are still numerically bounded (the RMS denominator grew to absorb the offset), but RMSNorm preserves the offset's *direction* while LayerNorm erases it. For most modern training runs this turns out not to matter, because $\mu$ in real residual streams is already ~0.
 </Callout>
 
-<Callout targetInteractive="rms-norm-compare">
-  Look at the op count under each formula. LayerNorm: two reductions (mean + variance), one subtract, one divide, one multiply, one add. RMSNorm: one reduction (mean of squares), one divide, one multiply. That's a real ~30% reduction in arithmetic on the norm itself — small per layer, meaningful when there are 80 layers and you're running on every token of a 128k context.
+<Callout title="The op count" targetInteractive="rms-norm-compare">
+  Count what each formula needs per element. LayerNorm: two reductions (mean + variance), one subtract, one divide, one multiply, one add — six operations. RMSNorm: one reduction (mean of squares), one divide, one multiply — three. That's a real ~30% reduction in arithmetic on the norm itself: small per layer, meaningful when you have 80 layers running on every token of a 128K context.
 </Callout>
 
 ## Reading the result
@@ -74,4 +74,4 @@ The geometric difference is small but real. LayerNorm projects an input vector o
 
 ## Recap
 
-Three takeaways. **RMSNorm = LayerNorm without the mean.** Divide by root-mean-square instead of standard deviation, keep the learned scale $\gamma$, drop the learned shift $\beta$. **Same quality, fewer ops.** Empirically equivalent perplexity, ~10–30% faster norm wall-clock. **It's the modern default.** Llama, Mistral, Gemma, Qwen — every major recent LLM family uses it. When you see "norm" in a transformer paper from 2023 onward, assume RMSNorm unless told otherwise. The next lesson zooms further into the gradient story that residuals and norms exist to fix — the **vanishing and exploding gradient** problem that motivates every architectural choice in this track.
+Three takeaways. **RMSNorm = LayerNorm without the mean.** Divide by root-mean-square instead of standard deviation, keep the learned scale $\gamma$, drop the learned shift $\beta$. **Same quality, fewer ops.** Empirically equivalent perplexity, ~10–30% faster norm wall-clock. **It's the modern default.** Llama, Mistral, Gemma, Qwen — every major recent LLM family uses it. When you see "norm" in a transformer paper from 2023 onward, assume RMSNorm unless told otherwise. The next lesson zooms in on the *bend* that sits between every pair of linear layers — the **activation function**, and why ReLU, GELU, SiLU, and SwiGLU all do roughly the same job slightly differently.

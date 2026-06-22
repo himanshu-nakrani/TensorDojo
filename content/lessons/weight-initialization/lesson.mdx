@@ -62,7 +62,7 @@ for i in range(24):
 The centerpiece runs a 12-layer ReLU MLP forward pass and plots **per-layer activation variance** for each initialization scheme. The x-axis is layer depth; the y-axis is log-variance.
 
 <Callout targetInteractive="weight-init-explorer">
-  Start with "Kaiming". Watch the line stay roughly flat across all 12 layers — variance stays near 1, exactly as the math predicts. This is the network state in which training can begin. Now switch to "Xavier" (same model, same activation). The line drifts steadily downward — at layer 12 the variance is already small, because Xavier was tuned for tanh and undershoots for ReLU by exactly the factor of 2 the math says.
+  Start with "Kaiming". Watch the line stay roughly flat across all 12 layers — variance stays near 1, exactly as the math predicts. This is the network state in which training can begin. Now switch to "Xavier" (same model, same activation). The line drifts steadily downward — Xavier was tuned for tanh, not ReLU, so it undershoots by a factor of 2 *per layer*. Over 12 layers that's $2^{12} \approx 4{,}000\times$ less variance, and you can read the gap straight off the y-axis.
 </Callout>
 
 <Callout title="The failure modes" targetInteractive="weight-init-explorer">

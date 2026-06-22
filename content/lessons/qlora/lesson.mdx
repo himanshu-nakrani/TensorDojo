@@ -3,7 +3,7 @@ import { Callout } from '@/components/lesson/Callout';
 
 ## Fine-tuning a 70B model on the GPU that runs Cyberpunk
 
-The LoRA lesson showed how to fine-tune a large model by freezing its weights and training only a tiny low-rank update — 0.1% of the parameters. That trick collapses the **trainable** parameter count, but the *base* model still has to live in memory for the forward and backward pass. A 70B model at 16-bit precision is 140 GB of weights, plus activations, plus gradients — easily 280 GB total. A single H100 is 80 GB. So even with LoRA, you need 4 GPUs to fine-tune a 70B model in 16-bit.
+The LoRA lesson showed how to fine-tune a large model by freezing its weights and training only a tiny low-rank update — 0.1% of the parameters. That trick collapses the **trainable** parameter count, but the *base* model still has to live in memory for the forward and backward pass. A 70B model at 16-bit precision is 140 GB of weights, plus activations and adapter-only gradients on top — comfortably ~180 GB. A single H100 is 80 GB. So even with LoRA, you need three H100s to fine-tune a 70B model in 16-bit, and *more* without LoRA.
 
 **QLoRA**, introduced in a 2023 paper by Dettmers et al., closes that last gap. The idea is to stack two tricks:
 
@@ -76,7 +76,7 @@ total_qlora    = 58         # GB — fits on one H100, almost on one 4090.
 The centerpiece is a memory-budget bar chart. The four bars are full fine-tuning, LoRA (16-bit base), QLoRA, and inference-only. Drag the model size and the LoRA rank; watch how the bars rebalance.
 
 <Callout targetInteractive="qlora-memory">
-  Start with 70B at LoRA rank 16. Full fine-tuning needs ~870 GB; LoRA cuts it to ~180 GB; QLoRA cuts it to ~58 GB. Each step is roughly a 3–4× reduction. The full-fine-tuning bar is dominated by **optimizer state** (orange) — Adam's $m$ and $v$ moments live in fp32 and are 8 bytes per parameter, four times the weight cost.
+  Start with 70B at LoRA rank 16. Full fine-tuning needs ~870 GB; LoRA cuts it to ~180 GB; QLoRA cuts it to ~58 GB. Each step is roughly a 3–4× reduction. The full-fine-tuning bar is dominated by **optimizer state** (the red segment) — Adam's $m$ and $v$ moments live in fp32, eight bytes per parameter, four times the weight cost.
 </Callout>
 
 <Callout title="What to watch for" targetInteractive="qlora-memory">
@@ -84,7 +84,7 @@ The centerpiece is a memory-budget bar chart. The four bars are full fine-tuning
 </Callout>
 
 <Callout targetInteractive="qlora-memory">
-  Now drop the model to 7B. Full fine-tuning is now ~87 GB — feasible on 2× A100s. LoRA: ~20 GB — feasible on one. QLoRA: ~6 GB — feasible on a laptop GPU. The reason QLoRA caught on so fast in 2023 wasn't 70B fine-tuning (still rare); it was 7B and 13B fine-tuning on consumer hardware, which made the open-source LLM ecosystem democratized.
+  Now drop the model to 7B. Full fine-tuning is now ~87 GB — feasible on 2× A100s. LoRA: ~20 GB — feasible on one. QLoRA: ~6 GB — feasible on a laptop GPU. The reason QLoRA caught on so fast in 2023 wasn't 70B fine-tuning (still rare); it was 7B and 13B fine-tuning on consumer hardware, which is what made the open-source LLM ecosystem possible.
 </Callout>
 
 ## Reading the result
@@ -107,4 +107,4 @@ QLoRA is a stack of three independent tricks: NF4 quantization, LoRA, and paged 
 
 ## Recap
 
-Three takeaways. **QLoRA = 4-bit frozen base + 16-bit LoRA adapter.** The base provides capability; the adapter carries the fine-tune. **Memory drops 10–25× vs full fine-tuning** with negligible quality loss — the trainable part is small enough that optimizer state and gradients are cheap, and the base is small enough that it fits on one GPU. **It democratized LLM fine-tuning.** Before QLoRA, fine-tuning a 70B model needed a server. After, it ran on a single H100 or two consumer GPUs. The recipe is now standard across HuggingFace's PEFT library, axolotl, Unsloth, and every "fine-tune at home" tutorial you'll find. This wraps up the fine-tuning track — and the curriculum has now covered the model end to end: from the dot product at lesson 1 to the practical recipe that fine-tunes a frontier model in a weekend.
+Three takeaways. **QLoRA = 4-bit frozen base + 16-bit LoRA adapter.** The base provides capability; the adapter carries the fine-tune. **Memory drops 10–25× vs full fine-tuning** with negligible quality loss — the trainable part is small enough that optimizer state and gradients are cheap, and the base is small enough that it fits on one GPU. **It democratized LLM fine-tuning.** Before QLoRA, fine-tuning a 70B model needed a server. After, it ran on a single H100 or two consumer GPUs. The recipe is now standard across HuggingFace's PEFT library, axolotl, Unsloth, and every "fine-tune at home" tutorial you'll find. The next lesson shifts from *how* you fine-tune to *how you know it worked* — **evaluation** — and the gap between perplexity, benchmarks, and the model actually being useful.
