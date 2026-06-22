@@ -38,6 +38,7 @@ import { meta as samplingDecodingMeta } from '@/content/lessons/sampling-decodin
 import { meta as beamSearchMeta } from '@/content/lessons/beam-search/meta';
 import { meta as inContextLearningMeta } from '@/content/lessons/in-context-learning/meta';
 import { meta as chainOfThoughtMeta } from '@/content/lessons/chain-of-thought/meta';
+import { meta as ragMeta } from '@/content/lessons/rag/meta';
 import { meta as kvCacheMeta } from '@/content/lessons/kv-cache/meta';
 import { meta as speculativeDecodingMeta } from '@/content/lessons/speculative-decoding/meta';
 import { meta as crossEntropyMeta } from '@/content/lessons/cross-entropy/meta';
@@ -49,6 +50,8 @@ import { meta as backpropagationMeta } from '@/content/lessons/backpropagation/m
 import { meta as sgdMeta } from '@/content/lessons/sgd/meta';
 import { meta as optimizersMeta } from '@/content/lessons/optimizers/meta';
 import { meta as lrSchedulesMeta } from '@/content/lessons/lr-schedules/meta';
+import { meta as mixedPrecisionMeta } from '@/content/lessons/mixed-precision/meta';
+import { meta as gradientCheckpointingMeta } from '@/content/lessons/gradient-checkpointing/meta';
 import { meta as trainingEndToEndMeta } from '@/content/lessons/training-end-to-end/meta';
 import { meta as scalingLawsMeta } from '@/content/lessons/scaling-laws/meta';
 import { meta as overfittingMeta } from '@/content/lessons/overfitting/meta';
@@ -105,6 +108,7 @@ const manifest: readonly LessonMetaEntry[] = [
   { meta: beamSearchMeta },
   { meta: inContextLearningMeta },
   { meta: chainOfThoughtMeta },
+  { meta: ragMeta },
   { meta: kvCacheMeta },
   { meta: speculativeDecodingMeta },
   { meta: crossEntropyMeta },
@@ -116,6 +120,8 @@ const manifest: readonly LessonMetaEntry[] = [
   { meta: sgdMeta },
   { meta: optimizersMeta },
   { meta: lrSchedulesMeta },
+  { meta: mixedPrecisionMeta },
+  { meta: gradientCheckpointingMeta },
   { meta: trainingEndToEndMeta },
   { meta: scalingLawsMeta },
   { meta: overfittingMeta },
@@ -211,7 +217,7 @@ export const TRACKS: readonly LessonTrack[] = [
     label: 'What the model says, and how it learns',
     description:
       'Sampling the next token, caching it, scoring the loss, and feeling the first gradient.',
-    slugs: ['sampling-decoding', 'beam-search', 'in-context-learning', 'chain-of-thought', 'kv-cache', 'speculative-decoding', 'cross-entropy', 'gradient-descent', 'loss-landscapes'],
+    slugs: ['sampling-decoding', 'beam-search', 'in-context-learning', 'chain-of-thought', 'rag', 'kv-cache', 'speculative-decoding', 'cross-entropy', 'gradient-descent', 'loss-landscapes'],
   },
   {
     id: 'training',
@@ -225,6 +231,8 @@ export const TRACKS: readonly LessonTrack[] = [
       'sgd',
       'optimizers',
       'lr-schedules',
+      'mixed-precision',
+      'gradient-checkpointing',
       'training-end-to-end',
       'scaling-laws',
     ],

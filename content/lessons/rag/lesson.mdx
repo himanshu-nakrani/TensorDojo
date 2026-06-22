@@ -1,0 +1,113 @@
+import { MathCode } from '@/components/lesson/MathCode';
+import { Callout } from '@/components/lesson/Callout';
+
+## What does a model do when the answer isn't in its weights?
+
+The in-context learning lesson made the point that a frozen LLM can handle new tasks just by reading examples in the prompt. The chain-of-thought lesson made the point that the prompt is, in effect, a software interface — you can change what the model does by changing what you put in front of it. **Retrieval-augmented generation (RAG)** is the most consequential version of that idea: you put *facts the model has never seen* in front of it, and ask it to answer based on them.
+
+The problem RAG solves is unambiguous. A pretrained LLM has memorized a slice of the internet, frozen at some training cutoff. It does not know your company's documentation, your codebase, last week's news, or any document you handed it five seconds ago. Without help, it has three options when asked a question about any of those things: refuse, guess (hallucinate), or recall something stale. None of those are useful for a real product.
+
+RAG turns the question into a two-step pipeline. **Step 1: retrieve.** Search a vector store for documents similar to the question. **Step 2: generate.** Paste the retrieved documents into the prompt and let the model answer using them as context. The model's job becomes "read these passages and answer the question" rather than "answer the question from memory." Same model, same weights, dramatically more accurate on anything outside the training distribution.
+
+## The pipeline
+
+The core RAG pipeline has four components: an **embedding model** (turns text into vectors), a **vector store** (indexes vectors for fast nearest-neighbor search), a **retriever** (does the search), and the **generator** (the LLM that produces the answer).
+
+At index time:
+
+1. Split each document into chunks (typically 200–500 tokens each).
+2. Embed each chunk with the embedding model.
+3. Store the (chunk text, embedding) pair in the vector store.
+
+At query time:
+
+1. Embed the user's question with the same embedding model.
+2. Retrieve the top-$k$ chunks whose embeddings have the highest cosine similarity with the query.
+3. Construct a prompt: system instructions + retrieved chunks + question.
+4. Send to the LLM, return the answer.
+
+$$
+\text{relevance}(q, d) = \frac{\mathbf{e}_q \cdot \mathbf{e}_d}{\|\mathbf{e}_q\|\, \|\mathbf{e}_d\|}, \qquad \text{top-}k(q) = \operatorname{argmax}_{d_1, \ldots, d_k} \text{relevance}(q, d)
+$$
+
+The math is the dot-product lesson, applied at scale. The whole machine is "embed, sort by cosine, paste, generate."
+
+<MathCode
+  math="\hat{y} = \text{LLM}\bigl(\text{prompt} \mid \text{question}, \operatorname{topk}(\text{question}, k)\bigr)"
+  code={`from sentence_transformers import SentenceTransformer
+import numpy as np
+
+embed = SentenceTransformer('all-MiniLM-L6-v2')
+
+# Index time: turn documents into vectors once.
+documents = [
+    "TensorDojo lessons are typically 5-10 minutes each.",
+    "The dot product computes alignment between two vectors.",
+    "Attention scales as O(n^2) in sequence length.",
+    "RoPE encodes position by rotating Q and K, not by adding to embeddings.",
+]
+doc_embs = embed.encode(documents)  # shape (N, d)
+
+# Query time: embed the question, find top-k, prompt the LLM.
+def answer(question, k=2):
+    q_emb = embed.encode([question])[0]
+    # Cosine similarity = normalized dot product.
+    norms = np.linalg.norm(doc_embs, axis=1) * np.linalg.norm(q_emb)
+    sims = (doc_embs @ q_emb) / norms
+    top_idx = np.argsort(-sims)[:k]
+    context = "\\n\\n".join(documents[i] for i in top_idx)
+
+    prompt = f"""Answer the question using only the context below.
+
+Context:
+{context}
+
+Question: {question}
+Answer:"""
+    return llm.generate(prompt)`}
+  caption="The entire RAG pipeline in 20 lines. Production systems add chunking, reranking, citation, and caching, but the spine is unchanged."
+/>
+
+<Callout title="Why embeddings, not keyword search?" targetInteractive="rag-explorer">
+  Keyword search ("BM25") returns documents that share *tokens* with the query. Embeddings return documents that share *meaning*. A query for "how long does a lesson take" matches a document about "lesson duration" even though they share no keywords. Embedding similarity is what makes retrieval work across paraphrases, synonyms, and concept-level queries — and it's the reason modern RAG starts with vectors rather than keywords. Production systems often use *both* (hybrid search) to catch the cases where one fails.
+</Callout>
+
+## Try it
+
+The centerpiece has a small corpus of 10 documents about a fictional product, an embedding model that has already encoded them, and a query slot. Pick a query (or type your own), see the cosine similarity to each document, and see the top-$k$ context that would be sent to the LLM.
+
+<Callout targetInteractive="rag-explorer">
+  Start with "How do I reset my password?" and $k = 3$. The retrieved chunks are the three documents about authentication, ordered by similarity. The query never matched on keywords — the embedding model is doing semantic search. The LLM then sees only those three passages plus the question.
+</Callout>
+
+<Callout title="What to watch for" targetInteractive="rag-explorer">
+  Try a query that's *outside* the corpus, like "What's the weather today?" The cosine similarities to every document are low (typically under 0.3). A well-built RAG system uses this as a signal: if the top match is below some threshold, refuse to answer rather than pasting in irrelevant context. The retriever's confidence is itself a guardrail against hallucination.
+</Callout>
+
+<Callout targetInteractive="rag-explorer">
+  Crank $k$ up to 8. Now the prompt contains every document in the corpus — and the LLM gets noisier context. Empirically, $k$ has a sweet spot: too small and you miss relevant documents; too large and the model is distracted by irrelevant ones. Most production systems use $k = 3$ to $k = 10$ depending on chunk size and context window.
+</Callout>
+
+## Reading the result
+
+**Embedding similarity is the entire retrieval step.** No fine-tuning, no special LLM training, no architectural changes. Off-the-shelf embedding models (OpenAI's `text-embedding-3-small`, BGE, Voyage, the open-source MTEB leaderboard winners) are good enough to power production RAG. The harder engineering problems live elsewhere — chunking, freshness, reranking, evaluation.
+
+**The LLM sees the same prompt format it always sees.** The retrieved context goes in as plain text. The model has no idea it's "doing RAG" — from its perspective, it's just answering a question with some helpful context in the prompt. This is why RAG works with any model and composes with any prompting trick (CoT, few-shot, instruction tuning).
+
+**Hallucination drops, but doesn't disappear.** RAG narrows the model's task from "recall facts" to "summarize these passages and answer the question." That's a much easier task — but the model can still hallucinate when the retrieved context is incomplete, contradictory, or wrong. Production RAG systems pair the LLM with citation generation (force the answer to cite which retrieved chunk supports each claim) so a human can verify.
+
+**Chunking is where most production engineering goes.** A document split too small loses context; split too large dilutes relevance. Recursive splitters, semantic chunkers, and "small chunks for retrieval + large chunks for context" are all standard tricks. The embedding model and the chunking strategy are tightly coupled — change one and you usually have to re-tune the other.
+
+## Variants worth knowing
+
+**Hybrid search** combines vector similarity with BM25 keyword scoring; usually 5–10 percentage points better than vector alone on benchmarks. **Reranking** runs a stronger cross-encoder model on the top 50 retrieved candidates and re-orders them; typical implementations use Cohere Rerank or BGE-rerank. **Multi-vector retrieval** (ColBERT, late interaction) embeds each token of a chunk separately for more precise matching at higher index cost. **GraphRAG** builds a knowledge graph from the corpus first and uses graph traversal alongside embedding retrieval. **RAG-as-a-tool** treats retrieval as one of several tools the LLM can call rather than always running first.
+
+All of these are variations on the same core idea: don't make the model recall; give it the source.
+
+<Callout title="When RAG isn't the answer" targetInteractive="rag-explorer">
+  RAG shines when the answer is *somewhere* in your corpus. It doesn't help when the answer requires synthesizing across many documents, when the corpus itself is wrong or out of date, or when the question is about something fundamentally not in the corpus. For those cases you need other tools — agents, longer context windows, fine-tuning, or better data. RAG is a tool, not a panacea.
+</Callout>
+
+## Recap
+
+Three takeaways. **RAG is a two-step pipeline: retrieve top-$k$ documents by embedding similarity, then generate the answer with the retrieved context in the prompt.** The model never changes; the prompt changes per query. **Embedding similarity is the entire retrieval step** — the dot-product lesson, applied at scale. **Hallucination drops dramatically** because the model's task shifts from recall to comprehension, but production systems still pair RAG with citations and reranking to catch the remaining failure modes. The next lesson zooms back into the inference loop itself — generating one token is cheap, but a real response is a thousand of them, and a naive loop wastes almost all its work. The fix is the **KV cache**.

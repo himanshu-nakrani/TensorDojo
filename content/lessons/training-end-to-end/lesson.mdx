@@ -3,7 +3,7 @@ import { Callout } from '@/components/lesson/Callout';
 
 ## You have a model, a loss, an optimizer, a schedule, a dataset. What does one training run actually look like?
 
-The previous four lessons built each piece individually. **Backprop** computes the gradient of a loss with respect to every parameter in a model. **SGD** samples batches of examples and averages their gradients. **Optimizers** turn gradients into parameter updates. **Schedules** scale the update size over time. The training *run* is the loop that wires them all together.
+The previous lessons built each piece individually. **Backprop** computes the gradient of a loss with respect to every parameter in a model. **SGD** samples batches of examples and averages their gradients. **Optimizers** turn gradients into parameter updates. **Schedules** scale the update size over time. **Mixed precision** and **gradient checkpointing** make the whole thing fit on real hardware. The training *run* is the loop that wires them all together.
 
 The lesson is the loop. For step in range(N): sample a batch → forward → loss → backward → optimizer step → schedule the LR → log. Every step is one of the pieces from a previous lesson. The thing the reader gets to *see* is the loss curve over thousands of steps, with all the pieces wired up — and a few presets that show what each piece contributes.
 

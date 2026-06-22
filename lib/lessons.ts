@@ -133,6 +133,7 @@ export const mdxLessonLoaders: Readonly<
     import('@/content/lessons/in-context-learning/lesson.mdx'),
   'chain-of-thought': () =>
     import('@/content/lessons/chain-of-thought/lesson.mdx'),
+  rag: () => import('@/content/lessons/rag/lesson.mdx'),
   'kv-cache': () => import('@/content/lessons/kv-cache/lesson.mdx'),
   'speculative-decoding': () =>
     import('@/content/lessons/speculative-decoding/lesson.mdx'),
@@ -150,6 +151,10 @@ export const mdxLessonLoaders: Readonly<
   sgd: () => import('@/content/lessons/sgd/lesson.mdx'),
   optimizers: () => import('@/content/lessons/optimizers/lesson.mdx'),
   'lr-schedules': () => import('@/content/lessons/lr-schedules/lesson.mdx'),
+  'mixed-precision': () =>
+    import('@/content/lessons/mixed-precision/lesson.mdx'),
+  'gradient-checkpointing': () =>
+    import('@/content/lessons/gradient-checkpointing/lesson.mdx'),
   'training-end-to-end': () =>
     import('@/content/lessons/training-end-to-end/lesson.mdx'),
   'scaling-laws': () => import('@/content/lessons/scaling-laws/lesson.mdx'),

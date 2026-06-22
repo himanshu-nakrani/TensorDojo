@@ -45,6 +45,7 @@ import { meta as samplingDecodingMeta } from '@/content/lessons/sampling-decodin
 import { meta as beamSearchMeta } from '@/content/lessons/beam-search/meta';
 import { meta as inContextLearningMeta } from '@/content/lessons/in-context-learning/meta';
 import { meta as chainOfThoughtMeta } from '@/content/lessons/chain-of-thought/meta';
+import { meta as ragMeta } from '@/content/lessons/rag/meta';
 import { meta as kvCacheMeta } from '@/content/lessons/kv-cache/meta';
 import { meta as speculativeDecodingMeta } from '@/content/lessons/speculative-decoding/meta';
 import { meta as crossEntropyMeta } from '@/content/lessons/cross-entropy/meta';
@@ -56,6 +57,8 @@ import { meta as backpropagationMeta } from '@/content/lessons/backpropagation/m
 import { meta as sgdMeta } from '@/content/lessons/sgd/meta';
 import { meta as optimizersMeta } from '@/content/lessons/optimizers/meta';
 import { meta as lrSchedulesMeta } from '@/content/lessons/lr-schedules/meta';
+import { meta as mixedPrecisionMeta } from '@/content/lessons/mixed-precision/meta';
+import { meta as gradientCheckpointingMeta } from '@/content/lessons/gradient-checkpointing/meta';
 import { meta as trainingEndToEndMeta } from '@/content/lessons/training-end-to-end/meta';
 import { meta as scalingLawsMeta } from '@/content/lessons/scaling-laws/meta';
 import { meta as overfittingMeta } from '@/content/lessons/overfitting/meta';
@@ -110,6 +113,7 @@ const metaBySlug: Readonly<Record<string, LessonMeta>> = {
   'beam-search': beamSearchMeta,
   'in-context-learning': inContextLearningMeta,
   'chain-of-thought': chainOfThoughtMeta,
+  rag: ragMeta,
   'kv-cache': kvCacheMeta,
   'speculative-decoding': speculativeDecodingMeta,
   'cross-entropy': crossEntropyMeta,
@@ -121,6 +125,8 @@ const metaBySlug: Readonly<Record<string, LessonMeta>> = {
   'sgd': sgdMeta,
   'optimizers': optimizersMeta,
   'lr-schedules': lrSchedulesMeta,
+  'mixed-precision': mixedPrecisionMeta,
+  'gradient-checkpointing': gradientCheckpointingMeta,
   'training-end-to-end': trainingEndToEndMeta,
   'scaling-laws': scalingLawsMeta,
   overfitting: overfittingMeta,
@@ -256,6 +262,10 @@ const interactivesLoaders: Readonly<Record<string, () => Promise<{
     import('@/content/lessons/chain-of-thought/interactives').then((m) => ({
       interactives: m.interactives,
     })),
+  rag: () =>
+    import('@/content/lessons/rag/interactives').then((m) => ({
+      interactives: m.interactives,
+    })),
   'kv-cache': () =>
     import('@/content/lessons/kv-cache/interactives').then((m) => ({
       interactives: m.interactives,
@@ -304,6 +314,16 @@ const interactivesLoaders: Readonly<Record<string, () => Promise<{
     import('@/content/lessons/lr-schedules/interactives').then((m) => ({
       interactives: m.interactives,
     })),
+  'mixed-precision': () =>
+    import('@/content/lessons/mixed-precision/interactives').then((m) => ({
+      interactives: m.interactives,
+    })),
+  'gradient-checkpointing': () =>
+    import('@/content/lessons/gradient-checkpointing/interactives').then(
+      (m) => ({
+        interactives: m.interactives,
+      }),
+    ),
   'training-end-to-end': () =>
     import('@/content/lessons/training-end-to-end/interactives').then((m) => ({
       interactives: m.interactives,

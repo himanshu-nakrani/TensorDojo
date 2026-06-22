@@ -279,6 +279,15 @@ nodes:
   - id: qlora-concept
     title: "QLoRA: 4-bit base + LoRA"
     lesson: qlora
+  - id: mixed-precision-concept
+    title: "Mixed precision: bf16 + fp32"
+    lesson: mixed-precision
+  - id: gradient-checkpointing-concept
+    title: "Gradient checkpointing"
+    lesson: gradient-checkpointing
+  - id: rag-concept
+    title: "RAG: retrieve, then generate"
+    lesson: rag
 
 edges:
   # Atomic prerequisite chain
@@ -451,6 +460,14 @@ edges:
     to: chain-of-thought-concept
   - from: sampling-decoding-concept
     to: chain-of-thought-concept
+  - from: chain-of-thought-concept
+    to: rag-concept
+  - from: in-context-learning-concept
+    to: rag-concept
+  - from: dot-product-concept
+    to: rag-concept
+  - from: token-embeddings-concept
+    to: rag-concept
   - from: cross-entropy
     to: cross-entropy-concept
   - from: gradient-descent
@@ -479,6 +496,14 @@ edges:
     to: lr-schedules-concept
   - from: cosine-decay
     to: lr-schedules-concept
+  - from: lr-schedules-concept
+    to: mixed-precision-concept
+  - from: mixed-precision-concept
+    to: gradient-checkpointing-concept
+  - from: backpropagation-concept
+    to: gradient-checkpointing-concept
+  - from: mixed-precision-concept
+    to: qlora-concept
   - from: training-loop
     to: training-end-to-end-concept
   - from: training-loop
