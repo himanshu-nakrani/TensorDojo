@@ -74,7 +74,7 @@ export function CrossEntropyExplorer() {
   };
 
   return (
-    <SimFrame title="Cross-entropy explorer" onReset={reset}>
+    <SimFrame title="Drag logits · click the true token · watch −log p" onReset={reset}>
       {/* Logits — one slider per token */}
       <section aria-label="Logits" className="mb-6">
         <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-3">

@@ -87,6 +87,7 @@ export function SamplingDecodingExplorer() {
   });
   const [empirical, setEmpirical] = useState<number[] | null>(null);
   const [seed, setSeed] = useState<number>(0);
+  const [lastSampled, setLastSampled] = useState<string | null>(null);
 
   const effective = useMemo(
     () => getEffective(strategy, params),
@@ -134,7 +135,7 @@ export function SamplingDecodingExplorer() {
 
   return (
     <SimFrame
-      title="Sampling explorer"
+      title="Same logits · pick a strategy · see what the model emits"
       headerAction={
         <button
           type="button"
@@ -289,25 +290,26 @@ export function SamplingDecodingExplorer() {
         </section>
       )}
 
-      <div className="flex items-baseline justify-between pt-3 border-t border-border text-[11px] font-mono text-muted">
+      <div className="flex items-baseline justify-between pt-3 border-t border-border text-[11px] font-mono text-muted gap-3">
         <button
           type="button"
           onClick={() => {
             const idx = sample();
             setEmpirical(null);
-            // Highlight the sampled token by making a brief toast
-            // in the top bar.
-            setParams((p) => ({ ...p }));
             setSeed((s) => s + 1);
-            alert(
-              `Sampled: "${NEXT_TOKEN_CANDIDATES[idx]}" (strategy = ${strategy})`,
-            );
+            setLastSampled(NEXT_TOKEN_CANDIDATES[idx] ?? null);
           }}
-          className="focus-ring text-accent hover:text-accent-hover transition-colors"
+          className="focus-ring text-accent hover:text-accent-hover transition-colors shrink-0"
         >
           Sample once →
         </button>
-        <span>logits are static; the strategy chooses how to interpret them.</span>
+        {lastSampled ? (
+          <span className="font-mono tabular-nums text-ink">
+            sampled: <span className="text-accent">{lastSampled}</span>
+          </span>
+        ) : (
+          <span>logits are static; the strategy chooses how to interpret them.</span>
+        )}
       </div>
     </SimFrame>
   );

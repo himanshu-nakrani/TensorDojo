@@ -52,7 +52,6 @@ export function SpeculativeSpeedup() {
   return (
     <SimFrame
       title="Speedup heatmap: γ × α"
-      onReset={reset}
       headerWrap
       headerAction={
         <div className="flex items-center gap-3 flex-wrap">

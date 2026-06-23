@@ -142,9 +142,9 @@ export function GradientDescentExplorer() {
 
   return (
     <SimFrame
-      title="Gradient descent"
+      title="Walk downhill · pick η · watch the trajectory"
       onReset={() => setSeed((s) => s + 1)}
-      resetLabel="Step"
+      resetLabel="Re-run"
     >
       {/* Presets */}
       <div className="mb-5 flex flex-wrap items-center gap-2">

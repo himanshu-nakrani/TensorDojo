@@ -105,7 +105,7 @@ export function LossLandscape() {
 
   return (
     <SimFrame
-      title="Loss Landscape"
+      title="Click anywhere · watch SGD walk to a stationary point"
       headerWrap
       headerAction={
         <button

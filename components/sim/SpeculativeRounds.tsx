@@ -100,7 +100,6 @@ export function SpeculativeRounds() {
   return (
     <SimFrame
       title="Speculative draft rounds: accept, reject, correct"
-      onReset={reset}
       headerWrap
       headerAction={
         <div className="flex items-center gap-3 flex-wrap">

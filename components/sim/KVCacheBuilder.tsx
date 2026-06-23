@@ -66,7 +66,6 @@ export function KVCacheBuilder() {
   return (
     <SimFrame
       title="KV cache: step through generation"
-      onReset={reset}
       headerAction={
         <div className="flex items-center gap-3">
           <button
