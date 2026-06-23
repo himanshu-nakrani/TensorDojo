@@ -122,7 +122,7 @@ export function RoPERelativity() {
 
   return (
     <SimFrame
-      title="Dot product vs relative offset"
+      title="Rotated q · k as a function of m − n"
       onReset={reset}
       headerAction={
         <div className="flex items-center gap-3">

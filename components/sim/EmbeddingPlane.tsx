@@ -118,7 +118,7 @@ export function EmbeddingPlane({ preset }: { preset?: EmbeddingPlanePreset }) {
 
   return (
     <SimFrame
-      title="Embedding plane"
+      title="2D embedding plane · find nearest, run an analogy"
       headerAction={
         <div className="flex items-center gap-3">
           <button

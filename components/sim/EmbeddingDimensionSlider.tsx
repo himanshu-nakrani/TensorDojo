@@ -103,7 +103,7 @@ export function EmbeddingDimensionSlider({ preset }: { preset?: EmbeddingDimensi
   };
 
   return (
-    <SimFrame title="Synthetic 2D projection" onReset={reset}>
+    <SimFrame title="Crank d · watch clusters tighten" onReset={reset}>
       <div className="grid grid-cols-1 md:grid-cols-[1fr_180px] gap-4">
         <div>
           <svg
@@ -117,18 +117,30 @@ export function EmbeddingDimensionSlider({ preset }: { preset?: EmbeddingDimensi
               const px = p[0] ?? 0;
               const py = p[1] ?? 0;
               const v = VOCAB[Math.floor(i / 4)]!;
+              const word = v.words[i % 4] ?? '';
               const isQuery = i === VOCAB.findIndex((vv) => vv.words.includes(query.toLowerCase())) * 4;
               const isNN = nn.includes(i);
+              const hi = isQuery || isNN;
               return (
-                <circle
-                  key={i}
-                  cx={px}
-                  cy={-py}
-                  r={isQuery || isNN ? 0.18 : 0.1}
-                  className="transition-all duration-200"
-                  fill={isQuery || isNN ? 'rgb(var(--accent))' : 'rgb(var(--fg-muted))'}
-                  opacity={isQuery || isNN ? 0.9 : 0.5}
-                />
+                <g key={i} className="transition-all duration-200">
+                  <circle
+                    cx={px}
+                    cy={-py}
+                    r={hi ? 0.18 : 0.1}
+                    fill={hi ? 'rgb(var(--accent))' : 'rgb(var(--fg-muted))'}
+                    opacity={hi ? 0.9 : 0.5}
+                  />
+                  <text
+                    x={px + 0.18}
+                    y={-py + 0.04}
+                    fill={hi ? 'rgb(var(--accent))' : 'rgb(var(--fg-muted))'}
+                    opacity={hi ? 1 : 0.7}
+                    style={{ fontSize: 9 }}
+                    className="font-mono pointer-events-none"
+                  >
+                    {word}
+                  </text>
+                </g>
               );
             })}
           </svg>

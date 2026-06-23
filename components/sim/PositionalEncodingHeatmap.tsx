@@ -41,7 +41,7 @@ export function PositionalEncodingHeatmap({ preset }: { preset?: PositionalEncod
   };
 
   return (
-    <SimFrame title="Positional encoding" onReset={reset}>
+    <SimFrame title="PE[pos, dim] heatmap · probe distance" onReset={reset}>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
           <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-2">

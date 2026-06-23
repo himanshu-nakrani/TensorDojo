@@ -48,8 +48,7 @@ export function BPETrainer({ preset }: { preset?: CorpusPreset }) {
 
   return (
     <SimFrame
-      title="BPE trainer"
-      onReset={reset}
+      title="Step BPE merges · watch the vocabulary grow"
       headerAction={
         <div className="flex items-center gap-3">
           <button

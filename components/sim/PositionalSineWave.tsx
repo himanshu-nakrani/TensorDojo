@@ -48,7 +48,7 @@ export function PositionalSineWave({ preset }: { preset?: PositionalSineWavePres
   };
 
   return (
-    <SimFrame title="One dimension across positions" onReset={reset}>
+    <SimFrame title="Pick a dim · plot sin/cos across positions" onReset={reset}>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-auto" preserveAspectRatio="xMidYMid meet">
@@ -64,7 +64,7 @@ export function PositionalSineWave({ preset }: { preset?: PositionalSineWavePres
               vectorEffect="non-scaling-stroke"
             />
             <text x={W - PAD} y={PAD + 12} textAnchor="end" className="fill-dim font-mono" fontSize={10} style={{ fontSize: 10 }}>
-              dim {dim} (wavelength ≈ {Math.round(2 * Math.PI * Math.pow(10000, Math.floor(dim / 2) / (d / 2)))})
+              dim {dim} · pair {Math.floor(dim / 2)} · wavelength ≈ {Math.round(2 * Math.PI * Math.pow(10000, Math.floor(dim / 2) / (d / 2)))}
             </text>
             <text x={W - PAD} y={H - PAD - 6} textAnchor="end" className="fill-dim font-mono" fontSize={10} style={{ fontSize: 10 }}>
               pos {maxPos - 1}
