@@ -311,7 +311,7 @@ export function BatchNormExplorer() {
 
   return (
     <SimFrame
-      title="Batch normalization"
+      title="Train with/without BN · watch activations stay bounded"
       headerAction={
         <div className="flex items-center gap-3">
           <div className="text-[11px] text-dim font-mono">

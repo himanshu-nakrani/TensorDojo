@@ -110,7 +110,7 @@ export function OverfittingExplorer() {
 
   return (
     <SimFrame
-      title="Overfitting"
+      title="Crank polynomial degree · watch test loss climb"
       headerAction={
         <div className="flex items-center gap-3">
           <div className="text-[11px] text-dim font-mono">

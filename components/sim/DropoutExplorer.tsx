@@ -356,7 +356,7 @@ export function DropoutExplorer() {
 
   return (
     <SimFrame
-      title="Dropout"
+      title="Drop neurons at rate p · train two MLPs side by side"
       headerAction={
         <div className="flex items-center gap-3">
           <div className="text-[11px] text-dim font-mono">

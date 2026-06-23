@@ -94,7 +94,7 @@ export function WeightDecayExplorer() {
   }, []);
 
   const fitDense = useMemo(
-    () => (fit ? fit.w.map((w) => 0).map((_, i) => evalPolyCoef(fit.w, xDense[i] ?? 0)) : []),
+    () => (fit ? xDense.map((x) => evalPolyCoef(fit.w, x)) : []),
     [fit, xDense],
   );
   const cleanDense = useMemo(() => xDense.map((x) => Math.sin(2 * x)), [xDense]);
@@ -109,7 +109,7 @@ export function WeightDecayExplorer() {
 
   return (
     <SimFrame
-      title="Weight decay (L2)"
+      title="Crank λ · the fit smooths and coefficients shrink"
       headerAction={
         <div className="flex items-center gap-3">
           <div className="text-[11px] text-dim font-mono">
