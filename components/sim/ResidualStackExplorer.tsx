@@ -78,11 +78,17 @@ function forward(
  * Compute per-layer gradient norm via the chain rule. This is a
  * forward-mode gradient with respect to the L2 norm of the output
  * (we just want the magnitude, not a particular direction).
+ *
+ * When `useLayerNorm` is on, we model LN's backward as a single
+ * 1/σ rescaling per layer (the dominant term in LN's Jacobian),
+ * which is enough to show the qualitative "stays roughly flat"
+ * behavior the lesson promises.
  */
 function gradNorms(
   x0: number[],
   layers: Layer[],
   useResidual: boolean,
+  useLayerNorm: boolean,
 ): number[] {
   const { acts } = forward(x0, layers, useResidual);
   // Initialize gradient at the output as ones (we want ||dL/dx||)
@@ -112,10 +118,18 @@ function gradNorms(
     } else {
       grad = newGrad;
     }
+    if (useLayerNorm) {
+      // Dominant LN Jacobian term: 1/σ rescaling. Use the std of
+      // this layer's input z, which is the activation LN would
+      // normalize.
+      const mean = z.reduce((s, v) => s + v, 0) / z.length;
+      const variance =
+        z.reduce((s, v) => s + (v - mean) ** 2, 0) / z.length + 1e-5;
+      const invStd = 1 / Math.sqrt(variance);
+      grad = grad.map((g) => g * invStd);
+    }
     norms.unshift(vecNorm(grad));
   }
-  // Trim: the loop above gave us norms for the input gradient after
-  //  each layer walk-back. We want one per layer.
   return norms;
 }
 
@@ -162,8 +176,8 @@ export function ResidualStackExplorer({ preset }: { preset?: ResidualStackExplor
 
   const actNorms = (actsLN ?? acts).map(vecNorm);
   const gradNormsArray = useMemo(
-    () => gradNorms(x0, layers, useResidual),
-    [x0, layers, useResidual],
+    () => gradNorms(x0, layers, useResidual, useLayerNorm),
+    [x0, layers, useResidual, useLayerNorm],
   );
 
   const WIDTH = 400;
@@ -180,7 +194,7 @@ export function ResidualStackExplorer({ preset }: { preset?: ResidualStackExplor
 
   return (
     <SimFrame
-      title="Residual + LayerNorm"
+      title="Stack N sublayers · toggle residual + LayerNorm"
       headerAction={
         <div className="flex items-center gap-3">
           <Toggle label="Residual" on={useResidual} onChange={setUseResidual} />

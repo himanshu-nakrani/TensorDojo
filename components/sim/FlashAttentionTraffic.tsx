@@ -47,15 +47,6 @@ export function FlashAttentionTraffic() {
     <SimFrame
       title="HBM traffic: naive vs flash attention"
       onReset={reset}
-      headerAction={
-        <button
-          type="button"
-          onClick={reset}
-          className="text-[11px] uppercase tracking-[0.12em] font-mono text-muted hover:text-ink focus-ring transition-colors"
-        >
-          Reset
-        </button>
-      }
     >
       <label className="block mb-5">
         <div className="flex items-baseline justify-between mb-1">

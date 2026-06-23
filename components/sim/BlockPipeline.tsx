@@ -337,7 +337,7 @@ export function BlockPipeline() {
 
   return (
     <SimFrame
-      title="Block pipeline"
+      title="One block, four rows: LN → attn → +res → LN → FFN → +res"
       headerAction={
         <div className="flex items-center gap-3 flex-wrap">
           <div className="flex items-center gap-2 flex-wrap font-mono text-[11px] uppercase tracking-[0.12em]">

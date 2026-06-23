@@ -114,7 +114,7 @@ export function LayerNormViz() {
             <div className="text-ink tabular-nums text-right">{scale.toFixed(1)}×</div>
           </div>
           <p className="text-[11px] text-dim leading-relaxed">
-            Drag the input scale; the "after" arrow always ends at the same length (≈ 1.41) and the same zero-mean offset. The direction is preserved.
+            Drag the input scale; the "after" arrow always ends at the same length (≈ 1.41) regardless of input magnitude. The direction is *not* preserved when the input has nonzero mean — layernorm subtracts the mean first, which rotates the vector.
           </p>
         </div>
       </div>

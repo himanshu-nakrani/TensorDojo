@@ -156,7 +156,7 @@ export function BlockDepth() {
   };
 
   return (
-    <SimFrame title="Block depth" onReset={reset}>
+    <SimFrame title="Stack N blocks · watch the residual stream drift" onReset={reset}>
       <div className="space-y-3 mb-5">
         <label className="flex items-center gap-2 text-[11px] uppercase tracking-[0.12em] text-dim font-mono">
           Sentence

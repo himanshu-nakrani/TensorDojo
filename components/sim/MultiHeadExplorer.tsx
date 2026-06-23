@@ -13,8 +13,6 @@ export interface MultiHeadExplorerPreset {
   dK?: number;
 }
 
-const TOKENS = ['cat', 'sat', 'down', 'on', 'the'] as const;
-
 /**
  * 4-token × h-head attention visualizer. For each head, the user
  * sees a small weight heatmap. Per-head Q and K rotation sliders
@@ -24,7 +22,7 @@ const TOKENS = ['cat', 'sat', 'down', 'on', 'the'] as const;
 export function MultiHeadExplorer({ preset }: { preset?: MultiHeadExplorerPreset }) {
   const [n, setN] = useState(preset?.n ?? 4);
   const [h, setH] = useState(preset?.h ?? 4);
-  const [dK, setDK] = useState(preset?.dK ?? 2);
+  const dK = preset?.dK ?? 2;
 
   // Per-head Q and K rotation angles (one pair per head).
   const [qAngles, setQAngles] = useState<number[]>(() =>
@@ -37,7 +35,6 @@ export function MultiHeadExplorer({ preset }: { preset?: MultiHeadExplorerPreset
   const reset = () => {
     setN(preset?.n ?? 4);
     setH(preset?.h ?? 4);
-    setDK(preset?.dK ?? 2);
     setQAngles(Array.from({ length: 4 }, (_, i) => i * 0.4));
     setKAngles(Array.from({ length: 4 }, (_, i) => Math.PI / 2 - i * 0.3));
   };
@@ -65,7 +62,7 @@ export function MultiHeadExplorer({ preset }: { preset?: MultiHeadExplorerPreset
   }, [n, h, dK, qAngles, kAngles]);
 
   return (
-    <SimFrame title="Multi-head attention" onReset={reset}>
+    <SimFrame title="h heads · h different ways to look at the same input" onReset={reset}>
       <div className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>

@@ -32,15 +32,6 @@ export function MoECostBars() {
     <SimFrame
       title="Total params vs active compute"
       onReset={reset}
-      headerAction={
-        <button
-          type="button"
-          onClick={reset}
-          className="text-[11px] uppercase tracking-[0.12em] font-mono text-muted hover:text-ink focus-ring transition-colors"
-        >
-          Reset
-        </button>
-      }
     >
       <div className="space-y-4">
         {CONFIGS.map((cfg, i) => {

@@ -4,8 +4,8 @@ import { useState } from 'react';
 import { Slider } from '@/components/sim/primitives/Slider';
 import { SimFrame } from '@/components/sim/primitives/SimFrame';
 
-const D_MODEL = 4;
-const D_HIDDEN_VALUES = [4, 8, 16, 32];
+const D_MODEL_DEFAULT = 4;
+const EXPANSIONS = [1, 2, 4, 8] as const;
 
 function paramCount(dModel: number, dHidden: number): {
   ffn: number;
@@ -33,18 +33,22 @@ function paramCount(dModel: number, dHidden: number): {
  * parameters widget. The reader sees how the FFN parameter
  * count (and its share of the block's total) grows with the
  * expansion factor.
+ *
+ * The expansion factor (1×, 2×, 4×, 8×) is what the user picks
+ * directly; d_hidden = expansion × d_model is computed from it.
+ * This keeps the "expansion factor" label honest no matter what
+ * d_model is set to.
  */
 export function FFNParameterCount() {
-  const [dModel, setDModel] = useState<number>(D_MODEL);
-  // d_hidden is one of {4, 8, 16, 32}; allow 1×, 2×, 4×, 8× of d_model.
-  const [dHiddenIdx, setDHiddenIdx] = useState<number>(2); // 16
+  const [dModel, setDModel] = useState<number>(D_MODEL_DEFAULT);
+  const [expansion, setExpansion] = useState<number>(4);
 
-  const dHidden = D_HIDDEN_VALUES[dHiddenIdx] as number;
+  const dHidden = expansion * dModel;
   const counts = paramCount(dModel, dHidden);
 
   const reset = () => {
-    setDModel(D_MODEL);
-    setDHiddenIdx(2);
+    setDModel(D_MODEL_DEFAULT);
+    setExpansion(4);
   };
 
   return (
@@ -78,27 +82,27 @@ export function FFNParameterCount() {
         <div>
           <div className="flex items-baseline justify-between mb-1">
             <span className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono">
-              d_hidden
+              expansion factor
             </span>
             <span className="text-ink tabular-nums">
-              {dHidden} (={dHidden / dModel}× d_model)
+              {expansion}× → d_hidden = {dHidden}
             </span>
           </div>
           <div className="grid grid-cols-4 gap-2">
-            {D_HIDDEN_VALUES.map((d, i) => (
+            {EXPANSIONS.map((e) => (
               <button
-                key={d}
+                key={e}
                 type="button"
-                onClick={() => setDHiddenIdx(i)}
+                onClick={() => setExpansion(e)}
                 className={
                   'text-[11px] uppercase tracking-[0.12em] font-mono px-2 py-0.5 rounded border focus-ring transition-colors ' +
-                  (dHiddenIdx === i
+                  (expansion === e
                     ? 'border-accent text-accent'
                     : 'border-border text-muted hover:text-ink')
                 }
-                aria-pressed={dHiddenIdx === i}
+                aria-pressed={expansion === e}
               >
-                {d / D_MODEL}×
+                {e}×
               </button>
             ))}
           </div>
@@ -125,10 +129,10 @@ export function FFNParameterCount() {
       </dl>
 
       <p className="mt-4 text-[11px] text-dim font-mono leading-relaxed">
-        At d_model = {dModel} and d_hidden = {dHidden} ({dHidden / dModel}×), the FFN
+        At d_model = {dModel} and {expansion}× expansion (d_hidden = {dHidden}), the FFN
         is {(counts.ffnFraction * 100).toFixed(0)}% of the block's parameters. In
-        real transformers (d_model = 512, 1024, 4096), the FFN is
-        typically 60–70% of the model's total parameter count.
+        real transformers (d_model = 512, 1024, 4096), the FFN at the conventional
+        4× expansion is typically 60–70% of the model's total parameter count.
       </p>
     </SimFrame>
   );

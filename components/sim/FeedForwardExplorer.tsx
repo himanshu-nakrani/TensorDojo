@@ -123,21 +123,8 @@ export function FeedForwardExplorer() {
 
   return (
     <SimFrame
-      title="Feed-forward explorer"
-      headerAction={
-        <div className="flex items-center gap-3">
-          <span className="text-[11px] text-dim font-mono">
-            FFN(x) = W₂·σ(W₁x + b₁) + b₂
-          </span>
-          <button
-            type="button"
-            onClick={reset}
-            className="text-[11px] uppercase tracking-[0.12em] font-mono text-muted hover:text-ink focus-ring transition-colors"
-          >
-            Reset
-          </button>
-        </div>
-      }
+      title="FFN(x) = W₂·σ(W₁x + b₁) + b₂ · expand, activate, project"
+      onReset={reset}
     >
       {/* Token selector */}
       <div className="mb-4 flex flex-wrap items-center gap-2">

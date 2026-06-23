@@ -68,7 +68,6 @@ export function MoERouter() {
   return (
     <SimFrame
       title="Router: each token, top-k experts"
-      onReset={reset}
       headerAction={
         <div className="flex items-center gap-3">
           <div className="flex border border-border rounded overflow-hidden font-mono text-[11px]">
