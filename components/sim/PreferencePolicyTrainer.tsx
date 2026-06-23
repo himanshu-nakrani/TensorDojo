@@ -106,7 +106,7 @@ export function PreferencePolicyTrainer() {
 
   return (
     <SimFrame
-      title="Policy trainer"
+      title="Step a policy on preference pairs · watch one response win"
       headerAction={
         <span className="text-[11px] font-mono text-muted tabular-nums">
           step {totalSteps % N_PREFS} of {N_PREFS} &middot; epoch {epoch}

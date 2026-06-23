@@ -406,7 +406,7 @@ export function LayerFreezeExplorer() {
 
   return (
     <SimFrame
-      title="Layer freeze explorer"
+      title="Freeze layers · train · watch gradient norms drop to 0"
       headerAction={
         <div className="flex items-center gap-3">
           <button

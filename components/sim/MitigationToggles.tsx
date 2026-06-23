@@ -390,7 +390,7 @@ export function MitigationToggles() {
   };
 
   return (
-    <SimFrame title="Mitigation strategies" onReset={reset}>
+    <SimFrame title="Lower LR or interleave A · watch forgetting fade" onReset={reset}>
       <div className="space-y-5">
         {/* Toggle switches */}
         <div>

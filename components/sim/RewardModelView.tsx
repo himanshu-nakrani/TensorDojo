@@ -232,7 +232,7 @@ export function RewardModelView() {
 
   return (
     <SimFrame
-      title="Policy vs reward model"
+      title="Two heads, same preferences: policy + reward model"
       headerAction={
         <span className="text-[11px] font-mono text-muted tabular-nums">
           step {totalSteps % N_PREFS} of {N_PREFS} &middot; epoch {epoch}
