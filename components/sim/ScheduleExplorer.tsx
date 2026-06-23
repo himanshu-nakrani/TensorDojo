@@ -99,7 +99,7 @@ export function ScheduleExplorer() {
   };
 
   return (
-    <SimFrame title="Schedule explorer" onReset={reset}>
+    <SimFrame title="LR over training · loss falls under it" onReset={reset}>
       <div className="grid grid-cols-1 md:grid-cols-[1fr_240px] gap-5">
         <div className="space-y-4">
           {/* LR schedule plot */}

@@ -217,7 +217,7 @@ export function BackpropExplorer() {
 
   return (
     <SimFrame
-      title="Backprop, by hand"
+      title="Drag any weight · gradient updates everywhere"
       headerAction={
         <div className="flex items-center gap-2">
           <button

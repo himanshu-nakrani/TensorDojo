@@ -123,7 +123,7 @@ export function TrainingEndToEnd() {
 
   return (
     <SimFrame
-      title="Training capstone"
+      title="Full loop: batch → fwd → loss → bwd → step → schedule"
       headerAction={
         <div className="flex items-center gap-2">
           <PresetButton id="default" onClick={() => onPreset('default')} />

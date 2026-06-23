@@ -75,8 +75,6 @@ export function ScalingLawTrade() {
     [],
   );
 
-  const reset = () => undefined;
-
   const W = 560;
   const H = 360;
   const PAD_X = 56;
@@ -89,7 +87,7 @@ export function ScalingLawTrade() {
   const cellH = (H - 2 * PAD_Y) / GRID_D;
 
   return (
-    <SimFrame title="Loss surface in (params × tokens)" onReset={reset}>
+    <SimFrame title="Loss surface in (params × tokens)">
       <div className="border border-border rounded bg-surface p-2 mb-4">
         <svg viewBox={`0 0 ${W} ${H}`} className="w-full" style={{ height: H }}>
           {/* Heatmap cells */}
