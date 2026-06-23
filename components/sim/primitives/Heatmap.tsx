@@ -40,6 +40,8 @@ interface HeatmapProps {
    * sizing with `cellSize` (12-18px works well).
    */
   compact?: boolean;
+  /** If set, fires when the user hovers a cell (row, col), or null on leave. */
+  onCellHover?: (cell: { row: number; col: number } | null) => void;
   ariaLabel?: string;
 }
 
@@ -85,6 +87,7 @@ export function Heatmap({
   cellSize = 56,
   minCellSize,
   compact = false,
+  onCellHover,
   ariaLabel,
 }: HeatmapProps) {
   const titleId = useId();
@@ -207,7 +210,14 @@ export function Heatmap({
             cellOpacity = accentOpacity(Math.abs(v) / max);
           }
           return (
-            <g key={`${i}-${j}`}>
+            <g
+              key={`${i}-${j}`}
+              onMouseEnter={
+                onCellHover ? () => onCellHover({ row: i, col: j }) : undefined
+              }
+              onMouseLeave={onCellHover ? () => onCellHover(null) : undefined}
+              style={onCellHover ? { cursor: 'crosshair' } : undefined}
+            >
               <rect
                 x={x + (compact ? 0 : 1)}
                 y={y + (compact ? 0 : 1)}

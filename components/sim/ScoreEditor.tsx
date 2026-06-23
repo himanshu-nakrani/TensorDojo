@@ -59,7 +59,7 @@ export function ScoreEditor({ preset }: { preset?: ScoreEditorPreset }) {
   const max = Math.max(0.001, ...distribution);
 
   return (
-    <SimFrame title="Score Editor" onReset={reset}>
+    <SimFrame title="Nudge scores with ↑ ↓ · feel the handoff" onReset={reset}>
       <p className="text-[12px] text-muted mb-5 font-mono">
         Focus a cell and nudge with{' '}
         <kbd className="px-1.5 py-0.5 rounded border border-border-strong text-ink bg-surface-2 text-[11px]">

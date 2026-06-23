@@ -44,20 +44,32 @@ export function ScalingHistogram({ preset }: { preset?: ScalingHistogramPreset }
     () => sampleDotProducts(N_PAIRS, dK, 0),
     [dK],
   );
-  const std = Math.sqrt(dK);
+  const theoreticalStd = Math.sqrt(dK);
 
   // When scaling is on, the values are divided by √d_k, so the std
   // drops to 1. The histogram x-axis stays in raw units though — we
   // rescale the axis labels and the bin positions accordingly.
   const scaledSamples = useMemo(
-    () => scale ? rawSamples.map((v) => v / std) : rawSamples,
-    [rawSamples, scale, std],
+    () => scale ? rawSamples.map((v) => v / theoreticalStd) : rawSamples,
+    [rawSamples, scale, theoreticalStd],
   );
+
+  // Empirical std of what's actually displayed (raw or scaled).
+  const empiricalStd = useMemo(() => {
+    const n = scaledSamples.length;
+    if (n === 0) return 0;
+    let mean = 0;
+    for (const v of scaledSamples) mean += v;
+    mean /= n;
+    let varSum = 0;
+    for (const v of scaledSamples) varSum += (v - mean) ** 2;
+    return Math.sqrt(varSum / n);
+  }, [scaledSamples]);
 
   // Bin in raw units when not scaling, in std-units when scaling.
   const bins = useMemo(() => {
-    const localBinWidth = scale ? BIN_WIDTH / std : BIN_WIDTH;
-    const localMaxRaw = scale ? MAX_RAW / std : MAX_RAW;
+    const localBinWidth = scale ? BIN_WIDTH / theoreticalStd : BIN_WIDTH;
+    const localMaxRaw = scale ? MAX_RAW / theoreticalStd : MAX_RAW;
     const localNBins = Math.ceil((2 * localMaxRaw) / localBinWidth) + 1;
     const out = new Array<number>(localNBins).fill(0);
     for (const v of scaledSamples) {
@@ -66,7 +78,7 @@ export function ScalingHistogram({ preset }: { preset?: ScalingHistogramPreset }
       out[idx] = (out[idx] ?? 0) + 1;
     }
     return { counts: out, binWidth: localBinWidth, maxRaw: localMaxRaw };
-  }, [scaledSamples, scale, std]);
+  }, [scaledSamples, scale, theoreticalStd]);
 
   const maxCount = Math.max(1, ...bins.counts);
 
@@ -78,7 +90,7 @@ export function ScalingHistogram({ preset }: { preset?: ScalingHistogramPreset }
 
   return (
     <SimFrame
-      title="Why we scale attention"
+      title="Variance grows with d_k · 1/√d_k brings it back to 1"
       onReset={() => {
         setDK(16);
         setScale(false);
@@ -90,10 +102,10 @@ export function ScalingHistogram({ preset }: { preset?: ScalingHistogramPreset }
             Q · K distribution · {N_PAIRS.toLocaleString()} random pairs
           </div>
           <div className="text-[11px] text-muted font-mono mb-1 tabular-nums">
-            std dev = {std.toFixed(2)}
+            empirical std = {empiricalStd.toFixed(2)}
             <span className="text-dim">
               {' '}
-              (theoretical: √{dK} = {Math.sqrt(dK).toFixed(2)})
+              (theoretical: {scale ? '1.00' : `√${dK} = ${theoreticalStd.toFixed(2)}`})
             </span>
           </div>
           <svg

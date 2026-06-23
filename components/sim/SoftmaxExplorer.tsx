@@ -62,7 +62,7 @@ export function SoftmaxExplorer({ preset }: { preset?: SoftmaxPreset }) {
   };
 
   return (
-    <SimFrame title="Softmax Explorer" onReset={reset}>
+    <SimFrame title="Edit scores · drag T · watch the distribution" onReset={reset}>
       {/* Scores */}
       <section aria-label="Scores" className="mb-7">
         <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-3">

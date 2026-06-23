@@ -97,7 +97,7 @@ export function AttentionMatrix({ preset }: { preset?: AttentionMatrixPreset }) 
 
   return (
     <SimFrame
-      title="Attention Matrix"
+      title="Q · Kᵀ → scores → softmax → weights"
       onReset={() => {
         setQ(DEFAULT_Q.map(([x, y]) => [x, y] as [number, number]));
         setK(DEFAULT_K.map(([x, y]) => [x, y] as [number, number]));
@@ -147,6 +147,7 @@ export function AttentionMatrix({ preset }: { preset?: AttentionMatrixPreset }) 
               precision={2}
               cellSize={48}
               highlight={hover ?? undefined}
+              onCellHover={setHover}
               ariaLabel="Score matrix: dot product of each Q with each K."
             />
             {showMath && (
@@ -168,6 +169,7 @@ export function AttentionMatrix({ preset }: { preset?: AttentionMatrixPreset }) 
               precision={2}
               cellSize={48}
               highlight={hover ?? undefined}
+              onCellHover={setHover}
               ariaLabel="Attention weight matrix: row-wise softmax of scores."
             />
             <p className="mt-2 text-[11px] text-muted font-mono">
@@ -179,30 +181,9 @@ export function AttentionMatrix({ preset }: { preset?: AttentionMatrixPreset }) 
         </div>
       </div>
 
-      {/* Hover hint matrix — invisible cells that capture pointer events so the
-          user can mouse over a (i,j) cell to highlight it across both heatmaps. */}
-      <div className="mt-4 text-[11px] text-dim font-mono">
-        Tip: hover the matrices — both highlight the same (i, j) so you can
-        see which Q–K pair produced which cell.
-      </div>
-      <div
-        className="grid mt-2"
-        style={{
-          gridTemplateColumns: `repeat(${TOKEN_LABELS.length}, 1fr)`,
-          gap: '2px',
-        }}
-        onMouseLeave={() => setHover(null)}
-      >
-        {TOKEN_LABELS.map((_, i) =>
-          TOKEN_LABELS.map((__, j) => (
-            <div
-              key={`${i}-${j}`}
-              className="h-4"
-              onMouseEnter={() => setHover({ row: i, col: j })}
-            />
-          )),
-        )}
-      </div>
+      <p className="mt-4 text-[11px] text-dim font-mono">
+        Hover any cell — both matrices highlight the same (i, j) so you can see which Q–K pair produced which cell.
+      </p>
     </SimFrame>
   );
 }

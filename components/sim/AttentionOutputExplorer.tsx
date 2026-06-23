@@ -122,21 +122,8 @@ export function AttentionOutputExplorer() {
 
   return (
     <SimFrame
-      title="Attention output"
-      headerAction={
-        <div className="flex items-center gap-3">
-          <div className="text-[11px] text-dim font-mono">
-            out[i] = sum_j W[i][j] * V[j]
-          </div>
-          <button
-            type="button"
-            onClick={reset}
-            className="text-[11px] uppercase tracking-[0.12em] font-mono text-muted hover:text-ink focus-ring transition-colors"
-          >
-            Reset
-          </button>
-        </div>
-      }
+      title="out[i] = Σⱼ W[i][j] · V[j] · drag V to see outputs shift"
+      onReset={reset}
       headerWrap
     >
       <div className="mb-4 flex flex-wrap items-center gap-2">

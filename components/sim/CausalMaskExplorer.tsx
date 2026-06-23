@@ -49,7 +49,7 @@ export function CausalMaskExplorer({ preset }: { preset?: CausalMaskExplorerPres
 
   return (
     <SimFrame
-      title="Causal mask"
+      title="Toggle the mask · upper triangle goes to 0"
       headerAction={
         <div className="flex items-center gap-3">
           <button

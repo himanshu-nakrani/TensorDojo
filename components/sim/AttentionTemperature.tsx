@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import { Slider } from '@/components/sim/primitives/Slider';
 import { AttentionMatrix } from '@/components/sim/AttentionMatrix';
-import { SimFrame } from '@/components/sim/primitives/SimFrame';
 
 export interface AttentionTemperaturePreset {
   temperature?: number;
@@ -27,10 +26,19 @@ export function AttentionTemperature({ preset }: { preset?: AttentionTemperature
   );
 
   return (
-    <SimFrame
-      title="Attention + Temperature"
-      onReset={() => setTemperature(1.0)}
-    >
+    <div className="rounded-xl border border-border bg-surface p-6 sm:p-8 card-surface">
+      <div className="flex items-baseline justify-between mb-5">
+        <h3 className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono">
+          Same matrices · drag T to soften the weights
+        </h3>
+        <button
+          type="button"
+          onClick={() => setTemperature(1.0)}
+          className="text-[11px] uppercase tracking-[0.12em] font-mono text-muted hover:text-ink focus-ring transition-colors"
+        >
+          Reset
+        </button>
+      </div>
 
       <div className="mb-3 flex items-baseline justify-between">
         <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono">
@@ -57,6 +65,6 @@ export function AttentionTemperature({ preset }: { preset?: AttentionTemperature
       <div className="mt-6">
         <AttentionMatrix preset={{ temperature, q: preset?.q, k: preset?.k }} />
       </div>
-    </SimFrame>
+    </div>
   );
 }
