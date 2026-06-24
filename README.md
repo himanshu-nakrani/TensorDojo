@@ -1,170 +1,168 @@
-# AI Learning Lab
+# TensorDojo
 
-> **Learn AI by manipulating it.** Every concept is something you can
-> move, change, and watch respond. Drag a slider, edit a number, read a
-> result.
+> **Learn how LLMs work by manipulating them.** Every concept is something you
+> can drag, edit, or step through — with the math underneath you can read.
 
-![lessons](https://img.shields.io/badge/lessons-41-blue)
-![tests](https://img.shields.io/badge/tests-492-6e9f18)
+[![lessons](https://img.shields.io/badge/lessons-58-blue)](https://tensordojo.vercel.app/lessons)
+[![tests](https://img.shields.io/badge/tests-591-6e9f18)](#stack)
 ![Next.js](https://img.shields.io/badge/Next.js-15-black)
 ![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178c6)
 ![React](https://img.shields.io/badge/React-19-61dafb)
 ![Tailwind](https://img.shields.io/badge/Tailwind-3.4-38bdf8)
-![pnpm](https://img.shields.io/badge/pnpm-9+-f69220)
 
-Forty-one interactive lessons that build up from the dot product to a
-trained, regularized, fine-tuned model — and on through inference
-efficiency, scaling laws, and evaluation. No videos, no quizzes (yet),
-no backend. Every figure is React + SVG you can manipulate; every math
-module is backed by tests that defend against silent numerical breakage.
+**[→ Open it: tensordojo.vercel.app](https://tensordojo.vercel.app)**
 
-The companion `design-spec.md` and `technical-spec.md` describe the
-longer arc — notebooks, the sync engine, the AI tutor — that this build
-is the foundation for.
+58 interactive lessons across 8 tracks. From the dot product at lesson 1
+through attention, the transformer block, training mechanics, regularization,
+RAG, LoRA, DPO, and distillation. No videos. No backend. Every figure is
+React + SVG you can move; every math module is backed by tests.
 
 ---
 
-## Highlights
+## Why this exists
 
-- **Manipulate, don't just read.** Every lesson centers on an
-  interactive figure — sliders, number inputs, live SVG — not a
-  passive diagram. Change an input, watch the math recompute.
-- **No charting library.** Pure React + SVG. No D3, no Canvas, no
-  recharts. The primitives (`VectorCanvas`, `Heatmap`, `BarChart`,
-  `Slider`, `NumberInput`, `SimFrame`, `LossLandscape`) are themed
-  through the same token system as the prose.
-- **Math you can trust.** 40 math modules, 492 tests. Boundary cases —
-  zero vectors, dimension mismatches, NaN propagation — are covered
-  explicitly so a lesson never silently breaks.
-- **Strict end to end.** TypeScript strict, zod-validated lesson
-  metadata at build time, a content linter that rejects cycles and
-  dangling edges, and a headless render-error sweep over all 41 routes.
-- **Light + dark, no flash.** Themes via CSS custom properties with an
-  inline no-flash script. One accent color, reserved exclusively for
-  things you can move or navigate to.
-- **A concept map, not just a list.** `/map` renders the eight tracks
-  as columns with in-track arrows and cross-track prerequisite arcs.
-  Your resume point is highlighted from `localStorage` — no backend.
+Most LLM explainers are write-ups with diagrams. You read them. They make
+sense. You close the tab and a week later the intuition is gone.
 
----
+TensorDojo replaces every diagram with a sim you can grab. The dot-product
+lesson hands you two 2D vectors and a live readout; you drag one of them
+and *feel* what alignment means. The attention lesson hands you four
+queries and four keys on the same plane; rotating one changes the
+softmax weight matrix in real time. The DPO lesson is a draggable point
+on the loss surface, watching the bracketed term move.
 
-## Table of contents
+The pitch in one line: **the math isn't behind a wall of LaTeX, it's the
+thing you're manipulating**.
 
-- [The eight tracks](#the-eight-tracks)
-- [Stack](#stack)
-- [Quick start](#quick-start)
-- [Adding a new lesson](#adding-a-new-lesson)
-- [Project structure](#project-structure)
-- [Design system](#design-system)
-- [Navigation model](#navigation-model)
-- [The longer arc](#the-longer-arc)
+## What's inside
 
----
+Eight tracks, in reading order:
 
-## The eight tracks
+| # | Track | Lessons | Sample of what you can move |
+|---|-------|:-------:|------------------------------|
+| 1 | Foundations of similarity | 3 | Vector tips, matmul cells, projection lines |
+| 2 | How models pick what matters | 5 | Softmax temperature, attention Q/K vectors, causal mask toggle |
+| 3 | How tokens become inputs | 5 | BPE merges, embedding-space tokens, RoPE pair-rotation |
+| 4 | Building the transformer block | 10 | Multi-head rotations, GQA group factor, flash-attn tiles, sliding window |
+| 5 | What the model says, and how it learns | 10 | Sampling strategy, beam frontier, ICL shot count, CoT step, RAG retriever |
+| 6 | How models learn | 10 | Gradient descent η, optimizer race, LR schedule, mixed-precision underflow, checkpoint anchors |
+| 7 | How models don't memorize | 5 | Polynomial degree, weight decay λ, dropout p, BN batch stats |
+| 8 | Adapting models to new tasks | 10 | Layer freeze toggle, quantization bits, LoRA rank, QLoRA memory bars, DPO loss surface |
 
-| # | Track | Lessons | What you manipulate |
-|---|-------|:-------:|---------------------|
-| 1 | Foundations of similarity | 2 | Vectors, projections, cosine angles |
-| 2 | How models pick what matters | 5 | Softmax temperature, attention scores, causal masks |
-| 3 | How tokens become inputs | 4 | BPE merges, embedding planes, RoPE rotations |
-| 4 | Building the transformer block | 7 | Heads, residuals, FFN width, MoE routing |
-| 5 | What the model says, and how it learns | 5 | Sampling, KV cache, speculative drafts, loss curves |
-| 6 | How models learn | 6 | Gradients, optimizers, schedules, scaling budgets |
-| 7 | How models don't memorize | 5 | Dropout rate, batchnorm stats, early stopping |
-| 8 | Adapting models to new tasks | 7 | Layer freezing, quantization bits, LoRA rank, RLHF |
+Total: **58 lessons, 84 lesson-specific sims, ~10 hours of reading**.
 
 <details>
-<summary><strong>Full lesson list (41 lessons, in reading order)</strong></summary>
+<summary><strong>Full lesson list (58, in reading order)</strong></summary>
 
 **Foundations of similarity**
 1. Dot product as alignment
-2. Vector projection and cosine similarity
+2. Matrix multiplication: the dot product, stacked
+3. Vector projection and cosine similarity
 
 **How models pick what matters**
-3. Softmax: turning scores into a distribution
-4. Attention scores: who attends to whom
-5. Attention output: the weighted sum of values
-6. Why we scale attention by √d_k
-7. Causal masking: don't peek at the future
+4. Softmax: turning scores into a distribution
+5. Attention scores: who attends to whom
+6. Attention output: the weighted sum of values
+7. Why we scale attention by √d_k
+8. Causal masking: don't peek at the future
 
 **How tokens become inputs**
-8. Tokenization: from strings to ids
-9. Token embeddings: from ids to vectors
-10. Positional encoding: giving order to a bag
-11. RoPE: rotation, not addition
+9. Tokenization: from strings to ids
+10. Token embeddings: from ids to vectors
+11. Weight tying: one matrix, two jobs
+12. Positional encoding: giving order to a bag
+13. RoPE: rotation, not addition
 
 **Building the transformer block**
-12. Multi-head attention: parallel views
-13. Grouped-query attention: shrinking the cache
-14. Flash attention: same math, different memory pattern
-15. Residual connections + layer normalization
-16. Feed-forward network: per-token rewriting
-17. Mixture of experts: more parameters at the same compute
-18. The transformer block: putting it all together
+14. Multi-head attention: parallel views of the same sequence
+15. Grouped-query attention: shrinking the cache
+16. Flash attention: same math, different memory pattern
+17. Sliding-window attention: only the last w tokens
+18. Residual connections + layer normalization
+19. RMSNorm: layer norm without the mean
+20. Activations: the bend that makes a network non-linear
+21. Feed-forward network: per-token rewriting
+22. Mixture of experts: more parameters at the same compute
+23. The transformer block: putting it all together
 
 **What the model says, and how it learns**
-19. Sampling and decoding: from logits to a token
-20. KV cache: making inference fast
-21. Speculative decoding: a small model drafts, the big one verifies
-22. Cross-entropy: how the model knows it was wrong
-23. Gradient descent: walking the loss downhill
+24. Sampling and decoding: from logits to a token
+25. Beam search: looking k steps ahead
+26. In-context learning: examples in the prompt change the answer
+27. Chain-of-thought: thinking out loud as a sampling pattern
+28. RAG: retrieve, then generate
+29. KV cache: making inference fast
+30. Speculative decoding: a small model drafts, the big one verifies
+31. Cross-entropy: how the model knows it was wrong
+32. Gradient descent: walking the loss downhill
+33. Loss landscapes: what gradient descent actually walks on
 
 **How models learn**
-24. Backpropagation: chain rule for the whole network
-25. Stochastic gradient descent: training with batches
-26. Optimizers: SGD, momentum, Adam
-27. Learning-rate schedules: how aggressively to step, over time
-28. Training a tiny model, end to end
-29. Scaling laws: how big should the model be?
+34. Vanishing and exploding gradients
+35. Weight initialization: starting at variance 1
+36. Backpropagation: chain rule for the whole network
+37. Stochastic gradient descent: training with batches
+38. Optimizers: SGD, momentum, Adam
+39. Learning-rate schedules: how aggressively to step, over time
+40. Mixed precision: bf16 for compute, fp32 for accumulate
+41. Gradient checkpointing: throw activations away, recompute them
+42. Training a tiny model, end to end
+43. Scaling laws: how big should the model be?
 
 **How models don't memorize**
-30. Overfitting: when the model memorizes the data
-31. L2 weight decay: penalizing big weights
-32. Dropout: training an ensemble for free
-33. Batch normalization: stabilizing activations during training
-34. Early stopping + data augmentation: cheap regularization that just works
+44. Overfitting: when the model memorizes the data
+45. L2 weight decay: penalizing big weights
+46. Dropout: training an ensemble for free
+47. Batch normalization: stabilizing activations during training
+48. Early stopping + data augmentation: cheap regularization that just works
 
 **Adapting models to new tasks**
-35. Pretraining vs fine-tuning
-36. Freezing vs full fine-tuning
-37. Catastrophic forgetting
-38. Quantization: storing 4 bits per weight
-39. LoRA: low-rank adaptation
-40. Evaluation: how the field measures models
-41. Instruction tuning & RLHF intuition
+49. Pretraining vs fine-tuning
+50. Freezing vs full fine-tuning
+51. Catastrophic forgetting
+52. Quantization: storing 4 bits per weight
+53. LoRA: low-rank adaptation
+54. QLoRA: 4-bit base + LoRA on a single GPU
+55. Evaluation: how the field measures models
+56. Instruction tuning & RLHF intuition
+57. DPO: skip the reward model
+58. Distillation: small model learns from big model
 
 </details>
 
-A `/map` page renders the eight tracks as columns on a single canvas.
-Lessons within a track are linked by short vertical arrows; cross-track
-prerequisites are drawn as dashed accent arcs. The lesson you most
-recently visited is highlighted as the resume point — visit tracking is
-`localStorage`-only, no backend.
+## How to use it
+
+- **Start at lesson 1** if you're new — the curriculum builds.
+- **Cmd-K** (or **Ctrl-K**) opens a search palette from anywhere; jump to
+  any of the 58 by title, summary, or track.
+- **Concept map** (`/map`) shows the eight tracks as columns with cross-track
+  prerequisite arcs; useful when you want to land on a specific topic and
+  follow its dependencies backward.
+- **Resume point** is highlighted on `/` and `/map` from `localStorage` —
+  no account, no backend.
+- **←/→** navigates prev/next within a lesson when no input is focused.
 
 ---
 
-## Stack
+## How it's built
 
 | Layer | Choice |
 |-------|--------|
-| Framework | Next.js 15, App Router, TypeScript strict |
+| Framework | Next.js 15 (App Router), TypeScript strict |
 | Package manager | pnpm |
-| Styling | Tailwind CSS, themed via CSS custom properties (channel pattern: tokens are bare `R G B` triplets consumed via `rgb(var(--x) / <alpha-value>)`, so the same classes work in both themes) |
-| Content | MDX via `@next/mdx`; math via `remark-math` + `rehype-katex` |
-| Figures | React + SVG (no D3, no Canvas, no charting library) |
-| State | `useState` / `useReducer` only — no state library |
+| Styling | Tailwind CSS, themed via CSS custom properties (`rgb(var(--token) / <alpha>)` channel pattern — same classes work in light + dark) |
+| Content | MDX (`@next/mdx`); math via `remark-math` + `rehype-katex` |
+| Figures | React + SVG. Zero charting libraries. |
+| State | `useState` / `useReducer` only |
+| Search | [cmdk](https://github.com/pacocoursey/cmdk), client-side index |
 | Validation | `zod` validates lesson metadata at build time |
-| Testing | Vitest, 492 tests across 40 files |
+| Testing | Vitest, 591 tests across 52 files |
+| Deploy | Vercel (static export, per-route OG cards via `ImageResponse`) |
 
-Forty-one lessons, 492 tests, ~118 kB first-load JS on the home page,
-~141 kB on a lesson route (37 kB page + 104 kB shared; the heavy
-centerpieces — BlockPipeline, TrainingEndToEnd, OptimizerRace,
-OverfittingExplorer, BatchNormExplorer, EarlyStoppingAugmentationExplorer,
-SequentialTaskTrainer — are in lazy chunks, so the largest individual
-lesson chunk stays under the brief's 25 kB target). No backend yet.
-
----
+**Bundle**: ~105 kB shared first-load JS. Heavy centerpiece sims
+(BlockPipeline, TrainingEndToEnd, OptimizerRace, OverfittingExplorer,
+BatchNormExplorer, EarlyStoppingAugmentationExplorer, SequentialTaskTrainer)
+live in lazy chunks so an individual lesson route stays under ~150 kB.
 
 ## Quick start
 
@@ -185,7 +183,7 @@ Tests, content lint, and the full quality gates:
 ```bash
 pnpm test                    # vitest, math suites
 pnpm lint:content            # zod-validated cross-reference check
-pnpm build                   # strict TS, full static export
+pnpm build                   # strict TS, full static export, OG cards
 ```
 
 Requires Node 18+ and pnpm 9+.
@@ -194,8 +192,7 @@ Requires Node 18+ and pnpm 9+.
 
 ## Adding a new lesson
 
-This is the pattern used for all forty-one live lessons — no
-speculation.
+The pattern used for all 58 live lessons — no speculation.
 
 <details>
 <summary><strong>Step-by-step (6 steps)</strong></summary>
@@ -231,10 +228,9 @@ speculation.
 3. **If the lesson needs a new interactive primitive**
    (a custom slider, heatmap variant, etc.), add it under
    `components/sim/primitives/`. The existing primitives
-   (`VectorCanvas`, `Heatmap`, `BarChart`, `Slider`, `NumberInput`)
-   are themed via the same token system; any new primitive must use
-   the tokens, not hardcoded colors. See the Design system section
-   below for the rationale.
+   (`VectorCanvas`, `Heatmap`, `BarChart`, `Slider`, `NumberInput`,
+   `LossLandscape`, `SimFrame`) are themed via the same token system;
+   any new primitive must use the tokens, not hardcoded colors.
 
 4. **If the lesson needs new math**, put it in
    `lib/math/<name>.ts` with `lib/math/<name>.test.ts` next to it.
@@ -249,60 +245,48 @@ speculation.
    which.
 
 6. **Run the gates**: `pnpm lint:content && pnpm test && pnpm build`.
-   `lint:content` rejects cycles and dangling edges.
+   `lint:content` rejects cycles and dangling edges; the build
+   regenerates the per-lesson OG card automatically.
 
 </details>
-
----
 
 ## Project structure
 
 ```
 TensorDojo/
 ├── app/
-│   ├── layout.tsx                 # root layout, inline no-flash theme script
-│   ├── page.tsx                   # landing: 8 track groups
-│   ├── globals.css                # design tokens (light default, .dark override)
-│   ├── not-found.tsx              # 404
-│   ├── lessons/[slug]/page.tsx    # dynamic SSG route, MDX code-split per slug
-│   └── map/page.tsx               # concept map
+│   ├── layout.tsx                       # root layout, inline no-flash theme, Cmd-K palette
+│   ├── page.tsx                         # landing
+│   ├── opengraph-image.tsx              # root OG card
+│   ├── lessons/
+│   │   ├── page.tsx                     # full lesson directory
+│   │   └── [slug]/
+│   │       ├── page.tsx                 # dynamic SSG route, MDX code-split per slug
+│   │       └── opengraph-image.tsx      # per-lesson OG card
+│   └── map/page.tsx                     # concept map
 ├── components/
-│   ├── lesson/                    # LessonShell, Workbench, WorkbenchItem,
-│   │                              # Callout, MathCode, PrevNext, VisitTracker, InteractiveSkeleton
-│   ├── sim/                       # Interactive figures (one per lesson)
-│   │   ├── primitives/            # VectorCanvas, Heatmap, BarChart,
-│   │   │                          # Slider, NumberInput, SimFrame, LossLandscape
-│   │   └── …                      # 72 lesson-specific composers
-│   ├── concept-graph/             # ConceptGraphView (SVG 2D map)
-│   ├── home/                      # LessonCardList for the landing
-│   └── theme/                     # ThemeToggle
+│   ├── lesson/                          # LessonShell, Workbench, Callout, MathCode, PrevNext, …
+│   ├── sim/                             # 84 lesson-specific composers
+│   │   └── primitives/                  # VectorCanvas, Heatmap, BarChart, Slider, NumberInput, SimFrame, LossLandscape
+│   ├── search/SearchPalette.tsx         # Cmd-K palette (cmdk)
+│   ├── concept-graph/                   # ConceptGraphView (SVG 2D map)
+│   ├── home/                            # landing-page composition (hero, tracks, FAQ, footer)
+│   └── theme/                           # TopNav, ThemeToggle
 ├── content/
-│   ├── lessons/<slug>/
-│   │   ├── meta.ts
-│   │   ├── interactives.tsx
-│   │   └── lesson.mdx
-│   └── concepts/graph.yaml
+│   ├── lessons/<slug>/                  # meta.ts + interactives.tsx + lesson.mdx
+│   └── concepts/graph.yaml              # prerequisite DAG
 ├── lib/
-│   ├── math/                      # 40 modules: softmax, linalg, attention,
-│   │                              # multihead, gqa, flashattn, layernorm, ffn,
-│   │                              # gelu, mask, positional, rope, sampling,
-│   │                              # cross-entropy, gradient-descent, kvcache,
-│   │                              # specdecode, moe, scalinglaws, transformer-block
-│   ├── content/                   # YAML loaders + zod schemas + map-data
-│   ├── progress/                  # visits.ts (localStorage tracking)
-│   ├── theme/                     # use-theme hook
-│   ├── lessons-meta.ts            # client-safe manifest + TRACKS
-│   ├── lessons.ts                 # server-side registry + MDX loaders
-│   └── lesson-manifest.ts         # interactives manifest
-├── scripts/
-│   ├── lint-content.ts            # zod-validated cross-reference check
-│   ├── _verify.mjs                # headless render-error sweep (puppeteer)
-│   └── …                          # screenshot + baseline capture helpers
-├── docs/screenshots/              # before/after captures, by phase
-└── package.json
+│   ├── math/                            # 53 modules with co-located tests (591 tests total)
+│   ├── content/                         # YAML loaders + zod schemas + map-data
+│   ├── progress/                        # visits.ts (localStorage tracking)
+│   ├── theme/                           # use-theme hook
+│   ├── lessons-meta.ts                  # client-safe manifest + TRACKS + trackForSlug
+│   ├── lessons.ts                       # server-side registry + MDX loaders
+│   └── lesson-manifest.ts               # interactives manifest
+└── scripts/
+    ├── lint-content.ts                  # zod-validated cross-reference check
+    └── _verify.mjs                      # headless render-error sweep (puppeteer)
 ```
-
----
 
 ## Design system
 
@@ -313,20 +297,10 @@ config as `rgb(var(--token) / <alpha-value>)`. Existing classes
 (`bg-bg`, `text-ink`, `border-border`, `bg-bg/40`) work in both themes
 without per-component overrides.
 
-**Tokens** (excerpt — full set defined in `app/globals.css`):
-
-| Token | Role |
-|-------|------|
-| `--bg`, `--bg-elevated` | page + card surfaces |
-| `--ink`, `--muted`, `--dim` | three levels of text |
-| `--border`, `--border-strong` | dividers |
-| `--accent`, `--accent-soft`, `--accent-fg` | the manipulable signal |
-
-**One accent, one rule.** The accent is reserved for the things the
-reader can move (sliders, knobs, dominant bars) and the things the
-reader is navigating to (resume node on the map, hover/focus states).
-Static chrome — headings, body text, borders, code fences — never
-uses it.
+**One accent, one rule.** The accent (teal) is reserved for the things
+the reader can move (sliders, knobs, dominant bars) and the things the
+reader is navigating to (resume node, hover/focus states). Static chrome
+— headings, body text, borders, code fences — never uses it.
 
 **Typography**: Inter (UI prose) + JetBrains Mono (numbers, labels,
 code) via `next/font`.
@@ -334,33 +308,17 @@ code) via `next/font`.
 **Math**: KaTeX via `remark-math` + `rehype-katex`. Display mode for
 the headline equation of a section, inline for everything else.
 
-**Numbers**: `tabular-nums` everywhere a value is read; min-width on
-slider value columns so digit changes don't reflow the row.
+## Status
 
----
+The curriculum is complete enough to launch. What's still ahead:
 
-## Navigation model
+- Per-lesson quizzes (a `<Check>` MDX component, ungated)
+- Capstone notebooks: take the toy sims into real Hugging Face / PyTorch
+- Custom domain
+- Analytics + an actual launch post
 
-- **Home** (`/`) — eight track groups, each lesson a card. Two
-  forward links to `/map`.
-- **Lesson** (`/lessons/<slug>`) — two-column layout: prose on the
-  left, an interactive workbench on the right with the lesson's
-  figures. Back-link to `/` at the top. Prev/next at the bottom,
-  with the destination's track label called out when crossing into
-  a new track. Keyboard ←/→ navigate prev/next when no input is
-  focused. After 10 s on the page, the lesson is marked visited in
-  `localStorage`.
-- **Map** (`/map`) — eight tracks as columns of a single SVG canvas.
-  In-track arrows are short verticals; cross-track prerequisites
-  are dashed accent arcs. The most recently visited lesson is
-  highlighted with an accent ring and a "Resume" pill.
-- **404** — leads with `← Home`, lists the map as secondary.
+Issues and PRs welcome.
 
----
+## License
 
-## The longer arc
-
-The full vision — notebooks, the sync engine, the AI tutor, accounts,
-quizzes with misconception diagnosis, hosted code execution — is in
-`design-spec.md` and `technical-spec.md`. They are *where this is
-going*, not *what this build is*.
+MIT.
