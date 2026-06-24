@@ -276,3 +276,8 @@ export function prevNext(slug: string): { prev?: string; next?: string } {
     next: i < order.length - 1 ? order[i + 1] : undefined,
   };
 }
+
+/** Look up which track a slug belongs to. Returns undefined if unknown. */
+export function trackForSlug(slug: string): LessonTrack | undefined {
+  return TRACKS.find((t) => t.slugs.includes(slug));
+}

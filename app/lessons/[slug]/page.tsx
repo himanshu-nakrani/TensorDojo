@@ -24,11 +24,27 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const { slug } = await params;
   const meta = getLessonMeta(slug);
   if (!meta) {
-    return { title: 'AI Learning Lab' };
+    return { title: 'TensorDojo' };
   }
+  const url = `/lessons/${slug}`;
   return {
-    title: `${meta.title} — AI Learning Lab`,
+    title: meta.title,
     description: meta.summary,
+    alternates: { canonical: url },
+    openGraph: {
+      type: 'article',
+      title: meta.title,
+      description: meta.summary,
+      url,
+      // Next attaches the opengraph-image.tsx output for this route
+      // automatically; we leave `images` unset so the file-system
+      // convention wins.
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: meta.title,
+      description: meta.summary,
+    },
   };
 }
 

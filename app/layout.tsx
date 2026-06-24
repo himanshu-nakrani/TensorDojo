@@ -15,10 +15,31 @@ const jetbrainsMono = JetBrains_Mono({
   display: 'swap',
 });
 
+const SITE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL ?? 'https://tensordojo.vercel.app';
+
 export const metadata: Metadata = {
-  title: 'AI Learning Lab',
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: 'TensorDojo — learn how LLMs work by manipulating them',
+    template: '%s · TensorDojo',
+  },
   description:
-    'Learn AI engineering by manipulating, implementing, and deploying every concept.',
+    '58 interactive lessons across 8 tracks. Every concept is a sim you can drag, with the math underneath you can read.',
+  openGraph: {
+    type: 'website',
+    siteName: 'TensorDojo',
+    title: 'TensorDojo — learn how LLMs work by manipulating them',
+    description:
+      '58 interactive lessons across 8 tracks. Every concept is a sim you can drag, with the math underneath you can read.',
+    url: SITE_URL,
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'TensorDojo — learn how LLMs work by manipulating them',
+    description:
+      '58 interactive lessons across 8 tracks. Every concept is a sim you can drag, with the math underneath you can read.',
+  },
 };
 
 /**
