@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Inter, JetBrains_Mono } from 'next/font/google';
 import { TopNav } from '@/components/theme/TopNav';
+import { SearchPaletteProvider } from '@/components/search/SearchPalette';
 import './globals.css';
 
 const inter = Inter({
@@ -88,8 +89,10 @@ export default function RootLayout({
         >
           Skip to content
         </a>
-        <TopNav />
-        {children}
+        <SearchPaletteProvider>
+          <TopNav />
+          {children}
+        </SearchPaletteProvider>
       </body>
     </html>
   );

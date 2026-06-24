@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import clsx from 'clsx';
 import { ThemeToggle } from './ThemeToggle';
+import { useSearchPalette } from '@/components/search/SearchPalette';
 
 interface NavLink {
   href: string;
@@ -41,6 +42,15 @@ export function TopNav() {
   const drawerRef = useRef<HTMLDivElement>(null);
   const toggleRef = useRef<HTMLButtonElement>(null);
   const wasOpen = useRef(false);
+  const search = useSearchPalette();
+  // Show ⌘ on Mac, Ctrl on everything else. We can only detect this
+  // on the client, so render a placeholder server-side and swap in
+  // the right glyph after hydration.
+  const [isMac, setIsMac] = useState(false);
+  useEffect(() => {
+    setIsMac(/Mac|iPhone|iPad/i.test(navigator.userAgent));
+  }, []);
+  const modKey = isMac ? '⌘' : 'Ctrl';
 
   // Close the drawer whenever the route changes.
   useEffect(() => {
@@ -142,12 +152,32 @@ export function TopNav() {
                 </Link>
               );
             })}
+            <button
+              type="button"
+              onClick={search.open}
+              aria-label="Search lessons"
+              className="focus-ring inline-flex h-9 items-center gap-2 rounded-md px-3 text-[13px] font-mono text-fg-muted hover:text-ink transition-colors"
+            >
+              <DesktopSearchIcon />
+              <span>Search</span>
+              <kbd className="rounded border border-border px-1 py-0.5 text-[10px] text-fg-subtle tabular-nums">
+                {modKey}K
+              </kbd>
+            </button>
             <span className="ml-2">
               <ThemeToggle />
             </span>
           </nav>
 
           <div className="flex items-center gap-1 md:hidden">
+            <button
+              type="button"
+              onClick={search.open}
+              aria-label="Search lessons"
+              className="focus-ring inline-flex h-11 w-11 items-center justify-center rounded-md text-fg-muted hover:text-ink hover:bg-bg-elevated-hover transition-colors"
+            >
+              <DesktopSearchIcon />
+            </button>
             <ThemeToggle />
             <button
               ref={toggleRef}
@@ -200,6 +230,25 @@ export function TopNav() {
         </div>
       )}
     </>
+  );
+}
+
+function DesktopSearchIcon() {
+  return (
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 16 16"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <circle cx="7" cy="7" r="4.5" />
+      <line x1="10.5" y1="10.5" x2="14" y2="14" />
+    </svg>
   );
 }
 
