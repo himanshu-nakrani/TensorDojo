@@ -12,6 +12,10 @@
 
 **[→ Open it: tensordojo.vercel.app](https://tensordojo.vercel.app)**
 
+<p align="center">
+  <img src="docs/screenshots/readme/dark/01-home.png" alt="TensorDojo landing page — Learn AI by manipulating it. A live dot-product demo with two draggable 2D vectors sits on the right of the hero." width="100%">
+</p>
+
 58 interactive lessons across 8 tracks. From the dot product at lesson 1
 through attention, the transformer block, training mechanics, regularization,
 RAG, LoRA, DPO, and distillation. No videos. No backend. Every figure is
@@ -33,6 +37,11 @@ on the loss surface, watching the bracketed term move.
 
 The pitch in one line: **the math isn't behind a wall of LaTeX, it's the
 thing you're manipulating**.
+
+| Attention scores | RoPE | Loss landscapes |
+|---|---|---|
+| ![Attention-scores lesson screenshot showing Q and K vectors on a 2D plane next to a live score and softmax-weight heatmap.](docs/screenshots/readme/light/lessons-attention-scores.png) | ![RoPE lesson screenshot showing two rotated vectors on a unit-circle canvas and the dot-product readout.](docs/screenshots/readme/light/lessons-rope.png) | ![Loss-landscapes lesson screenshot showing a 2D loss surface heatmap with an SGD trajectory marker.](docs/screenshots/readme/light/lessons-loss-landscapes.png) |
+| Rotate a query vector, watch the row of the weight matrix sharpen or flatten. | Drag the position sliders; the rotated dot product depends only on m − n. | Click anywhere on the surface and watch SGD walk to a stationary point. |
 
 ## What's inside
 
@@ -129,6 +138,15 @@ Total: **58 lessons, 84 lesson-specific sims, ~10 hours of reading**.
 58. Distillation: small model learns from big model
 
 </details>
+
+The `/map` page shows the same eight tracks as columns of a single SVG
+canvas. In-track arrows are short verticals; cross-track prerequisites
+are dashed accent arcs. Your last-visited lesson is highlighted as the
+resume point.
+
+<p align="center">
+  <img src="docs/screenshots/readme/light/map.png" alt="Concept map: eight columns, one per track, with cross-track prerequisite arcs drawn as dashed accent curves." width="100%">
+</p>
 
 ## How to use it
 
