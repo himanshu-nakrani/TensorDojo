@@ -15,9 +15,15 @@ interface MathCodeProps {
 }
 
 /**
- * Side-by-side math + code primitive. The visual contract: math on the left,
- * code on the right, both inside the same card. On narrow screens the columns
- * stack.
+ * Math + code primitive. Math on top, code below, both inside the same
+ * card at the full prose-column width.
+ *
+ * Originally side-by-side on desktop, but a side-by-side layout at the
+ * lesson's `max-w-prose` parent gave each column ~340px — narrower than
+ * a typical 70-80 char Python line, so every figure forced horizontal
+ * scroll. Stacking each block at full prose width is dramatically
+ * easier to read with negligible loss of "compare math to code" since
+ * the reader's eye covers the full vertical span anyway.
  */
 export function MathCode({ math, code, caption, className }: MathCodeProps) {
   const html = katex.renderToString(math, {
@@ -33,11 +39,13 @@ export function MathCode({ math, code, caption, className }: MathCodeProps) {
         className,
       )}
     >
-      <div className="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-border">
+      <div className="divide-y divide-border">
         <div className="p-6 flex flex-col">
           <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-4">
             Math
           </div>
+          {/* Math may still need horizontal scroll for wide matrices /
+              multi-row equations that KaTeX can't break. */}
           <div
             className="text-ink flex-1 flex items-center justify-center overflow-x-auto py-2 [&_.katex-display]:my-0 [&_.katex-display]:text-ink"
             dangerouslySetInnerHTML={{ __html: html }}
@@ -47,6 +55,10 @@ export function MathCode({ math, code, caption, className }: MathCodeProps) {
           <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-4">
             Code
           </div>
+          {/* Code stays in a <pre> (no soft wrap — breaking Python
+              lines mid-statement hurts readability more than the rare
+              scroll). At full prose width an 80-char line fits without
+              scroll on every viewport above ~640px. */}
           <pre className="m-0 font-mono text-[13px] leading-relaxed text-ink overflow-x-auto">
             <code>{code}</code>
           </pre>
