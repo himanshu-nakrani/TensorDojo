@@ -36,13 +36,13 @@
   --border-strong: 207 201 191;
 
   /* The single accent (design-spec §8) — manipulated things only. */
-  --accent: 15 118 110;           /* teal-700; 5.25:1 on --bg */
-  --accent-hover: 17 94 89;       /* teal-800 */
+  --accent: 21 128 61;            /* green-700; ~5.4:1 on --bg */
+  --accent-hover: 22 101 52;      /* green-800 */
   --accent-fg: 255 255 255;       /* text/icon on accent surfaces */
 
   /* Charting tokens */
   --grid: 236 232 225;
-  --positive: 15 118 110;
+  --positive: 21 128 61;
   --negative: 185 28 28;          /* red-700; AA on --bg */
 
   /* Categorical series colors — used by sims that need to plot
@@ -50,22 +50,22 @@
      optimizer traces, four batch-size traces). Distinct from
      --accent/--positive/--negative; chosen to be perceptually
      distinguishable and theme-aware. */
-  --series-1: 15 118 110;         /* teal — same hue as accent in light */
+  --series-1: 21 128 61;          /* green — same hue as accent in light */
   --series-2: 217 119 6;          /* amber-600 */
   --series-3: 124 58 237;         /* violet-600 */
   --series-4: 14 116 144;         /* cyan-700 */
 
   /* Pre-baked translucent variants — kept as full rgba because they
      describe a specific visual, not a "themed color at 30%". */
-  --accent-soft: rgba(15, 118, 110, 0.10);
-  --accent-faint: rgba(15, 118, 110, 0.06);
-  --accent-dim: rgba(15, 118, 110, 0.32);
+  --accent-soft: rgba(21, 128, 61, 0.10);
+  --accent-faint: rgba(21, 128, 61, 0.06);
+  --accent-dim: rgba(21, 128, 61, 0.32);
 
   /* Hover state for the elevated surface. */
   --bg-elevated-hover: 244 241 236;
 
   /* Glow color for the focus ring on inputs. */
-  --accent-shadow: rgba(15, 118, 110, 0.18);
+  --accent-shadow: rgba(21, 128, 61, 0.18);
 
   /* Pre-baked negative bar bg (the "wrong answer" red with built-in alpha). */
   --negative-bg: rgba(185, 28, 28, 0.7);
@@ -78,6 +78,13 @@
   /* Heatmap cell-number halo — matches --bg so text reads on any
      cell tint. Inline-styled as `rgb(var(--cell-halo))`. */
   --cell-halo: 251 250 248;
+
+  /* Graph-paper background lines. Two perpendicular families of
+     thin lines at very low opacity — minor at 24px, major every 5
+     (120px). The pattern reinforces the "this is a math notebook"
+     metaphor without making the page busy. */
+  --paper-minor: rgba(31, 26, 22, 0.035);
+  --paper-major: rgba(31, 26, 22, 0.07);
 }
 
 :root.dark {
@@ -97,30 +104,35 @@
   --border: 41 48 56;              /* was 33 38 45 — visible against #161b22 */
   --border-strong: 62 70 80;       /* was 48 54 61 */
 
-  --accent: 45 212 191;
-  --accent-hover: 94 234 212;
+  --accent: 74 222 128;            /* green-400 — bright on the GH dark canvas */
+  --accent-hover: 134 239 172;     /* green-300 */
   --accent-fg: 13 17 23;
 
   --grid: 33 38 45;
-  --positive: 45 212 191;
+  --positive: 74 222 128;
   --negative: 248 113 113;
 
-  --series-1: 45 212 191;         /* teal */
-  --series-2: 251 191 36;         /* amber-400 */
-  --series-3: 167 139 250;        /* violet-400 */
-  --series-4: 56 189 248;         /* sky-400 */
+  --series-1: 74 222 128;          /* green */
+  --series-2: 251 191 36;          /* amber-400 */
+  --series-3: 167 139 250;         /* violet-400 */
+  --series-4: 56 189 248;          /* sky-400 */
 
-  --accent-soft: rgba(45, 212, 191, 0.16);
-  --accent-faint: rgba(45, 212, 191, 0.10);
-  --accent-dim: rgba(45, 212, 191, 0.28);
+  --accent-soft: rgba(74, 222, 128, 0.16);
+  --accent-faint: rgba(74, 222, 128, 0.10);
+  --accent-dim: rgba(74, 222, 128, 0.28);
 
   --bg-elevated-hover: 29 36 46;
-  --accent-shadow: rgba(45, 212, 191, 0.15);
+  --accent-shadow: rgba(74, 222, 128, 0.15);
 
   --negative-bg: rgba(248, 113, 113, 0.7);
   --shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.02);
 
   --cell-halo: 13 17 23;
+
+  /* On the GH dark canvas the grid lines need to be lighter than
+     the background, not darker. Same minor/major split. */
+  --paper-minor: rgba(255, 255, 255, 0.025);
+  --paper-major: rgba(255, 255, 255, 0.05);
 }
 
 /* ===========================================================================
@@ -154,6 +166,39 @@
   padding: 0;
   margin: -1px;
   border: 0;
+}
+
+/* ===========================================================================
+   Graph-paper background.
+
+   Drawn on the body with four stacked linear gradients: a major and
+   a minor grid line in each axis. The minor grid is at 24px; the
+   major lands every 5 cells (120px). Opacities are token-driven
+   (--paper-minor, --paper-major) and theme-aware: dark lines on the
+   warm off-white in light mode, faint white lines on the GH dark
+   canvas in dark mode.
+
+   background-attachment: fixed so the grid stays anchored to the
+   viewport, not the document — scrolling a long lesson doesn't
+   sweep the grid along, which would be distracting at our pattern
+   density.
+
+   The body's Tailwind `bg-bg` class still sets the solid color
+   underneath; this rule only adds the lines on top.
+   =========================================================================== */
+body {
+  background-image:
+    linear-gradient(to right, var(--paper-major), var(--paper-major) 1px, transparent 1px, transparent),
+    linear-gradient(to bottom, var(--paper-major), var(--paper-major) 1px, transparent 1px, transparent),
+    linear-gradient(to right, var(--paper-minor), var(--paper-minor) 1px, transparent 1px, transparent),
+    linear-gradient(to bottom, var(--paper-minor), var(--paper-minor) 1px, transparent 1px, transparent);
+  background-size:
+    120px 120px,
+    120px 120px,
+    24px 24px,
+    24px 24px;
+  background-position: 0 0;
+  background-attachment: fixed;
 }
 
 /* Selection — same accent on both themes. */

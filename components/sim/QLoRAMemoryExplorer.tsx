@@ -18,7 +18,7 @@ const REGIMES: { id: Regime; label: string }[] = [
 ];
 
 const COMPONENT_COLOR = {
-  base: 'fill-[rgb(15,118,110)]',     // teal
+  base: 'fill-[rgb(21,128,61)]',      // green (brand)
   adapter: 'fill-[rgb(67,56,202)]',   // indigo
   gradients: 'fill-[rgb(180,83,9)]',  // amber
   optimizer: 'fill-[rgb(220,38,38)]', // red

@@ -189,8 +189,8 @@ export function OverfittingExplorer() {
               </span>
             </div>
             <p className="text-[11px] text-fg-subtle font-mono mt-2 leading-relaxed">
-              Gray dashed is the true sin(2x) curve. The teal line is the
-              polynomial fit; circles are the data. Train = filled teal,
+              Gray dashed is the true sin(2x) curve. The green line is the
+              polynomial fit; circles are the data. Train = filled green,
               test = filled red.
             </p>
           </div>
@@ -229,7 +229,7 @@ function FitPlot({
       viewBox={`0 0 ${PLOT_W} ${PLOT_H}`}
       className="w-full h-auto bg-bg/40 rounded"
       role="img"
-      aria-label="Polynomial fit on a noisy sin(2x) dataset. The gray dashed curve is the true function; the teal curve is the fit; filled teal circles are training points, filled red circles are test points."
+      aria-label="Polynomial fit on a noisy sin(2x) dataset. The gray dashed curve is the true function; the green curve is the fit; filled green circles are training points, filled red circles are test points."
     >
       {/* Axes */}
       <line
@@ -257,7 +257,7 @@ function FitPlot({
         strokeDasharray="3 3"
         opacity={0.7}
       />
-      {/* Fit curve (teal) */}
+      {/* Fit curve (accent) */}
       <polyline
         points={fitPath}
         fill="none"
@@ -275,7 +275,7 @@ function FitPlot({
           opacity={0.85}
         />
       ))}
-      {/* Train points (teal filled) */}
+      {/* Train points (accent filled) */}
       {xsTrain.map((x, i) => (
         <circle
           key={`train-${i}`}

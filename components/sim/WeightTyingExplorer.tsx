@@ -43,7 +43,7 @@ const TOKENS: Token[] = [
 ];
 
 const CLUSTER_COLOR: Record<Token['cluster'], string> = {
-  animal: 'fill-[rgb(15,118,110)]',
+  animal: 'fill-[rgb(21,128,61)]',
   function: 'fill-[rgb(180,83,9)]',
   verb: 'fill-[rgb(67,56,202)]',
 };

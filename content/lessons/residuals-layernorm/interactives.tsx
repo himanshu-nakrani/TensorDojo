@@ -20,7 +20,7 @@ export const interactives: readonly InteractiveEntry[] = [
     description:
       'A stack of N toy transformer-like sublayers (W·x + b then tanh). Toggle residual and layernorm; see activation and gradient norms per layer.',
     caption:
-      'Drag the stack-depth slider from 1 to 24 layers. The teal line is the per-layer activation norm; the red line is the per-layer gradient norm. With both on, both lines stay roughly flat. Flip residual off and the gradient line diverges; flip layernorm off and the activation line drifts.',
+      'Drag the stack-depth slider from 1 to 24 layers. The green line is the per-layer activation norm; the red line is the per-layer gradient norm. With both on, both lines stay roughly flat. Flip residual off and the gradient line diverges; flip layernorm off and the activation line drifts.',
     Component: ResidualStackExplorer,
   },
   {

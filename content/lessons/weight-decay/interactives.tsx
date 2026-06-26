@@ -29,7 +29,7 @@ export const interactives: readonly InteractiveEntry[] = [
     description:
       'Visit a few λ values; the loss-vs-λ curve records your trace. The classic U-shape: too-small λ → still overfits; right-sized λ → test-loss minimum; too-large λ → both losses climb.',
     caption:
-      'The x-axis is log-scaled. The sweet spot is the lowest point of the red (test) curve; the teal (train) curve is monotone increasing in λ because shrinking the weights away from the data-fitting solution costs fit.',
+      'The x-axis is log-scaled. The sweet spot is the lowest point of the red (test) curve; the green (train) curve is monotone increasing in λ because shrinking the weights away from the data-fitting solution costs fit.',
     Component: WeightDecaySweep,
   },
 ];

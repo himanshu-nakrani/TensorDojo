@@ -198,7 +198,7 @@ function RangeBar({ value }: { value: number }) {
   };
 
   const labels: { id: Format; y: number; color: string }[] = [
-    { id: 'fp32', y: 14, color: 'rgb(15,118,110)' },
+    { id: 'fp32', y: 14, color: 'rgb(21,128,61)' },
     { id: 'bf16', y: 28, color: 'rgb(67,56,202)' },
     { id: 'fp16', y: 42, color: 'rgb(180,83,9)' },
   ];

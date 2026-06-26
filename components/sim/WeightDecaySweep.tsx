@@ -149,7 +149,7 @@ export function WeightDecaySweep() {
         <p className="text-[11px] text-fg-subtle font-mono leading-relaxed pt-2">
           Visit three or four λ values to see the curve. The sweet
           spot is where the test loss (red) is lowest while the
-          train loss (teal) is still small.
+          train loss (green) is still small.
         </p>
       </div>
     </SimFrame>

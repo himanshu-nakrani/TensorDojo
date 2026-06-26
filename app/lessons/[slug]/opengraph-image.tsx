@@ -22,7 +22,7 @@ const BG_PANEL = 'rgb(255, 255, 255)';
 const INK = 'rgb(26, 24, 21)';
 const MUTED = 'rgb(74, 71, 66)';
 const SUBTLE = 'rgb(111, 108, 104)';
-const ACCENT = 'rgb(15, 118, 110)';
+const ACCENT = 'rgb(21, 128, 61)';
 const BORDER = 'rgb(207, 201, 191)';
 
 async function loadInter(weight: 400 | 600 | 700): Promise<ArrayBuffer> {

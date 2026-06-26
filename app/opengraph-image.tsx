@@ -11,7 +11,7 @@ const BG = 'rgb(251, 250, 248)';
 const INK = 'rgb(26, 24, 21)';
 const MUTED = 'rgb(74, 71, 66)';
 const SUBTLE = 'rgb(111, 108, 104)';
-const ACCENT = 'rgb(15, 118, 110)';
+const ACCENT = 'rgb(21, 128, 61)';
 
 async function loadInter(weight: 400 | 600 | 700): Promise<ArrayBuffer> {
   const url = `https://fonts.googleapis.com/css2?family=Inter:wght@${weight}&display=swap`;
