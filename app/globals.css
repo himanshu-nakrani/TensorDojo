@@ -83,8 +83,8 @@
      thin lines at very low opacity — minor at 24px, major every 5
      (120px). The pattern reinforces the "this is a math notebook"
      metaphor without making the page busy. */
-  --paper-minor: rgba(31, 26, 22, 0.035);
-  --paper-major: rgba(31, 26, 22, 0.07);
+  --paper-minor: rgba(31, 26, 22, 0.018);
+  --paper-major: rgba(31, 26, 22, 0.035);
 }
 
 :root.dark {
@@ -131,8 +131,8 @@
 
   /* On the GH dark canvas the grid lines need to be lighter than
      the background, not darker. Same minor/major split. */
-  --paper-minor: rgba(255, 255, 255, 0.025);
-  --paper-major: rgba(255, 255, 255, 0.05);
+  --paper-minor: rgba(255, 255, 255, 0.012);
+  --paper-major: rgba(255, 255, 255, 0.024);
 }
 
 /* ===========================================================================
