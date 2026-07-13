@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="docs/header.svg" alt="TensorDojo — Learn how LLMs work by manipulating them. Left: interactive dot-product vectors. Center: wordmark. Right: attention weight matrix." width="100%">
+</p>
+
 # TensorDojo
 
 > **Learn how LLMs work by manipulating them.** Every concept is something you
