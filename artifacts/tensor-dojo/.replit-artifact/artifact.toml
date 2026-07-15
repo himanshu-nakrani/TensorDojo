@@ -1,0 +1,27 @@
+kind = "web"
+previewPath = "/"
+title = "Tensor Dojo"
+version = "1.0.0"
+id = "artifacts/tensor-dojo"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 19037
+
+[services.development]
+run = "pnpm --filter @workspace/tensor-dojo run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/tensor-dojo", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/tensor-dojo/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "19037"
+BASE_PATH = "/"

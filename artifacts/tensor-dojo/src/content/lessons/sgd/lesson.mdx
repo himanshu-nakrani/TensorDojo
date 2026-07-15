@@ -1,0 +1,74 @@
+import { MathCode } from '@/components/lesson/MathCode';
+import { Callout } from '@/components/lesson/Callout';
+
+## Backprop gave you a gradient for *one* example. Real datasets have millions. What gives?
+
+The backprop lesson computed $\partial L / \partial W$ for *one* training example. A real model trains on millions. The full-batch gradient is the *average* gradient over the whole dataset — which means summing or averaging over millions of per-example gradients, every step. At the scales modern training runs at, that's not just slow, it's not feasible at all: a 1M-example dataset, evaluated at every step, means every gradient computation touches every example, and the throughput bottleneck becomes the read-from-disk time of the dataset, not the math.
+
+**Stochastic gradient descent (SGD)** is the workaround. Sample a single example (or a small mini-batch of $B$ examples) per step. The per-example gradient is a noisy estimate of the true full-batch gradient. The noise is fine — it averages out over many steps, and the noise itself is sometimes useful (it helps the model escape sharp minima that the deterministic full-batch gradient would just slide into).
+
+## The formula
+
+For a dataset of $N$ examples, the full-batch gradient is the mean over all of them:
+
+$$
+g_{\text{full}} \;=\; \frac{1}{N} \sum_{i=1}^{N} \nabla L(x_i, t_i)
+$$
+
+SGD samples a batch $\mathcal{B}$ of $B$ examples and approximates the full-batch gradient with the mean over the batch:
+
+$$
+g_{\text{batch}} \;=\; \frac{1}{B} \sum_{i \in \mathcal{B}} \nabla L(x_i, t_i), \qquad \theta \leftarrow \theta - \eta \cdot g_{\text{batch}}
+$$
+
+Three regimes the lesson exercises:
+
+- **Full-batch** ($B = N$): the gradient is the true gradient, smooth, no noise. Slow per step because every step reads the whole dataset.
+- **Mini-batch** ($1 \ll B \ll N$, say $B = 32$ or $B = 256$): the practical compromise. The gradient is a low-variance estimate of the true gradient; the step is cheap ($B$ forward + backward passes); the noise averages out over many steps.
+- **One-sample** ($B = 1$): maximum noise, fastest per step. The trajectory zigzags; the noise is sometimes a feature (helps escape sharp minima) but is usually too much to be useful in practice.
+
+<MathCode
+  math="\theta \leftarrow \theta - \eta \cdot \frac{1}{B} \sum_{i \in \mathcal{B}} \nabla L(x_i, t_i)"
+  code={`# Mini-batch SGD. Sample a batch, average the per-example
+# gradients, take a step.
+
+def sgd_step(theta, dataset, batch_size, eta, rng):
+    indices = rng.sample(range(len(dataset)), batch_size)
+    batch = [dataset[i] for i in indices]
+    grads = [backward(theta, x, t) for (x, t) in batch]
+    mean_grad = mean(grads)
+    return theta - eta * mean_grad`}
+  caption="Mini-batch SGD: sample B examples, average their gradients, step. The mean over B examples is a low-variance estimate of the full-batch gradient."
+/>
+
+<Callout title="Why is the noise OK?" targetInteractive="sgd-batch-explorer">
+  The variance of the per-batch gradient estimator shrinks like $1/B$. Doubling the batch size halves the noise variance. But the per-step *progress* in expectation is the same — the noise is unbiased, so the expected step direction is the true gradient direction. The noise just adds a small random walk on top of the descent, and that walk has zero mean over many steps.
+</Callout>
+
+## Try it
+
+The centerpiece is a 2D regression task (the loss surface in $(a, b)$, with a 3-parameter linear model $\hat{y} = a \cdot x + b \cdot y + c$). Thirty noisy samples; the loss at any $(a, b)$ is the mean squared error over the sampled batch. A batch-size selector runs four trajectories from the same starting point.
+
+<Callout targetInteractive="sgd-batch-explorer">
+  Pick batch=1. The trajectory zigzags: each step is one example, and one example's gradient is rarely aligned with the true gradient. The trajectory still drifts toward the minimum in expectation, but the per-step walk is noisy. The loss trace on the right is bumpy and occasionally *increases* on a step.
+</Callout>
+
+<Callout targetInteractive="sgd-batch-explorer">
+  Pick batch=all. The trajectory is the smooth curve the deterministic full-batch gradient produces. No noise. The cost is that every step reads the entire 30-example dataset. Smooth but slow per step.
+</Callout>
+
+<Callout title="Variance sanity" targetInteractive="sgd-variance-histogram">
+  Open the histogram widget. At batch=1 the histogram is wide; the per-coordinate variance is large. As the batch size grows, the histogram collapses to a narrow spike around the true gradient. The variance numbers in the right column shrink like $1/B$ as you crank the batch size up.
+</Callout>
+
+## Reading the result
+
+**Mini-batch SGD trades per-step gradient accuracy for per-step throughput.** A full-batch step reads $N$ examples and takes a step along the true gradient direction. A mini-batch step reads $B$ examples and takes a step along a noisy estimate. The expected step is the same; the variance is larger. The wall-clock cost per step is $B/N$ of the full-batch cost. The right $B$ balances noise and throughput for the hardware — too small and the noise dominates the useful signal; too large and the step cost outweighs the gradient-quality gain.
+
+**The noise itself can be a feature.** Sharp minima (small regions of the loss surface with high curvature in some directions) generalize worse than flat minima. A deterministic full-batch gradient slides straight into whatever sharp minimum it finds; a noisy mini-batch gradient "kicks" the parameters out of sharp minima and lets them settle in flatter ones. Empirically, smaller batches often find better-generalizing solutions than larger ones, all else equal.
+
+**The sample-a-batch step is the only place the optimizer interacts with the data.** Everything else in the training loop — the loss function, the optimizer update, the LR schedule — is data-agnostic. The mini-batch sampling is what couples the optimizer to the dataset. The next three lessons are about the rest of that loop: better optimizers, better LR schedules, and the full training run that wires everything together.
+
+## Recap
+
+Three takeaways. **Mini-batch SGD samples a batch of $B$ examples per step and uses the mean of their gradients as the descent direction**, trading gradient accuracy for per-step throughput. **The variance of the per-batch gradient estimator shrinks like $1/B$ with batch size**, so the noise is bounded and averages out over many steps. **The noise is sometimes a feature** — small batches escape sharp minima that the full-batch gradient would slide into, and small-batch training often generalizes better than large-batch training. The next question: the optimizer step itself is a single equation, $\theta \leftarrow \theta - \eta \cdot g$. Are there better equations?

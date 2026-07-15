@@ -1,0 +1,1 @@
+- [Next.js→Vite dynamic import shim](nextjs-vite-dynamic-shim.md) — next/dynamic factories often return raw ComponentType (not { default }); the shim must normalise both shapes for React.lazy.

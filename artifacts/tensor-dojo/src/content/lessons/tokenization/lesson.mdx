@@ -1,0 +1,77 @@
+import { MathCode } from '@/components/lesson/MathCode';
+import { Callout } from '@/components/lesson/Callout';
+
+## A model never sees the string "cat". How does it see the word at all?
+
+A neural network operates on numbers. To feed it text, you need a function that turns any string into a sequence of integer ids — ids that index into the embedding table the next lesson covers. That function is the **tokenizer**, and it is itself something you train.
+
+The naive choice is "one token per word." It breaks immediately: any input the tokenizer hasn't seen becomes the same `<UNK>` token. Misspellings, names, code, hashtags, languages with rich morphology — all collapse to the same id.
+
+The opposite naive choice is "one token per character." Every input is handled — but the model now has to learn from scratch that `c`, `a`, `t` together mean *cat*, separately from learning that `c`, `o`, `w` mean *cow*. Every word is a long sequence of single characters, and the model burns capacity rediscovering letter combinations.
+
+**Byte-pair encoding (BPE)** is the compromise: start at characters, then *learn* a vocabulary of common subwords. Common letter combinations (`th`, `ing`, `tion`) become single tokens; rare or novel words still decompose into character pieces. Every input is handled, every common word is one or two tokens, and the model gets to spend its capacity on meaning, not orthography.
+
+## The algorithm
+
+Train: count every pair of adjacent symbols in the corpus, find the most frequent pair, merge it into a new symbol, repeat. The result is an ordered list of merges and a vocabulary that contains every original character plus every merged subword.
+
+$$
+\text{merge}_{t+1} \;=\; \arg\max_{(a,\,b)} \; \text{count}\bigl[(a, b)\;\text{adjacent in corpus}_t\bigr]
+$$
+
+<MathCode
+  math="\text{merge}_{t+1} = \arg\max_{(a,\,b)} \, \text{count}\bigl[(a, b)\;\text{adjacent in corpus}_t\bigr]"
+  code={`def learn_bpe(corpus, num_merges):
+    # Split every word into chars; append ▁ to mark word-end.
+    words = [list(w[:-1]) + [w[-1] + '▁'] for w in corpus]
+    merges = []
+    for _ in range(num_merges):
+        pairs = Counter()
+        for w in words:
+            for i in range(len(w) - 1):
+                pairs[(w[i], w[i + 1])] += 1
+        if not pairs:
+            break
+        (a, b), _ = pairs.most_common(1)[0]
+        merges.append((a, b))
+        # Replace every adjacent (a, b) with the merged symbol a+b.
+        words = [apply_merge(w, a, b) for w in words]
+    return merges, words`}
+  caption="Greedy training: each step is one pair-count + one corpus rewrite. Sennrich et al. (2015) introduced this; every modern LLM tokenizer is a variant."
+/>
+
+The end-of-word marker `▁` matters. Without it, a token like `low` is ambiguous — is it the whole word "low" or the prefix of "lower"? Adding `▁` to the final character of every word ("low" → `l`, `o`, `w▁`) lets BPE learn `low▁` as a distinct token from `low`.
+
+## Try it
+
+<Callout targetInteractive="bpe-trainer">
+  Press Step a few times. The most frequent adjacent pair across the whole corpus is merged first. Watch how the corpus on the left compresses one symbol at a time, and how the vocabulary on the right grows: usually by one (the new merged token), occasionally net-zero (the merged token replaces both constituents everywhere). After enough steps, common words like `low▁` collapse to a single token; rare words still split into multiple subwords.
+</Callout>
+
+<Callout title="Why greedy merging works" targetInteractive="bpe-trainer">
+  Each merge maximally compresses the corpus *at that step*. The result is not globally optimal — that would require searching over orderings — but in practice it's close, and it's fast enough to train on terabytes of text. The model doesn't need a perfect vocabulary; it needs a consistent one that handles every input.
+</Callout>
+
+## Reading the result
+
+Three things to internalize.
+
+**The vocabulary is a function of the corpus.** Train BPE on English news, you get English subwords. Train it on Python source, you get `def`, `return`, `import` as single tokens. There is no universal tokenizer — the vocabulary is a learned artifact of *what text the model will see*. Models trained on multilingual data use much larger vocabularies (often 100k+ tokens) to cover every script.
+
+**Every input is handled, even ones never seen.** If you type a word the tokenizer has never encountered, it still produces tokens — they just go all the way down to characters. There is no `<UNK>`. This is why GPT-4 can tokenize emoji, code, math, and even random Unicode without crashing; the worst case is "every character is its own token."
+
+**Token count drives compute, not character count.** The transformer's compute scales with sequence length. A document that tokenizes to 1000 tokens costs the same as another that tokenizes to 1000 tokens, regardless of how many characters each contains. Programming languages tokenize to fewer tokens per character (lots of common keywords); informal text in non-Latin scripts often tokenizes to more (the vocabulary was trained on Latin-heavy text).
+
+## A second look
+
+<Callout targetInteractive="bpe-tokenizer">
+  Switch the vocabulary dropdown to "Trained on -er / -est words." Now type "newest": one token — it appears often in the training corpus and earned a dedicated merge. Type "lowest": two tokens ("lowe" + "st▁") — close but not collapsed into one. Type "elephant": eight tokens, character by character — nothing about it appears in the training corpus. Same string, completely different tokenization depending on what the vocabulary was trained on.
+</Callout>
+
+<Callout title="What to watch for" targetInteractive="bpe-tokenizer">
+  Switch to "Trained on programming words" and type "class" — one token. Try "import" and "return" — also one token each. Now type "function" — eight tokens, character by character. The first three appear often enough in the training corpus to earn dedicated merges; "function" never appears enough times to be worth a merge under this budget. The vocabulary's shape mirrors the training distribution; words the corpus never wanted to optimize for stay expensive.
+</Callout>
+
+## Recap
+
+Three takeaways. **A tokenizer is a learned mapping from strings to integer ids** — it sits between the raw text and the embedding table the model actually consumes. **BPE is the modern default**: start from characters, repeatedly merge the most frequent adjacent pair, end up with a vocabulary of common subwords. Greedy and deterministic. **The vocabulary is a function of the training corpus**, which means the same string can tokenize completely differently depending on which model's tokenizer you use. Token count, not character count, is what drives transformer compute. The next lesson is what happens to those integer ids once the model has them: the **embedding table** turns each id into a learned vector.

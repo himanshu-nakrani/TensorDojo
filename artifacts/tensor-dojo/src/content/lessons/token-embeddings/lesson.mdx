@@ -1,0 +1,56 @@
+import { MathCode } from '@/components/lesson/MathCode';
+import { Callout } from '@/components/lesson/Callout';
+
+## How does a model represent the word "cat"?
+
+A model never sees the word "cat" as a string. The previous lesson covered where the integer comes from — a trained BPE tokenizer turns the string into an id (or a sequence of ids, for longer words). This lesson picks up the moment after: the model has the integer id — say, 4231 — and needs to do math with it. The id points into a table. The table is a single matrix $E \in \mathbb{R}^{V \times d}$ with one row per token in the vocabulary. The row at index 4231 is the embedding of "cat": a $d$-dimensional vector that the model can do math with.
+
+Before training, the rows are random. After training on enough text, the geometry becomes meaningful: similar words end up near each other, and the famous analogy $E[\text{king}] - E[\text{man}] + E[\text{woman}] \approx E[\text{queen}]$ emerges. **We cannot show training in a static page.** What follows is a *hand-placed* 2D layout that mimics the geometry a trained embedding produces — every position is authored, none is learned. The point is to make the geometry tangible. The lesson is the geometry, not the learning.
+
+## The formula
+
+$$
+\mathbf{x}_i = E[i, :] \in \mathbb{R}^{d}
+$$
+
+One row lookup. No arithmetic, no transformation — just *what is*. The training process adjusts $E$ to make the dot products of related tokens large (so attention fires between them) and unrelated tokens small.
+
+<MathCode
+  math="\mathbf{x}_i = E[i, :], \qquad E \in \mathbb{R}^{V \times d}"
+  code={`import torch
+E = torch.nn.Embedding(V, d)  # learnable table
+x = E(token_ids)                  # (n, d) — one row per token`}
+  caption="A learnable lookup. Each id maps to a row; that row is the token's vector."
+/>
+
+## Try it
+
+<Callout targetInteractive="embedding-plane">
+  Type a token name in the "find nearest" input. The five nearest neighbors by cosine similarity appear in the right panel, along with their 2D positions. Try `king`, `cat`, `run`. The neighborhoods reflect what the embedding learned — *king* sits near *queen*, *cat* near *dog*, *run* near *ran*.
+</Callout>
+
+<Callout title="Show analogy" targetInteractive="embedding-plane">
+  Toggle "Show analogy". The green line is `king − man + woman`; the highlighted token is the closest existing word to that point. With well-trained embeddings, the highlighted token is *queen*. The 2D positions here are hand-placed — the lesson is that the analogy structure exists at all, not that it lands perfectly.
+</Callout>
+
+## Reading the result
+
+Two facts to internalize.
+
+**The embedding is the model's first decision about every word.** Everything downstream — attention, layer norm, the residual stream — sees only vectors, not words. The information about "this token is a verb" or "this token is plural" has to live in the geometry of those vectors. The 2D slice of an embedding space is a hint at that geometry, projected for the eye to read.
+
+**Cosine similarity between two rows of $E$ is the model's first similarity judgment.** Attention scores, retrieval hits, nearest-neighbor lookups — all of these reduce to "is this row close to that row in $E$?". The interactive's find-nearest output is exactly what a $k$-NN retrieval system returns on top of an embedding model.
+
+The takeaway: the embedding table is not a one-hot representation dressed up. It is a *learned* function from "token id" to "a point in a space the rest of the model can do math with." Training pushes the rows around until that space has the structure attention needs.
+
+## A second look
+
+A small synthetic vocabulary whose 2D positions are random projections of higher-dimensional vectors. The dimension slider shows what happens as $d$ grows: same-cluster tokens cluster more tightly, different clusters separate.
+
+<Callout targetInteractive="embedding-dimensions">
+  Drag the dimension slider from $d = 2$ to $d = 64$. Watch the six clusters of four words each collapse and spread. At low $d$, the random projection loses the structure; at high $d$, same-cluster tokens are within a small radius of each other, different clusters are far apart. The 2D plot is a *projection* of the d-dimensional space — the structure you see is real, the positions are not.
+</Callout>
+
+## Recap
+
+Three takeaways. **A token embedding is a learnable lookup from id to vector** — a single row in a $V \times d$ table, where $V$ is the vocabulary size. **The geometry of the rows is what carries every signal the model uses**: similarity to other tokens, analogy structure, the meaning of words. **Cosine similarity between two rows is the model's first similarity judgment** — and the same operation that attention scores build on. The 2D positions on the plane are hand-placed here, but the lesson is real: a well-trained embedding has structure attention can use, and the structure lives in the dot products between rows. The next lesson notices something about this table that doubles as the output projection at the very end of the network — **weight tying** — the trick that turns one $V \times d$ matrix into two layers.

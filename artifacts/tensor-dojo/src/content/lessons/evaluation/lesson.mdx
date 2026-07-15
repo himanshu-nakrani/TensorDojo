@@ -1,0 +1,88 @@
+import { MathCode } from '@/components/lesson/MathCode';
+import { Callout } from '@/components/lesson/Callout';
+
+## You've built it, trained it, fine-tuned it. How do you know if it's any good?
+
+The curriculum so far has been all about *making* models — attention, training loops, optimizers, fine-tuning. Not a single lesson has said how to know if the model you built actually works. That gap is conspicuous because *every* paper, every release, every leaderboard reduces to a single act of measurement: "this model scored X on benchmark Y."
+
+Two kinds of metrics carry that weight. **Intrinsic** metrics measure how well the model models its training distribution — perplexity is the canonical example, and it's literally exp of the loss the model was trained on. **Extrinsic** metrics measure how well the model performs on downstream tasks the field cares about — MMLU on knowledge, HellaSwag on commonsense, HumanEval on code, GSM8K on math. Each kind has well-known failure modes; modern practice uses both and trusts neither completely.
+
+Before the rest of the fine-tuning track turns to alignment — instruction tuning, RLHF, DPO, distillation — this lesson covers the measurement infrastructure all of them rely on. You cannot improve what you cannot evaluate.
+
+## Perplexity, in one line
+
+Perplexity is the exponential of the average per-token cross-entropy loss. If the model assigns log-probability $\ell_t$ to the true token at position $t$, then for $T$ tokens:
+
+$$
+\text{PPL} = \exp\!\left(-\frac{1}{T} \sum_{t=1}^{T} \ell_t\right)
+$$
+
+A perfect model (probability 1 on every true token) has perplexity 1. A uniform model over a $V$-token vocabulary has perplexity $V$. Real LLMs on natural text land somewhere between 8 and 20 — meaning the model is, on average, as uncertain as a 10-way choice at every token.
+
+The connection to training is exact: cross-entropy is the loss the model minimized. Perplexity is the same number in token-space units instead of nats. Lower training loss = lower perplexity, no surprises.
+
+## Pass@k, accuracy, and the benchmark zoo
+
+For downstream tasks the metric depends on the task shape:
+
+- **Multiple-choice** (MMLU, HellaSwag, ARC, GPQA): accuracy. Pick the option with the highest log-probability, count hits over $N$ questions.
+- **Code generation** (HumanEval, MBPP, SWE-bench): pass@$k$. Sample $n$ programs per task; the unbiased estimate of "probability that at least one of $k$ samples passes" is $1 - \binom{n-c}{k}/\binom{n}{k}$ where $c$ of the $n$ samples pass. Pass@1 (greedy) and pass@10 (with sampling) are the most-reported numbers.
+- **Math** (GSM8K, MATH): exact-match on the final answer, sometimes with chain-of-thought required.
+- **Open-ended generation** (MT-bench, AlpacaEval, Arena-Hard): pairwise preference judgments, often via another LLM as judge or human raters.
+
+<MathCode
+  math="\text{pass@}k = \mathbb{E}_{\text{tasks}}\!\left[\,1 - \binom{n-c}{k}/\binom{n}{k}\,\right]"
+  code={`# HumanEval pass@k, the unbiased estimator from the original paper.
+def pass_at_k(pass_results, k):
+    """pass_results[i] is a list of booleans for task i's n samples."""
+    out = []
+    for row in pass_results:
+        n, c = len(row), sum(row)
+        if k > n:
+            raise ValueError(f"k={k} exceeds samples per task n={n}")
+        if n - c < k:
+            out.append(1.0)
+        else:
+            ratio = 1.0
+            for i in range(k):
+                ratio *= (n - c - i) / (n - i)
+            out.append(1 - ratio)
+    return sum(out) / len(out)`}
+  caption="The estimator avoids the bias of just counting 'any of the first k samples passes' — for small n this is the difference between an honest measurement and a noisy one."
+/>
+
+## Try it
+
+<Callout targetInteractive="perplexity-calculator">
+  Drag the confidence slider to 2.0 (sharp): every probability fattens above 0.6, log-probs shrink toward 0, perplexity drops to ~1.3 (a confident, correct model approaching the ideal of 1.0). Drag to 0.1 (flat): probabilities approach 0.5 across the board, perplexity climbs past 1.9 (a model that knows almost nothing — perplexity 2 means binary uncertainty at every token). The cross-entropy and perplexity numbers are the same number in different units — perplexity = exp(cross-entropy) — so they move together.
+</Callout>
+
+<Callout title="Why perplexity isn't enough" targetInteractive="perplexity-calculator">
+  Perplexity measures fit to the *training distribution*. A model that memorizes Wikipedia has low Wikipedia-perplexity but might be terrible at code. A model trained on Common Crawl with a heavy weighting on chat data has low chat-perplexity but might be useless for math. Perplexity is necessary (high perplexity = bad model) but not sufficient (low perplexity ≠ useful model). That's why downstream benchmarks took over as the headline metric.
+</Callout>
+
+## A second look
+
+<Callout targetInteractive="benchmark-board">
+  At default weights, Generalist-70B is best. Crank the GSM8K and ARC-C weights up; Reasoner-13B (smaller but stronger on reasoning) overtakes it. Set MMLU and HellaSwag weights to 0 (they're saturated — top models all cluster near the ceiling, so they barely discriminate) and ranks shift again. There is no single "best" model; the leaderboard is a function of what the evaluator weights.
+</Callout>
+
+<Callout title="Saturation and contamination" targetInteractive="benchmark-board">
+  Two problems plague every popular benchmark. <span className="text-ink">Saturation</span>: once frontier models all score &gt; 90% on a benchmark, the next 5 points of capability gain produce maybe 1 point of benchmark gain — the metric loses resolution. <span className="text-ink">Contamination</span>: benchmark questions leak into pretraining corpora (often via blog posts and Github), so the model "knows" the test set. The field's response has been a treadmill: new benchmarks (MMLU-Pro, GPQA, SWE-bench Verified, ARC-AGI) come out every few months specifically to outrun both problems.
+</Callout>
+
+## Reading the result
+
+Three things to internalize.
+
+**Perplexity is exact and limited.** It measures the same thing the model trained on, which makes it a clean signal during pretraining (loss going down = perplexity going down = model getting better at its training distribution). But it doesn't measure what we usually care about: can the model write code, solve math, answer questions. Two models with the same perplexity can have wildly different downstream utility.
+
+**Benchmarks measure capability slices, not capability.** MMLU measures broad-knowledge multiple-choice; HumanEval measures Python function-completion; GSM8K measures grade-school math word problems. Each correlates only roughly with what users actually want. "Which model is best" is always a weighted question; the weights are usually implicit and rarely defended.
+
+**Both metrics decay.** Perplexity loses resolution once you're below a certain loss (the model has internalized the distribution; further gains are in the long tail). Benchmarks saturate and contaminate. The field keeps inventing new ones (Arena-Hard, SWE-bench Verified, ARC-AGI, FrontierMath) specifically to keep measurement ahead of capability. Whatever metric you cite is probably out of date within 18 months.
+
+## Recap
+
+Three takeaways. **Perplexity is exp of the cross-entropy the model trained on** — exact, intrinsic, useful during pretraining, weakly correlated with downstream utility. **Benchmarks measure narrow capability slices**, and the composite "best model" rank depends on which benchmarks you weight. **Both have known failure modes** — perplexity is shallow, benchmarks saturate and leak — and the field's response is a treadmill of new metrics.
+
+That's the measurement infrastructure the rest of the curriculum implicitly relied on. The next and final lesson is the one this measurement infrastructure made possible at all: how the model learns from a *preference* signal instead of a label, the way the assistant flavor of every modern LLM is actually trained.

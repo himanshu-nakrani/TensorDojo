@@ -1,0 +1,98 @@
+import { MathCode } from '@/components/lesson/MathCode';
+import { Callout } from '@/components/lesson/Callout';
+
+## What does the backward pass actually *need*?
+
+The backpropagation lesson walked through the chain rule: each layer's gradient is the product of the downstream gradient with the layer's local Jacobian, and computing that Jacobian needs the activations the layer saw on the forward pass. Concretely, the gradient with respect to a linear layer's weight $W$ is $\partial L/\partial W = (\partial L/\partial y) \cdot x^\top$ — and to evaluate the right side, the framework must have $x$ in memory when the backward step runs.
+
+Vanilla training keeps **every layer's activations** in memory between forward and backward. For a 96-layer transformer with batch size 8 and sequence length 4096, that's 96 layers × dozens of intermediate tensors per layer, each shape $(8, 4096, d_{\text{model}})$. Activations balloon into hundreds of GB. At 70B parameters, activation memory often *exceeds* weight memory.
+
+The mixed-precision lesson cut the activation bill in half by storing them in bf16. **Gradient checkpointing** cuts it again, more aggressively. The trick: don't save every layer's activations. Save a few "anchor" points; when the backward pass needs an activation that wasn't saved, **recompute it** from the nearest anchor by running a small forward pass.
+
+You pay extra forward FLOPs to recover the activation. You save the memory you would have spent storing it. For training a model that wouldn't otherwise fit, the trade is one-sided.
+
+## The trick
+
+Pick $\sqrt{N}$ anchor positions across an $N$-layer stack. During the forward pass, save the activation only at the anchors; discard everything else. During the backward pass, when you need the activation at layer $i$:
+
+1. Find the nearest anchor before layer $i$.
+2. Run forward from the anchor to layer $i$, *just* enough to materialize the activation.
+3. Use that activation to compute the gradient at layer $i$.
+4. Discard the recomputed activations again.
+
+Total memory cost: $O(\sqrt{N})$ activations live at once (the anchors plus the per-segment recomputation buffer). Total compute cost: one extra forward pass on average — every activation between anchors gets computed twice (once on the original forward, once during backward).
+
+$$
+\text{memory} \approx O(\sqrt{N}), \qquad \text{compute} \approx 1.33 \times \text{baseline forward+backward}
+$$
+
+The $1.33\times$ overhead comes from the fact that backward already costs about 2× forward; the extra forward pass adds 1× more, taking the total from 3× to 4× of one forward — a 33% increase.
+
+<MathCode
+  math="\text{baseline: } O(N) \text{ act. mem}, \quad \text{checkpointing: } O(\sqrt{N}) \text{ act. mem} + 1\!\times \text{ extra fwd}"
+  code={`# Baseline: save everything.
+def forward_baseline(x, layers):
+    activations = [x]
+    for layer in layers:
+        x = layer(x)
+        activations.append(x)        # keep every intermediate
+    return x, activations             # activations memory: O(N)
+
+# Gradient checkpointing: save only anchors, recompute the rest.
+def forward_checkpointed(x, layers, n_anchors):
+    chunk_size = len(layers) // n_anchors
+    anchors = [x]
+    for i in range(n_anchors):
+        # Run forward through one chunk, but DON'T save intermediates.
+        with torch.no_grad():
+            for layer in layers[i*chunk_size : (i+1)*chunk_size]:
+                x = layer(x)
+        anchors.append(x)
+    return x, anchors                 # activations memory: O(sqrt(N))
+
+# At backward time, for each chunk, recompute the intermediates from
+# the chunk's anchor — once, with grad tracking turned back on.`}
+  caption="The trade in pseudocode. Real implementations (PyTorch's torch.utils.checkpoint) handle the autograd plumbing automatically; the user wraps a sub-module and the rest is transparent."
+/>
+
+<Callout title="Why sqrt(N) and not constant?" targetInteractive="checkpoint-explorer">
+  If you saved zero anchors, you'd recompute the entire forward pass from scratch for *every* layer's backward step — N times. That's $O(N^2)$ total compute. If you saved every layer, you'd use $O(N)$ memory. The $\sqrt{N}$ point is the optimum on the memory × compute curve: divide $N$ layers into $\sqrt{N}$ chunks of $\sqrt{N}$ layers each, and both the per-chunk memory and the recompute work are $\sqrt{N}$. Below or above that, one of the two costs blows up.
+</Callout>
+
+## Try it
+
+The centerpiece shows a stack of $N$ transformer layers. The memory bar tracks activation storage as the forward pass advances; the compute bar tracks total forward FLOPs (with checkpointing on, the same FLOPs run twice for non-anchor layers).
+
+<Callout targetInteractive="checkpoint-explorer">
+  Start with checkpointing OFF and $N = 24$ layers. The memory bar fills steadily as each layer's activation is saved. The compute bar measures one full forward pass. This is the baseline.
+</Callout>
+
+<Callout title="What to watch for" targetInteractive="checkpoint-explorer">
+  Turn checkpointing ON. The memory bar now stays low — it only spikes at the anchor layers and drops back between them. Final activation memory is a few times smaller than the baseline. The compute bar, meanwhile, climbs to ~4/3 of its previous height. That's the trade made concrete: less memory, more compute.
+</Callout>
+
+<Callout targetInteractive="checkpoint-explorer">
+  Push $N$ to 96 (roughly Llama-3-70B's depth). With checkpointing OFF, activation memory grows linearly with depth — at 96 layers it's nearly 4× what it was at 24. With checkpointing ON, the activation memory grows only as $\sqrt{N}$ — at 96 it's ~2× what it was at 24. This is the entire point: as models get deeper, plain training's memory bill grows linearly, but checkpointed training's bill grows by the square root.
+</Callout>
+
+## Reading the result
+
+**Recomputation is the cost, memory is the prize.** Modern hardware is bandwidth-bound on memory and compute-rich on FLOPs. Trading FLOPs for memory is the right trade almost everywhere a model is bottlenecked on activation storage — which, for any transformer above ~7B parameters at modern context lengths, is most of them.
+
+**The $\sqrt{N}$ scaling is the headline.** Doubling depth doubles activation memory in plain training; in checkpointed training, doubling depth only multiplies memory by $\sqrt{2} \approx 1.41$. This is the difference between activations being a manageable fraction of total memory at 24 layers and dominating it at 96.
+
+**Real implementations are smarter than uniform $\sqrt{N}$.** PyTorch's `torch.utils.checkpoint` lets you mark specific sub-modules as checkpointed. Production training scripts often checkpoint each transformer block individually, recomputing within a block while still saving inter-block activations. This is a less aggressive memory cut than the $\sqrt{N}$ math, but it preserves the gradient quality of certain numerically-sensitive ops (LayerNorm, attention softmax) by not redoing them.
+
+**It composes with everything else.** Gradient checkpointing is orthogonal to mixed precision, gradient accumulation, ZeRO sharding, and LoRA. Production big-model training stacks all of them. The numbers from QLoRA's bar chart — the gap between full FT and the various tricks — are mostly closed by checkpointing being one of the layers.
+
+## A second look
+
+The natural pairing is with mixed precision (the previous lesson): mixed precision halves the per-tensor *size* of activations; checkpointing reduces the *number* of activations kept at any one moment. Together they multiply. A 70B model that needs 200 GB of activation memory at fp32, no checkpointing, drops to ~60 GB with bf16 alone, and to ~15 GB with bf16 + checkpointing. The first cut is "store each tensor in 2 bytes instead of 4"; the second is "store one tensor per $\sqrt{N}$ layers instead of every layer."
+
+<Callout title="When checkpointing isn't worth it" targetInteractive="checkpoint-explorer">
+  For small models that already fit comfortably (say, fine-tuning a 1B model on a 40 GB GPU), the 33% compute overhead is pure waste — you have memory to spare. Checkpointing only pays off when activations are *the binding constraint*. The way to check: profile a run with checkpointing off, see how much GPU memory the activations use, compare to total. If activations are under 30% of total, checkpointing is wasted compute.
+</Callout>
+
+## Recap
+
+Three takeaways. **Gradient checkpointing trades extra forward FLOPs for lower activation memory.** Anchors are saved at $\sqrt{N}$ positions; everything between them is recomputed on the backward pass. **Memory drops from $O(N)$ to $O(\sqrt{N})$ at a ~33% compute overhead.** The trade is one-sided for any model where activations dominate memory. **It composes with mixed precision, LoRA, and quantization** to push the memory budget for big-model training onto consumer or single-GPU hardware. The next lesson pivots from the *how* of training to a *usage* pattern: how a frozen model can answer questions about documents it's never seen at training time, by *retrieving* them at inference time. That's **RAG**.

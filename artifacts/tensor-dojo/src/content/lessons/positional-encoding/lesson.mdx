@@ -1,0 +1,67 @@
+import { MathCode } from '@/components/lesson/MathCode';
+import { Callout } from '@/components/lesson/Callout';
+
+## If attention is permutation-invariant, how does the model know the order?
+
+The dot product $\mathbf{q} \cdot \mathbf{k}$ is a property of two vectors — it does not care which came first. A model that sees only embeddings would treat "the cat sat" and "sat cat the" identically. The order has to be smuggled in.
+
+The transformer adds a position-dependent vector to each token's embedding *before* attention. The position vector has no learned parameters — it is a deterministic function of the index $0, 1, 2, \ldots$. The original paper used sin and cos at geometrically-scaled frequencies; that is the **sinusoidal positional encoding**.
+
+## The formula
+
+$$
+\operatorname{PE}(\text{pos}, 2i) = \sin\!\left(\frac{\text{pos}}{10000^{2i / d}}\right), \qquad
+\operatorname{PE}(\text{pos}, 2i + 1) = \cos\!\left(\frac{\text{pos}}{10000^{2i / d}}\right)
+$$
+
+The wavelength for dimension $i$ is $2\pi \cdot 10000^{2i / d}$. Low dimensions have short wavelengths (position 0 vs 1 vs 2 are distinguishable). High dimensions have long wavelengths (position 0 vs 1000 are distinguishable). The full table encodes every position uniquely.
+
+<MathCode
+  math="\operatorname{PE}(\text{pos}, 2i) = \sin\!\left(\frac{\text{pos}}{10000^{2i / d}}\right), \quad \operatorname{PE}(\text{pos}, 2i+1) = \cos\!\left(\frac{\text{pos}}{10000^{2i / d}}\right)"
+  code={`import numpy as np
+
+def sinusoidal_pe(max_pos, d):
+    out = np.zeros((max_pos, d))
+    half = d // 2
+    for pos in range(max_pos):
+        for i in range(half):
+            # angle = pos / 10000^(2i/d); the resulting sin/cos
+            # have wavelength 2π · 10000^(2i/d).
+            angle = pos / (10000 ** (i / half))
+            out[pos, 2 * i] = np.sin(angle)
+            out[pos, 2 * i + 1] = np.cos(angle)
+    return out`}
+  caption="Deterministic, parameter-free, bounded in [−1, 1]."
+/>
+
+## Try it
+
+<Callout targetInteractive="positional-heatmap">
+  Toggle the max-position slider from 16 to 32. Each row of the heatmap is one position's $d$-dimensional PE vector; the color tells you the value of each component. Low-indexed dimensions flicker fast across positions; high-indexed dimensions stay nearly constant. The wavelengths spread across the dimension indices.
+</Callout>
+
+<Callout targetInteractive="positional-heatmap">
+  Pick two positions, say pos $a = 0$ and pos $b = 4$. Read their dot product in the right panel. As you push $b$ further from $a$, the dot product changes *smoothly* — that is how the model "feels" distance between positions. Without a positional encoding, that information would not exist.
+</Callout>
+
+## Reading the result
+
+Two properties to internalize.
+
+**Bounded.** Every entry of PE is in $[-1, 1]$. The encoding can never dominate the embedding; it nudges the embedding in a known direction with a known magnitude.
+
+**Distance is a function of the dot product.** Two positions at indices $a$ and $b$ have a dot product that is a smooth, monotonic-ish function of $|a - b|$. Near positions have similar PE vectors and high dot products; far positions have very different PE vectors. This is what the model uses: when position $i$ attends to position $j$, the contribution $\mathbf{q}_i \cdot \mathbf{k}_j$ includes a term from the PE vectors that says "how far apart these are".
+
+The sinusoidal scheme has a nice property that the original paper exploited: a shift of $k$ in position corresponds to a rotation in the PE space, and the dot product $\text{PE}(a) \cdot \text{PE}(a + k)$ is a closed-form function of $k$ and the dimension $i$. The model "knows" relative position without being told it explicitly.
+
+## A second look
+
+A 1D plot of one dimension of PE as a function of position. The frequency slider picks which dimension.
+
+<Callout targetInteractive="positional-sinewave">
+  Dimensions are paired (sin, cos) and share a wavelength, so the natural axis to think along is the *pair index* $p = \lfloor i/2 \rfloor$ — with $d = 16$ that's $p \in \{0, 1, \ldots, 7\}$. Pair $0$ has wavelength $2\pi \approx 6.3$ — one full cycle every six positions. Pair $2$ has wavelength $2\pi \cdot 10000^{2/8} \approx 63$, ten times longer. Pair $7$ has wavelength $\approx 20{,}000$ — across the 32 positions on screen the curve barely budges. The widget's "dimension index" slider $i$ maps to pair $p = \lfloor i/2 \rfloor$; step it through dim indices $0, 4, 14$ (pairs $0, 2, 7$) and watch the period stretch by a factor of $\approx 10$ between them.
+</Callout>
+
+## Recap
+
+Three takeaways. **Positional encoding is a deterministic, parameter-free vector added to each token's embedding before attention.** The model has no way to learn "this is position 5" from the input alone, so the architecture injects it. **The sinusoidal scheme uses sin and cos at geometrically-scaled frequencies** — low dimensions encode nearby positions, high dimensions encode far-apart ones. **The pairwise dot products are a smooth function of position distance**, so the model can "feel" how far apart two tokens are without being told relative position explicitly. The sinusoidal scheme works — it's what the original transformer used and what makes a good entry point for the idea. But it is no longer what production uses. The next lesson covers the modern replacement: **rotary positional encoding (RoPE)**, which rotates Q and K instead of adding to embeddings, and which has the relative-position property by construction rather than by approximation.

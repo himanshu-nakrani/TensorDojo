@@ -1,0 +1,89 @@
+import { MathCode } from '@/components/lesson/MathCode';
+import { Callout } from '@/components/lesson/Callout';
+
+## Why train against a one-hot when the teacher knows the whole distribution?
+
+The previous lessons closed the alignment story: instruction tuning, RLHF, and DPO are all answers to "how do you get the model to follow instructions." **Distillation** answers a different question — one of *size*: how do you fit the capability of a 70B-parameter model into something small enough to run on a phone.
+
+Distillation came from a 2015 Hinton, Vinyals, and Dean paper with a clean observation. When you train a classifier with cross-entropy against a one-hot label like `[0, 0, 1, 0, 0]`, the model learns the right answer — but it learns *nothing* about the structure of the wrong answers. A teacher model's full output distribution, in contrast, might look like `[0.02, 0.05, 0.85, 0.07, 0.01]`. That tells the student: "the answer is index 2, but if you were going to be wrong, indices 1 and 3 are far more plausible than 0 and 4." That ranking-among-wrong-answers is the **dark knowledge** that a one-hot target throws away.
+
+A small model trained on the teacher's full distribution can match or beat the same small model trained on hard labels. **Distil-BERT** kept 97% of BERT's quality at 40% of its size. **Gemma-2B** is the distilled student of a much larger Gemini teacher. **Phi-3-mini** explicitly traces its quality to teacher-generated training data. The technique is everywhere quality matters but compute is constrained.
+
+## The formula
+
+The student is trained against a **mix** of two losses. The first, $L_{\text{soft}}$, is cross-entropy against the teacher's distribution. The second, $L_{\text{hard}}$, is the standard cross-entropy against the ground-truth one-hot. The total is a weighted sum.
+
+The teacher's logits are softened by a **temperature** $T > 1$ before the softmax: dividing logits by $T$ flattens the distribution, exposing more of the small probabilities that carry the dark knowledge. The student is trained at the same temperature, then deployed at $T = 1$.
+
+$$
+L = \alpha \cdot T^2 \cdot \operatorname{CE}\bigl(\operatorname{softmax}(\mathbf{z}_s / T),\ \operatorname{softmax}(\mathbf{z}_t / T)\bigr) + (1 - \alpha) \cdot \operatorname{CE}\bigl(\operatorname{softmax}(\mathbf{z}_s),\ y\bigr)
+$$
+
+The $T^2$ factor on the soft loss compensates for the fact that softening with $T$ shrinks the gradient by $1/T^2$. With it, the soft and hard gradients are on the same scale and $\alpha$ behaves as a real knob.
+
+<MathCode
+  math="L = \alpha \cdot T^2 \cdot \operatorname{CE}(\text{student soft},\ \text{teacher soft}) + (1-\alpha) \cdot \operatorname{CE}(\text{student},\ y)"
+  code={`import numpy as np
+
+def softmax(x, T=1.0):
+    z = (x - x.max()) / T
+    e = np.exp(z)
+    return e / e.sum()
+
+def distillation_loss(student_logits, teacher_logits, y, T=4.0, alpha=0.5):
+    # Soft loss: cross-entropy against the teacher's temperature-softened
+    # distribution. Multiplied by T^2 to compensate for the gradient
+    # attenuation that temperature softening introduces.
+    p_s = softmax(student_logits, T=T)
+    p_t = softmax(teacher_logits, T=T)
+    soft = -np.sum(p_t * np.log(p_s + 1e-12)) * (T ** 2)
+
+    # Hard loss: standard cross-entropy at T=1 against the one-hot label.
+    p_s_hard = softmax(student_logits, T=1.0)
+    hard = -np.log(p_s_hard[y] + 1e-12)
+
+    return alpha * soft + (1 - alpha) * hard`}
+  caption="Two losses, one weighted sum. Real implementations often use KL divergence in place of cross-entropy for the soft term (they differ by an additive constant in T, so the gradient is the same)."
+/>
+
+<Callout title="Why temperature?" targetInteractive="distillation-explorer">
+  A sharp teacher distribution at $T = 1$ might be `[0.001, 0.001, 0.997, 0.001, 0.001]` — almost a one-hot, almost no dark knowledge. The same logits at $T = 4$ might be `[0.10, 0.15, 0.50, 0.20, 0.05]` — now the *relative* ranking of the wrong answers is visible. Temperature is the dial that says "how much of the dark knowledge do we expose for the student to learn from."
+</Callout>
+
+## Try it
+
+The centerpiece shows a teacher distribution (5 classes) and a student distribution side by side, with sliders for temperature $T$ and mix $\alpha$. The student is initialized to a noisy starting point and updated toward the chosen loss target.
+
+<Callout targetInteractive="distillation-explorer">
+  Start with $T = 1$, $\alpha = 0$ (hard label only). Hit *Train* and let it run for a moment. The student converges to a near-one-hot on the correct class — and that's all it learns. The relative scores of the wrong classes are noise.
+</Callout>
+
+<Callout title="What to watch for" targetInteractive="distillation-explorer">
+  Reset, then set $T = 4$, $\alpha = 1$ (teacher soft only). Hit *Train* again. The student converges to the teacher's *softened* distribution — including the ranking among the wrong answers. The student now "knows" which wrong answer is the second-best guess, which is the worst, etc. That information transfers downstream into better calibration and (empirically) better fine-tuned performance.
+</Callout>
+
+<Callout targetInteractive="distillation-explorer">
+  Reset, then try $T = 4$, $\alpha = 0.5$ and train again. The student matches the teacher's shape while still being anchored to the true label. In practice this is roughly where most distillation recipes live — $\alpha \in [0.3, 0.7]$, $T \in [2, 8]$, tuned on a validation set. The hard label keeps the student honest when the teacher is wrong; the soft label transfers the dark knowledge when the teacher is right.
+</Callout>
+
+## Reading the result
+
+**The soft target is what makes distillation work.** A one-hot label tells the student one bit of information per example: "this index." A teacher distribution tells the student $V$ numbers per example — orders of magnitude more signal per token. The dark-knowledge ranking is "free" in the sense that the teacher already had to compute it as part of its forward pass.
+
+**Temperature exposes the dark knowledge.** Without temperature softening, a confident teacher's distribution looks like a one-hot and the student gains nothing. With $T = 4$ or $T = 8$, the small-but-meaningful probabilities on the wrong classes become large enough to carry gradient signal. The student trains at high $T$ and deploys at $T = 1$.
+
+**Mix $\alpha$ trades student-purity for teacher-fidelity.** $\alpha = 0$ is plain supervised learning (ignore the teacher). $\alpha = 1$ is "be the teacher" (ignore the ground truth, even when the teacher is wrong). The middle is where most recipes live.
+
+**Distillation works on LLMs in three different ways.** *Response distillation* (synthetic data): the teacher generates training examples (Q→A pairs) and the student trains on them with the standard next-token loss. This is what Phi-3 and many recent small models do. *Logit distillation* (the classic Hinton recipe): student matches teacher's full token distribution at each position. Requires teacher logits to be saved, which is expensive. *Hidden-state distillation*: student also matches teacher's intermediate activations. Most aggressive; most expensive; sometimes used for the strongest small models.
+
+## A second look
+
+Cost asymmetry is the deeper reason distillation matters. A 70B teacher costs ~35× more per inference than a 2B student. If you can train the 2B student to 90% of the teacher's quality, you pay the teacher's cost *once* (during distillation) and the student's cost *always* (at deployment). For a model serving millions of users, that's the entire business case.
+
+<Callout title="When distillation fails" targetInteractive="distillation-explorer">
+  Distillation is bounded by the teacher. If the teacher is biased, miscalibrated, or wrong on a region of the input space, the student inherits that — sometimes amplified. Production recipes always mix in real-data fine-tuning, hold out an evaluation set the teacher didn't see, and treat the distilled student as a starting point for further alignment, not the finished product.
+</Callout>
+
+## Recap
+
+Three takeaways. **Distillation trains a small student to match a big teacher's full output distribution.** The teacher's "soft" target carries the dark knowledge — the ranking among wrong answers — that a one-hot label throws away. **Temperature is the dial that exposes the dark knowledge.** Soften the teacher with $T > 1$, train the student at the same $T$, deploy at $T = 1$. **Distillation is how Distil-BERT, Gemma-2B, and Phi-3-mini exist.** A 2B model trained from scratch on hard labels would not reach the capability that a 2B model distilled from a much larger teacher does. This is the last lesson — you've now seen the full LLM stack from dot products to alignment.

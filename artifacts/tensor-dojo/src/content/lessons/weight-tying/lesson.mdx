@@ -1,0 +1,98 @@
+import { MathCode } from '@/components/lesson/MathCode';
+import { Callout } from '@/components/lesson/Callout';
+
+## Two layers, same shape — and the same job, reversed
+
+Tokenization mapped strings to integer ids. Token embedding looked those ids up in a $V \times d$ matrix to get a $d$-dimensional vector — the first layer's input. At the *other* end of the transformer, after all the blocks, the hidden state at position $t$ has to be turned back into a distribution over the vocabulary. That conversion is a single linear layer: a $d \times V$ projection that produces $V$ logits.
+
+The two matrices have the same shape. The embedding is $V \times d$; the output projection is $d \times V$. One reads tokens in; the other reads tokens out. **Weight tying** is the observation that they can be the *same matrix*, transposed — and modern transformers do this almost universally. The shared matrix is consistent with the geometry: if two tokens have similar embeddings (because they're semantically similar), then their output logits should also be similar (because the model should consider them interchangeable predictions).
+
+The practical motivation is even simpler: this is the **largest single matrix in the model**. For Llama-3 with $V = 128{,}000$ and $d = 4096$, the embedding matrix has 525M parameters. If the output projection is independent, that's another 525M — over a billion parameters in those two layers alone. Tying them halves it.
+
+## The formula
+
+The input embedding is a lookup: $\mathbf{x}_t = \mathbf{E}[t]$ where $\mathbf{E} \in \mathbb{R}^{V \times d}$ and $t$ is the token id. The output projection turns a hidden state into logits: $\boldsymbol{\ell} = \mathbf{H} \mathbf{h}$ where $\mathbf{H} \in \mathbb{R}^{d \times V}$.
+
+Weight tying sets $\mathbf{H} = \mathbf{E}^{\!\top}$:
+
+$$
+\mathbf{x}_t = \mathbf{E}[t], \qquad \boldsymbol{\ell} = \mathbf{E} \mathbf{h}
+$$
+
+Element-wise, this means the logit for token $v$ is the **dot product between the hidden state and token $v$'s embedding**:
+
+$$
+\ell_v = \mathbf{E}[v] \cdot \mathbf{h}
+$$
+
+That's exactly the dot product from the very first lesson — measuring how aligned the hidden state is with each candidate token's direction in embedding space.
+
+<MathCode
+  math="\mathbf{x}_t = \mathbf{E}[t], \qquad \ell_v = \mathbf{E}[v] \cdot \mathbf{h}"
+  code={`import torch
+import torch.nn as nn
+
+class TransformerLM(nn.Module):
+    def __init__(self, V, d):
+        super().__init__()
+        self.embed = nn.Embedding(V, d)            # V × d
+        self.blocks = nn.Sequential(...)
+        # Untied (old): an independent V × d for output projection.
+        # self.out_proj = nn.Linear(d, V, bias=False)
+
+        # Tied (modern): reuse the embedding matrix.
+        self.out_proj = nn.Linear(d, V, bias=False)
+        self.out_proj.weight = self.embed.weight   # shared!
+
+    def forward(self, ids):
+        x = self.embed(ids)                        # (B, T, d)
+        h = self.blocks(x)
+        return self.out_proj(h)                    # (B, T, V)
+
+# For Llama-3-8B: V = 128000, d = 4096.
+# Untied: 525M params for embed + 525M for out_proj = 1.05B total.
+# Tied:   525M shared. Saves 525M params.`}
+  caption="One line — assigning `.weight` — turns two independent matrices into a tied pair. PyTorch's autograd treats them as one parameter."
+/>
+
+<Callout title="Why this works geometrically" targetInteractive="weight-tying-explorer">
+  Token embeddings encode semantic similarity in their geometry — "king" and "queen" are nearby, "dog" and "cat" are nearby. If the *input* layer uses this geometry to turn ids into vectors, the *output* layer should use the same geometry in reverse: a hidden state pointing toward "king" should produce a high logit for "king" and a slightly lower one for "queen." Tying enforces this by construction. Without tying, the model has to *learn* this consistency from the data, which it usually does eventually — but at the cost of redundant parameters.
+</Callout>
+
+## Try it
+
+The centerpiece shows a vocabulary of small tokens, the shared $V \times d$ embedding matrix, and a hidden state $\mathbf{h}$ you can rotate. The output logits are the dot products of $\mathbf{h}$ with each token's embedding. Rotate $\mathbf{h}$ and watch which token gets the highest logit.
+
+<Callout targetInteractive="weight-tying-explorer">
+  Start with $\mathbf{h}$ pointing at the "cat" embedding. The cat logit is highest; "dog" and "kitten" are next (they're geometrically close to cat); "the" and "and" are low (different semantic neighborhood). The same matrix that *embedded* the input is now *scoring* the output — and the output's ranking is exactly the cosine geometry of the embedding space.
+</Callout>
+
+<Callout title="What to watch for" targetInteractive="weight-tying-explorer">
+  Rotate $\mathbf{h}$ toward "and". The logits for function words ("and", "the", "of") rise together; the content words drop. This is the embedding geometry doing double duty: tokens cluster by usage, and the output projection inherits that clustering for free. The model doesn't have to relearn that "and" and "of" are similar — the embedding already says so.
+</Callout>
+
+<Callout targetInteractive="weight-tying-explorer">
+  Slide $V$ and $d$ to see the parameter savings grow. At $V = 32{,}000$ and $d = 4096$ (small modern LLM), tying saves $V \cdot d = 131$M parameters. At Llama-3's $V = 128{,}000$ and $d = 4096$: 525M saved. The savings dominate at the embedding layer — for many models, the embedding is 10-30% of all parameters, and tying recovers half of that.
+</Callout>
+
+## Reading the result
+
+**One matrix in two roles is consistent with the geometry.** The embedding's $V$ rows live in $\mathbb{R}^d$ and define a semantic geometry. The output projection treats the same matrix as a set of $V$ "target directions" in $\mathbb{R}^d$ — and predicting token $v$ means: "the hidden state is aligned with target direction $v$." If the embeddings encode meaning, the output projection inherits that meaning structure.
+
+**The parameter savings are large because the embedding is huge.** For most LLMs, the embedding ($V \cdot d$ parameters) is one of the largest single layers. Tying cuts the input+output combo in half. At the scale of Llama-3 or GPT-4, this is hundreds of millions of parameters — not a free lunch but very cheap.
+
+**Empirically: equivalent or slightly better quality.** The 2017 paper by Press & Wolf and the 2018 paper by Inan et al. showed that weight tying matches or beats untied training across most language modeling benchmarks. The theoretical argument (embedding and output should share geometry) is supported by the empirical result (no quality loss).
+
+**Modern practice.** GPT-2/3, Llama (all versions), Mistral, Gemma, and most open-weight LLMs tie weights. Some larger models (PaLM, some GPT-4-class systems) tie the input embedding but use a separate output projection — at very large scale the parameter savings matter less and the extra capacity may help. The default for any new model under ~30B parameters is to tie.
+
+## A second look
+
+Weight tying is also a tiny but real connection between the lessons. The embedding lesson said "tokens become vectors via a lookup in a learned matrix." The cross-entropy lesson said "logits are scores over vocabulary entries." The dot-product lesson said "logits are dot products of the hidden state with each token's direction." Weight tying makes those three statements use *the same matrix*. The model's first layer and its last layer share a single $V \times d$ table; the rest of the network is what transforms the input direction into the output direction.
+
+<Callout title="A historical note" targetInteractive="weight-tying-explorer">
+  Pre-2017 neural language models used separate input and output matrices. The cost wasn't well-understood until Press & Wolf showed that tying didn't hurt quality and saved a lot of parameters. The trick became standard within two years. It's a good example of "obvious in retrospect, completely missed for a decade" — the kind of free improvement that scaling-era research surfaces.
+</Callout>
+
+## Recap
+
+Three takeaways. **The input embedding and the output projection have the same shape — $V \times d$ — and modern transformers share the same matrix for both.** The output logit for token $v$ is the dot product between the hidden state and token $v$'s embedding. **The savings are real**: for an 8B-parameter model, tying saves ~500M parameters. **The geometry is consistent**: if two tokens have similar embeddings, their logits should also be similar, and tying enforces that by construction. The next lesson tackles the other half of the input story — **positional encoding** — because once tokens are vectors, the network needs to know which one came first.

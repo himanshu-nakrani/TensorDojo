@@ -1,0 +1,138 @@
+import { MathCode } from '@/components/lesson/MathCode';
+import { Callout } from '@/components/lesson/Callout';
+
+## Why fp32 isn't free, and fp16 alone doesn't work
+
+A 70-billion-parameter model at full fp32 precision is 280 GB of weights — and weights are only one of four things the optimizer has to hold during training. Add gradients (another 280 GB at fp32), Adam's $m$ and $v$ moments (another 560 GB), and the activations the backward pass needs to read (depends on batch and sequence length, but easily 50–100 GB more). The total comfortably exceeds 1 TB. No single GPU has anywhere near that much memory.
+
+The obvious knob is **precision**. Drop every number from 4 bytes (fp32) to 2 bytes (fp16 or bf16) and the memory bill halves. The matmul kernels run faster too — modern tensor cores are built around 16-bit math, with throughput 2–8× higher than fp32 on the same hardware.
+
+The problem is that **fp16 alone breaks training**. The format has a narrow exponent — it can represent values from roughly $6 \times 10^{-5}$ to $6.5 \times 10^{4}$, with anything outside that range becoming 0 or $\pm\infty$. Real training routinely produces gradients near the bottom of that range and activations near the top. A loss curve that converges cleanly in fp32 will spike to NaN in pure fp16, sometimes within the first hundred steps.
+
+**Mixed precision** is the standard fix: use 16-bit precision where it's cheap (the matmul and the activations) and 32-bit precision where the math actually needs it (the optimizer state and the gradient accumulation). Every modern training framework (PyTorch AMP, JAX, DeepSpeed) does this by default.
+
+## The formats
+
+Three formats matter for training. Their differences are entirely in how many bits go to the exponent vs the mantissa.
+
+$$
+\begin{array}{lccc}
+\text{Format} & \text{Sign} & \text{Exponent} & \text{Mantissa} \\
+\hline
+\text{fp32 (single)} & 1 & 8 & 23 \\
+\text{fp16 (half)} & 1 & 5 & 10 \\
+\text{bf16 (brain float)} & 1 & 8 & 7
+\end{array}
+$$
+
+The headline numbers fall out of the bit counts.
+
+- **fp16** keeps the same number of mantissa bits as a halved fp32 would, but at the cost of only 5 exponent bits. Range: $\sim 6 \times 10^{-5}$ to $\sim 6.5 \times 10^{4}$. Precision: about 3 decimal digits.
+- **bf16** keeps fp32's *exponent* and truncates the mantissa to 7 bits. Range: same as fp32 ($\sim 10^{-38}$ to $\sim 10^{38}$). Precision: about 2 decimal digits.
+
+For training, the exponent matters more than the mantissa. fp16's narrow range causes the overflow/underflow problems; bf16 dodges them by construction. The cost is a noisier individual number, but neural networks are robust to that kind of noise. The exponent range — that's the load-bearing axis.
+
+<MathCode
+  math="\text{fp32: } 1 + 8 + 23 \text{ bits} \qquad \text{fp16: } 1 + 5 + 10 \qquad \text{bf16: } 1 + 8 + 7"
+  code={`# Each format has the same overall layout: sign, exponent, mantissa.
+
+# fp32: range ~1e-38 to ~1e38, precision ~7 decimal digits
+import numpy as np
+x = np.float32(0.1)              # 0.10000000149011612
+
+# fp16: range ~6e-5 to ~6.5e4, precision ~3 digits
+x16 = np.float16(0.1)            # 0.0999755859375
+
+# bf16: range matches fp32, precision ~2 digits
+import torch
+x_bf = torch.tensor(0.1, dtype=torch.bfloat16)
+print(x_bf.item())               # 0.1015625
+
+# Underflow demo: a gradient of 1e-6 lives in fp32 and bf16, dies in fp16.
+print(np.float32(1e-6))          # 1e-06
+print(np.float16(1e-6))          # 1e-06 — fine
+print(np.float16(1e-7))          # 0.0  — underflowed
+print(np.float16(1e-8))          # 0.0`}
+  caption="The three formats every modern trainer touches. The headline difference is the exponent width, not the mantissa."
+/>
+
+<Callout title="Why bf16 took over" targetInteractive="precision-explorer">
+  Pure fp16 was the original 2017 mixed-precision target (NVIDIA Volta), and it worked — with a trick called *loss scaling* that multiplies the loss by a large constant to push gradients up into fp16's representable range, then divides them back out before the optimizer step. It's effective but fiddly: the scale has to be tuned, monitored, and adjusted dynamically. bf16 (Google's "brain float" from TPUs, then available on Ampere GPUs in 2020) made all that machinery obsolete. Same exponent as fp32, no loss scaling needed, "just works." Almost every transformer trained after 2022 uses bf16.
+</Callout>
+
+## The mixed-precision recipe
+
+The standard recipe — what PyTorch's `autocast` and `GradScaler` implement, what every Hugging Face trainer defaults to — has four moving parts:
+
+1. **Master weights** in fp32. The "real" parameters live in fp32 and are what the optimizer steps update. These are not used for the matmul.
+2. **Compute copy** of the weights in bf16. The bf16 cast happens lazily; the matmul kernel sees only bf16.
+3. **Forward and backward in bf16.** Activations, gradients, intermediate matmul outputs — all bf16. This is where the memory savings and the kernel speedup live.
+4. **Optimizer step in fp32.** When the bf16 gradient arrives at the optimizer, it's cast to fp32 and applied to the master weights. The optimizer state (Adam's $m$, $v$) lives in fp32 throughout.
+
+The result: the *matmul* — where almost all the compute is — runs at the fast 16-bit precision. The *update* — where small numerical errors compound across millions of steps — runs at the safe 32-bit precision. The model gets both.
+
+<MathCode
+  math="\theta^{(\text{fp32})} \xleftarrow{\text{update}} \theta^{(\text{fp32})} - \eta \cdot g^{(\text{fp32})}, \qquad g^{(\text{bf16})} = \nabla L\!\left(\theta^{(\text{bf16})}\right)"
+  code={`import torch
+from torch.amp import autocast
+
+# Master weights in fp32; the model itself is fp32.
+model = ...  # fp32 parameters
+optimizer = torch.optim.AdamW(model.parameters(), lr=1e-4)
+
+for batch in loader:
+    optimizer.zero_grad()
+
+    # Forward + loss happen inside autocast: bf16 inside,
+    # fp32 weights remain untouched.
+    with autocast(device_type='cuda', dtype=torch.bfloat16):
+        output = model(batch.x)
+        loss = loss_fn(output, batch.y)
+
+    # Backward outside autocast: gradients arrive in bf16 in the
+    # tape but get accumulated into the fp32 .grad buffers PyTorch
+    # creates for the master weights.
+    loss.backward()
+
+    # Optimizer step is plain fp32.
+    optimizer.step()`}
+  caption="The autocast block is the entire user-facing API. The framework handles the bf16 ↔ fp32 dance underneath."
+/>
+
+## Try it
+
+The centerpiece shows a single floating-point value pushed through each of the three formats. Drag the value over many orders of magnitude. fp32 represents almost everything; bf16 keeps the same range but quantizes the mantissa; fp16 underflows at small values and overflows at large ones.
+
+<Callout targetInteractive="precision-explorer">
+  Start at 1.0. All three formats are fine — each gets you within 0.01% of the input. Now drag the value to $10^{-6}$. fp32 and bf16 still represent it cleanly. fp16 snaps to zero — underflow. This is the failure mode pure fp16 has on gradients. The smallest representable normal fp16 is $6.1 \times 10^{-5}$; any gradient component smaller than that is silently lost.
+</Callout>
+
+<Callout title="The overflow side" targetInteractive="precision-explorer">
+  Drag the value to $10^{5}$. fp32 and bf16 are fine. fp16 overflows to $\infty$ — anything above $6.55 \times 10^{4}$. In a real training run, an activation that lands here typically appears mid-forward as a product of a few moderately large values; bf16 absorbs it, fp16 turns it into NaN, and the run dies.
+</Callout>
+
+<Callout targetInteractive="precision-explorer">
+  Switch to "show ULP" (unit in the last place — the gap between two adjacent representable values). At the same large magnitude, bf16's ULP is significantly bigger than fp16's. That's the trade: bf16 buys range by giving up precision. For training, the trade is one-sided in bf16's favor; for inference quantization down to 4 bits, the precision matters more — which is why QLoRA-style 4-bit storage uses a calibrated NF4 scheme rather than raw bf16/fp16.
+</Callout>
+
+## Reading the result
+
+**The matmul uses bf16; the update uses fp32.** This is the entire mixed-precision recipe. The two formats serve different jobs: the matmul is bandwidth-bound on the activation/weight tensors (16-bit halves the traffic) and compute-bound on the tensor cores (16-bit doubles or quadruples throughput). The optimizer step touches one parameter at a time and runs millions of times over a training run; the accumulated error of doing it in 16-bit is what blows up models that try.
+
+**bf16 is the modern default.** Pure fp16 needs loss scaling; bf16 doesn't. The TPUs invented bf16, GPUs adopted it (Ampere onward), and the entire HuggingFace / DeepSpeed / Megatron training ecosystem now defaults to it. If you write a training script and don't specify a precision, the answer in 2025 is almost certainly bf16.
+
+**Memory savings are real but not free.** Mixed precision halves the *activation* memory and halves the *gradient* memory. But the optimizer state (Adam $m$, $v$ in fp32) and the master weights (also fp32) stay at full size. So total training memory drops by maybe 40%, not 50%. The other ~40% comes from gradient checkpointing — the topic of the next lesson.
+
+**At inference, you can go further.** Inference doesn't need an optimizer, so it doesn't need fp32 anywhere. Most production inference uses bf16 or pure fp16, and quantization down to 4-bit (QLoRA-style) is now standard for deployment. Training is where the fp32 master copy earns its keep.
+
+## A second look
+
+Mixed precision is one half of a two-pronged memory attack on big training. The numbers in the QLoRA lesson laid out the budget: at 70B parameters, full fp32 training is ~870 GB, mixed precision drops that to ~440 GB, gradient checkpointing brings it down to ~180 GB, and adding LoRA + quantization on top brings it to ~60 GB. Each layer of trickery cuts a category of cost. Mixed precision is the first and largest cut — and it's the one you turn on by default.
+
+<Callout title="When mixed precision still fails" targetInteractive="precision-explorer">
+  Some operations remain numerically unstable even in bf16. The softmax in attention (because of the $\exp$), the layernorm/RMSNorm (because of the variance reduction), and any per-token reduction over long sequences are typically computed in fp32 internally even when the surrounding ops are bf16. Modern kernels (FlashAttention is the canonical example) handle this automatically; you only encounter it when writing a custom kernel.
+</Callout>
+
+## Recap
+
+Three takeaways. **Mixed precision = bf16 for the matmul, fp32 for the optimizer.** The matmul is where the FLOPs and the bandwidth live; the optimizer step is where small errors compound. Run each at its appropriate precision. **bf16 is the modern default** because its exponent matches fp32's — no loss scaling, no overflow/underflow workarounds. **Memory savings are real (~40%) but not free** — the master weights and Adam moments stay in fp32. The next lesson covers the other half of the memory attack: **gradient checkpointing**, which trades extra compute for a much smaller activation footprint.

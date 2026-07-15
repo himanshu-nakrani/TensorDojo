@@ -1,0 +1,70 @@
+import { MathCode } from '@/components/lesson/MathCode';
+import { Callout } from '@/components/lesson/Callout';
+
+## How aligned are two vectors?
+
+A word embedding wants to know which other embeddings point the same way. A query wants to know which keys in a retrieval index are aligned with it. A classifier wants to know which side of a decision boundary a sample falls on. All of these are the same question, asked of two vectors. The answer is a single number.
+
+**The dot product is that number.** It is the natural choice — symmetric, smooth, and built from a single sum of products — and every "how aligned?" computation in a neural network reduces to it. One formula; three ways to read it.
+
+## The formula
+
+For two equal-length vectors $\mathbf{a} = (a_1, \ldots, a_n)$ and $\mathbf{b} = (b_1, \ldots, b_n)$:
+
+$$
+\mathbf{a} \cdot \mathbf{b} \;=\; \sum_{i=1}^{n} a_i b_i \;=\; \|\mathbf{a}\| \, \|\mathbf{b}\| \, \cos\theta
+$$
+
+Three readings of one expression.
+
+1. The **component form** $\sum a_i b_i$ is the implementation: multiply componentwise, sum. No square roots, no trig.
+2. The **geometric form** $\|\mathbf{a}\|\|\mathbf{b}\|\cos\theta$ is the meaning: $\cos\theta$ is the alignment, and the magnitudes scale it.
+3. The **sign of the dot product** is the sign of $\cos\theta$: positive when acute, zero when orthogonal, negative when obtuse.
+
+<MathCode
+  math="\mathbf{a} \cdot \mathbf{b} \;=\; \sum_{i} a_i b_i"
+  code={`def dot(a, b):
+    return sum(x * y for x, y in zip(a, b))
+
+# 2D example
+dot([1.5, 0.5], [1.0, 0.0])  # → 1.5`}
+  caption="The component form — the form you actually compute."
+/>
+
+## Try it
+
+<Callout targetInteractive="dot-explorer">
+  Drag $\mathbf{a}$ so it lies parallel to $\mathbf{b}$. The dot product jumps to $\|\mathbf{a}\|\|\mathbf{b}\|$ (its maximum). Now drag $\mathbf{a}$ so it lies perpendicular to $\mathbf{b}$. The dot product snaps to zero, regardless of magnitude. **Alignment** in isolation.
+</Callout>
+
+<Callout targetInteractive="dot-explorer">
+  Set $\mathbf{a} = (1.0, 0)$ and $\mathbf{b} = (0.5, 0)$. Note the dot product. Now scale $\mathbf{a}$ to $(2.0, 0)$. The dot product doubled, but the angle did not change. **Magnitude** in isolation.
+</Callout>
+
+<Callout targetInteractive="dot-explorer">
+  Set $\mathbf{a} = (1.0, 0)$ and $\mathbf{b} = (1.0, 0)$ (aligned, positive). Now drag $\mathbf{b}$ to $(-1.0, 0)$. The dot product is $-1$. Same magnitudes, opposite direction. The signed bar swings to the left.
+</Callout>
+
+## Reading the result
+
+Two traps to avoid.
+
+**"The dot product measures the angle."** It measures the *cosine* of the angle, scaled by magnitudes. On unit vectors, dot product and cosine coincide. On arbitrary vectors, the magnitudes matter.
+
+**"Bigger vector, bigger dot product."** Only if the direction is fixed. A long vector dotted with an orthogonal vector is still zero, no matter how long.
+
+The three inputs (direction of $\mathbf{a}$, direction of $\mathbf{b}$, and the two magnitudes) are independent. The dot product reads them all at once, but the experiments above separate them. That separability is what makes the dot product useful: it factors naturally into an alignment part and a magnitude part, and you can study each in isolation by freezing the other.
+
+A useful mental model: $\mathbf{a} \cdot \mathbf{b}$ is the answer to "if I were to measure how much of $\mathbf{a}$ lies in the direction of $\mathbf{b}$, what would the projection be?" The full projection comes a couple of lessons later; the dot product is the unnormalized answer.
+
+## A second look
+
+A query vector $\mathbf{q}$ that you drag, and five fixed candidate vectors. Each row shows one candidate's label, its dot product with $\mathbf{q}$, and a signed bar. The list re-sorts in real time as you move $\mathbf{q}$.
+
+<Callout targetInteractive="candidate-sort">
+  Drag $\mathbf{q}$ across the plane. The list re-sorts by *signed* dot product: aligned candidates climb, anti-aligned ones sink. The signed bar in each row tells you sign and magnitude at a glance.
+</Callout>
+
+## Recap
+
+Three takeaways to carry forward. **The dot product is a single number with three readings:** computationally, $\mathbf{a} \cdot \mathbf{b} = \sum_i a_i b_i$ — multiply componentwise, sum; geometrically, $\mathbf{a} \cdot \mathbf{b} = \|\mathbf{a}\| \, \|\mathbf{b}\| \cos\theta$ — magnitudes scaled by alignment; sign-wise, the sign tracks $\cos\theta$ — positive when acute, zero when orthogonal, negative when obtuse. **Magnitudes and alignment are separable inputs.** A length-2 vector dotted with an orthogonal one is still zero, no matter how long; that's why cosine similarity, the magnitude-free form, is a separate operation. **The three inputs (direction of $\mathbf{a}$, direction of $\mathbf{b}$, magnitudes) are independent**, which is why the dot product factors cleanly into direction and magnitude. The next lesson scales this up — a single dot product is between two vectors, but a real model has hundreds of vectors that all need to be compared against hundreds of other vectors, and the right way to do all of them at once is **matrix multiplication**.

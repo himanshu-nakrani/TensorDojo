@@ -1,0 +1,83 @@
+import { MathCode } from '@/components/lesson/MathCode';
+import { Callout } from '@/components/lesson/Callout';
+
+## The cartoon and the reality
+
+The previous lesson drew the loss as a U-shaped curve, dropped a marble on the side, and watched it roll to the bottom. The picture is correct in spirit and wrong in detail. A real neural network has millions to billions of parameters, so the "surface" is a billion-dimensional thing nobody can plot. What can be plotted are 2-D slices of it. Researchers have spent a decade studying those slices and the picture that emerged looks nothing like the textbook bowl.
+
+This lesson is a tour of four canonical 2-D loss surfaces that show up over and over in real networks. Each one is a different way for gradient descent to disappoint you, and a different way to fix it.
+
+## Surface 1: the bowl
+
+The shape SGD was designed for. One global minimum, the function curves smoothly upward from there, the gradient at every point reliably points back toward the minimum. Pick a starting point, take small enough steps, you converge. This is the picture every intro stats course draws and the only picture in which the math is fully behaved.
+
+$$
+\mathcal{L}_{\text{bowl}}(x, y) = x^2 + y^2
+$$
+
+The gradient is $(2x, 2y)$. The step $-\eta \nabla \mathcal{L}$ shrinks both coordinates by a factor of $(1 - 2\eta)$ each iteration. As long as $0 < \eta < 1$, the marble walks straight to origin.
+
+<Callout title="The textbook case" targetInteractive="loss-landscape">
+  Pick "Bowl" and click anywhere. SGD walks in a smooth curve straight to the center. Slide the LR up and down — the path angle is preserved, only the step size changes. This is the only surface where "just turn up the learning rate" actually helps. The other three break it.
+</Callout>
+
+## Surface 2: the saddle
+
+In a high-dimensional loss, *most critical points are saddles, not minima*. (The reasoning: at a critical point in $n$ dimensions, the Hessian is symmetric with $n$ real eigenvalues. For it to be a minimum, all $n$ have to be positive. The probability of that drops as $n$ grows; the probability of a mixed-sign eigenvalue set goes to 1.) The 2-D version is:
+
+$$
+\mathcal{L}_{\text{saddle}}(x, y) = x^2 - y^2
+$$
+
+At the origin, both partial derivatives are zero. But the second derivative in $x$ is positive (curving up) and in $y$ is negative (curving down). The origin is a minimum along one axis and a maximum along the other — a saddle. A naive optimizer that decides "gradient is small, must be done" gets stuck. SGD with momentum and any noise gets through fine, because the negative-curvature direction provides a force that pushes the iterate off the saddle.
+
+This is the headline result of Dauphin et al. (2014): the problem with high-dimensional optimization is rarely local minima, it's saddles slowing convergence to a crawl.
+
+<Callout title="Walking through a saddle" targetInteractive="loss-landscape">
+  Pick "Saddle" and click along the x-axis (anywhere where y ≈ 0). SGD slides toward the origin along x — the gradient there is small but pointing inward. Then it slides *down* in y. The trajectory threads through the saddle and runs off the bottom of the plot. Now click somewhere with a large y component to begin with. The y-direction dominates immediately. Saddle traps depend on where you start.
+</Callout>
+
+## Surfaces 3 and 4: sharp vs flat minima
+
+Two minima can have exactly the same loss value but very different *shapes*. A **sharp minimum** is a narrow, steep basin: small region of low loss, steep walls. A **flat minimum** is a wide, shallow basin: large region of low loss, gentle walls. Empirically, **flat minima generalize better than sharp ones** (Keskar et al., 2017). The intuitive argument: a flat minimum is robust — small perturbations to the parameters (which is what you get on new data) don't push you out of the low-loss region. A sharp minimum is fragile; you fell into the cup by training-set luck, and any small parameter change kicks you back out.
+
+The same intuition explains why SGD with a non-trivial learning rate prefers flat minima. Each gradient step is noisy enough that it can climb out of a sharp basin but stays comfortably inside a wide one. Decreasing the learning rate too aggressively trades flat for sharp.
+
+<MathCode
+  math="\theta_{t+1} = \theta_t - \eta \, \nabla_\theta \mathcal{L}(\theta_t)"
+  code={`# Same SGD update, four different surfaces.
+def sgd(start, grad, lr, steps):
+    theta = list(start)
+    path = [list(theta)]
+    for _ in range(steps):
+        g = grad(*theta)
+        theta = [t - lr * gi for t, gi in zip(theta, g)]
+        path.append(list(theta))
+    return path
+
+# Bowl: predictable.
+# Saddle: needs noise or momentum to escape.
+# Sharp minimum: small LR works, large LR oscillates.
+# Flat minimum: large LR works, small LR is glacial.`}
+  caption="The optimizer doesn't know what surface it is on. The same update rule produces wildly different behavior depending on local curvature."
+/>
+
+<Callout title="Same LR, different curvature, different outcome" targetInteractive="loss-landscape">
+  Pick "Sharp minimum" and set LR to 0.05. Click a starting point; SGD walks calmly into the basin. Now slide LR to 0.5. The trajectory oscillates back and forth across the narrow valley and refuses to settle — the step size is too big for the curvature. Now switch to "Flat minimum" and keep LR at 0.5. Calm convergence. The same step size is "right" or "wrong" depending entirely on how curved the surface is near the minimum.
+</Callout>
+
+## What this changes about how you train
+
+Three practical consequences fall out of this picture:
+
+1. **Saddles are the bottleneck, not local minima.** This is why modern optimizers (Adam, momentum-SGD) all carry second-moment estimates — they accelerate through saddle points where vanilla SGD crawls.
+2. **Learning-rate schedules exist for a reason.** A high LR early helps escape sharp basins and saddles; a low LR late helps settle into the flat one you found. Cosine and warmup-decay schedules are the standard answer.
+3. **Batch size affects which minimum you reach.** Small batches add noise that helps SGD favor flat minima. Large-batch training tends to settle into sharper, less-generalizable solutions — the *generalization gap* of large-batch training. This is partly why the LR has to be scaled with batch size.
+
+## Recap
+
+Three takeaways. **The loss surface is not a bowl** — saddles, sharp basins, and flat basins all show up in real networks, and they behave very differently under the same SGD update. **High-dimensional optimization is dominated by saddles, not local minima**, which is why momentum-based and adaptive optimizers win. **Flat minima generalize better than sharp ones**, and the noise injected by small-batch SGD is part of what biases training toward them.
+
+What you should walk away with: the next time you see a training curve plateau, your first guess shouldn't be "stuck in a local minimum" — it should be "stuck near a saddle." And when someone says "the LR is too high," you now know what curvature they mean.
+
+The next track begins by zooming back out to the *product* of $N$ Jacobians that gradient descent has to navigate across a deep stack — **vanishing and exploding gradients**, the structural problem that residuals and normalization exist to solve.

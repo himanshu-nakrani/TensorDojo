@@ -1,0 +1,572 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ===========================================================================
+   THEME TOKENS
+
+   Two palettes: light is the default on :root; dark overrides via .dark on
+   <html>. Every Tailwind color in tailwind.config.ts reads through one of
+   these tokens as `rgb(var(--token) / <alpha-value>)`, so `bg-bg`, `text-ink`,
+   `border-border`, and even `bg-bg/40` all theme-swap automatically.
+
+   Tokens are stored as bare RGB triplets (space-separated channels) so the
+   Tailwind alpha modifier can build a translucent color. Inline styles and
+   SVG attributes that need the same color wrap the variable in `rgb()`,
+   e.g. `fill="rgb(var(--accent))"`.
+
+   A handful of tokens are kept as full rgba values because they bake in a
+   specific opacity that doesn't make sense to expose to Tailwind
+   (--accent-soft, --accent-faint, --accent-dim, --negative-bg, etc.).
+   =========================================================================== */
+
+:root {
+  /* Surfaces */
+  --bg: 251 250 248;              /* warm off-white page background */
+  --bg-elevated: 255 255 255;     /* card / workbench surface */
+  --bg-code: 244 241 236;         /* code block fill (slightly warmer) */
+
+  /* Text */
+  --fg: 26 24 21;
+  --fg-muted: 74 71 66;
+  --fg-subtle: 111 108 104;       /* eyebrows, hints — AA on --bg */
+
+  /* Lines */
+  --border: 230 226 219;
+  --border-strong: 207 201 191;
+
+  /* The single accent (design-spec §8) — manipulated things only. */
+  --accent: 21 128 61;            /* green-700; ~5.4:1 on --bg */
+  --accent-hover: 22 101 52;      /* green-800 */
+  --accent-fg: 255 255 255;       /* text/icon on accent surfaces */
+
+  /* Charting tokens */
+  --grid: 236 232 225;
+  --positive: 21 128 61;
+  --negative: 185 28 28;          /* red-700; AA on --bg */
+
+  /* Categorical series colors — used by sims that need to plot
+     multiple lines that are NOT ordered or signed (e.g. three
+     optimizer traces, four batch-size traces). Distinct from
+     --accent/--positive/--negative; chosen to be perceptually
+     distinguishable and theme-aware. */
+  --series-1: 21 128 61;          /* green — same hue as accent in light */
+  --series-2: 217 119 6;          /* amber-600 */
+  --series-3: 124 58 237;         /* violet-600 */
+  --series-4: 14 116 144;         /* cyan-700 */
+
+  /* Pre-baked translucent variants — kept as full rgba because they
+     describe a specific visual, not a "themed color at 30%". */
+  --accent-soft: rgba(21, 128, 61, 0.10);
+  --accent-faint: rgba(21, 128, 61, 0.06);
+  --accent-dim: rgba(21, 128, 61, 0.32);
+
+  /* Hover state for the elevated surface. */
+  --bg-elevated-hover: 244 241 236;
+
+  /* Glow color for the focus ring on inputs. */
+  --accent-shadow: rgba(21, 128, 61, 0.18);
+
+  /* Pre-baked negative bar bg (the "wrong answer" red with built-in alpha). */
+  --negative-bg: rgba(185, 28, 28, 0.7);
+
+  /* Subtle top-edge highlight on elevated cards. The dark theme
+     uses a faint white inset to suggest light from above; light
+     theme uses a faint black inset for the same suggestion. */
+  --shadow-inset: inset 0 1px 0 rgba(31, 26, 22, 0.04);
+
+  /* Heatmap cell-number halo — matches --bg so text reads on any
+     cell tint. Inline-styled as `rgb(var(--cell-halo))`. */
+  --cell-halo: 251 250 248;
+
+  /* Graph-paper background lines. Two perpendicular families of
+     thin lines at very low opacity — minor at 24px, major every 5
+     (120px). The pattern reinforces the "this is a math notebook"
+     metaphor without making the page busy. */
+  --paper-minor: rgba(31, 26, 22, 0.018);
+  --paper-major: rgba(31, 26, 22, 0.035);
+}
+
+:root.dark {
+  /* GitHub-inspired dark grey palette. The previous #0B0D10
+     read as near-black and gave the page a heavier feel than
+     intended; #0d1117 / #161b22 are GitHub's canvas + surface
+     pair and provide enough warmth that the page reads as a
+     deliberately dark grey rather than an OLED-black void. */
+  --bg: 13 17 23;
+  --bg-elevated: 22 27 34;
+  --bg-code: 22 27 34;
+
+  --fg: 230 233 239;              /* slightly warmer/brighter than slate-200 */
+  --fg-muted: 184 191 204;         /* was 156 163 175 — bumped for readability on the lighter bg */
+  --fg-subtle: 168 178 196;        /* was 148 163 184 — same reason */
+
+  --border: 41 48 56;              /* was 33 38 45 — visible against #161b22 */
+  --border-strong: 62 70 80;       /* was 48 54 61 */
+
+  --accent: 74 222 128;            /* green-400 — bright on the GH dark canvas */
+  --accent-hover: 134 239 172;     /* green-300 */
+  --accent-fg: 13 17 23;
+
+  --grid: 33 38 45;
+  --positive: 74 222 128;
+  --negative: 248 113 113;
+
+  --series-1: 74 222 128;          /* green */
+  --series-2: 251 191 36;          /* amber-400 */
+  --series-3: 167 139 250;         /* violet-400 */
+  --series-4: 56 189 248;          /* sky-400 */
+
+  --accent-soft: rgba(74, 222, 128, 0.16);
+  --accent-faint: rgba(74, 222, 128, 0.10);
+  --accent-dim: rgba(74, 222, 128, 0.28);
+
+  --bg-elevated-hover: 29 36 46;
+  --accent-shadow: rgba(74, 222, 128, 0.15);
+
+  --negative-bg: rgba(248, 113, 113, 0.7);
+  --shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.02);
+
+  --cell-halo: 13 17 23;
+
+  /* On the GH dark canvas the grid lines need to be lighter than
+     the background, not darker. Same minor/major split. */
+  --paper-minor: rgba(255, 255, 255, 0.012);
+  --paper-major: rgba(255, 255, 255, 0.024);
+}
+
+/* ===========================================================================
+   KaTeX — let math inherit the page's text color.
+   =========================================================================== */
+.katex {
+  color: inherit;
+  font-size: 1.05em;
+}
+.katex-display {
+  margin: 1.5rem 0 !important;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 2px;
+}
+/* The MathML annotation layer is visually hidden but can cause
+   horizontal overflow on narrow viewports. The .katex container
+   must clip it so absolutely-positioned MathML children don't
+   extend the scroll width. */
+.katex {
+  overflow: hidden;
+}
+.katex-mathml,
+.katex-mathml math {
+  overflow: hidden;
+  max-width: 100%;
+  position: absolute;
+  clip-path: inset(50%);
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  border: 0;
+}
+
+/* ===========================================================================
+   Graph-paper background.
+
+   Drawn on the body with four stacked linear gradients: a major and
+   a minor grid line in each axis. The minor grid is at 24px; the
+   major lands every 5 cells (120px). Opacities are token-driven
+   (--paper-minor, --paper-major) and theme-aware: dark lines on the
+   warm off-white in light mode, faint white lines on the GH dark
+   canvas in dark mode.
+
+   background-attachment: fixed so the grid stays anchored to the
+   viewport, not the document — scrolling a long lesson doesn't
+   sweep the grid along, which would be distracting at our pattern
+   density.
+
+   The body's Tailwind `bg-bg` class still sets the solid color
+   underneath; this rule only adds the lines on top.
+   =========================================================================== */
+body {
+  background-image:
+    linear-gradient(to right, var(--paper-major), var(--paper-major) 1px, transparent 1px, transparent),
+    linear-gradient(to bottom, var(--paper-major), var(--paper-major) 1px, transparent 1px, transparent),
+    linear-gradient(to right, var(--paper-minor), var(--paper-minor) 1px, transparent 1px, transparent),
+    linear-gradient(to bottom, var(--paper-minor), var(--paper-minor) 1px, transparent 1px, transparent);
+  background-size:
+    120px 120px,
+    120px 120px,
+    24px 24px,
+    24px 24px;
+  background-position: 0 0;
+  background-attachment: fixed;
+}
+
+/* Selection — same accent on both themes. */
+::selection {
+  background: rgb(var(--accent));
+  color: rgb(var(--accent-fg));
+}
+
+/* ===========================================================================
+   Slider (themed via tokens). The .slider element is rendered by the
+   Slider primitive with a CSS custom property --fill set inline.
+   =========================================================================== */
+.slider {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  height: 24px;
+  cursor: pointer;
+  padding: 0;
+  margin: 0;
+}
+.slider:focus {
+  outline: none;
+}
+.slider:focus-visible {
+  outline: 2px solid rgb(var(--accent));
+  outline-offset: 4px;
+  border-radius: 2px;
+}
+
+/* WebKit / Blink — fill to var(--fill), unfilled in --border-strong. */
+.slider::-webkit-slider-runnable-track {
+  height: 4px;
+  border-radius: 2px;
+  background: linear-gradient(
+    to right,
+    rgb(var(--accent)) 0%,
+    rgb(var(--accent)) var(--fill, 0%),
+    rgb(var(--border-strong)) var(--fill, 0%),
+    rgb(var(--border-strong)) 100%
+  );
+}
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 16px;
+  width: 16px;
+  border-radius: 50%;
+  background: rgb(var(--accent));
+  margin-top: -6px;
+  border: 3px solid rgb(var(--bg));
+  box-shadow: 0 0 0 1px rgb(var(--accent));
+  transition: transform 120ms ease-out, box-shadow 120ms ease-out;
+}
+.slider:hover::-webkit-slider-thumb {
+  transform: scale(1.12);
+}
+.slider:focus-visible::-webkit-slider-thumb {
+  box-shadow:
+    0 0 0 1px rgb(var(--bg)),
+    0 0 0 4px rgb(var(--accent));
+  transform: scale(1.12);
+}
+
+/* Firefox */
+.slider::-moz-range-track {
+  height: 4px;
+  border-radius: 2px;
+  background: rgb(var(--border-strong));
+}
+.slider::-moz-range-progress {
+  height: 4px;
+  border-radius: 2px;
+  background: rgb(var(--accent));
+}
+.slider::-moz-range-thumb {
+  height: 16px;
+  width: 16px;
+  border-radius: 50%;
+  background: rgb(var(--accent));
+  border: 3px solid rgb(var(--bg));
+  box-shadow: 0 0 0 1px rgb(var(--accent));
+  cursor: pointer;
+  transition: transform 120ms ease-out, box-shadow 120ms ease-out;
+}
+.slider:hover::-moz-range-thumb {
+  transform: scale(1.12);
+}
+.slider:focus-visible::-moz-range-thumb {
+  box-shadow:
+    0 0 0 1px rgb(var(--bg)),
+    0 0 0 4px rgb(var(--accent));
+  transform: scale(1.12);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .slider::-webkit-slider-thumb,
+  .slider::-moz-range-thumb {
+    transition: none;
+  }
+  .slider:hover::-webkit-slider-thumb,
+  .slider:focus-visible::-webkit-slider-thumb,
+  .slider:hover::-moz-range-thumb,
+  .slider:focus-visible::-moz-range-thumb {
+    transform: none;
+  }
+}
+
+/* ===========================================================================
+   Number input
+   =========================================================================== */
+.number-input {
+  background: rgb(var(--bg-code));
+  border: 1px solid rgb(var(--border));
+  color: rgb(var(--fg));
+  border-radius: 4px;
+  padding: 6px 8px;
+  font-size: 0.875rem;
+  text-align: center;
+  transition: border-color 120ms ease-out, box-shadow 120ms ease-out;
+  -moz-appearance: textfield;
+}
+.number-input::-webkit-outer-spin-button,
+.number-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.number-input:hover {
+  border-color: rgb(var(--border-strong));
+}
+.number-input:focus {
+  outline: none;
+  border-color: rgb(var(--accent));
+  box-shadow: 0 0 0 2px var(--accent-shadow);
+}
+.number-input:focus-visible {
+  outline: 2px solid rgb(var(--accent));
+  outline-offset: 1px;
+}
+.number-input--error {
+  border-color: rgb(var(--negative));
+}
+.number-input--error:focus {
+  border-color: rgb(var(--negative));
+  box-shadow: 0 0 0 2px rgba(var(--negative), 0.25);
+}
+.number-input--error:focus-visible {
+  outline-color: rgb(var(--negative));
+}
+
+/* ===========================================================================
+   Universal :focus-visible ring
+   =========================================================================== */
+.focus-ring:focus-visible {
+  outline: 2px solid rgb(var(--accent));
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+.lesson-body a:focus-visible {
+  outline: 2px solid rgb(var(--accent));
+  outline-offset: 2px;
+}
+
+/* Screen-reader-only utility. */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ===========================================================================
+   Lesson body (prose)
+   =========================================================================== */
+.lesson-body {
+  color: rgb(var(--fg-muted));
+  font-size: 1.0625rem;
+  line-height: 1.75;
+}
+.lesson-body > * + * {
+  margin-top: 1.25rem;
+}
+.lesson-body h2 {
+  font-size: 1.625rem;
+  font-weight: 600;
+  color: rgb(var(--fg));
+  letter-spacing: -0.01em;
+  line-height: 1.25;
+  margin-top: 3rem;
+  margin-bottom: 0.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgb(var(--border));
+}
+.lesson-body h2:first-child {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: 0;
+}
+.lesson-body h3 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: rgb(var(--fg));
+  margin-top: 1.5rem;
+  margin-bottom: 0.25rem;
+}
+.lesson-body p {
+  margin: 0;
+}
+.lesson-body strong {
+  color: rgb(var(--fg));
+  font-weight: 600;
+}
+.lesson-body em {
+  font-style: italic;
+}
+.lesson-body a {
+  color: rgb(var(--accent));
+  text-decoration: none;
+  border-bottom: 1px solid var(--accent-dim);
+  transition: border-color 120ms;
+}
+.lesson-body a:hover {
+  border-bottom-color: rgb(var(--accent));
+}
+.lesson-body code {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.875em;
+  background: rgb(var(--bg-code));
+  border: 1px solid rgb(var(--border));
+  border-radius: 3px;
+  padding: 1px 5px;
+  color: rgb(var(--fg));
+}
+.lesson-body pre {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  background: rgb(var(--bg-code));
+  border: 1px solid rgb(var(--border));
+  border-radius: 6px;
+  padding: 14px 16px;
+  overflow-x: auto;
+  font-size: 0.8125rem;
+  line-height: 1.65;
+  color: rgb(var(--fg));
+  margin: 0;
+}
+.lesson-body pre code {
+  background: transparent;
+  border: 0;
+  padding: 0;
+  font-size: inherit;
+  color: inherit;
+}
+.lesson-body kbd {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.75rem;
+  background: rgb(var(--bg-code));
+  border: 1px solid rgb(var(--border-strong));
+  border-bottom-width: 2px;
+  border-radius: 3px;
+  padding: 1px 5px;
+  color: rgb(var(--fg));
+}
+.lesson-body ol,
+.lesson-body ul {
+  padding-left: 1.5rem;
+  margin: 0;
+}
+.lesson-body ol > li + li,
+.lesson-body ul > li + li {
+  margin-top: 0.75rem;
+}
+.lesson-body ol > li::marker {
+  color: rgb(var(--fg-subtle));
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.85em;
+}
+.lesson-body blockquote {
+  border-left: 2px solid rgb(var(--border-strong));
+  padding-left: 1rem;
+  color: rgb(var(--fg-muted));
+  font-style: italic;
+  margin: 0;
+}
+
+/* Inline math inside prose should pick up ink color. */
+.inline-math .katex {
+  font-size: 1em;
+}
+
+/* ===========================================================================
+   Workbench pulse (the diagnosis flow triggers this).
+   Longer + larger than before so the eye actually lands on it
+   after smooth-scroll resolves.
+   =========================================================================== */
+@keyframes pulse-ring {
+  0% {
+    box-shadow:
+      0 0 0 0 var(--accent-shadow),
+      0 0 0 0 var(--accent-soft);
+  }
+  60% {
+    box-shadow:
+      0 0 0 6px var(--accent-shadow),
+      0 0 0 14px var(--accent-faint);
+  }
+  100% {
+    box-shadow:
+      0 0 0 14px transparent,
+      0 0 0 26px transparent;
+  }
+}
+.animate-pulse-ring {
+  animation: pulse-ring 1200ms ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-pulse-ring {
+    animation: none;
+    box-shadow: 0 0 0 2px var(--accent-shadow);
+  }
+}
+
+/* ===========================================================================
+   Entrance animations — fade-up on first paint. Applied via the
+   .animate-fade-up class with optional --delay custom property.
+   Respects prefers-reduced-motion (elements appear instantly).
+   =========================================================================== */
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-fade-up {
+  animation: fade-up 600ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: var(--delay, 0ms);
+}
+@media (prefers-reduced-motion: reduce) {
+  .animate-fade-up {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ===========================================================================
+   Card surface (a small inset highlight on elevated cards).
+   Use the .card-surface utility anywhere a sim card wants the
+   top-edge highlight. Token resolves per theme.
+   =========================================================================== */
+.card-surface {
+  box-shadow: var(--shadow-inset);
+}
+
+/* ===========================================================================
+   Theme switch — skip transitions on every element so a class swap doesn't
+   cascade a 200ms color tween across the whole page.
+   =========================================================================== */
+.theme-switching,
+.theme-switching * {
+  transition: none !important;
+}

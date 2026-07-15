@@ -1,0 +1,92 @@
+import { MathCode } from '@/components/lesson/MathCode';
+import { Callout } from '@/components/lesson/Callout';
+
+## From one dot product to many
+
+You just spent a whole lesson dragging two vectors around and watching one number — their dot product — update. That number was a measure of similarity between $\mathbf{a}$ and $\mathbf{b}$. Useful, but lonely. A real model has hundreds of vectors that all need to be compared against hundreds of other vectors. Doing one dot product at a time is the right idea, written down for one pair. Doing them all at once is **matrix multiplication**.
+
+Pick two matrices:
+
+$$
+A = \begin{bmatrix} 1 & 2 & 3 \\ 4 & 5 & 6 \end{bmatrix}
+\qquad
+B = \begin{bmatrix} 7 & 8 \\ 9 & 10 \\ 11 & 12 \end{bmatrix}
+$$
+
+The product $AB$ is a new matrix, and the rule for each of its cells is the dot-product rule from the previous lesson:
+
+$$
+(AB)_{ij} \;=\; \text{row } i \text{ of } A \;\cdot\; \text{col } j \text{ of } B
+$$
+
+So $(AB)_{1,1}$ is row 1 of $A$ — that's $[1, 2, 3]$ — dotted with column 1 of $B$ — that's $[7, 9, 11]$ — which gives $1\cdot 7 + 2\cdot 9 + 3\cdot 11 = 58$. Cell $(1, 2)$ uses the same row of $A$ but column 2 of $B$: $1\cdot 8 + 2\cdot 10 + 3\cdot 12 = 64$. Repeat for the other two cells.
+
+$$
+AB = \begin{bmatrix} 58 & 64 \\ 139 & 154 \end{bmatrix}
+$$
+
+Four output cells. Four separate dot products. They share inputs but pick different rows and columns. That is the whole operation.
+
+<Callout title="Hover any output cell, then edit any input cell" targetInteractive="matmul-explorer">
+  Open the explorer. Hover the top-right output cell; the highlighted row of A and column of B are exactly the two vectors whose dot product produced that cell. The expansion line below the grids shows the three terms with live values. Now drag any cell of A or B — every output cell that uses that cell updates. That is "every linear layer in a transformer," written out at toy size.
+</Callout>
+
+## The shape rule
+
+You cannot multiply just any two matrices. The inner dimensions have to agree:
+
+$$
+\underbrace{A}_{m \times k} \;\cdot\; \underbrace{B}_{k \times n} \;=\; \underbrace{AB}_{m \times n}
+$$
+
+Read left-to-right: $A$ has $k$ columns, $B$ has $k$ rows — same $k$. The product is $(m \times n)$: it inherits the outer dimensions and drops the shared inner one. If $A$ has 3 columns and $B$ has 4 rows, the product is undefined — there is no way to "line up" the dot products.
+
+<MathCode
+  math="(AB)_{ij} = \sum_{p=1}^{k} A_{ip}\, B_{pj}"
+  code={`import numpy as np
+
+A = np.array([[1, 2, 3],
+              [4, 5, 6]])          # (2, 3)
+B = np.array([[7, 8],
+              [9, 10],
+              [11, 12]])           # (3, 2)
+
+# A @ B has shape (2, 2).
+print(A @ B)
+# [[ 58  64]
+#  [139 154]]
+
+# Inner dims must match — this raises:
+# ValueError: matmul: Input operand 1 has a mismatch in
+# its core dimension 0
+A @ A   # (2, 3) · (2, 3) — undefined`}
+  caption="Every framework uses the same shape rule. NumPy, PyTorch, JAX — all of them reject (m,k)·(k',n) when k ≠ k'."
+/>
+
+<Callout title="Hit the wall on purpose" targetInteractive="matmul-shape-rules">
+  Drag the two k sliders apart. The third panel turns red and says "shapes don't match." Slide them back together. The rule isn't an arbitrary convention — it's what makes the dot product on each output cell well-defined.
+</Callout>
+
+## Why this is the operation under every linear layer
+
+A linear layer in a neural net looks like:
+
+$$
+\mathbf{y} \;=\; W \mathbf{x} + \mathbf{b}
+$$
+
+where $W$ is a matrix and $\mathbf{x}$ is a column vector. That is a matmul. If you stack a batch of inputs $X$ as a matrix — each row is one input vector — then the whole batch's outputs become a matmul too:
+
+$$
+Y \;=\; X W^\top + \mathbf{b}
+$$
+
+The attention scores in a transformer are a matmul: $QK^\top$. The attention output is a matmul: $\text{softmax}(QK^\top / \sqrt{d}) \cdot V$. The feed-forward layer is two matmuls back-to-back. The unembedding step that turns the final hidden state into per-token logits is a matmul. **The vast majority of the FLOPs in any real model are spent here, on this one operation.**
+
+This is also why GPUs win. Matmul decomposes cleanly into a grid of independent dot products, which is exactly the workload a parallel chip is built for. Once you understand a single output cell, you have understood every linear layer in every transformer.
+
+## Recap
+
+Three takeaways. **A matmul is many dot products** — one per output cell, between one row of A and one column of B. **The shape rule is non-negotiable** — the inner dimensions must agree, and the result inherits the outer ones. **Every linear layer is a matmul** — what you just dragged around is the operation under attention, the FFN, the output head, and every other piece of a real model.
+
+Next we look at **vector projection**, the geometric companion of the dot product. A dot product gives you a number; projection gives you a vector — the part of $\mathbf{a}$ that points along $\mathbf{b}$. Together with matmul they form the toolkit the rest of the curriculum builds on.

@@ -1,0 +1,81 @@
+import { MathCode } from '@/components/lesson/MathCode';
+import { Callout } from '@/components/lesson/Callout';
+
+## Sinusoidal positional encoding worked. Why did the entire field switch to something else?
+
+The previous lesson covered the Vaswani 2017 scheme: build a deterministic PE matrix, add it to each token's embedding once, never touch it again. It worked — the original transformer was trained on it, and the dot product of two PE vectors is a smooth function of position distance, which is the property attention needs.
+
+But over the years three problems with the additive scheme accumulated. **One**, addition entangles content and position in the same vector. The model has to learn to disentangle them inside attention; in practice it does, but you're asking a single learned matrix to separate two qualitatively different signals. **Two**, extending to longer contexts than the model was trained on is awkward — the PE matrix is hard-coded to a max length; extrapolation past it requires tricks. **Three**, the inductive bias you actually want — "relative position matters, absolute position doesn't" — is *implicit* in sinusoidal-add (you have to do the math to see it falls out of the dot product) and *explicit* in the alternative this lesson covers.
+
+The alternative is **rotary positional encoding** (RoPE). Every modern decoder-only LLM uses it: LLaMA, Mistral, Qwen, GPT-NeoX, DeepSeek. The change is qualitative, not just quantitative.
+
+## The trick
+
+Don't add position to the embedding. Instead, *rotate* the Q and K vectors by an angle that depends on the position, *before* taking the dot product.
+
+The rotation is applied per pair of dimensions: dimensions $(0, 1)$ get rotated together, $(2, 3)$ together, and so on. Pair $k$ at position $m$ rotates by angle $\theta_{m,k} = m \cdot \text{base}^{-2k/d}$, with $\text{base} = 10{,}000$ — exactly the same frequency schedule as sinusoidal PE.
+
+The headline identity falls out of the basic property of 2D rotations: rotate by $A$, rotate by $-B$, total rotation is $A - B$. So the dot product of "Q rotated by position $m$" and "K rotated by position $n$" depends only on $m - n$ — not on $m$ and $n$ separately.
+
+$$
+R(\theta) = \begin{pmatrix} \cos\theta & -\sin\theta \\ \sin\theta & \cos\theta \end{pmatrix},
+\qquad
+\text{rope}(\mathbf{q}, m) \cdot \text{rope}(\mathbf{k}, n) = \mathbf{q}^\top R(\theta_{m-n})\, \mathbf{k}
+$$
+
+<MathCode
+  math="\text{rope}(\mathbf{q}, m) \cdot \text{rope}(\mathbf{k}, n) \;=\; \mathbf{q}^\top R(\theta_{m-n})\, \mathbf{k}"
+  code={`# Per attention head, per layer, per token:
+def apply_rope(x, pos, base=10000):
+    d = x.shape[-1]
+    out = torch.empty_like(x)
+    for k in range(d // 2):
+        theta = pos * base ** (-2 * k / d)
+        c, s = math.cos(theta), math.sin(theta)
+        x0, x1 = x[..., 2*k], x[..., 2*k+1]
+        out[..., 2*k]   = x0 * c - x1 * s
+        out[..., 2*k+1] = x0 * s + x1 * c
+    return out
+
+# Then attend.
+q_rot = apply_rope(q, pos_q)
+k_rot = apply_rope(k, pos_k)
+scores = q_rot @ k_rot.T / math.sqrt(d)`}
+  caption="One pair of dimensions, one rotation, no embedding table mutation. Applied inside attention, per layer, per token — not added to embeddings once."
+/>
+
+## Try it
+
+<Callout targetInteractive="rope-rotator">
+  Start at m=3, n=0. The rotated Q is ghosted at some angle from the raw Q; rotated K is unrotated (n=0). Now slide both position sliders to the right by the *same amount* — say m=10, n=7. Both ghosts swing further around the circle, but the rotated dot product number at the bottom doesn't change. Slide them apart and it does.
+</Callout>
+
+<Callout title="Why the frequency varies by pair" targetInteractive="rope-rotator">
+  Switch the pair toggle to "pair 3" at the top. The arc on the canvas barely moves as you drag the position slider — pair 3 rotates at one ten-thousandth the rate of pair 0. That's the same geometric-frequency schedule from sinusoidal PE: low pairs encode fine-grained position, high pairs encode coarse-grained position. RoPE just applies it as rotation, not addition.
+</Callout>
+
+## A second look
+
+<Callout targetInteractive="rope-relativity">
+  Switch to "pair 0 only" to see one curve cleanly: rotated dot product peaks at offset zero (the unrotated value), oscillates sinusoidally across offsets with a period of about six positions. Switch back to "all 4 pairs" and the slower-frequency curves layer in underneath. A real RoPE rotation sums d/2 of these — for a 4096-dim head that's 2048 curves — and the sum produces the smooth distance-aware similarity attention uses.
+</Callout>
+
+<Callout title="The relative-position property in aggregate" targetInteractive="rope-relativity">
+  The curves are perfectly symmetric around zero — every pair contributes the same way for offset +5 as for offset −5, because what matters is |m − n|. (Sign matters for the rotation direction, but the averaged dot product is symmetric.) This is the property attention exploits: "the token 5 to my left" is treated similarly to "the token 5 to my right," which is what you want for most language modeling.
+</Callout>
+
+## Reading the result
+
+Three things to internalize.
+
+**Rotation, not addition.** Sinusoidal PE adds a fixed vector to the embedding; RoPE rotates Q and K inside attention. The embedding is left alone — content and position stay in separate operations. There's no PE matrix sitting in memory; the rotation is a few cosines and sines computed per token at runtime, free at inference.
+
+**The dot product is a function of relative offset, by construction.** The defining identity $\text{rope}(\mathbf{q}, m) \cdot \text{rope}(\mathbf{k}, n) = \mathbf{q}^\top R(\theta_{m-n})\, \mathbf{k}$ means *no information about absolute position survives* the attention operation. The model can't tell the difference between "token at position 100 attending to token at position 95" and "token at position 5 attending to token at position 0." That's not a bug — it's the inductive bias that most language tasks actually want.
+
+**Applied per layer, per head, per token — at runtime.** RoPE is not part of the embedding table; it's part of the attention computation. Every transformer block re-rotates Q and K before scoring. This makes context-length extrapolation tractable: scaling the frequencies (NTK-aware scaling, YaRN) lets a model trained on 4k context handle 32k or 100k with only mild fine-tuning. Sinusoidal PE doesn't extend nearly as cleanly.
+
+## Recap
+
+Three takeaways. **RoPE rotates Q and K by a position-dependent angle instead of adding a position vector to embeddings.** The rotation is applied per pair of dimensions, at geometrically-scaled frequencies, exactly like sinusoidal PE. **The dot product of two rotated vectors depends only on the relative offset $m - n$**, by the basic 2D rotation identity. **It's the modern default** — LLaMA, Mistral, Qwen, GPT-NeoX, DeepSeek all use RoPE. And because it's a runtime operation rather than a baked-in PE matrix, it composes cleanly with the KV cache: rotate the new query, attend against the (rotated, cached) keys, done.
+
+The model now has content (embeddings), position (RoPE), and a numerical attention mechanism that doesn't saturate at large $d_k$ or peek into the future. The next track starts assembling those pieces into the **transformer block** — and the first question is what to do when the same sentence has many simultaneous structures: **multi-head attention**.

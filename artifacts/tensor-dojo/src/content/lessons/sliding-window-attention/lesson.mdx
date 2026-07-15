@@ -1,0 +1,94 @@
+import { MathCode } from '@/components/lesson/MathCode';
+import { Callout } from '@/components/lesson/Callout';
+
+## The cost of "every token reads every other token"
+
+Causal attention is symmetric only in one direction: each token attends to every previous token. The cost is $O(n^2)$ per layer, where $n$ is the sequence length. For a 32-layer model on a 32k-token context, that's roughly a billion attention pairs *per layer* — and the cost grows quadratically with context length.
+
+**Sliding-window attention** replaces "every previous token" with "the previous $w$ previous tokens." The mask becomes a band along the diagonal: each token reads exactly $w$ keys (or $w$ + 1 with the token itself), no matter how long the sequence gets. The cost drops to $O(n \cdot w)$ — linear in $n$ once $w$ is fixed.
+
+The catch: a token at position $i$ can no longer directly attend to a token at position $i - w - 1$. So how does information from far away ever influence the answer? **Through the stack.** A token at position $i$ reads $w$ previous tokens at layer 1. At layer 2, those $w$ tokens have each already read $w$ tokens of their own. After $L$ layers of sliding-window attention with window $w$, the effective receptive field is $L \cdot w$. Mistral's 7B uses $w = 4096$ and 32 layers, giving an effective receptive field of $\sim 131{,}000$ tokens — well beyond the 32K context window the model was trained on.
+
+## The formula
+
+For full causal attention, the mask is the lower-triangular matrix. For sliding-window attention with window $w$:
+
+$$
+\text{mask}(i, j) = \begin{cases} 1 & \text{if } i - w \leq j \leq i \\ 0 & \text{otherwise} \end{cases}
+$$
+
+The attention output at position $i$ is computed as usual, but the softmax is restricted to the $w + 1$ keys in the window:
+
+$$
+\mathbf{o}_i = \sum_{j = \max(0, i-w)}^{i} \frac{\exp(\mathbf{q}_i \cdot \mathbf{k}_j / \sqrt{d_k})}{\sum_{j'} \exp(\mathbf{q}_i \cdot \mathbf{k}_{j'} / \sqrt{d_k})} \mathbf{v}_j
+$$
+
+In practice the kernel doesn't materialize the full $n \times n$ matrix at all — it streams over the band, which is also why sliding-window pairs naturally with FlashAttention's tiling.
+
+<MathCode
+  math="\text{cost}_\text{full} = O(n^2), \quad \text{cost}_\text{sliding} = O(n \cdot w)"
+  code={`import torch
+
+def causal_mask(n):
+    """The standard lower-triangular mask: token i attends to all j <= i."""
+    return torch.tril(torch.ones(n, n, dtype=torch.bool))
+
+def sliding_window_mask(n, w):
+    """Each token attends to the last w tokens (plus itself)."""
+    i = torch.arange(n).unsqueeze(1)
+    j = torch.arange(n).unsqueeze(0)
+    return (j <= i) & (j >= i - w)
+
+# For n = 8192, w = 1024:
+#   full causal pairs:    ~33.5M
+#   sliding-window pairs: ~8.4M  (4x cheaper)
+
+# For n = 131072, w = 4096:
+#   full causal pairs:    ~8.6B
+#   sliding-window pairs: ~537M  (16x cheaper)
+
+# The savings grow linearly with n once w is fixed.`}
+  caption="The band keeps a fixed number of nonzero columns per row. The full causal mask, by contrast, has row i with i + 1 nonzero columns — so the per-row cost grows with the row index, which is what gives the quadratic n²/2 total."
+/>
+
+<Callout title="The receptive field still grows with depth" targetInteractive="sliding-window-explorer">
+  This is the load-bearing observation. Even though one layer of sliding-window attention only reads $w$ tokens, stacking $L$ such layers gives each token an effective receptive field of $L \cdot w$. Mistral 7B is $L = 32$ and $w = 4096$, so its receptive field is $32 \cdot 4096 = 131{,}072$ tokens — exactly its training context. The depth turns a "local" operation into a long-range one, the same way the visual cortex turns local edge detectors into face recognizers.
+</Callout>
+
+## Try it
+
+The centerpiece shows the attention mask side by side: causal on the left, sliding-window on the right. Drag the context length and window size; watch the band stay constant-width while the full mask grows quadratically.
+
+<Callout targetInteractive="sliding-window-explorer">
+  Start with context $n = 32$ and window $w = 8$. The full causal mask fills the lower triangle — 528 attended pairs. The sliding-window mask is a band along the diagonal — 252 attended pairs, roughly half. Now drag $n$ to 64: full causal climbs to 2080 pairs, sliding-window only to 540. The gap is widening.
+</Callout>
+
+<Callout title="What to watch for" targetInteractive="sliding-window-explorer">
+  Drag $n$ to 128 with $w = 8$. The full mask now has 8256 pairs; sliding-window has 1116 — a 7× saving. Push $n$ higher and the gap keeps widening: at $n = 1024$ it would be 64×. This is the linear-in-$n$ scaling: the band's width stays $w + 1$ no matter how tall the matrix gets, while the full mask's row size grows with $i$.
+</Callout>
+
+<Callout targetInteractive="sliding-window-explorer">
+  Now slide $L$ up. Each layer's sliding-window output is read by the next layer's window, so the effective reach grows roughly as $L \cdot w$. With $L = 8$ and $w = 8$, the receptive field is 65 tokens — eight times what a single layer can see. Real transformers stack 24–80 such layers, so the receptive field comfortably covers their training context window even when each individual layer reads only a few thousand tokens.
+</Callout>
+
+## Reading the result
+
+**The per-layer cost drops from quadratic to linear.** This is the entire point. Modern long-context models (Mistral 7B at 32K, Mixtral, Gemma 2) use sliding-window attention to keep the per-layer compute bounded as the context grows. Without it, doubling context quadruples per-layer FLOPs and KV-cache bandwidth; with it, doubling context only doubles them.
+
+**Information flow is indirect but real.** A token at position 100 attending only to positions 92-100 can still be influenced by position 5 — through the stack. The token at position 12 read position 5 at layer 1; the token at position 19 read position 12 at layer 1; … eventually the influence reaches position 100 through a chain of within-window reads. This is identical to how convolutional networks build large receptive fields out of small kernels.
+
+**Modern recipes are usually hybrid.** Mistral 7B uses sliding-window attention on every layer. Mixtral uses it on most layers but keeps some full-attention layers for global context. Gemma 2 alternates: half the layers are sliding-window, half are full. The pattern is empirical: dense layers give the model places to do long-range reasoning; sliding-window layers carry the bulk of the compute cheaply.
+
+**It pairs naturally with FlashAttention.** Both kernels stream over tiles of the attention matrix without materializing it. A FlashAttention kernel with a sliding-window mask is identical in form to the dense version — it just skips tiles that fall outside the band. That's why "use sliding window" is often a one-flag change in the kernel call rather than a re-architecture.
+
+## A second look
+
+Sliding-window attention is the natural counterpart of RoPE and other positional schemes: RoPE encodes *where* tokens are; sliding-window restricts *who* tokens read. Together they make long-context training tractable. Without sliding-window, the 100K-token context windows of 2025 frontier models would be 10× more expensive per layer than they actually are.
+
+<Callout title="When dense attention still wins" targetInteractive="sliding-window-explorer">
+  Some workloads care more about long-range fidelity than per-layer cost: legal document QA, code repos with cross-file dependencies, math problems with proof structure. Pure sliding-window architectures have measurable gaps on these — the receptive field is large but the *concentration* of attention on distant tokens is lower than dense attention can provide. Hybrid architectures (Gemma 2, Llama-4-style) try to get both: cheap sliding-window layers for the bulk of compute, occasional dense layers for global context.
+</Callout>
+
+## Recap
+
+Three takeaways. **Sliding-window attention restricts each token to read the previous $w$ tokens**, dropping per-layer cost from $O(n^2)$ to $O(n \cdot w)$. **The effective receptive field is $L \cdot w$ after $L$ stacked layers**, so distant tokens still influence the output through the depth of the network. **Modern long-context models use it everywhere** — Mistral, Mixtral, Gemma 2, recent Llamas — often hybridized with a few dense layers to preserve global reasoning. The next lesson moves from "who attends to whom" to "how do gradients survive depth at all" — **residual connections + layer normalization**, the two ideas that make stacking 12, 32, 96 layers possible without the signal collapsing.

@@ -1,0 +1,62 @@
+import { MathCode } from '@/components/lesson/MathCode';
+import { Callout } from '@/components/lesson/Callout';
+
+## You have weight decay. You have dropout. What is left?
+
+The four previous lessons covered the main regularization tools: a smaller model (overfitting), L2 weight decay (penalty on big weights), dropout (random sub-network per step), and batch normalization (anchored activations). All of them touch the *model*, the *loss*, or the *activations*. The two regularizers in this lesson touch neither. They are the cheapest regularizers in deep learning, and the ones most often left on the table.
+
+The lesson covers two ideas in one page because they always travel together in practice: **early stopping** (use a validation set) and **data augmentation** (expand the training set).
+
+## Early stopping: keep the best checkpoint
+
+The setup is one extra dataset and one extra bookkeeping field.
+
+<MathCode
+  math="\mathbf{w}^\star = \arg\min_{\mathbf{w}_t}\; L_{\text{val}}(\mathbf{w}_t), \quad t \le T"
+  code={`# Best-checkpoint bookkeeping.
+best_loss  = inf
+best_step  = -1
+best_w     = None
+bad_steps  = 0
+patience   = 20  # stop after this many non-improving val steps
+
+for step in range(num_steps):
+    w = sgd_step(w, grad, lr)
+    val_loss = loss(w, val_set)
+    if val_loss < best_loss:
+        best_loss, best_step, best_w = val_loss, step, copy(w)
+        bad_steps = 0
+    else:
+        bad_steps += 1
+        if bad_steps > patience: break
+return best_w`}
+  caption="Early stopping in twelve lines. Every step we record the validation loss; whenever it's better than the best so far we save a checkpoint; when the validation loss has not improved for `patience` steps, we return the saved checkpoint."
+/>
+
+That's the whole algorithm. Two pieces of bookkeeping (the best loss and the patience counter) plus the saved model snapshot. The result: the run terminates at the best-validation step, and the returned model is the one with the lowest test error, not the lowest training error. The lesson's centerpiece shows three preset runs of the same model, side by side: **(a)** no regularization, **(b)** early stopping, **(c)** early stopping + augmentation.
+
+<Callout targetInteractive="early-stopping-augmentation">
+  Look at the (a) curve: training loss falls, validation loss bottoms and climbs. The (b) curve is the same run, but with early stopping — the dot marks the best-validation step, and that's the model that gets returned. The patience slider controls how many non-improving steps to tolerate before stopping; small patience = aggressive stopping, large patience = patient.
+</Callout>
+
+## Data augmentation: free data
+
+Data augmentation doesn't change the loss or the model — it changes the *training set*. For each original example, generate $k$ synthetic copies by applying a label-preserving transformation. For images: horizontal flips, small rotations, color jitter, random crops. For text: synonyms, paraphrases, back-translation. For the lesson's 2D point cloud: small rotations (the synthetic dataset is rotationally symmetric, so the label is preserved) plus a small Gaussian jitter on the input coordinates.
+
+The result: the model sees more "data" without you collecting any. It's the best regularizer when applicable, because the synthetic examples add real new information to the training set (within the constraints of the label-preserving transform).
+
+<Callout targetInteractive="early-stopping-augmentation">
+  Compare the (b) curve to the (c) curve. The (c) run uses early stopping *and* augmentation. The validation best is lower than (b) — augmentation pushed it down further. The training loss in (c) is *higher* than in (b) (the synthetic examples are noisy, so the training loss can't go as low) but the validation loss is lower (the model is regularized).
+</Callout>
+
+## A note on what to actually do
+
+Both ideas are free. Early stopping costs you a validation set (10–20% of the training data, held out) and a `copy(model.state_dict())` per step. Data augmentation costs you a transformation function and a few extra forward passes per step. Both are universally applicable: any model, any optimizer, any schedule.
+
+<Callout title="Putting it all together" targetInteractive="early-stopping-augmentation">
+  The modern recipe for a vision model: augmentation on (always), dropout on (tune p), weight decay via AdamW (tune λ), and early stopping (always). Batch norm is a default, layernorm is the transformer default. Tune one knob at a time, watch the validation loss, and *save the best checkpoint*. The training loss going down is not a good signal — the validation loss going down is.
+</Callout>
+
+## Recap
+
+Three takeaways. **Early stopping returns the best-validation checkpoint**, terminating the run when validation loss has not improved for `patience` steps. **Data augmentation expands the training set** with label-preserving synthetic examples (flips, rotations, jitter for images; synonyms, paraphrases for text). **Both are free regularizers** — they cost almost nothing to add, and they almost always help. End of the regularization track. The full toolkit is now in place: weight decay, dropout, batch normalization, early stopping, data augmentation. The next track flips the picture: instead of training a model from scratch, what if you started from one someone else already trained? That's **pretraining vs fine-tuning**.

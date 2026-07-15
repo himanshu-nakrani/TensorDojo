@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
+    <title>TensorDojo — learn how LLMs work by manipulating them</title>
+    <meta name="description" content="58 interactive lessons across 8 tracks. Every concept is a sim you can drag, with the math underneath you can read." />
+    <meta name="robots" content="index, follow" />
+    <meta property="og:title" content="TensorDojo — learn how LLMs work by manipulating them" />
+    <meta property="og:description" content="58 interactive lessons across 8 tracks. Every concept is a sim you can drag, with the math underneath you can read." />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="TensorDojo — learn how LLMs work by manipulating them" />
+    <meta name="twitter:description" content="58 interactive lessons across 8 tracks. Every concept is a sim you can drag, with the math underneath you can read." />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <script>
+(function() {
+  try {
+    var ls = localStorage.getItem('tld-theme');
+    var mq = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)');
+    var sysKnown = !!(mq && (mq.media === '(prefers-color-scheme: dark)'));
+    var dark = ls ? ls === 'dark' : (sysKnown ? mq.matches : true);
+    if (dark) document.documentElement.classList.add('dark');
+  } catch (e) {}
+})();
+    </script>
+  </head>
+  <body class="min-h-screen bg-bg text-ink antialiased font-sans">
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

@@ -1,0 +1,98 @@
+import { MathCode } from '@/components/lesson/MathCode';
+import { Callout } from '@/components/lesson/Callout';
+
+## How does a probability distribution become a single output token?
+
+The previous lesson closed the architecture: stack $N$ transformer blocks, embed at the bottom, project to vocabulary at the top, and you have a model. The output of the projection is a vector of **logits** — one real number per vocabulary entry. To *generate* a single token, you need a rule that turns the logits into a single integer.
+
+The four most common rules are **greedy decoding**, **temperature sampling**, **top-k sampling**, and **top-p (nucleus) sampling**. They differ in how much of the distribution they keep, and how much of the model's uncertainty they let through.
+
+## The formula
+
+Given the model's output logits $\mathbf{z} = (z_0, z_1, \ldots, z_{V-1})$:
+
+- **Greedy**: $\text{out} = \arg\max_i z_i$. Pick the highest logit. Deterministic.
+- **Temperature sampling**: $\mathbf{p} = \operatorname{softmax}(\mathbf{z}/T)$, then sample one index. $T = 1$ is the canonical softmax; $T < 1$ sharpens, $T > 1$ flattens.
+- **Top-k**: keep the $k$ highest logits, zero the rest, renormalize, sample. $k = 1$ collapses to greedy; $k = V$ is plain temperature sampling.
+- **Top-p (nucleus)**: keep the smallest set of entries whose cumulative probability $\geq p$, renormalize, sample. Adaptive: when the distribution is peaked, the nucleus is small; when it is flat, the nucleus is large.
+
+<MathCode
+  math="\text{out} = \begin{cases} \arg\max_i z_i & \text{(greedy)} \\ \text{sample}\bigl(\operatorname{softmax}(\mathbf{z}/T)\bigr) & \text{(temperature)} \\ \text{sample}\bigl(\operatorname{topk}_k(\operatorname{softmax}(\mathbf{z}/T))\bigr) & \text{(top-}k\text{)} \\ \text{sample}\bigl(\operatorname{topp}_p(\operatorname{softmax}(\mathbf{z}/T))\bigr) & \text{(top-}p\text{)} \end{cases}"
+  code={`import numpy as np
+
+def softmax(x, T=1.0):
+    z = (x - x.max()) / T
+    e = np.exp(z)
+    return e / e.sum()
+
+def greedy(logits):
+    return int(np.argmax(logits))
+
+def temperature_sample(logits, T=1.0, rng=np.random):
+    probs = softmax(logits, T)
+    return rng.choice(len(probs), p=probs)
+
+def topk_sample(logits, k=5, T=1.0, rng=np.random):
+    probs = softmax(logits, T)
+    # Keep the k highest-prob entries. Ties at the boundary are kept,
+    # so the support can be slightly larger than k in pathological cases.
+    cutoff = np.sort(probs)[-k]
+    kept = np.where(probs >= cutoff, probs, 0)
+    kept /= kept.sum()
+    return rng.choice(len(kept), p=kept)
+
+def topp_sample(logits, p=0.9, T=1.0, rng=np.random):
+    probs = softmax(logits, T)
+    sorted_idx = np.argsort(-probs)
+    cumsum = np.cumsum(probs[sorted_idx])
+    n_keep = int(np.searchsorted(cumsum, p)) + 1
+    kept = np.zeros_like(probs)
+    kept[sorted_idx[:n_keep]] = probs[sorted_idx[:n_keep]]
+    kept /= kept.sum()
+    return rng.choice(len(kept), p=kept)`}
+  caption="The four strategies, in NumPy. The temperature here is the same one from the softmax lesson — applied to the model's output logits instead of a hidden score vector."
+/>
+
+<Callout title="The temperature is the same temperature" targetInteractive="sampling-decoding-explorer">
+  The temperature $T$ that appears here is the same $T$ from the softmax lesson — it's the same operation, applied to a different vector. The lesson's connection: every softmax temperature in a model — hidden attention weights, output head, anywhere — is doing the same thing.
+</Callout>
+
+## Try it
+
+The vocabulary in the centerpiece is 12 plausible next-tokens after "The cat sat on the ___". The model's logits (fixed, hand-tuned) put "mat" as the most likely, with a few near-tied alternatives.
+
+<Callout targetInteractive="sampling-decoding-explorer">
+  Pick "Greedy". The effective distribution is a one-hot at "mat" (the highest logit). Every sample returns "mat". This is what the model would say if it played it safe every time — boring, predictable, but always the top guess.
+</Callout>
+
+<Callout title="What to watch for" targetInteractive="sampling-decoding-explorer">
+  Switch to "Temperature" with $T = 0.5$. The bars sharpen — "mat" gets even more mass, the tail collapses. Try $T = 2.0$: the bars flatten — "dog", "on", "the", "mat" all get non-trivial mass. At $T \to \infty$ the distribution approaches uniform. Same logits, three different sampling behaviors.
+</Callout>
+
+<Callout targetInteractive="sampling-decoding-explorer">
+  Switch to "Top-k" with $k = 1$. That's greedy — only the top logit is kept. Try $k = 3$: now the model samples among the top three (mat, on, dog), with the rest zeroed out. Try $k = 12$: that's the full distribution again, equivalent to temperature sampling.
+</Callout>
+
+<Callout targetInteractive="sampling-decoding-explorer">
+  Switch to "Top-p" with $p = 0.5$. The nucleus is small — only "mat" + "on" + "dog" together clear 50% of the mass (cumulative ${\sim}0.58$). Try $p = 0.9$: the nucleus grows to roughly the top eight tokens ("mat", "on", "dog", "cat", "the", "a", "rabbit", "under") to reach ${\sim}90\%$. The lesson: top-p adapts to the distribution shape — sharp distributions get tiny nuclei, flat ones get large ones.
+</Callout>
+
+## Reading the result
+
+**The strategy is *separate* from the model.** The model produces logits; the strategy decides how to interpret them. The same logits can produce wildly different output streams depending on whether you greedy-decode, sample with low temperature, or use a top-p nucleus.
+
+**Temperature trades off coherence and variety.** $T \to 0$ makes the model deterministic (always picks the top logit). $T \to \infty$ makes it uniform (samples from the full vocabulary). Most real systems use a temperature in between, often $T \approx 0.7$ to $1.0$, with the exact value tuned for the use case.
+
+**Top-k and top-p are ways to *bound* the sampling.** Even at $T = 1$, sampling from a 50,000-token vocabulary can produce rare and surprising tokens. Top-k and top-p cut off the long tail: top-k by absolute count, top-p by cumulative mass.
+
+<Callout title="Why strategies exist at all" targetInteractive="sampling-decoding-explorer">
+  Click "Sample 100 times" with Greedy. You get 100 of the same token. Click with Temperature at $T = 1$ and 100 samples. You get a mix — most "mat", some "dog", a few "on". The empirical distribution should match the displayed bars — that's the strategy's *promise*, made visible.
+</Callout>
+
+## A second look
+
+A side-by-side comparison is the cleanest way to see what each strategy does to the same logits. The table is at the top of the centerpiece: switch between strategies without changing parameters (other than what's strategy-specific) and the bars re-compute in real time. The empirical distribution from "Sample 100 times" makes the strategy's promise concrete — it's the bar chart's claim, verified by sampling.
+
+## Recap
+
+Three takeaways. **Decoding is the rule that turns logits into a single output token.** Greedy picks the top logit (deterministic). Temperature samples from a softened distribution ($T < 1$ sharpens, $T > 1$ flattens — the same temperature from the softmax lesson). Top-k and top-p bound the sampling to the most likely entries. **The model and the strategy are independent.** The same model can be sampled with any strategy; the choice depends on the use case. **In production, temperature is almost always between 0 and 1, with top-p or top-k applied** to bound the long tail. We've now seen one full step of inference end to end. The next lesson asks: what if instead of picking *one* next token, we keep the top *k* partial sequences alive? That's **beam search**.

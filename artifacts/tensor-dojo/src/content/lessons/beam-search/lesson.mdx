@@ -1,0 +1,71 @@
+import { MathCode } from '@/components/lesson/MathCode';
+import { Callout } from '@/components/lesson/Callout';
+
+## The greedy trap
+
+The previous lesson covered sampling from the model's next-token distribution — temperature, top-k, top-p. The simplest of all decoders, **greedy decoding**, doesn't sample at all. At every step it picks the most likely next token and moves on. Cheap, deterministic, and exactly what a width-1 beam does in the centerpiece below.
+
+The problem with greedy is locked into a single word: *short-sighted*. The most likely token *now* can lead into a region of the sequence where every continuation is bad. A slightly less likely token now can open the door to a sequence that scores far higher overall.
+
+Concrete toy example. Pretend the only tokens in the world are `the`, `cat`, `sat`, `on`, `mat`, plus an end-of-sequence marker `<eos>`. The next-token probabilities (the bigram table the centerpiece uses) look roughly like this:
+
+- After `the`: `cat` 0.70, `mat` 0.18, others tiny.
+- After `cat`: `sat` 0.78.
+- After `sat`: `on` 0.80.
+- After `on`: `the` 0.66, `mat` 0.20, others tiny.
+- After `mat`: `<eos>` 0.80.
+
+Greedy from `the` produces: the → cat → sat → on → the → cat → sat → on → … forever. The path never reaches `<eos>` because at every "after on" step, `the` (0.66) outscores `mat` (0.20). The sequence with the highest *path* score is the one through `mat → <eos>`, but you never see it if you only look one step ahead.
+
+## What beam search does
+
+Beam search fixes the short-sightedness by keeping the top **k** partial sequences alive at every step. At each step:
+
+1. **Expand.** For every currently alive beam, score every possible next token. With $V$ tokens and $k$ beams, that's $k \cdot V$ candidate sequences.
+2. **Score.** Each candidate's score is its parent's cumulative log-probability plus the next token's log-probability.
+3. **Prune.** Keep only the top $k$ candidates across all expansions. Discard the rest.
+4. **Repeat** until every beam has emitted `<eos>` (or you hit a step budget).
+
+At the end, the beam with the highest cumulative log-probability is the chosen sequence. Width $k = 1$ is greedy. Width $k = \infty$ is exhaustive search — every possible sequence considered, guaranteed optimal, intractable past a few tokens.
+
+<MathCode
+  math="\text{score}(y_{1:T}) = \sum_{t=1}^{T} \log P(y_t \mid y_{<t})"
+  code={`def beam_step(beams, k, log_probs):
+    # beams = list of (tokens, score, finished?)
+    # log_probs(prev_token) returns {token: logp} for the full vocab
+    cands = []
+    for tokens, score, done in beams:
+        if done:
+            cands.append((tokens, score, True))
+            continue
+        for tok, lp in log_probs(tokens[-1]).items():
+            cands.append((tokens + [tok], score + lp, tok == "<eos>"))
+    cands.sort(key=lambda c: c[1], reverse=True)
+    return cands[:k]
+
+# Greedy decoding is just beam search with k=1.
+# Exhaustive search is k = V**T (intractable).`}
+  caption="One step of beam search. Expand every alive beam over every vocabulary token; keep the top k by cumulative log-probability. The whole search loop is a dozen lines."
+/>
+
+<Callout title="Width 1 loops, width 2 escapes" targetInteractive="beam-search-explorer">
+  Set k = 1 and press Play. The beam steps `the → cat → sat → on → the → cat → sat → on → …` and never finishes — greedy gets trapped because `the` always beats `mat` after `on`. Reset and set k = 2. The second beam carries `the → mat → <eos>` — that path has a worse *first* step (0.18 vs 0.70) but a much better *second* step (0.80 instead of 0.66·0.78·0.80). Width-2 beam search finds the higher-scoring termination greedy missed.
+</Callout>
+
+## Why beam search isn't free
+
+Beam search trades compute for quality. A width-k beam runs $k \times$ the forward passes per step (one per beam), and the model's KV cache has to be maintained $k$ times — beam search at $k = 5$ on a 70B model uses roughly $5\times$ the inference cost of greedy. That's the headline cost.
+
+There's a quieter cost too: beam search is **biased toward short sequences**. Each step adds a negative log-probability term to the score (`log p` for `p < 1` is negative), so longer sequences accumulate more negative score. Without correction, beam search prefers short, abrupt outputs. Production systems fix this with **length normalization** — divide the score by some power of the length, typically $T^\alpha$ with $\alpha \in [0.6, 1.0]$. The toy in the centerpiece skips length normalization to keep the algorithm visible.
+
+## When beam search wins, and when it doesn't
+
+Beam search was the dominant decoding strategy for machine translation through the 2010s — the translation model wants the single best sequence and rewards consistent, well-formed output. It's still the standard for translation, summarization, and code generation when you want a deterministic, high-quality output.
+
+For open-ended generation — chat, story writing, anything where "interesting" matters more than "most likely" — beam search produces output that feels stilted and repetitive. The most likely sequence is also the most generic one. Modern chat models default to nucleus or top-k sampling for exactly this reason. Beam search is for problems with a *correct* answer; sampling is for problems with a *good* answer.
+
+## Recap
+
+Three takeaways. **Greedy decoding is short-sighted** — picking the locally best token at each step can lock you out of globally better paths. **Beam search keeps the top-k partial sequences alive** and lets a slightly worse short-term choice survive long enough to win on the full sequence. **The cost is roughly $k \times$ the forward passes**, plus a built-in bias toward short outputs that length normalization patches over. Greedy is the cheap baseline; beam is the principled improvement; sampling is what you do when you want output that doesn't sound like a textbook.
+
+The next lesson steps back from the algorithm and asks about the *prompt*: a frozen model with the same weights can do translation, classification, or arithmetic depending only on what you put in front of the question. That's **in-context learning**.
