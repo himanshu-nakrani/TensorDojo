@@ -33,7 +33,7 @@ const STATUS_LABEL: Record<Status, string> = {
 
 const STATUS_COLOR: Record<Status, string> = {
   ok: 'text-accent',
-  rounded: 'text-amber-500 dark:text-amber-400',
+  rounded: 'text-warning',
   underflow: 'text-[rgb(var(--negative))]',
   overflow: 'text-[rgb(var(--negative))]',
 };
@@ -198,9 +198,9 @@ function RangeBar({ value }: { value: number }) {
   };
 
   const labels: { id: Format; y: number; color: string }[] = [
-    { id: 'fp32', y: 14, color: 'rgb(21,128,61)' },
-    { id: 'bf16', y: 28, color: 'rgb(67,56,202)' },
-    { id: 'fp16', y: 42, color: 'rgb(180,83,9)' },
+    { id: 'fp32', y: 14, color: 'rgb(var(--series-1))' },
+    { id: 'bf16', y: 28, color: 'rgb(var(--series-3))' },
+    { id: 'fp16', y: 42, color: 'rgb(var(--warning))' },
   ];
 
   const valX = toX(Math.log10(Math.max(value, Math.pow(10, LOG_MIN))));

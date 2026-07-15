@@ -43,9 +43,9 @@ const TOKENS: Token[] = [
 ];
 
 const CLUSTER_COLOR: Record<Token['cluster'], string> = {
-  animal: 'fill-[rgb(21,128,61)]',
-  function: 'fill-[rgb(180,83,9)]',
-  verb: 'fill-[rgb(67,56,202)]',
+  animal: 'fill-[rgb(var(--series-4))]',
+  function: 'fill-[rgb(var(--warning))]',
+  verb: 'fill-[rgb(var(--series-3))]',
 };
 
 export function WeightTyingExplorer() {

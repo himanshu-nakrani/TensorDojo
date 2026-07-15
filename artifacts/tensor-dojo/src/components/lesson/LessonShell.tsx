@@ -18,15 +18,15 @@ export function LessonShell({ title, minutes, summary, children }: LessonShellPr
   return (
     <article id="main" className="mx-auto px-6 sm:px-10 py-12 sm:py-16 max-w-[1320px]">
       <header className="mb-10 max-w-prose">
-        <div className="flex items-center gap-3 text-[12px] uppercase tracking-[0.12em] text-fg-muted font-mono mb-5">
+        <div className="flex items-center gap-3 text-[12px] uppercase tracking-[0.12em] text-accent font-semibold font-mono mb-5">
           <span>Lesson</span>
           <span className="text-border-strong">·</span>
           <span>{minutes} min</span>
         </div>
-        <h1 className="text-[2.5rem] sm:text-[2.75rem] font-semibold text-ink leading-[1.1] tracking-[-0.01em] mb-5">
+        <h1 className="text-3xl sm:text-4xl font-semibold text-ink leading-[1.15] tracking-[-0.01em] mb-5">
           {title}
         </h1>
-        <p className="text-[1.125rem] text-muted leading-relaxed max-w-[640px]">
+        <p className="text-xl text-muted font-medium leading-relaxed max-w-[640px]">
           {summary}
         </p>
       </header>

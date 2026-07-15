@@ -22,7 +22,8 @@ _Replace the heading above with the project's name, and this line with one sente
 
 ## Where things live
 
-_Populate as you build — short repo map plus pointers to the source-of-truth file for DB schema, API contracts, theme files, etc._
+- `artifacts/tensor-dojo/` — the Tensor Dojo web app (Vite + React + MDX): 58 lessons in `src/content/lessons/<slug>/lesson.mdx`, interactives registered per-lesson via `src/lib/lesson-manifest.ts`
+- Theme source of truth: `artifacts/tensor-dojo/src/index.css` — all colors are RGB-triplet CSS tokens on `:root` / `:root.dark` ("Humanist Clarity": IBM Plex Sans/Mono, slate palette, blue accent, inverted dark code blocks). Fonts load in `index.html`; `--font-sans`/`--font-mono` are defined in `index.css` and consumed by `tailwind.config.ts`
 
 ## Architecture decisions
 
@@ -38,7 +39,8 @@ _Populate as you build — explicit user instructions worth remembering across s
 
 ## Gotchas
 
-_Populate as you build — sharp edges, "always run X before Y" rules._
+- Tensor Dojo theme: append `?theme=dark|light` to any app URL to force a theme for that load without persisting it (used for screenshots/sharing; bootstrap script in `index.html`)
+- `.lesson-body` spacing: element `margin: 0` resets outspecific the `> * + *` rhythm rule — direct-child `margin-top` rules at the end of the lesson-body block in `index.css` restore it; keep new element resets consistent with that pattern
 
 ## Pointers
 

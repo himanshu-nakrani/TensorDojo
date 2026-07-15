@@ -117,7 +117,7 @@ function clampNorm(sigma: number): number {
 function classify(g: number): string {
   if (g < 0.05) return 'text-[rgb(var(--negative))]';
   if (g > 20) return 'text-[rgb(var(--negative))]';
-  if (g < 0.5 || g > 2) return 'text-amber-500 dark:text-amber-400';
+  if (g < 0.5 || g > 2) return 'text-warning';
   return 'text-accent';
 }
 
@@ -255,7 +255,7 @@ function BarStack({ grads }: { grads: readonly number[] }) {
         const fill = g > 10 || g < 0.1
           ? 'fill-[rgb(var(--negative))]'
           : g > 2 || g < 0.5
-            ? 'fill-amber-500'
+            ? 'fill-warning'
             : 'fill-[rgb(var(--accent))]';
         return <rect key={i} x={x} y={y} width={w} height={h} className={fill} />;
       })}

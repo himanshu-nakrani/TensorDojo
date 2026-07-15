@@ -28,13 +28,14 @@ const config: Config = {
           faint: 'var(--accent-faint)',
           soft: 'var(--accent-soft)',
         },
+        warning: 'rgb(var(--warning) / <alpha-value>)',
       },
       fontFamily: {
         sans: ['var(--font-sans)', 'ui-sans-serif', 'system-ui', 'sans-serif'],
         mono: ['var(--font-mono)', 'ui-monospace', 'SFMono-Regular', 'monospace'],
       },
       maxWidth: {
-        prose: '720px',
+        prose: '680px',
         wide: '960px',
       },
       fontSize: {

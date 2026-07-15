@@ -51,15 +51,15 @@ export function MathCode({ math, code, caption, className }: MathCodeProps) {
             dangerouslySetInnerHTML={{ __html: html }}
           />
         </div>
-        <div className="p-6 flex flex-col bg-surface-2/40">
-          <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-4">
+        <div className="p-6 flex flex-col code-panel rounded-b-lg">
+          <div className="text-[11px] uppercase tracking-[0.12em] opacity-60 font-mono mb-4">
             Code
           </div>
           {/* Code stays in a <pre> (no soft wrap — breaking Python
               lines mid-statement hurts readability more than the rare
               scroll). At full prose width an 80-char line fits without
               scroll on every viewport above ~640px. */}
-          <pre className="m-0 font-mono text-[13px] leading-relaxed text-ink overflow-x-auto">
+          <pre className="m-0 font-mono text-[13px] leading-relaxed overflow-x-auto">
             <code>{code}</code>
           </pre>
         </div>

@@ -178,10 +178,10 @@ function LossHeatmap({
     const dist = l - DPO_BASELINE_LOSS; // <0 = good, >0 = bad
     if (dist <= 0) {
       const t = Math.min(1, -dist / DPO_BASELINE_LOSS);
-      return { color: 'rgb(21, 128, 61)', alpha: 0.15 + t * 0.65 };
+      return { color: 'rgb(var(--positive))', alpha: 0.15 + t * 0.65 };
     }
     const t = Math.min(1, dist / Math.max(0.001, cells.maxL - DPO_BASELINE_LOSS));
-    return { color: 'rgb(220, 38, 38)', alpha: 0.15 + t * 0.6 };
+    return { color: 'rgb(var(--negative))', alpha: 0.15 + t * 0.6 };
   };
 
   const handlePointer = (e: React.PointerEvent<SVGSVGElement>) => {

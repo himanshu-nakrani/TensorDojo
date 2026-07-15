@@ -18,11 +18,11 @@ const REGIMES: { id: Regime; label: string }[] = [
 ];
 
 const COMPONENT_COLOR = {
-  base: 'fill-[rgb(21,128,61)]',      // green (brand)
-  adapter: 'fill-[rgb(67,56,202)]',   // indigo
-  gradients: 'fill-[rgb(180,83,9)]',  // amber
-  optimizer: 'fill-[rgb(220,38,38)]', // red
-  activations: 'fill-[rgb(107,114,128)]', // gray
+  base: 'fill-[rgb(var(--accent))]',        // brand accent
+  adapter: 'fill-[rgb(var(--series-3))]',   // violet
+  gradients: 'fill-[rgb(var(--warning))]',  // amber
+  optimizer: 'fill-[rgb(var(--negative))]', // red
+  activations: 'fill-[rgb(var(--fg-subtle))]', // gray
 } as const;
 
 type Component = keyof typeof COMPONENT_COLOR;

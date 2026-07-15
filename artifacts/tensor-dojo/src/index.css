@@ -21,51 +21,59 @@
    =========================================================================== */
 
 :root {
-  /* Surfaces */
-  --bg: 251 250 248;              /* warm off-white page background */
+  /* Typefaces — "Humanist Clarity": IBM Plex Sans for reading,
+     IBM Plex Mono for labels/code. Consumed by tailwind.config.ts
+     font-sans / font-mono. */
+  --font-sans: 'IBM Plex Sans';
+  --font-mono: 'IBM Plex Mono';
+
+  /* Surfaces — cool neutral near-white (slate scale) */
+  --bg: 248 250 252;              /* slate-50 page background */
   --bg-elevated: 255 255 255;     /* card / workbench surface */
-  --bg-code: 244 241 236;         /* code block fill (slightly warmer) */
+  --bg-code: 241 245 249;         /* slate-100 — inline code, inputs, kbd */
 
   /* Text */
-  --fg: 26 24 21;
-  --fg-muted: 74 71 66;
-  --fg-subtle: 111 108 104;       /* eyebrows, hints — AA on --bg */
+  --fg: 15 23 42;                 /* slate-900 — headings, ink */
+  --fg-prose: 30 41 59;           /* slate-800 — long-form lesson prose */
+  --fg-muted: 71 85 105;          /* slate-600 — summaries, secondary UI */
+  --fg-subtle: 100 116 139;       /* slate-500 — eyebrows, hints; AA on --bg */
 
   /* Lines */
-  --border: 230 226 219;
-  --border-strong: 207 201 191;
+  --border: 226 232 240;          /* slate-200 */
+  --border-strong: 203 213 225;   /* slate-300 */
 
   /* The single accent (design-spec §8) — manipulated things only. */
-  --accent: 21 128 61;            /* green-700; ~5.4:1 on --bg */
-  --accent-hover: 22 101 52;      /* green-800 */
+  --accent: 37 99 235;            /* blue-600; ~5.2:1 on --bg */
+  --accent-hover: 29 78 216;      /* blue-700 */
   --accent-fg: 255 255 255;       /* text/icon on accent surfaces */
 
   /* Charting tokens */
-  --grid: 236 232 225;
-  --positive: 21 128 61;
+  --grid: 226 232 240;
+  --positive: 21 128 61;          /* green stays semantic (correct/positive) */
   --negative: 185 28 28;          /* red-700; AA on --bg */
+  --warning: 180 83 9;            /* amber-700; AA (4.5:1) on --bg for small text */
 
   /* Categorical series colors — used by sims that need to plot
      multiple lines that are NOT ordered or signed (e.g. three
      optimizer traces, four batch-size traces). Distinct from
-     --accent/--positive/--negative; chosen to be perceptually
+     --positive/--negative; chosen to be perceptually
      distinguishable and theme-aware. */
-  --series-1: 21 128 61;          /* green — same hue as accent in light */
+  --series-1: 37 99 235;          /* blue — same hue as accent in light */
   --series-2: 217 119 6;          /* amber-600 */
   --series-3: 124 58 237;         /* violet-600 */
-  --series-4: 14 116 144;         /* cyan-700 */
+  --series-4: 13 148 136;         /* teal-600 */
 
   /* Pre-baked translucent variants — kept as full rgba because they
      describe a specific visual, not a "themed color at 30%". */
-  --accent-soft: rgba(21, 128, 61, 0.10);
-  --accent-faint: rgba(21, 128, 61, 0.06);
-  --accent-dim: rgba(21, 128, 61, 0.32);
+  --accent-soft: rgba(37, 99, 235, 0.10);
+  --accent-faint: rgba(37, 99, 235, 0.06);
+  --accent-dim: rgba(37, 99, 235, 0.32);
 
   /* Hover state for the elevated surface. */
-  --bg-elevated-hover: 244 241 236;
+  --bg-elevated-hover: 241 245 249;
 
   /* Glow color for the focus ring on inputs. */
-  --accent-shadow: rgba(21, 128, 61, 0.18);
+  --accent-shadow: rgba(37, 99, 235, 0.18);
 
   /* Pre-baked negative bar bg (the "wrong answer" red with built-in alpha). */
   --negative-bg: rgba(185, 28, 28, 0.7);
@@ -73,66 +81,66 @@
   /* Subtle top-edge highlight on elevated cards. The dark theme
      uses a faint white inset to suggest light from above; light
      theme uses a faint black inset for the same suggestion. */
-  --shadow-inset: inset 0 1px 0 rgba(31, 26, 22, 0.04);
+  --shadow-inset: inset 0 1px 0 rgba(15, 23, 42, 0.04);
 
   /* Heatmap cell-number halo — matches --bg so text reads on any
      cell tint. Inline-styled as `rgb(var(--cell-halo))`. */
-  --cell-halo: 251 250 248;
+  --cell-halo: 248 250 252;
 
-  /* Graph-paper background lines. Two perpendicular families of
-     thin lines at very low opacity — minor at 24px, major every 5
-     (120px). The pattern reinforces the "this is a math notebook"
-     metaphor without making the page busy. */
-  --paper-minor: rgba(31, 26, 22, 0.018);
-  --paper-major: rgba(31, 26, 22, 0.035);
+  /* Code blocks — deliberately inverted (dark panel on light page),
+     the signature move of the approved "Humanist Clarity" design.
+     Inline code stays on --bg-code; only block code inverts. */
+  --code-block-bg: 15 23 42;      /* slate-900 */
+  --code-block-fg: 241 245 249;   /* slate-100 */
+  --code-block-border: 15 23 42;
 }
 
 :root.dark {
-  /* GitHub-inspired dark grey palette. The previous #0B0D10
-     read as near-black and gave the page a heavier feel than
-     intended; #0d1117 / #161b22 are GitHub's canvas + surface
-     pair and provide enough warmth that the page reads as a
-     deliberately dark grey rather than an OLED-black void. */
-  --bg: 13 17 23;
-  --bg-elevated: 22 27 34;
-  --bg-code: 22 27 34;
+  /* "Humanist Clarity" dark — the same cool slate family as light
+     mode, inverted: slate-900 canvas, slate-800 surfaces, blue-400
+     accent. Text sits slightly below max contrast to avoid glare. */
+  --bg: 15 23 42;                  /* slate-900 */
+  --bg-elevated: 30 41 59;         /* slate-800 */
+  --bg-code: 30 41 59;
 
-  --fg: 230 233 239;              /* slightly warmer/brighter than slate-200 */
-  --fg-muted: 184 191 204;         /* was 156 163 175 — bumped for readability on the lighter bg */
-  --fg-subtle: 168 178 196;        /* was 148 163 184 — same reason */
+  --fg: 226 232 240;               /* slate-200 — headings, ink */
+  --fg-prose: 203 213 225;         /* slate-300 — lesson prose, below max contrast */
+  --fg-muted: 168 180 197;         /* between slate-300/400 for secondary UI */
+  --fg-subtle: 148 163 184;        /* slate-400 — AA on --bg */
 
-  --border: 41 48 56;              /* was 33 38 45 — visible against #161b22 */
-  --border-strong: 62 70 80;       /* was 48 54 61 */
+  --border: 51 65 85;              /* slate-700 */
+  --border-strong: 71 85 105;      /* slate-600 */
 
-  --accent: 74 222 128;            /* green-400 — bright on the GH dark canvas */
-  --accent-hover: 134 239 172;     /* green-300 */
-  --accent-fg: 13 17 23;
+  --accent: 96 165 250;            /* blue-400 — bright on the slate canvas */
+  --accent-hover: 147 197 253;     /* blue-300 */
+  --accent-fg: 15 23 42;
 
-  --grid: 33 38 45;
+  --grid: 51 65 85;
   --positive: 74 222 128;
   --negative: 248 113 113;
+  --warning: 251 191 36;           /* amber-400 */
 
-  --series-1: 74 222 128;          /* green */
+  --series-1: 96 165 250;          /* blue */
   --series-2: 251 191 36;          /* amber-400 */
   --series-3: 167 139 250;         /* violet-400 */
-  --series-4: 56 189 248;          /* sky-400 */
+  --series-4: 45 212 191;          /* teal-400 */
 
-  --accent-soft: rgba(74, 222, 128, 0.16);
-  --accent-faint: rgba(74, 222, 128, 0.10);
-  --accent-dim: rgba(74, 222, 128, 0.28);
+  --accent-soft: rgba(96, 165, 250, 0.16);
+  --accent-faint: rgba(96, 165, 250, 0.10);
+  --accent-dim: rgba(96, 165, 250, 0.30);
 
-  --bg-elevated-hover: 29 36 46;
-  --accent-shadow: rgba(74, 222, 128, 0.15);
+  --bg-elevated-hover: 38 51 73;
+  --accent-shadow: rgba(96, 165, 250, 0.15);
 
   --negative-bg: rgba(248, 113, 113, 0.7);
-  --shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.02);
+  --shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.03);
 
-  --cell-halo: 13 17 23;
+  --cell-halo: 15 23 42;
 
-  /* On the GH dark canvas the grid lines need to be lighter than
-     the background, not darker. Same minor/major split. */
-  --paper-minor: rgba(255, 255, 255, 0.012);
-  --paper-major: rgba(255, 255, 255, 0.024);
+  /* Code wells sink below the page in dark mode (slate-950). */
+  --code-block-bg: 2 6 23;
+  --code-block-fg: 226 232 240;
+  --code-block-border: 51 65 85;
 }
 
 /* ===========================================================================
@@ -147,6 +155,16 @@
   overflow-x: auto;
   overflow-y: hidden;
   padding-bottom: 2px;
+}
+/* Display math directly in the prose flow gets the framed treatment
+   from the approved design: hairline top/bottom, faint surface lift.
+   Nested display math (inside MathCode cards etc.) is excluded. */
+.lesson-body > .katex-display {
+  margin: 2rem 0 !important;
+  padding: 1.5rem 0 calc(1.5rem + 2px);
+  border-top: 1px solid rgb(var(--border));
+  border-bottom: 1px solid rgb(var(--border));
+  background: rgb(var(--bg-elevated) / 0.5);
 }
 /* The MathML annotation layer is visually hidden but can cause
    horizontal overflow on narrow viewports. The .katex container
@@ -168,38 +186,9 @@
   border: 0;
 }
 
-/* ===========================================================================
-   Graph-paper background.
-
-   Drawn on the body with four stacked linear gradients: a major and
-   a minor grid line in each axis. The minor grid is at 24px; the
-   major lands every 5 cells (120px). Opacities are token-driven
-   (--paper-minor, --paper-major) and theme-aware: dark lines on the
-   warm off-white in light mode, faint white lines on the GH dark
-   canvas in dark mode.
-
-   background-attachment: fixed so the grid stays anchored to the
-   viewport, not the document — scrolling a long lesson doesn't
-   sweep the grid along, which would be distracting at our pattern
-   density.
-
-   The body's Tailwind `bg-bg` class still sets the solid color
-   underneath; this rule only adds the lines on top.
-   =========================================================================== */
-body {
-  background-image:
-    linear-gradient(to right, var(--paper-major), var(--paper-major) 1px, transparent 1px, transparent),
-    linear-gradient(to bottom, var(--paper-major), var(--paper-major) 1px, transparent 1px, transparent),
-    linear-gradient(to right, var(--paper-minor), var(--paper-minor) 1px, transparent 1px, transparent),
-    linear-gradient(to bottom, var(--paper-minor), var(--paper-minor) 1px, transparent 1px, transparent);
-  background-size:
-    120px 120px,
-    120px 120px,
-    24px 24px,
-    24px 24px;
-  background-position: 0 0;
-  background-attachment: fixed;
-}
+/* The former graph-paper body background was retired with the
+   "Humanist Clarity" redesign — the page is a flat, cool near-white
+   (docs-style) so nothing competes with the text. */
 
 /* Selection — same accent on both themes. */
 ::selection {
@@ -379,28 +368,24 @@ body {
    Lesson body (prose)
    =========================================================================== */
 .lesson-body {
-  color: rgb(var(--fg-muted));
+  color: rgb(var(--fg-prose));
   font-size: 1.0625rem;
-  line-height: 1.75;
+  line-height: 1.7;
 }
 .lesson-body > * + * {
   margin-top: 1.25rem;
 }
 .lesson-body h2 {
-  font-size: 1.625rem;
+  font-size: 1.5rem;
   font-weight: 600;
   color: rgb(var(--fg));
   letter-spacing: -0.01em;
   line-height: 1.25;
-  margin-top: 3rem;
-  margin-bottom: 0.5rem;
-  padding-top: 1.5rem;
-  border-top: 1px solid rgb(var(--border));
+  margin-top: 3.5rem;
+  margin-bottom: 1rem;
 }
 .lesson-body h2:first-child {
   margin-top: 0;
-  padding-top: 0;
-  border-top: 0;
 }
 .lesson-body h3 {
   font-size: 1.125rem;
@@ -439,14 +424,14 @@ body {
 }
 .lesson-body pre {
   font-family: var(--font-mono), ui-monospace, monospace;
-  background: rgb(var(--bg-code));
-  border: 1px solid rgb(var(--border));
-  border-radius: 6px;
-  padding: 14px 16px;
+  background: rgb(var(--code-block-bg));
+  border: 1px solid rgb(var(--code-block-border));
+  border-radius: 8px;
+  padding: 18px 20px;
   overflow-x: auto;
-  font-size: 0.8125rem;
+  font-size: 0.875rem;
   line-height: 1.65;
-  color: rgb(var(--fg));
+  color: rgb(var(--code-block-fg));
   margin: 0;
 }
 .lesson-body pre code {
@@ -486,6 +471,22 @@ body {
   color: rgb(var(--fg-muted));
   font-style: italic;
   margin: 0;
+}
+
+/* The UA-margin resets above (`.lesson-body p { margin: 0 }` etc.,
+   specificity 0,1,1) also defeat the `> * + *` flow rule (0,1,0),
+   which silently removed ALL spacing between consecutive paragraphs.
+   Re-assert the rhythm for direct children only — nested paragraphs
+   (inside callouts, cards) keep their zeroed margins. */
+.lesson-body > p,
+.lesson-body > pre,
+.lesson-body > ol,
+.lesson-body > ul,
+.lesson-body > blockquote {
+  margin-top: 1.25rem;
+}
+.lesson-body > :is(p, pre, ol, ul, blockquote):first-child {
+  margin-top: 0;
 }
 
 /* Inline math inside prose should pick up ink color. */
@@ -560,6 +561,15 @@ body {
    =========================================================================== */
 .card-surface {
   box-shadow: var(--shadow-inset);
+}
+
+/* ===========================================================================
+   Code panel — the inverted (dark-on-light-page) code surface used by
+   MathCode's code half. Same tokens as .lesson-body pre.
+   =========================================================================== */
+.code-panel {
+  background: rgb(var(--code-block-bg));
+  color: rgb(var(--code-block-fg));
 }
 
 /* ===========================================================================

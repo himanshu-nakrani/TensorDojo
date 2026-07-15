@@ -58,7 +58,7 @@ export const WorkbenchItem = forwardRef<HTMLDivElement, WorkbenchItemProps>(
         className={clsx(
           'rounded-xl border bg-surface transition-shadow',
           isActive
-            ? 'border-accent/60 ring-1 ring-accent/20 shadow-[0_8px_24px_-12px_rgba(45,212,191,0.25)]'
+            ? 'border-accent/60 ring-1 ring-accent/20 shadow-[0_8px_24px_-12px_var(--accent-shadow)]'
             : 'border-border',
           pulsing && 'animate-pulse-ring',
         )}

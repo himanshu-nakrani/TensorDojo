@@ -139,7 +139,7 @@ function classify(v: number): { label: string; color: string } {
   if (v > 1e6)
     return { label: 'exploded', color: 'text-[rgb(var(--negative))]' };
   if (v < 0.1 || v > 10)
-    return { label: 'drifting', color: 'text-amber-500 dark:text-amber-400' };
+    return { label: 'drifting', color: 'text-warning' };
   return { label: 'stable', color: 'text-accent' };
 }
 
