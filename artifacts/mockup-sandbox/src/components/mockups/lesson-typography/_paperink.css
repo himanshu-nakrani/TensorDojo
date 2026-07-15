@@ -1,0 +1,70 @@
+.theme-paper-ink {
+  --pi-bg: #fbf9f6;
+  --pi-ink: #2c2a28;
+  --pi-ink-muted: #6b6661;
+  --pi-accent: #a03b26;
+  --pi-accent-bg: #fdf6f5;
+  --pi-accent-border: #e2c0ba;
+  --pi-border: #e6e2db;
+  --pi-code-bg: #f2efe9;
+  
+  --pi-font-body: 'Source Serif 4', Georgia, serif;
+  --pi-font-mono: 'IBM Plex Mono', 'Space Mono', monospace;
+  --pi-font-label: 'IBM Plex Sans', sans-serif;
+
+  background-color: var(--pi-bg);
+  color: var(--pi-ink);
+  font-family: var(--pi-font-body);
+  font-feature-settings: "onum" 1, "pnum" 1; /* oldstyle, proportional numerals */
+  min-height: 100vh;
+}
+
+.theme-paper-ink ::selection {
+  background-color: #eeddca;
+}
+
+.theme-paper-ink .pi-border-b {
+  border-bottom: 1px solid var(--pi-border);
+}
+
+.theme-paper-ink .pi-border-t {
+  border-top: 1px solid var(--pi-border);
+}
+
+.theme-paper-ink .pi-bg-code {
+  background-color: var(--pi-code-bg);
+}
+
+.theme-paper-ink .pi-text-accent {
+  color: var(--pi-accent);
+}
+
+.theme-paper-ink .pi-bg-accent-tint {
+  background-color: var(--pi-accent-bg);
+  border-color: var(--pi-accent-border);
+}
+
+/* Base typography tuning */
+.theme-paper-ink h1, 
+.theme-paper-ink h2, 
+.theme-paper-ink h3 {
+  font-family: var(--pi-font-body);
+  color: var(--pi-ink);
+  letter-spacing: -0.01em;
+}
+
+.theme-paper-ink .pi-font-mono {
+  font-family: var(--pi-font-mono);
+  font-feature-settings: "lnum" 1, "tnum" 1;
+}
+
+.theme-paper-ink .pi-font-label {
+  font-family: var(--pi-font-label);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.theme-paper-ink p, 
+.theme-paper-ink li {
+  line-height: 1.65;
+}
