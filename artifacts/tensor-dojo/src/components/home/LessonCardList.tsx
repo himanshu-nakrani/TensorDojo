@@ -11,7 +11,7 @@ interface TrackBucket {
   lessons: LessonMetaEntry[];
 }
 
-function bucketByTrack(): TrackBucket[] {
+const STATIC_BUCKETS: TrackBucket[] = (() => {
   const lessons = listLessonMeta();
   return TRACKS.map((t) => ({
     id: t.id,
@@ -20,10 +20,11 @@ function bucketByTrack(): TrackBucket[] {
       .map((slug) => lessons.find((l) => l.meta.slug === slug)!)
       .filter(Boolean),
   })).filter((t) => t.lessons.length > 0);
-}
+})();
+
+const FLAT_LESSONS = STATIC_BUCKETS.flatMap((b) => b.lessons);
 
 export function LessonCardList() {
-  const buckets = bucketByTrack();
   const [visited, setVisited] = useState<Set<string>>(() => new Set());
   const [resumeSlug, setResumeSlug] = useState<string | null>(null);
 
@@ -42,7 +43,7 @@ export function LessonCardList() {
   }, []);
 
   const resumeLesson = resumeSlug
-    ? buckets.flatMap((b) => b.lessons).find((l) => l.meta.slug === resumeSlug)
+    ? FLAT_LESSONS.find((l) => l.meta.slug === resumeSlug)
     : undefined;
 
   return (
@@ -54,7 +55,7 @@ export function LessonCardList() {
           minutes={resumeLesson.meta.minutes}
         />
       )}
-      {buckets.map((bucket) => {
+      {STATIC_BUCKETS.map((bucket) => {
         const doneCount = bucket.lessons.filter((l) =>
           visited.has(l.meta.slug),
         ).length;
