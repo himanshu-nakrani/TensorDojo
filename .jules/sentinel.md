@@ -1,0 +1,4 @@
+## 2024-07-16 - Prevent Stack Trace Leaks in Express API Server
+**Vulnerability:** Unhandled exceptions in the Express API server were exposing application stack traces via the default Express error handler, which generates a 500 HTML page containing the stack trace.
+**Learning:** By default, Express will expose internal details via an HTML stack trace when an exception goes unhandled, potentially leaking path locations, package versions, and internal code logic.
+**Prevention:** Add a generic, final error handling middleware (`app.use((err, req, res, next) => { ... })`) at the end of the routing chain to intercept all unhandled exceptions, log them securely server-side, and return a safe, sanitized JSON response like `{"error": "Internal Server Error"}` to the client.
