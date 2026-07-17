@@ -6,6 +6,17 @@ import { logger } from "./lib/logger";
 
 const app: Express = express();
 
+// Disable x-powered-by header to prevent fingerprinting
+app.disable("x-powered-by");
+
+// Add basic security headers
+app.use((_req: Request, res: Response, next: NextFunction) => {
+  res.setHeader("X-Content-Type-Options", "nosniff");
+  res.setHeader("X-Frame-Options", "DENY");
+  res.setHeader("X-XSS-Protection", "1; mode=block");
+  next();
+});
+
 app.use(
   pinoHttp({
     logger,
@@ -25,7 +36,9 @@ app.use(
     },
   }),
 );
-app.use(cors());
+
+app.use(cors()); // TODO: Security enhancement: configure strict CORS origins when production domain is known.
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
