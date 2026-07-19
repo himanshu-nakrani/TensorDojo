@@ -1,4 +1,9 @@
-import express, { type Express, type Request, type Response, type NextFunction } from "express";
+import express, {
+  type Express,
+  type Request,
+  type Response,
+  type NextFunction,
+} from "express";
 import cors from "cors";
 import pinoHttp from "pino-http";
 import router from "./routes";
@@ -14,6 +19,11 @@ app.use((_req: Request, res: Response, next: NextFunction) => {
   res.setHeader("X-Content-Type-Options", "nosniff");
   res.setHeader("X-Frame-Options", "DENY");
   res.setHeader("X-XSS-Protection", "1; mode=block");
+  res.setHeader(
+    "Strict-Transport-Security",
+    "max-age=31536000; includeSubDomains",
+  );
+  res.setHeader("Content-Security-Policy", "default-src 'none'");
   next();
 });
 
@@ -37,7 +47,14 @@ app.use(
   }),
 );
 
-app.use(cors()); // TODO: Security enhancement: configure strict CORS origins when production domain is known.
+const isProduction = process.env.NODE_ENV === "production";
+const corsOrigin = process.env.CORS_ORIGIN || "*";
+
+app.use(
+  cors({
+    origin: isProduction && corsOrigin !== "*" ? corsOrigin.split(",") : "*",
+  }),
+);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -50,10 +67,10 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
     return next(err);
   }
 
-  if (req.log && typeof req.log.error === 'function') {
-      req.log.error({ err }, "Unhandled application error");
+  if (req.log && typeof req.log.error === "function") {
+    req.log.error({ err }, "Unhandled application error");
   } else {
-      logger.error({ err }, "Unhandled application error");
+    logger.error({ err }, "Unhandled application error");
   }
 
   res.status(500).json({ error: "Internal Server Error" });

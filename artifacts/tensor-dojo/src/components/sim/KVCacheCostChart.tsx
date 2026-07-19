@@ -66,6 +66,7 @@ export function KVCacheCostChart() {
               <button
                 key={s}
                 type="button"
+                aria-pressed={scale === s}
                 onClick={() => setScale(s)}
                 className={clsx(
                   'px-2 py-0.5 transition-colors focus-ring',
