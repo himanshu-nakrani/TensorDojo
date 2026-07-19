@@ -1,23 +1,22 @@
-import { useMemo } from 'react';
 import { ConceptMapView } from '@/components/concept-graph/ConceptGraphView';
 import { loadConceptGraph } from '@/lib/content/loaders';
 import { listLessonMeta } from '@/lib/lessons-meta';
 import { buildTrackSections } from '@/lib/content/map-data';
 
-export default function MapPage() {
-  const sections = useMemo(() => {
-    const graph = loadConceptGraph();
-    const lessons = listLessonMeta();
-    const lessonMeta: Record<string, { title: string; minutes: number }> = {};
-    for (const l of lessons) {
-      lessonMeta[l.meta.slug] = {
-        title: l.meta.title,
-        minutes: l.meta.minutes,
-      };
-    }
-    return buildTrackSections(graph, lessonMeta);
-  }, []);
+const STATIC_SECTIONS = (() => {
+  const graph = loadConceptGraph();
+  const lessons = listLessonMeta();
+  const lessonMeta: Record<string, { title: string; minutes: number }> = {};
+  for (const l of lessons) {
+    lessonMeta[l.meta.slug] = {
+      title: l.meta.title,
+      minutes: l.meta.minutes,
+    };
+  }
+  return buildTrackSections(graph, lessonMeta);
+})();
 
+export default function MapPage() {
   return (
     <main id="main" className="mx-auto px-4 sm:px-6 py-12 sm:py-16 max-w-[1500px]">
       <header className="mb-10 max-w-prose">
@@ -38,7 +37,7 @@ export default function MapPage() {
       </header>
 
       <div className="rounded-xl border border-border bg-bg-elevated p-4 sm:p-6 card-surface">
-        <ConceptMapView sections={sections} />
+        <ConceptMapView sections={STATIC_SECTIONS} />
       </div>
     </main>
   );
