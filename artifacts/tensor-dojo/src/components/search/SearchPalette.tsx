@@ -40,25 +40,34 @@ export function useSearchPalette(): SearchContextValue {
   return ctx;
 }
 
+// Pre-compute the full lesson index once. Stable across renders.
+const STATIC_ITEMS = (() => {
+  return listLessonMeta().map(({ meta }) => {
+    const track = trackForSlug(meta.slug);
+    return {
+      slug: meta.slug,
+      title: meta.title,
+      summary: meta.summary,
+      minutes: meta.minutes,
+      trackId: track?.id ?? '',
+      trackLabel: track?.label ?? '',
+    };
+  });
+})();
+
+// Group lessons by track for visual grouping in the list. The order
+// mirrors the TRACKS reading order so navigating by section feels
+// continuous with the lessons page.
+const STATIC_GROUPED = (() => {
+  return TRACKS.map((track) => ({
+    track,
+    items: STATIC_ITEMS.filter((i) => i.trackId === track.id),
+  })).filter((g) => g.items.length > 0);
+})();
+
 export function SearchPaletteProvider({ children }: { children: ReactNode }) {
   const [isOpen, setIsOpen] = useState(false);
-  
-
-  // Pre-compute the full lesson index once. Stable across renders.
   const [, navigate] = useLocation();
-  const items = useMemo(() => {
-    return listLessonMeta().map(({ meta }) => {
-      const track = trackForSlug(meta.slug);
-      return {
-        slug: meta.slug,
-        title: meta.title,
-        summary: meta.summary,
-        minutes: meta.minutes,
-        trackId: track?.id ?? '',
-        trackLabel: track?.label ?? '',
-      };
-    });
-  }, []);
 
   // Cmd/Ctrl + K toggles the palette globally. Skip if focus is in an
   // editable element — let the user use Cmd-K natively (e.g. in the
@@ -90,23 +99,13 @@ export function SearchPaletteProvider({ children }: { children: ReactNode }) {
     [navigate, close],
   );
 
-  // Group lessons by track for visual grouping in the list. The order
-  // mirrors the TRACKS reading order so navigating by section feels
-  // continuous with the lessons page.
-  const grouped = useMemo(() => {
-    return TRACKS.map((track) => ({
-      track,
-      items: items.filter((i) => i.trackId === track.id),
-    })).filter((g) => g.items.length > 0);
-  }, [items]);
-
   return (
     <SearchContext.Provider value={ctxValue}>
       {children}
       {isOpen && (
         <PaletteOverlay
           onClose={close}
-          grouped={grouped}
+          grouped={STATIC_GROUPED}
           onSelect={go}
         />
       )}
