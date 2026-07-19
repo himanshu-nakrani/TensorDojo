@@ -1,6 +1,6 @@
 
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { Link } from 'wouter';
 import { getVisited, getLastVisited } from '@/lib/progress/visits';
 import type { CrossTrackEdge, TrackSection } from '@/lib/content/map-data';
@@ -223,38 +223,42 @@ function MapCanvas({
   visited: Set<string>;
   resumeSlug: string | null;
 }) {
-  // 1. Position every lesson in the grid.
-  const positioned: PositionedLesson[] = [];
-  const bySlug = new Map<string, PositionedLesson>();
-  sections.forEach((section, col) => {
-    section.lessons.forEach((lesson, row) => {
-      const cx = PADDING_X + col * (NODE_W + COL_GAP) + NODE_W / 2;
-      const cy = PADDING_Y + HEADER_H + row * (NODE_H + ROW_GAP) + NODE_H / 2;
-      const p: PositionedLesson = {
-        slug: lesson.slug,
-        title: lesson.title,
-        minutes: lesson.minutes,
-        concepts: lesson.concepts,
-        crossTrackPrereqs: lesson.crossTrackPrereqs,
-        trackId: section.id,
-        col,
-        row,
-        cx,
-        cy,
-      };
-      positioned.push(p);
-      bySlug.set(lesson.slug, p);
+  const { positioned, width, height } = useMemo(() => {
+    // ⚡ Bolt Optimization: Memoize layout calculations to avoid re-running
+    // the nested loops on progress updates (e.g. when `visited` or `resumeSlug` change).
+    // 1. Position every lesson in the grid.
+    const pos: PositionedLesson[] = [];
+    sections.forEach((section, col) => {
+      section.lessons.forEach((lesson, row) => {
+        const cx = PADDING_X + col * (NODE_W + COL_GAP) + NODE_W / 2;
+        const cy = PADDING_Y + HEADER_H + row * (NODE_H + ROW_GAP) + NODE_H / 2;
+        const p: PositionedLesson = {
+          slug: lesson.slug,
+          title: lesson.title,
+          minutes: lesson.minutes,
+          concepts: lesson.concepts,
+          crossTrackPrereqs: lesson.crossTrackPrereqs,
+          trackId: section.id,
+          col,
+          row,
+          cx,
+          cy,
+        };
+        pos.push(p);
+      });
     });
-  });
 
-  // 2. Canvas dimensions. (Cross-track prereqs are rendered as
-  // per-node badges on the destination LessonNode rather than as
-  // SVG arcs — see the design-doc block at the top of the file.)
-  const cols = sections.length;
-  const maxRows = Math.max(...sections.map((s) => s.lessons.length));
-  const width = PADDING_X * 2 + cols * NODE_W + (cols - 1) * COL_GAP;
-  const height =
-    PADDING_Y * 2 + HEADER_H + maxRows * NODE_H + (maxRows - 1) * ROW_GAP;
+    // 2. Canvas dimensions. (Cross-track prereqs are rendered as
+    // per-node badges on the destination LessonNode rather than as
+    // SVG arcs — see the design-doc block at the top of the file.)
+    const cols = sections.length;
+    const maxRows = Math.max(...sections.map((s) => s.lessons.length));
+    const w = PADDING_X * 2 + cols * NODE_W + (cols - 1) * COL_GAP;
+    const h =
+      PADDING_Y * 2 + HEADER_H + maxRows * NODE_H + (maxRows - 1) * ROW_GAP;
+
+    return { positioned: pos, width: w, height: h };
+  }, [sections]);
 
   return (
     <div className="overflow-x-auto">
