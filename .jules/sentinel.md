@@ -1,3 +1,7 @@
+## 2024-05-16 - [Security Headers]
+**Vulnerability:** Missing basic security headers like Strict-Transport-Security, X-Content-Type-Options, etc., exposing the app to XSS, clickjacking and MIME sniffing attacks.
+**Learning:** Adding custom Express middleware is preferred over adding new dependencies like `helmet` when maintaining a strict no-new-dependencies policy.
+**Prevention:** Implement standard security headers via a simple custom middleware for any new Express applications in the workspace.
 ## 2025-03-09 - Express Security Headers
 
 **Vulnerability:** Missing basic HTTP security headers (X-Content-Type-Options, X-Frame-Options, X-XSS-Protection) and exposed x-powered-by header in the Express API server.
