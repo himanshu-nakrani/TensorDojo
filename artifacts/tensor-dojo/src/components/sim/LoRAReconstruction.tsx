@@ -118,6 +118,8 @@ function Stats({
   );
 }
 
+const STATIC_TARGET = makeTargetDelta();
+
 // ---------------------------------------------------------------------------
 // Main component
 // ---------------------------------------------------------------------------
@@ -126,19 +128,17 @@ function Stats({
 export function LoRAReconstruction() {
   const [r, setR] = useState(3);
 
-  const target = useMemo(() => makeTargetDelta(), []);
-
   const { reconstructed, residual, paramsUsed, frobError } = useMemo(() => {
-    const { A, B } = svdLowRankApprox(target, r);
+    const { A, B } = svdLowRankApprox(STATIC_TARGET, r);
     const rec = compose(A, B);
-    const res = target.map((row, i) => row.map((v, j) => v - rec[i]![j]!));
+    const res = STATIC_TARGET.map((row, i) => row.map((v, j) => v - rec[i]![j]!));
     return {
       reconstructed: rec,
       residual: res,
       paramsUsed: paramCount(8, 8, r),
-      frobError: frobeniusError(target, rec),
+      frobError: frobeniusError(STATIC_TARGET, rec),
     };
-  }, [target, r]);
+  }, [r]);
 
   const reset = () => {
     setR(3);
@@ -169,7 +169,7 @@ export function LoRAReconstruction() {
 
       {/* Three heatmaps side by side */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 items-start">
-        <HeatmapWithLabel label="Target ΔW" values={target} />
+        <HeatmapWithLabel label="Target ΔW" values={STATIC_TARGET} />
         <HeatmapWithLabel
           label={`Reconstruction A·B (rank ${r})`}
           values={reconstructed}

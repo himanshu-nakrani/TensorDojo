@@ -45,6 +45,8 @@ function makeTargetDelta(): number[][] {
   return W;
 }
 
+const STATIC_TARGET = makeTargetDelta();
+
 // ---------------------------------------------------------------------------
 // Fit hyperparameters
 // ---------------------------------------------------------------------------
@@ -215,8 +217,6 @@ function HeatmapWithLabel({
 export function LoRAFinetuneLoss() {
   const [r, setR] = useState(2);
 
-  const target = useMemo(() => makeTargetDelta(), []);
-
   // Cache fit results keyed by r so we don't re-run GD on slider revisit
   const cacheRef = useRef<Record<number, FitResult>>({});
   const [fitResult, setFitResult] = useState<FitResult | null>(null);
@@ -226,15 +226,15 @@ export function LoRAFinetuneLoss() {
       setFitResult(cacheRef.current[r]!);
       return;
     }
-    const result = fitLowRank(target, r, FIT_STEPS, FIT_LR);
+    const result = fitLowRank(STATIC_TARGET, r, FIT_STEPS, FIT_LR);
     cacheRef.current[r] = result;
     setFitResult(result);
-  }, [r, target]);
+  }, [r]);
 
   const reconstructed = useMemo(() => {
-    if (!fitResult) return target.map((row) => row.map(() => 0));
+    if (!fitResult) return STATIC_TARGET.map((row) => row.map(() => 0));
     return compose(fitResult.A, fitResult.B);
-  }, [fitResult, target]);
+  }, [fitResult]);
 
   const paramsUsed = paramCount(8, 8, r);
   const finalLoss = fitResult ? fitResult.losses[fitResult.losses.length - 1] ?? 0 : 0;
@@ -268,7 +268,7 @@ export function LoRAFinetuneLoss() {
 
       {/* Two heatmaps side by side */}
       <div className="grid grid-cols-2 gap-6 items-start">
-        <HeatmapWithLabel label="Target ΔW" values={target} />
+        <HeatmapWithLabel label="Target ΔW" values={STATIC_TARGET} />
         <HeatmapWithLabel
           label={`A·B fit — gradient descent (rank ${r})`}
           values={reconstructed}
