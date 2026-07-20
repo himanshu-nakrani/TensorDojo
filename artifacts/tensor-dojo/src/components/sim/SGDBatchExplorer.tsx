@@ -48,8 +48,9 @@ function lossAB(a: number, b: number): number {
 const NUM_STEPS = 30;
 const ETA = 0.4;
 
+const STATIC_DATASET = syntheticDataset();
+
 export function SGDBatchExplorer() {
-  const dataset = useMemo(() => syntheticDataset(), []);
   const [batchSize, setBatchSize] = useState<number>(4);
   const [step, setStep] = useState<number>(0); // bumps to re-run
   const [runLength, setRunLength] = useState<number>(NUM_STEPS);
@@ -57,8 +58,8 @@ export function SGDBatchExplorer() {
   // The full trajectory under the chosen batch size.
   const trajectory = useMemo(() => {
     const start: ToyModel = { a: 0, b: 0, c: FIXED_C };
-    return runSgd(start, dataset, batchSize, ETA, runLength, step);
-  }, [dataset, batchSize, step, runLength]);
+    return runSgd(start, STATIC_DATASET, batchSize, ETA, runLength, step);
+  }, [batchSize, step, runLength]);
 
   // We also run mini-trajectories at all four batch sizes so the
   // reader can see the comparison on one plot. The 1-sample
@@ -69,9 +70,9 @@ export function SGDBatchExplorer() {
       id: `b${bp.value}`,
       batchSize: bp.value,
       label: bp.label,
-      result: runSgd(start, dataset, bp.value, ETA, runLength, step),
+      result: runSgd(start, STATIC_DATASET, bp.value, ETA, runLength, step),
     }));
-  }, [dataset, step, runLength]);
+  }, [step, runLength]);
 
   const colors = [
     'rgb(var(--series-1))',
@@ -195,7 +196,7 @@ export function SGDBatchExplorer() {
             </div>
             <div className="flex items-baseline justify-between">
               <span className="text-dim">Dataset</span>
-              <span className="text-ink tabular-nums">{dataset.length} pts</span>
+              <span className="text-ink tabular-nums">{STATIC_DATASET.length} pts</span>
             </div>
           </div>
 
@@ -261,20 +262,20 @@ function LossTrace({
  * Tells the same story as the centerpiece's "variance shrinks
  * with batch size" intuition, with actual numbers.
  */
+const STATIC_MODEL: ToyModel = { a: 0.5, b: -0.2, c: FIXED_C };
+const STATIC_TRUE_G = trueGradient(STATIC_MODEL, STATIC_DATASET);
+
 export function SGDVarianceHistogram() {
-  const dataset = useMemo(() => syntheticDataset(), []);
   const [batchSize, setBatchSize] = useState<number>(4);
-  const m: ToyModel = { a: 0.5, b: -0.2, c: FIXED_C };
-  const trueG = useMemo(() => trueGradient(m, dataset), [dataset]);
   const stats = useMemo(
-    () => gradientEmpiricalStats(m, dataset, batchSize, 100, 7),
-    [dataset, batchSize],
+    () => gradientEmpiricalStats(STATIC_MODEL, STATIC_DATASET, batchSize, 100, 7),
+    [batchSize],
   );
 
   // Build a histogram of the 'a' coordinate (the rest are similar).
   const samples = stats.samples.map((s) => s.a);
-  const lo = Math.min(...samples, trueG.a);
-  const hi = Math.max(...samples, trueG.a);
+  const lo = Math.min(...samples, STATIC_TRUE_G.a);
+  const hi = Math.max(...samples, STATIC_TRUE_G.a);
   const NB = 20;
   const counts = new Array<number>(NB).fill(0);
   const binW = (hi - lo) / NB;
@@ -307,7 +308,7 @@ export function SGDVarianceHistogram() {
             })}
             {/* True gradient line */}
             {(() => {
-              const x = ((trueG.a - lo) / (hi - lo)) * w;
+              const x = ((STATIC_TRUE_G.a - lo) / (hi - lo)) * w;
               return (
                 <line
                   x1={x}
@@ -375,7 +376,7 @@ export function SGDVarianceHistogram() {
             <div className="flex items-baseline justify-between">
               <span className="text-dim">Loss at (a, b, c)</span>
               <span className="text-ink tabular-nums">
-                {batchLoss(m, dataset).toFixed(3)}
+                {batchLoss(STATIC_MODEL, STATIC_DATASET).toFixed(3)}
               </span>
             </div>
           </div>

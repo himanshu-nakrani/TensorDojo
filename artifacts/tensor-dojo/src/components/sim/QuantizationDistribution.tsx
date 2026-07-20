@@ -55,18 +55,18 @@ function makeWeights(seed: number): number[] {
   return out;
 }
 
+const STATIC_WEIGHTS = makeWeights(11);
+
 export function QuantizationDistribution() {
   const [bits, setBits] = useState<(typeof BIT_OPTIONS)[number]>(4);
   const [model, setModel] = useState<ModelOption>(MODEL_OPTIONS[0]!);
 
-  const weights = useMemo(() => makeWeights(11), []);
-
   const { reconstructed, rms } = useMemo(() => {
-    const q = quantize(weights, bits, 'symmetric');
+    const q = quantize(STATIC_WEIGHTS, bits, 'symmetric');
     const r = dequantize(q);
-    const err = quantizationError(weights, r);
+    const err = quantizationError(STATIC_WEIGHTS, r);
     return { reconstructed: r, rms: err.rms };
-  }, [weights, bits]);
+  }, [bits]);
 
   const fp16Bytes = weightBytes(model.params, 16);
   const quantBytes = weightBytes(model.params, bits);
@@ -114,7 +114,7 @@ export function QuantizationDistribution() {
         <div>
           <DistributionStrip
             label={`Original (fp16) — ${N_WEIGHTS.toLocaleString()} distinct values`}
-            values={weights}
+            values={STATIC_WEIGHTS}
             variant="original"
           />
           <div className="h-3" />

@@ -17,6 +17,7 @@ const TEACHER_LOGITS: readonly number[] = [-1.5, 1.0, 2.5, 0.8, -1.8];
 const INIT_STUDENT: readonly number[] = [0.3, -0.2, 0.1, -0.1, 0.2];
 
 const LR = 0.15;
+const TEACHER_DEPLOY = softmaxT(TEACHER_LOGITS, 1);
 
 export function DistillationExplorer() {
   const [T, setT] = useState(4);
@@ -29,7 +30,6 @@ export function DistillationExplorer() {
   const raf = useRef<number | null>(null);
 
   const teacherSoft = useMemo(() => softmaxT(TEACHER_LOGITS, T), [T]);
-  const teacherDeploy = useMemo(() => softmaxT(TEACHER_LOGITS, 1), []);
   const studentSoft = useMemo(
     () => softmaxT(studentLogits, T),
     [studentLogits, T],
@@ -155,7 +155,7 @@ export function DistillationExplorer() {
           title="Teacher"
           subtitle={`softened at T = ${T.toFixed(1)}`}
           probs={teacherSoft}
-          ghostProbs={teacherDeploy}
+          ghostProbs={TEACHER_DEPLOY}
           ghostLabel="at T=1"
           highlight={Y_TRUE}
         />
