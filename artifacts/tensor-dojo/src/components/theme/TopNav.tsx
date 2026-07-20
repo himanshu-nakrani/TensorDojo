@@ -120,6 +120,12 @@ export function TopNav() {
 
   return (
     <>
+      <a
+        href="#main"
+        className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:top-2 focus:left-2 focus:px-4 focus:py-2 focus:bg-bg-elevated focus:text-ink focus:font-semibold focus:rounded-md focus:shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+      >
+        Skip to main content
+      </a>
       <header className="sticky top-0 z-40 border-b border-border/60 bg-bg/80 backdrop-blur-sm supports-[backdrop-filter]:bg-bg/60">
         <div className="mx-auto flex h-12 max-w-[1500px] items-center justify-between gap-4 px-4 sm:px-6">
           <Link
