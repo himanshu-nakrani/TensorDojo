@@ -13,3 +13,8 @@
 **Vulnerability:** Weak CORS configuration (`*`) and missing advanced HTTP security headers (Strict-Transport-Security, Content-Security-Policy) in the Express API server.
 **Learning:** Default `cors()` allows all origins. It should be restricted in production. Pure APIs that only return JSON should have restrictive CSPs (`default-src 'none'`) to prevent XSS if a response is ever accidentally rendered in a browser.
 **Prevention:** Configure CORS based on environment and add HSTS/CSP headers.
+## 2025-03-09 - Overly Permissive Default CORS
+
+**Vulnerability:** The default CORS configuration in `artifacts/api-server/src/app.ts` allowed all origins (`*`) if the `CORS_ORIGIN` environment variable was empty or set to `*`.
+**Learning:** Default fallbacks for environmental variables in sensitive configurations can open up major holes. A permissive default might be fine for local dev, but should never make it to production unnoticed. Also, redundant security middleware configurations can cause confusion.
+**Prevention:** In production environments, default to denying cross-origin requests (or being extremely restrictive) when specific configuration variables are absent, instead of falling back to a wildcard. Always review security-related boilerplate code for duplicate or conflicting settings.
