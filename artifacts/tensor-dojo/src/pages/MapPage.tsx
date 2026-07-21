@@ -1,7 +1,7 @@
-import { ConceptMapView } from '@/components/concept-graph/ConceptGraphView';
-import { loadConceptGraph } from '@/lib/content/loaders';
-import { listLessonMeta } from '@/lib/lessons-meta';
-import { buildTrackSections } from '@/lib/content/map-data';
+import { ConceptMapView } from "@/components/concept-graph/ConceptGraphView";
+import { loadConceptGraph } from "@/lib/content/loaders";
+import { listLessonMeta } from "@/lib/lessons-meta";
+import { buildTrackSections } from "@/lib/content/map-data";
 
 const STATIC_SECTIONS = (() => {
   const graph = loadConceptGraph();
@@ -18,7 +18,11 @@ const STATIC_SECTIONS = (() => {
 
 export default function MapPage() {
   return (
-    <main id="main" className="mx-auto px-4 sm:px-6 py-12 sm:py-16 max-w-[1500px]">
+    <main
+      id="main"
+      tabIndex={-1}
+      className="mx-auto px-4 sm:px-6 py-12 sm:py-16 max-w-[1500px]"
+    >
       <header className="mb-10 max-w-prose">
         <div className="text-[12px] uppercase tracking-[0.18em] text-fg-muted font-mono mb-3">
           Concept map
@@ -27,12 +31,11 @@ export default function MapPage() {
           How the pieces connect
         </h1>
         <p className="text-[1rem] text-muted leading-relaxed">
-          Eight tracks, in reading order. Within a track, the next
-          lesson is one step along. A small ↗N marker on a lesson
-          means it has N cross-track prerequisites — tap or click
-          the marker to see the list. If you&apos;ve started
-          reading, your last lesson is highlighted as the resume
-          point.
+          Eight tracks, in reading order. Within a track, the next lesson is one
+          step along. A small ↗N marker on a lesson means it has N cross-track
+          prerequisites — tap or click the marker to see the list. If
+          you&apos;ve started reading, your last lesson is highlighted as the
+          resume point.
         </p>
       </header>
 

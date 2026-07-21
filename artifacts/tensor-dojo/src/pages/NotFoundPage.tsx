@@ -1,10 +1,14 @@
-import { Link } from 'wouter';
-import { listSlugs } from '@/lib/lessons';
+import { Link } from "wouter";
+import { listSlugs } from "@/lib/lessons";
 
 export default function NotFoundPage() {
   const total = listSlugs().length;
   return (
-    <main id="main" className="mx-auto px-6 sm:px-10 py-32 max-w-prose flex flex-col">
+    <main
+      id="main"
+      tabIndex={-1}
+      className="mx-auto px-6 sm:px-10 py-32 max-w-prose flex flex-col"
+    >
       <div className="text-[11px] uppercase tracking-[0.18em] text-dim font-mono mb-6">
         404 — page not found
       </div>
@@ -12,7 +16,7 @@ export default function NotFoundPage() {
         Lost?
       </h1>
       <p className="text-[1.0625rem] text-muted leading-relaxed mb-10">
-        That URL doesn&apos;t match a lesson. The home page lists the {total}{' '}
+        That URL doesn&apos;t match a lesson. The home page lists the {total}{" "}
         lessons in reading order; the concept map shows how they connect.
       </p>
       <div className="flex flex-wrap items-center gap-x-6 gap-y-3 text-[0.95rem]">
