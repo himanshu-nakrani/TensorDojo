@@ -1,9 +1,10 @@
-import { LessonCardList } from '@/components/home/LessonCardList';
+import { LessonCardList } from "@/components/home/LessonCardList";
 
 export default function LessonsPage() {
   return (
     <main
       id="main"
+      tabIndex={-1}
       className="mx-auto px-6 sm:px-10 py-12 sm:py-16 max-w-wide"
     >
       <header className="mb-10 max-w-prose">
@@ -14,9 +15,8 @@ export default function LessonsPage() {
           Every lesson, by track.
         </h1>
         <p className="text-[1rem] text-muted leading-relaxed">
-          Fifty-eight interactive lessons across eight tracks, in
-          reading order. Each card opens a workbench where the math
-          is something you can move.
+          Fifty-eight interactive lessons across eight tracks, in reading order.
+          Each card opens a workbench where the math is something you can move.
         </p>
       </header>
 

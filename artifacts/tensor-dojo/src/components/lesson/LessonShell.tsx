@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import { ReactNode } from "react";
 
 interface LessonShellProps {
   title: string;
@@ -14,9 +14,18 @@ interface LessonShellProps {
  *
  * The top of the shell carries a single back-link to the home page.
  */
-export function LessonShell({ title, minutes, summary, children }: LessonShellProps) {
+export function LessonShell({
+  title,
+  minutes,
+  summary,
+  children,
+}: LessonShellProps) {
   return (
-    <article id="main" className="mx-auto px-6 sm:px-10 py-12 sm:py-16 max-w-[1320px]">
+    <article
+      id="main"
+      tabIndex={-1}
+      className="mx-auto px-6 sm:px-10 py-12 sm:py-16 max-w-[1320px]"
+    >
       <header className="mb-10 max-w-prose">
         <div className="flex items-center gap-3 text-[12px] uppercase tracking-[0.12em] text-accent font-semibold font-mono mb-5">
           <span>Lesson</span>

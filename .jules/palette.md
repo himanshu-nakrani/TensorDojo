@@ -5,3 +5,6 @@
 ## 2024-07-20 - Missing skip-to-content trigger despite having targets
 **Learning:** The application successfully defined `id="main"` on main content containers across all pages (HomePage, MapPage, LessonsPage, etc.), but completely omitted the `<a href="#main">Skip to main content</a>` link at the top of the DOM to actually trigger it. This is a common accessibility pattern where developers remember the destination target but forget the required interaction mechanism for keyboard/screen reader users.
 **Action:** When auditing or implementing skip links, always ensure both the trigger (the visually hidden, focusable anchor at the start of the document) and the target (`id="main"`) are present. One without the other is useless.
+## 2024-12-07 - TabIndex for main content wrapper
+**Learning:** React single-page apps using "#main" for skip links may not shift focus appropriately if the `<main>` or `<article>` element lacks a tabindex since they are not natively focusable elements. This causes screen readers to fail shifting focus when the skip link is activated.
+**Action:** Always verify that "Skip to main content" links point to a container with `tabIndex={-1}` applied so that programmatic focus works.
