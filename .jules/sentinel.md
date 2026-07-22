@@ -18,3 +18,8 @@
 **Vulnerability:** The default CORS configuration in `artifacts/api-server/src/app.ts` allowed all origins (`*`) if the `CORS_ORIGIN` environment variable was empty or set to `*`.
 **Learning:** Default fallbacks for environmental variables in sensitive configurations can open up major holes. A permissive default might be fine for local dev, but should never make it to production unnoticed. Also, redundant security middleware configurations can cause confusion.
 **Prevention:** In production environments, default to denying cross-origin requests (or being extremely restrictive) when specific configuration variables are absent, instead of falling back to a wildcard. Always review security-related boilerplate code for duplicate or conflicting settings.
+
+## 2024-05-18 - Express Rate Limiting
+**Vulnerability:** Missing rate limiting on the API server, leaving it vulnerable to basic DoS and brute-force attacks.
+**Learning:** We can implement a simple in-memory rate limiter using standard Node.js/Express constructs instead of adding new dependencies. It's crucial to `unref()` the cleanup `setInterval` so it doesn't block the process from exiting gracefully.
+**Prevention:** Include basic rate limiting on API endpoints to prevent abuse.

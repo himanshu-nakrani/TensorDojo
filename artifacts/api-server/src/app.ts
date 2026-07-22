@@ -24,6 +24,38 @@ app.use((_req: Request, res: Response, next: NextFunction) => {
     "max-age=31536000; includeSubDomains",
   );
   res.setHeader("Content-Security-Policy", "default-src 'none'");
+  res.setHeader("Cache-Control", "no-store");
+  next();
+});
+
+// Simple in-memory rate limiter to mitigate basic DoS and brute-force
+const rateLimit = new Map<string, { count: number; resetTime: number }>();
+const RATE_LIMIT_WINDOW_MS = 60 * 1000; // 1 minute
+const RATE_LIMIT_MAX_REQUESTS = 100;
+
+setInterval(() => {
+  const now = Date.now();
+  for (const [ip, data] of rateLimit.entries()) {
+    if (now > data.resetTime) rateLimit.delete(ip);
+  }
+}, RATE_LIMIT_WINDOW_MS).unref();
+
+app.use((req: Request, res: Response, next: NextFunction) => {
+  const ip = req.ip || req.socket.remoteAddress || "unknown";
+  const now = Date.now();
+
+  let record = rateLimit.get(ip);
+  if (!record || now > record.resetTime) {
+    record = { count: 0, resetTime: now + RATE_LIMIT_WINDOW_MS };
+    rateLimit.set(ip, record);
+  }
+
+  record.count++;
+  if (record.count > RATE_LIMIT_MAX_REQUESTS) {
+    res.status(429).json({ error: "Too Many Requests" });
+    return;
+  }
+
   next();
 });
 
