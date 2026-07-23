@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { Link } from 'wouter';
-import { TRACKS, listLessonMeta, type LessonMetaEntry } from '@/lib/lessons-meta';
+import { TRACKS, getLessonMeta, type LessonMetaEntry } from '@/lib/lessons-meta';
 import { getVisited, getLastVisited } from '@/lib/progress/visits';
 
 interface TrackBucket {
@@ -12,12 +12,11 @@ interface TrackBucket {
 }
 
 const STATIC_BUCKETS: TrackBucket[] = (() => {
-  const lessons = listLessonMeta();
   return TRACKS.map((t) => ({
     id: t.id,
     label: t.label,
     lessons: t.slugs
-      .map((slug) => lessons.find((l) => l.meta.slug === slug)!)
+      .map((slug) => getLessonMeta(slug)!)
       .filter(Boolean),
   })).filter((t) => t.lessons.length > 0);
 })();

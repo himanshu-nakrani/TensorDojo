@@ -7,3 +7,6 @@
 ## 2025-02-18 - ConceptGraphView optimization
 **Learning:** Found that layout dimensions and positions for the `ConceptGraphView` were being computed on every render, even though they only depend on the static `sections` prop. Additionally, a `bySlug` map was populated on every render but never used.
 **Action:** Always wrap heavy layout computations in `useMemo` when they only depend on static props, preventing recomputation when local state like `visited` updates. Remove unused variables that accumulate data unnecessarily.
+## 2025-02-18 - Optimized heavily queried static module access
+**Learning:** Found that core UI layout methods (`PrevNext.tsx`, `LessonCardList.tsx`) and central utility lookups (`getLessonMeta`, `trackForSlug`, `prevNext` in `lib/lessons-meta.ts`) were repeatedly performing O(N) array traversals (`.find()`, `.indexOf()`, `.includes()`, `.flatMap()`) across the same static structures on every UI navigation or re-render.
+**Action:** Always pre-compute static mappings (e.g. `SLUG_TO_META`, `SLUG_TO_TRACK`) in a module so highly accessed registry lookups operate in O(1) time. Avoid performing array traversals (especially nested ones) during runtime renders or navigation events if the underlying lists never change.

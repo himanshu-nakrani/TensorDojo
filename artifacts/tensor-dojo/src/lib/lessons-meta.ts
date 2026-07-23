@@ -141,12 +141,17 @@ const manifest: readonly LessonMetaEntry[] = [
   { meta: distillationMeta },
 ];
 
+// ⚡ Bolt Optimization: Pre-compute slug to meta mapping for O(1) lookups
+const SLUG_TO_META = new Map<string, LessonMetaEntry>(
+  manifest.map((l) => [l.meta.slug, l])
+);
+
 export function listLessonMeta(): readonly LessonMetaEntry[] {
   return manifest;
 }
 
 export function getLessonMeta(slug: string): LessonMetaEntry | undefined {
-  return manifest.find((l) => l.meta.slug === slug);
+  return SLUG_TO_META.get(slug);
 }
 
 export function listLessonSlugs(): string[] {
@@ -263,21 +268,29 @@ export const TRACKS: readonly LessonTrack[] = [
  * Flattened reading order across all tracks. Used to derive
  * prev/next links on each lesson.
  */
+// ⚡ Bolt Optimization: Pre-compute reading order and track map to avoid O(N) ops on every call
+const STATIC_READING_ORDER = TRACKS.flatMap((t) => t.slugs);
+const SLUG_TO_TRACK = new Map<string, LessonTrack>(
+  TRACKS.flatMap((t) => t.slugs.map((slug) => [slug, t]))
+);
+const SLUG_INDEX = new Map<string, number>(
+  STATIC_READING_ORDER.map((slug, i) => [slug, i])
+);
+
 export function readingOrder(): readonly string[] {
-  return TRACKS.flatMap((t) => t.slugs);
+  return STATIC_READING_ORDER;
 }
 
 export function prevNext(slug: string): { prev?: string; next?: string } {
-  const order = readingOrder();
-  const i = order.indexOf(slug);
-  if (i < 0) return {};
+  const i = SLUG_INDEX.get(slug);
+  if (i === undefined) return {};
   return {
-    prev: i > 0 ? order[i - 1] : undefined,
-    next: i < order.length - 1 ? order[i + 1] : undefined,
+    prev: i > 0 ? STATIC_READING_ORDER[i - 1] : undefined,
+    next: i < STATIC_READING_ORDER.length - 1 ? STATIC_READING_ORDER[i + 1] : undefined,
   };
 }
 
 /** Look up which track a slug belongs to. Returns undefined if unknown. */
 export function trackForSlug(slug: string): LessonTrack | undefined {
-  return TRACKS.find((t) => t.slugs.includes(slug));
+  return SLUG_TO_TRACK.get(slug);
 }
