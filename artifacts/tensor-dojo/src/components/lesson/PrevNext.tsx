@@ -5,7 +5,7 @@ import { useLocation } from 'wouter';
 import { Link } from 'wouter';
 
 import { getLesson, prevNext } from '@/lib/lessons';
-import { TRACKS, type LessonTrack } from '@/lib/lessons-meta';
+import { trackForSlug } from '@/lib/lessons-meta';
 
 interface PrevNextProps {
   slug: string;
@@ -63,9 +63,9 @@ export function PrevNext({ slug }: PrevNextProps) {
 
   if (!prevLesson && !nextLesson) return null;
 
-  const currentTrackId = trackIdForLesson(slug);
-  const prevTrackId = prev ? trackIdForLesson(prev) : undefined;
-  const nextTrackId = next ? trackIdForLesson(next) : undefined;
+  const currentTrackId = trackForSlug(slug)?.id;
+  const prevTrackId = prev ? trackForSlug(prev)?.id : undefined;
+  const nextTrackId = next ? trackForSlug(next)?.id : undefined;
   const prevIsNewTrack = prevTrackId && currentTrackId && prevTrackId !== currentTrackId;
   const nextIsNewTrack = nextTrackId && currentTrackId && nextTrackId !== currentTrackId;
 
@@ -138,12 +138,4 @@ export function PrevNext({ slug }: PrevNextProps) {
       </div>
     </nav>
   );
-}
-
-/** Look up the track id of a lesson by walking TRACKS. */
-function trackIdForLesson(slug: string): string | undefined {
-  for (const t of TRACKS as readonly LessonTrack[]) {
-    if (t.slugs.includes(slug)) return t.id;
-  }
-  return undefined;
 }
