@@ -31,11 +31,11 @@ export default function MapPage() {
           How the pieces connect
         </h1>
         <p className="text-[1rem] text-muted leading-relaxed">
-          Eight tracks, in reading order. Within a track, the next lesson is one
-          step along. A small ↗N marker on a lesson means it has N cross-track
-          prerequisites — tap or click the marker to see the list. If
-          you&apos;ve started reading, your last lesson is highlighted as the
-          resume point.
+          Every lesson is a node in one dependency graph. Solid links run along a
+          track in reading order; dashed links, coloured by their source track,
+          are cross-track prerequisites. Drag to pan, scroll to zoom, and hover a
+          node to trace exactly what it depends on. If you&apos;ve started
+          reading, your last lesson is highlighted as the resume point.
         </p>
       </header>
 

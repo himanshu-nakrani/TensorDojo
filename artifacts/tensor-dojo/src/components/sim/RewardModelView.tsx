@@ -249,7 +249,8 @@ export function RewardModelView() {
       </div>
 
       {/* Two-pane bar charts */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+      <div className="sim-split">
+      <div className="sim-split__grid">
         {/* Left: policy */}
         <section aria-label="Policy probabilities">
           <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-3">
@@ -265,6 +266,7 @@ export function RewardModelView() {
           </div>
           <RewardBars scores={rewardScores} />
         </section>
+      </div>
       </div>
 
       {/* Next preference preview */}

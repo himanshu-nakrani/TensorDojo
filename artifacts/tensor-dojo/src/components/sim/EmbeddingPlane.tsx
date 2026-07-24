@@ -144,7 +144,8 @@ export function EmbeddingPlane({ preset }: { preset?: EmbeddingPlanePreset }) {
         </div>
       }
     >
-      <div className="grid grid-cols-1 md:grid-cols-[1fr_220px] gap-6">
+      <div className="sim-split" style={{ ['--sim-aside-w' as string]: '220px' }}>
+      <div className="sim-split__grid">
         <div>
           <svg
             viewBox="-2.4 -2.4 4.8 4.8"
@@ -225,7 +226,7 @@ export function EmbeddingPlane({ preset }: { preset?: EmbeddingPlanePreset }) {
           </svg>
         </div>
 
-        <div className="space-y-3 font-mono text-[12px]">
+        <div className="sim-split__aside space-y-3 font-mono text-[12px]">
           <div>
             <label className="block">
               <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-1">
@@ -268,6 +269,7 @@ export function EmbeddingPlane({ preset }: { preset?: EmbeddingPlanePreset }) {
             </div>
           )}
         </div>
+      </div>
       </div>
     </SimFrame>
   );

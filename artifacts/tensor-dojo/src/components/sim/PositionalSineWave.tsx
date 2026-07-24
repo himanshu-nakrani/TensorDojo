@@ -49,7 +49,8 @@ export function PositionalSineWave({ preset }: { preset?: PositionalSineWavePres
 
   return (
     <SimFrame title="Pick a dim · plot sin/cos across positions" onReset={reset}>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="sim-split">
+      <div className="sim-split__grid">
         <div>
           <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-auto" preserveAspectRatio="xMidYMid meet">
             <rect x={0} y={0} width={W} height={H} className="fill-bg/40" />
@@ -71,7 +72,7 @@ export function PositionalSineWave({ preset }: { preset?: PositionalSineWavePres
             </text>
           </svg>
         </div>
-        <div className="space-y-2 font-mono text-[12px]">
+        <div className="sim-split__aside space-y-2 font-mono text-[12px]">
           <div>
             <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-1">
               Dimension index
@@ -107,6 +108,7 @@ export function PositionalSineWave({ preset }: { preset?: PositionalSineWavePres
             <div className="text-ink tabular-nums text-right">{maxPos}</div>
           </div>
         </div>
+      </div>
       </div>
     </SimFrame>
   );

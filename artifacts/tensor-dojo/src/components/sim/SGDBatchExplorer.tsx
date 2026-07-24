@@ -90,7 +90,8 @@ export function SGDBatchExplorer() {
       onReset={() => setStep((s) => s + 1)}
       resetLabel="Re-run"
     >
-      <div className="grid grid-cols-1 md:grid-cols-[1fr_240px] gap-5">
+      <div className="sim-split" style={{ ['--sim-aside-w' as string]: '240px' }}>
+      <div className="sim-split__grid">
         {/* Loss surface + trajectories */}
         <div>
           <LossLandscape
@@ -127,7 +128,7 @@ export function SGDBatchExplorer() {
         </div>
 
         {/* Controls */}
-        <div className="space-y-4 font-mono text-[12px]">
+        <div className="sim-split__aside space-y-4 font-mono text-[12px]">
           <div>
             <div className="flex items-baseline justify-between mb-1">
               <span className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono">
@@ -206,6 +207,7 @@ export function SGDBatchExplorer() {
             color={colors[BATCH_PRESETS.findIndex((p) => p.value === batchSize)]!}
           />
         </div>
+      </div>
       </div>
     </SimFrame>
   );
@@ -290,7 +292,8 @@ export function SGDVarianceHistogram() {
 
   return (
     <SimFrame title="Gradient estimate variance">
-      <div className="grid grid-cols-1 md:grid-cols-[1fr_220px] gap-5">
+      <div className="sim-split" style={{ ['--sim-aside-w' as string]: '220px' }}>
+      <div className="sim-split__grid">
         <div>
           <svg viewBox={`0 0 ${w} ${h}`} className="w-full h-auto" aria-label="Histogram of mini-batch gradient estimates (a).">
             {counts.map((c, i) => {
@@ -330,7 +333,7 @@ export function SGDVarianceHistogram() {
             Vertical line: true full-batch gradient. Bars: 100 mini-batch estimates.
           </div>
         </div>
-        <div className="space-y-3 font-mono text-[12px]">
+        <div className="sim-split__aside space-y-3 font-mono text-[12px]">
           <div>
             <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-1">
               Batch size
@@ -381,6 +384,7 @@ export function SGDVarianceHistogram() {
             </div>
           </div>
         </div>
+      </div>
       </div>
     </SimFrame>
   );

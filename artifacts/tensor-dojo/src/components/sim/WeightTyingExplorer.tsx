@@ -116,11 +116,15 @@ export function WeightTyingExplorer() {
         />
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+      <div className="sim-split">
+      <div className="sim-split__grid">
         {/* 2D plot */}
         <EmbeddingPlot tokens={tokens} hx={hx} hy={hy} />
         {/* Logits as a bar chart */}
-        <LogitsList sorted={sorted} />
+        <div className="sim-split__aside">
+          <LogitsList sorted={sorted} />
+        </div>
+      </div>
       </div>
 
       {/* Param savings */}

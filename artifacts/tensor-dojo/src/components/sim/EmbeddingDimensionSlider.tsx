@@ -104,7 +104,8 @@ export function EmbeddingDimensionSlider({ preset }: { preset?: EmbeddingDimensi
 
   return (
     <SimFrame title="Crank d · watch clusters tighten" onReset={reset}>
-      <div className="grid grid-cols-1 md:grid-cols-[1fr_180px] gap-4">
+      <div className="sim-split" style={{ ['--sim-aside-w' as string]: '180px' }}>
+      <div className="sim-split__grid">
         <div>
           <svg
             viewBox="-3 -3 6 6"
@@ -145,7 +146,7 @@ export function EmbeddingDimensionSlider({ preset }: { preset?: EmbeddingDimensi
             })}
           </svg>
         </div>
-        <div className="space-y-2 font-mono text-[12px]">
+        <div className="sim-split__aside space-y-2 font-mono text-[12px]">
           <div>
             <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-1">
               Dimension d
@@ -179,6 +180,7 @@ export function EmbeddingDimensionSlider({ preset }: { preset?: EmbeddingDimensi
             As d grows, same-cluster tokens cluster more tightly and different clusters separate. The 2D plot is a projection; the real embedding is d-dimensional.
           </p>
         </div>
+      </div>
       </div>
     </SimFrame>
   );

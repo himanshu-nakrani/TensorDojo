@@ -227,9 +227,10 @@ function DefaultLayout({
       {/* Left: prose */}
       <div className="min-w-0 lesson-body">{prose}</div>
 
-      {/* Right: workbench — sticky on desktop. No interior scroll;
-          we want the page scroll, not a nested one. */}
-      <aside className="min-w-0 space-y-4 lg:sticky lg:top-16 lg:self-start">
+      {/* Right: workbench — sticky on desktop with its OWN scrollbar, so a
+          tall interactive scrolls independently of the reading column
+          instead of sharing (or being clipped by) the page scroll. */}
+      <aside className="min-w-0 space-y-4 lg:sticky lg:top-16 lg:self-start lg:max-h-[calc(100vh-5rem)] lg:overflow-y-auto scroll-y-themed">
         {interactives.map((entry) => (
           <Item
             key={entry.id}

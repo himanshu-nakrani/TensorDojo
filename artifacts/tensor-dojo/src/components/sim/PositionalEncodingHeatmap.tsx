@@ -42,7 +42,8 @@ export function PositionalEncodingHeatmap({ preset }: { preset?: PositionalEncod
 
   return (
     <SimFrame title="PE[pos, dim] heatmap · probe distance" onReset={reset}>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="sim-split">
+      <div className="sim-split__grid">
         <div>
           <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-2">
             PE heatmap ({maxPos} positions × {d} dims)
@@ -77,7 +78,7 @@ export function PositionalEncodingHeatmap({ preset }: { preset?: PositionalEncod
           </div>
         </div>
 
-        <div className="space-y-3 font-mono text-[12px]">
+        <div className="sim-split__aside space-y-3 font-mono text-[12px]">
           <SliderRow label="max position" value={maxPos} min={4} max={32} step={1} onChange={setMaxPos} />
           <SliderRow label="d (model dim)" value={d} min={4} max={32} step={2} onChange={(v) => setD(v % 2 === 0 ? v : v + 1)} />
 
@@ -98,6 +99,7 @@ export function PositionalEncodingHeatmap({ preset }: { preset?: PositionalEncod
             </p>
           </div>
         </div>
+      </div>
       </div>
     </SimFrame>
   );
