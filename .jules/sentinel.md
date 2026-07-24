@@ -23,3 +23,8 @@
 **Vulnerability:** Missing rate limiting on the API server, leaving it vulnerable to basic DoS and brute-force attacks.
 **Learning:** We can implement a simple in-memory rate limiter using standard Node.js/Express constructs instead of adding new dependencies. It's crucial to `unref()` the cleanup `setInterval` so it doesn't block the process from exiting gracefully.
 **Prevention:** Include basic rate limiting on API endpoints to prevent abuse.
+
+## 2025-03-09 - CSS Injection / XSS in UI Component Boilerplate
+**Vulnerability:** Found a CSS Injection and XSS vulnerability in `artifacts/tensor-dojo/src/components/ui/chart.tsx`. The component used `dangerouslySetInnerHTML` to inject dynamic `id` and `color` variables into a `<style>` block without sanitization. An attacker could potentially break out of the CSS rules and insert malicious scripts (e.g. `</style><script>alert(1)</script>`).
+**Learning:** Standard UI component boilerplate (like Recharts wrappers) often implements dynamic styling using `<style dangerouslySetInnerHTML>` to support theme variables. This pattern is inherently unsafe if any of the interpolated variables depend on user input. Even "safe-looking" things like element IDs or hex colors can be exploited.
+**Prevention:** Always sanitize any interpolated variables when using `dangerouslySetInnerHTML` in `<style>` blocks. For IDs, strip non-alphanumeric/dash/underscore characters. For colors, strip characters that can break CSS or HTML rules (`[;{}"'<>]`).
