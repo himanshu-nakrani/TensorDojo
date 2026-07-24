@@ -44,6 +44,7 @@ export function MoECostBars() {
               key={cfg.label}
               type="button"
               onClick={() => setSelectedIdx(i)}
+              aria-pressed={selectedIdx === i}
               className={clsx(
                 'block w-full text-left rounded p-3 transition-colors focus-ring',
                 selectedIdx === i

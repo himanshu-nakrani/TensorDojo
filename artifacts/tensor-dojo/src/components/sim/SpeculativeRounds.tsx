@@ -208,7 +208,7 @@ export function SpeculativeRounds() {
       </div>
 
       <p className="mt-4 text-[11px] text-dim font-mono leading-relaxed">
-        Green tokens are accepted from the draft model. Red strikethroughs
+        Blue tokens are accepted from the draft model. Red strikethroughs
         are draft tokens the target rejected — the target's corrective
         token (filled accent) starts the next round at that position. Each
         round costs <span className="text-ink">one</span> big-model forward

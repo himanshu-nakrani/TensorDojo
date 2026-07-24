@@ -6,7 +6,9 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
+  type KeyboardEvent as ReactKeyboardEvent,
   type ReactNode,
 } from 'react';
 import { Command } from 'cmdk';
@@ -69,6 +71,30 @@ export function SearchPaletteProvider({ children }: { children: ReactNode }) {
   const [isOpen, setIsOpen] = useState(false);
   const [, navigate] = useLocation();
 
+  // Remember what had focus when the palette opened so we can hand it
+  // back on close (WCAG 2.4.3). `isOpenRef` mirrors the open state for
+  // the global key handler, whose listener is bound once.
+  const openerRef = useRef<HTMLElement | null>(null);
+  const isOpenRef = useRef(false);
+  useEffect(() => {
+    isOpenRef.current = isOpen;
+  }, [isOpen]);
+
+  const open = useCallback(() => {
+    openerRef.current = (document.activeElement as HTMLElement) ?? null;
+    setIsOpen(true);
+  }, []);
+  const close = useCallback(() => {
+    setIsOpen(false);
+    const opener = openerRef.current;
+    openerRef.current = null;
+    // Restore focus after the overlay unmounts so keyboard/AT users
+    // land back on the control that opened the palette.
+    if (opener && typeof opener.focus === 'function') {
+      requestAnimationFrame(() => opener.focus());
+    }
+  }, []);
+
   // Cmd/Ctrl + K toggles the palette globally. Skip if focus is in an
   // editable element — let the user use Cmd-K natively (e.g. in the
   // address bar of the matmul number inputs).
@@ -80,14 +106,12 @@ export function SearchPaletteProvider({ children }: { children: ReactNode }) {
       // tools): only handle the bare Cmd/Ctrl + K case.
       if (e.altKey || e.shiftKey) return;
       e.preventDefault();
-      setIsOpen((o) => !o);
+      if (isOpenRef.current) close();
+      else open();
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, []);
-
-  const open = useCallback(() => setIsOpen(true), []);
-  const close = useCallback(() => setIsOpen(false), []);
+  }, [open, close]);
 
   const ctxValue = useMemo<SearchContextValue>(() => ({ open }), [open]);
 
@@ -136,6 +160,8 @@ function PaletteOverlay({
   grouped: Grouped[];
   onSelect: (slug: string) => void;
 }) {
+  const panelRef = useRef<HTMLDivElement>(null);
+
   // Lock body scroll while the palette is open.
   useEffect(() => {
     const prev = document.body.style.overflow;
@@ -144,6 +170,35 @@ function PaletteOverlay({
       document.body.style.overflow = prev;
     };
   }, []);
+
+  // Escape closes the palette; Tab is trapped inside the panel so
+  // keyboard focus can't wander onto the page behind this modal.
+  const onKeyDown = (e: ReactKeyboardEvent) => {
+    if (e.key === 'Escape') {
+      e.preventDefault();
+      onClose();
+      return;
+    }
+    if (e.key !== 'Tab') return;
+    const panel = panelRef.current;
+    if (!panel) return;
+    const focusable = panel.querySelectorAll<HTMLElement>(
+      'a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])',
+    );
+    if (focusable.length === 0) {
+      e.preventDefault();
+      return;
+    }
+    const first = focusable[0]!;
+    const last = focusable[focusable.length - 1]!;
+    if (e.shiftKey && document.activeElement === first) {
+      e.preventDefault();
+      last.focus();
+    } else if (!e.shiftKey && document.activeElement === last) {
+      e.preventDefault();
+      first.focus();
+    }
+  };
 
   return (
     <div
@@ -155,10 +210,12 @@ function PaletteOverlay({
       <div
         // The panel itself absorbs clicks so they don't bubble to the
         // backdrop.
+        ref={panelRef}
         role="dialog"
         aria-modal="true"
         aria-label="Search lessons"
         onClick={(e) => e.stopPropagation()}
+        onKeyDown={onKeyDown}
         className="w-full max-w-[640px] rounded-xl border border-border-strong bg-bg-elevated shadow-xl overflow-hidden"
       >
         <Command
@@ -174,7 +231,7 @@ function PaletteOverlay({
             <Command.Input
               autoFocus
               placeholder="Search 58 lessons by title, summary, or track…"
-              className="flex-1 bg-transparent text-[14px] text-ink placeholder:text-fg-subtle focus:outline-none"
+              className="flex-1 bg-transparent text-[14px] text-ink placeholder:text-fg-subtle rounded-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
             />
             <kbd className="hidden sm:inline-block rounded border border-border px-1.5 py-0.5 text-[10px] font-mono text-fg-muted">
               esc
