@@ -109,6 +109,7 @@ export function SpeculativeRounds() {
                 key={g}
                 type="button"
                 onClick={() => setGamma(g)}
+                aria-pressed={gamma === g}
                 className={clsx(
                   'px-2 py-0.5 transition-colors focus-ring',
                   gamma === g
@@ -126,6 +127,7 @@ export function SpeculativeRounds() {
                 key={a.label}
                 type="button"
                 onClick={() => setAlphaIdx(i)}
+                aria-pressed={alphaIdx === i}
                 className={clsx(
                   'px-2 py-0.5 transition-colors focus-ring',
                   alphaIdx === i

@@ -132,6 +132,7 @@ export function RoPERelativity() {
                 key={m}
                 type="button"
                 onClick={() => setMode(m)}
+                aria-pressed={mode === m}
                 className={clsx(
                   'px-2 py-0.5 transition-colors focus-ring',
                   mode === m

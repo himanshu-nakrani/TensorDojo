@@ -89,6 +89,7 @@ export function QuantizationDistribution() {
                 key={b}
                 type="button"
                 onClick={() => setBits(b)}
+                aria-pressed={bits === b}
                 className={clsx(
                   'px-2 py-0.5 transition-colors focus-ring',
                   bits === b
@@ -144,6 +145,7 @@ export function QuantizationDistribution() {
                     key={m.label}
                     type="button"
                     onClick={() => setModel(m)}
+                    aria-pressed={model.label === m.label}
                     className={clsx(
                       'px-2 py-0.5 transition-colors focus-ring',
                       model.label === m.label
