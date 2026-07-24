@@ -41,7 +41,9 @@ const ChartContainer = React.forwardRef<
   }
 >(({ id, className, children, config, ...props }, ref) => {
   const uniqueId = React.useId();
-  const chartId = `chart-${id || uniqueId.replace(/:/g, '')}`;
+  // Sanitize the ID to prevent CSS injection / XSS
+  const baseId = id || uniqueId.replace(/:/g, '');
+  const chartId = `chart-${baseId.replace(/[^a-zA-Z0-9-_]/g, '')}`;
 
   return (
     <ChartContext.Provider value={{ config }}>
@@ -85,7 +87,9 @@ ${colorConfig
     const color =
       itemConfig.theme?.[theme as keyof typeof itemConfig.theme] ||
       itemConfig.color;
-    return color ? `  --color-${key}: ${color};` : null;
+    // Sanitize color to prevent CSS injection / XSS (remove chars that break out of rules/tags)
+    const sanitizedColor = color?.replace(/[;{}"'<>]/g, '');
+    return sanitizedColor ? `  --color-${key}: ${sanitizedColor};` : null;
   })
   .join('\n')}
 }
