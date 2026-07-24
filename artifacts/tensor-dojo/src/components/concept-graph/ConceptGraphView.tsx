@@ -499,7 +499,7 @@ function LessonNode({
           </button>
           {prereqOpen && (
             <div
-              role="dialog"
+              role="group"
               aria-label="Cross-track prerequisites"
               onClick={(e) => e.stopPropagation()}
               className="absolute right-0 bottom-full mb-2 w-[220px] rounded-md border border-border-strong bg-bg-elevated p-3 shadow-lg text-left"

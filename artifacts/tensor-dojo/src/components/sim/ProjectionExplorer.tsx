@@ -100,14 +100,14 @@ export function ProjectionExplorer({ preset }: { preset?: ProjectionExplorerPres
             onChange={setVector}
             height={340}
             showGrid
-            ariaLabel="2D plane with vectors a and b. Drag either tip. Dashed green shows the projection of a onto b; dashed red shows the residual."
+            ariaLabel="2D plane with vectors a and b. Drag either tip. Dashed blue shows the projection of a onto b; dashed red shows the residual."
             overlay={(toScreen) => {
               const [ox, oy] = toScreen(0, 0);
               const [px, py] = toScreen(proj[0]!, proj[1]!);
               const [ax, ay] = toScreen(a[0]!, a[1]!);
               return (
                 <g pointerEvents="none">
-                  {/* Projection of a onto b (cyan, dashed) */}
+                  {/* Projection of a onto b (blue, dashed) */}
                   <line
                     x1={ox}
                     y1={oy}
@@ -178,7 +178,7 @@ export function ProjectionExplorer({ preset }: { preset?: ProjectionExplorerPres
           <div className="pt-3 border-t border-border text-[11px] text-dim leading-relaxed">
             <div>
               <span className="inline-block w-3 h-px align-middle bg-accent mr-1" />
-              green dashed = projection of a onto b
+              blue dashed = projection of a onto b
             </div>
             <div className="mt-1">
               <span className="inline-block w-3 h-px align-middle bg-[rgb(var(--negative))] mr-1" />

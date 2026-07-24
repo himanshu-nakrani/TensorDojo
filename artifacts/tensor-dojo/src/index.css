@@ -305,10 +305,18 @@
   color: rgb(var(--fg));
   border-radius: 4px;
   padding: 6px 8px;
-  font-size: 0.875rem;
+  /* 16px on mobile: anything smaller triggers iOS Safari's focus
+     auto-zoom, which jars the whole sim out of view. Tighten back to
+     the compact 0.875rem once we're past the mobile breakpoint. */
+  font-size: 16px;
   text-align: center;
   transition: border-color 120ms ease-out, box-shadow 120ms ease-out;
   -moz-appearance: textfield;
+}
+@media (min-width: 640px) {
+  .number-input {
+    font-size: 0.875rem;
+  }
 }
 .number-input::-webkit-outer-spin-button,
 .number-input::-webkit-inner-spin-button {

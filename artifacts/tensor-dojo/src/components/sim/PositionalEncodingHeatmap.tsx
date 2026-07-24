@@ -13,8 +13,8 @@ export interface PositionalEncodingHeatmapPreset {
 
 /**
  * Heatmap of PE[pos, dim] for pos ∈ [0, maxPos), dim ∈ [0, d).
- * Sliders for maxPos and d. The cells use a teal-only colormap
- * (PE values are in [-1, 1], so accent is positive, dim teal is
+ * Sliders for maxPos and d. The cells use a blue-only colormap
+ * (PE values are in [-1, 1], so accent is positive, dim blue is
  * negative, mid is muted).
  */
 export function PositionalEncodingHeatmap({ preset }: { preset?: PositionalEncodingHeatmapPreset }) {

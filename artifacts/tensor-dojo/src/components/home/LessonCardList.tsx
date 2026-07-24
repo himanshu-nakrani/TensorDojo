@@ -84,7 +84,7 @@ export function LessonCardList() {
                     <Link
                       href={`/lessons/${lesson.meta.slug}`}
                       aria-label={`${lesson.meta.title}${isVisited ? ' — visited' : ''}${isResume ? ' — resume here' : ''}`}
-                      className="group block rounded-lg border border-border bg-surface p-4 transition-colors hover:border-border-strong hover:bg-surface-2 focus-visible:outline-none focus-visible:border-accent focus-visible:bg-surface-2"
+                      className="group block rounded-lg border border-border bg-surface p-4 transition-colors hover:border-border-strong hover:bg-surface-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg focus-visible:border-accent focus-visible:bg-surface-2"
                     >
                       <div className="flex items-baseline justify-between gap-4 mb-1">
                         <div className="flex items-baseline gap-2.5 min-w-0">

@@ -109,6 +109,7 @@ export function SpeculativeRounds() {
                 key={g}
                 type="button"
                 onClick={() => setGamma(g)}
+                aria-pressed={gamma === g}
                 className={clsx(
                   'px-2 py-0.5 transition-colors focus-ring',
                   gamma === g
@@ -126,6 +127,7 @@ export function SpeculativeRounds() {
                 key={a.label}
                 type="button"
                 onClick={() => setAlphaIdx(i)}
+                aria-pressed={alphaIdx === i}
                 className={clsx(
                   'px-2 py-0.5 transition-colors focus-ring',
                   alphaIdx === i
@@ -208,7 +210,7 @@ export function SpeculativeRounds() {
       </div>
 
       <p className="mt-4 text-[11px] text-dim font-mono leading-relaxed">
-        Green tokens are accepted from the draft model. Red strikethroughs
+        Blue tokens are accepted from the draft model. Red strikethroughs
         are draft tokens the target rejected — the target's corrective
         token (filled accent) starts the next round at that position. Each
         round costs <span className="text-ink">one</span> big-model forward

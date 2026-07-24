@@ -61,6 +61,7 @@ export function SpeculativeSpeedup() {
                 key={r.label}
                 type="button"
                 onClick={() => setRatioIdx(i)}
+                aria-pressed={ratioIdx === i}
                 className={clsx(
                   'px-2 py-0.5 transition-colors focus-ring',
                   ratioIdx === i

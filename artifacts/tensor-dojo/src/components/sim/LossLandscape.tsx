@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import clsx from 'clsx';
 import { SimFrame } from '@/components/sim/primitives/SimFrame';
+import { Slider } from '@/components/sim/primitives/Slider';
 import {
   SURFACES,
   listSurfaces,
@@ -158,7 +159,7 @@ export function LossLandscape() {
             className="cursor-crosshair block h-auto"
             onClick={handleClick}
             role="img"
-            aria-label="Loss surface heatmap. Click anywhere to drop a starting point for SGD."
+            aria-label="Loss surface heatmap. Click anywhere — or use the start x and start y sliders — to drop a starting point for SGD."
           >
             {cells.flatMap((row, i) =>
               row.map((v, j) => {
@@ -272,6 +273,39 @@ export function LossLandscape() {
             </div>
           </div>
 
+          {/* [a11y] Keyboard-operable way to set the SGD start point —
+              equivalent to clicking the heatmap, which was mouse-only. */}
+          <div className="mb-4 space-y-3">
+            <div>
+              <span className="block mb-1.5 text-[11px] uppercase tracking-[0.12em] text-dim font-mono">
+                start x
+              </span>
+              <Slider
+                value={start?.[0] ?? 0}
+                min={-surface.extent}
+                max={surface.extent}
+                step={0.1}
+                onChange={(x) => setStart([x, start?.[1] ?? 0])}
+                ariaLabel="SGD start x coordinate"
+                formatValue={(v) => v.toFixed(1)}
+              />
+            </div>
+            <div>
+              <span className="block mb-1.5 text-[11px] uppercase tracking-[0.12em] text-dim font-mono">
+                start y
+              </span>
+              <Slider
+                value={start?.[1] ?? 0}
+                min={-surface.extent}
+                max={surface.extent}
+                step={0.1}
+                onChange={(y) => setStart([start?.[0] ?? 0, y])}
+                ariaLabel="SGD start y coordinate"
+                formatValue={(v) => v.toFixed(1)}
+              />
+            </div>
+          </div>
+
           <div className="rounded-md border border-border bg-bg/30 px-3 py-2 font-mono text-[12px] space-y-1.5">
             <div className="flex justify-between text-fg-muted">
               <span>start</span>
@@ -304,8 +338,9 @@ export function LossLandscape() {
 
           {!start && (
             <p className="mt-3 text-[11px] text-fg-muted font-mono leading-relaxed">
-              Click the heatmap to drop a starting point. SGD will
-              walk to a stationary point from there.
+              Click the heatmap — or use the start x / y sliders — to
+              drop a starting point. SGD walks to a stationary point
+              from there.
             </p>
           )}
         </div>

@@ -24,7 +24,7 @@ export const interactives: readonly InteractiveEntry[] = [
     id: 'speculative-rounds',
     title: 'Speculative draft rounds: accept, reject, correct',
     description:
-      'Watch the draft model propose γ tokens at a time. Accepted draft tokens are green; the first rejection at each round is shown struck through with the target\'s replacement filled in accent. Try different (γ, α) combinations and see how the rhythm changes.',
+      'Watch the draft model propose γ tokens at a time. Accepted draft tokens are blue; the first rejection at each round is shown struck through with the target\'s replacement filled in accent. Try different (γ, α) combinations and see how the rhythm changes.',
     caption:
       'At α=0.9 (easy text — common phrases, code, math), most rounds reach the full γ and earn the bonus +1 target token. At α=0.3, rounds truncate early and the speedup mostly evaporates. The draft model\'s job is exactly to be cheap enough that even a 30% accept rate is a win.',
     Component: SpeculativeRounds,

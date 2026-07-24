@@ -105,6 +105,7 @@ export function KVCacheBuilder() {
               key={m}
               type="button"
               onClick={() => setMode(m)}
+              aria-pressed={mode === m}
               className={clsx(
                 'px-3 py-1 transition-colors focus-ring',
                 mode === m

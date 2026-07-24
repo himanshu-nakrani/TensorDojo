@@ -15,15 +15,20 @@ const TRUE_MAP: Record<Shape, Color> = {
   '▲': 'green',
 };
 
+// Route the three categorical colors through the theme tokens so the
+// bars and text track light/dark. The previous hardcoded RGB literals
+// kept their light-mode values in dark mode (dark bars on a dark
+// canvas). --negative/--accent/--positive already carry the exact
+// per-theme values these literals were hand-rolling.
 const COLOR_BAR: Record<Color, string> = {
-  red: 'fill-[rgb(220,38,38)]',
-  blue: 'fill-[rgb(37,99,235)]',
-  green: 'fill-[rgb(22,163,74)]',
+  red: 'fill-[rgb(var(--negative))]',
+  blue: 'fill-[rgb(var(--accent))]',
+  green: 'fill-[rgb(var(--positive))]',
 };
 const COLOR_TEXT: Record<Color, string> = {
-  red: 'text-[rgb(220,38,38)] dark:text-[rgb(248,113,113)]',
-  blue: 'text-[rgb(37,99,235)] dark:text-[rgb(96,165,250)]',
-  green: 'text-[rgb(22,163,74)] dark:text-[rgb(74,222,128)]',
+  red: 'text-[rgb(var(--negative))]',
+  blue: 'text-[rgb(var(--accent))]',
+  green: 'text-[rgb(var(--positive))]',
 };
 
 /**

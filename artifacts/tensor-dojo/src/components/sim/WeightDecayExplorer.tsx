@@ -132,7 +132,7 @@ export function WeightDecayExplorer() {
             viewBox={`0 0 ${PLOT_W} ${PLOT_H}`}
             className="w-full h-auto bg-bg/40 rounded"
             role="img"
-            aria-label="L2-regularized polynomial fit. Gray dashed is sin(2x); green is the fit."
+            aria-label="L2-regularized polynomial fit. Gray dashed is sin(2x); blue is the fit."
           >
             <line
               x1={PAD}

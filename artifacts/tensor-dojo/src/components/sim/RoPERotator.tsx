@@ -101,6 +101,7 @@ export function RoPERotator() {
                 key={i}
                 type="button"
                 onClick={() => setPairIdx(i)}
+                aria-pressed={pairIdx === i}
                 className={clsx(
                   'px-2 py-0.5 transition-colors focus-ring',
                   pairIdx === i

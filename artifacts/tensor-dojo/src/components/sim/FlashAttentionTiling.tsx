@@ -128,9 +128,12 @@ export function FlashAttentionTiling() {
         </div>
       }
     >
-      <div className="flex items-start gap-6">
-        <div className="border border-border rounded p-3 bg-surface">
-          <svg viewBox={`0 0 ${W} ${W}`} className="block" style={{ width: W, height: W }}>
+      <div className="flex flex-col sm:flex-row items-start gap-6">
+        <div className="max-w-full min-w-0 border border-border rounded p-3 bg-surface">
+          {/* [mobile] Fixed-W square SVG now caps at the container width
+              (max-w-full) and keeps its aspect via h-auto, so it shrinks
+              on phones instead of overflowing the card. */}
+          <svg viewBox={`0 0 ${W} ${W}`} className="block h-auto max-w-full" style={{ width: W }}>
             {Array.from({ length: N }, (_, i) =>
               Array.from({ length: N }, (_, j) => {
                 const f = freshness.current[i * N + j]!;

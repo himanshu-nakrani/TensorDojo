@@ -20,7 +20,7 @@ export const interactives: readonly InteractiveEntry[] = [
     description:
       'Two draggable vectors; the projection of a onto b and the residual are drawn live.',
     caption:
-      'Drag a and b. The cyan dashed line is proj_b a; the red dashed line is the residual a − proj_b a, which is always perpendicular to b. Toggle "Show unit vectors" to see what the same picture looks like when both vectors are length 1.',
+      'Drag a and b. The blue dashed line is proj_b a; the red dashed line is the residual a − proj_b a, which is always perpendicular to b. Toggle "Show unit vectors" to see what the same picture looks like when both vectors are length 1.',
     Component: ProjectionExplorer,
   },
   {
