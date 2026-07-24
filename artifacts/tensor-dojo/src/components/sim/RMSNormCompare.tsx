@@ -70,7 +70,8 @@ export function RMSNormCompare() {
       </div>
 
       {/* Two bar charts */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div className="sim-split">
+      <div className="sim-split__grid">
         <BarPanel
           label="LayerNorm output"
           formula="γ·(x − μ) / √(σ² + ε) + β"
@@ -83,6 +84,7 @@ export function RMSNormCompare() {
           values={rnOut}
           accent="rmsnorm"
         />
+      </div>
       </div>
 
       {/* Diff row */}

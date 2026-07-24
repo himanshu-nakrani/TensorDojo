@@ -174,7 +174,8 @@ export function AttentionOutputExplorer() {
         </div>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="sim-split">
+      <div className="sim-split__grid">
         <div>
           <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-2">
             Vectors
@@ -192,7 +193,7 @@ export function AttentionOutputExplorer() {
           </p>
         </div>
 
-        <div className="font-mono text-[12px]">
+        <div className="sim-split__aside font-mono text-[12px]">
           <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-2">
             Weight matrix W
           </div>
@@ -252,6 +253,7 @@ export function AttentionOutputExplorer() {
             </tbody>
           </table>
         </div>
+      </div>
       </div>
     </SimFrame>
   );

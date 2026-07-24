@@ -127,7 +127,8 @@ export function CandidateCosine({ preset }: { preset?: CandidateCosinePreset }) 
         setResizableLen(DEFAULT_RESIZABLE_LEN);
       }}
     >
-      <div className="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-6">
+      <div className="sim-split">
+      <div className="sim-split__grid">
         <div>
           <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-2">
             Query <span className="text-accent">q</span> (drag) · 5 fixed candidates · c_R has a length slider below
@@ -143,7 +144,10 @@ export function CandidateCosine({ preset }: { preset?: CandidateCosinePreset }) 
           </p>
         </div>
 
-        <div className="md:w-[420px] space-y-2">
+        <div
+          className="sim-split__aside space-y-2"
+          style={{ ['--sim-aside-w' as string]: '26rem' }}
+        >
           <header className="grid grid-cols-[80px_1fr_1fr] gap-3 text-[11px] uppercase tracking-[0.12em] text-dim font-mono pb-1 border-b border-border">
             <span>candidate</span>
             <span className="text-right">q · c</span>
@@ -194,6 +198,7 @@ export function CandidateCosine({ preset }: { preset?: CandidateCosinePreset }) 
             </label>
           </div>
         </div>
+      </div>
       </div>
     </SimFrame>
   );

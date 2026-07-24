@@ -10,6 +10,13 @@ const config: Config = {
     extend: {
       colors: {
         bg: 'rgb(var(--bg) / <alpha-value>)',
+        // `--bg-elevated` is exposed under two names: `surface` (used by
+        // newer components) and `bg-elevated` (used by ~27 older files,
+        // e.g. `bg-bg-elevated`). Without this alias those classes resolve
+        // to nothing, so <input>s fall back to browser-default white and
+        // become invisible in dark mode. Keep both names pointing at the token.
+        'bg-elevated': 'rgb(var(--bg-elevated) / <alpha-value>)',
+        'bg-elevated-hover': 'rgb(var(--bg-elevated-hover) / <alpha-value>)',
         surface: 'rgb(var(--bg-elevated) / <alpha-value>)',
         'surface-2': 'rgb(var(--bg-code) / <alpha-value>)',
         border: 'rgb(var(--border) / <alpha-value>)',

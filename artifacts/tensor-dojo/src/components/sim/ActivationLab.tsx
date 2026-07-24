@@ -139,7 +139,8 @@ export function ActivationLab() {
       </div>
 
       {/* Three curves */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div className="sim-split">
+      <div className="sim-split__grid">
         {ACTIVATIONS.map((act) => (
           <CurvePanel
             key={act.id}
@@ -149,6 +150,7 @@ export function ActivationLab() {
             showDeriv={showDeriv}
           />
         ))}
+      </div>
       </div>
     </SimFrame>
   );

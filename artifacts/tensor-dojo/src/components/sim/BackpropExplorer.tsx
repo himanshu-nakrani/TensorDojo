@@ -243,7 +243,8 @@ export function BackpropExplorer() {
         </div>
       }
     >
-      <div className="grid grid-cols-1 md:grid-cols-[1fr_280px] gap-5">
+      <div className="sim-split" style={{ ['--sim-aside-w' as string]: '280px' }}>
+      <div className="sim-split__grid">
         {/* Activations + loss */}
         <div className="space-y-3 font-mono text-[12px]">
           <div>
@@ -332,7 +333,7 @@ export function BackpropExplorer() {
         </div>
 
         {/* Sliders — one per parameter */}
-        <div className="space-y-3 max-h-[480px] overflow-y-auto pr-1">
+        <div className="sim-split__aside space-y-3 max-h-[480px] overflow-y-auto pr-1">
           {(['W1', 'b1', 'W2', 'b2', 'W3', 'b3'] as const).map((layer) => (
             <div key={layer}>
               <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-1">
@@ -389,6 +390,7 @@ export function BackpropExplorer() {
             </div>
           ))}
         </div>
+      </div>
       </div>
     </SimFrame>
   );

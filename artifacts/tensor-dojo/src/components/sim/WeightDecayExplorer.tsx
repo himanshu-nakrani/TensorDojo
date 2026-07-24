@@ -126,7 +126,8 @@ export function WeightDecayExplorer() {
       }
       headerWrap
     >
-      <div className="grid grid-cols-1 md:grid-cols-[1fr_220px] gap-5">
+      <div className="sim-split" style={{ ['--sim-aside-w' as string]: '220px' }}>
+      <div className="sim-split__grid">
         <div>
           <svg
             viewBox={`0 0 ${PLOT_W} ${PLOT_H}`}
@@ -192,7 +193,7 @@ export function WeightDecayExplorer() {
           )}
         </div>
 
-        <div className="space-y-3 font-mono text-[12px]">
+        <div className="sim-split__aside space-y-3 font-mono text-[12px]">
           <div>
             <div className="flex items-baseline justify-between mb-1">
               <span className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono">
@@ -242,6 +243,7 @@ export function WeightDecayExplorer() {
             </p>
           </div>
         </div>
+      </div>
       </div>
     </SimFrame>
   );

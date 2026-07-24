@@ -132,7 +132,8 @@ export function TrainingEndToEnd() {
         </div>
       }
     >
-      <div className="grid grid-cols-1 md:grid-cols-[1fr_220px] gap-5">
+      <div className="sim-split" style={{ ['--sim-aside-w' as string]: '220px' }}>
+      <div className="sim-split__grid">
         <div className="space-y-4">
           <LossChart
             losses={progress?.losses ?? []}
@@ -147,7 +148,7 @@ export function TrainingEndToEnd() {
           />
         </div>
 
-        <div className="space-y-3 font-mono text-[12px]">
+        <div className="sim-split__aside space-y-3 font-mono text-[12px]">
           <div>
             <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-1">
               Optimizer
@@ -271,6 +272,7 @@ export function TrainingEndToEnd() {
             )}
           </div>
         </div>
+      </div>
       </div>
     </SimFrame>
   );

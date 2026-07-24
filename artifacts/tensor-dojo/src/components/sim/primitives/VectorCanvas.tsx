@@ -5,6 +5,7 @@ import {
   KeyboardEvent as ReactKeyboardEvent,
   PointerEvent as ReactPointerEvent,
   useCallback,
+  useMemo,
   useRef,
   useState,
   type ReactNode,
@@ -42,6 +43,15 @@ interface VectorCanvasProps {
 
 const VIEW = 100; // viewBox size (square). viewBox stays 0..100, all math
                   // is in the reader's coordinate system.
+const LABEL_OFF = 5; // radial distance (viewBox units) the label sits beyond a tip
+const LABEL_FONT = 10;
+
+interface LabelPos {
+  lx: number;
+  ly: number;
+  anchor: 'start' | 'middle' | 'end';
+  width: number;
+}
 
 /**
  * 2D vector canvas with draggable tips. All vectors share the origin at
@@ -87,6 +97,66 @@ export function VectorCanvas({
     },
     [range],
   );
+
+  /**
+   * Label placement, de-collided. Each label is pushed radially outward
+   * past its own tip (so vectors pointing different ways get well-separated
+   * labels), then a greedy top-to-bottom pass nudges any label that would
+   * still overlap an already-placed one downward. This keeps clusters of
+   * near-parallel vectors (q, c_R, c₁ …) from piling their labels into an
+   * unreadable blob.
+   */
+  const labelLayout = useMemo<Record<string, LabelPos>>(() => {
+    const [ox2, oy2] = toScreen(0, 0);
+    const raw = vectors.map((v): LabelPos & { id: string } => {
+      const [tx, ty] = toScreen(v.value[0], v.value[1]);
+      let dx = tx - ox2;
+      let dy = ty - oy2;
+      const len = Math.hypot(dx, dy);
+      if (len < 1e-3) {
+        // Zero-length vector: default its label up-and-right of the origin.
+        dx = 0.8;
+        dy = -0.6;
+      } else {
+        dx /= len;
+        dy /= len;
+      }
+      const anchor: 'start' | 'middle' | 'end' =
+        dx > 0.25 ? 'start' : dx < -0.25 ? 'end' : 'middle';
+      const width = Math.max(1, v.label.length) * LABEL_FONT * 0.62;
+      return {
+        id: v.id,
+        lx: tx + dx * LABEL_OFF,
+        ly: ty + dy * LABEL_OFF,
+        anchor,
+        width,
+      };
+    });
+    const gap = LABEL_FONT * 1.05;
+    const leftEdge = (l: LabelPos) =>
+      l.anchor === 'start'
+        ? l.lx
+        : l.anchor === 'end'
+          ? l.lx - l.width
+          : l.lx - l.width / 2;
+    const placed: Array<LabelPos & { id: string }> = [];
+    for (const l of [...raw].sort((a, b) => a.ly - b.ly)) {
+      let ly = l.ly;
+      for (const p of placed) {
+        const hOverlap =
+          leftEdge(l) < leftEdge(p) + p.width && leftEdge(p) < leftEdge(l) + l.width;
+        if (hOverlap && Math.abs(ly - p.ly) < gap) {
+          ly = Math.max(ly, p.ly + gap);
+        }
+      }
+      placed.push({ ...l, ly });
+    }
+    const out: Record<string, LabelPos> = {};
+    for (const p of placed) {
+      out[p.id] = { lx: p.lx, ly: p.ly, anchor: p.anchor, width: p.width };
+    }
+    return out;
+  }, [vectors, toScreen]);
 
   const onPointerDown = (
     id: string,
@@ -205,8 +275,9 @@ export function VectorCanvas({
       {vectors.map((v) => {
         const [tx, ty] = toScreen(v.value[0], v.value[1]);
         const isDragging = dragging === v.id;
-        const labelDx = v.value[0] >= 0 ? 3.5 : -3.5;
-        const anchor: 'start' | 'end' = v.value[0] >= 0 ? 'start' : 'end';
+        const lay =
+          labelLayout[v.id] ??
+          ({ lx: tx + 4, ly: ty - 4, anchor: 'start', width: 0 } as LabelPos);
         return (
           <g key={v.id}>
             {/* Arrow line */}
@@ -287,12 +358,13 @@ export function VectorCanvas({
             {/* Label — drawn with a halo (--cell-halo = page bg) so it
                 reads against any background. */}
             <text
-              x={tx + labelDx}
-              y={ty - 3}
-              textAnchor={anchor}
+              x={lay.lx}
+              y={lay.ly}
+              textAnchor={lay.anchor}
+              dominantBaseline="middle"
               className="fill-ink font-mono"
-              fontSize={11}
-              style={{ fontSize: 11, paintOrder: 'stroke' }}
+              fontSize={LABEL_FONT}
+              style={{ fontSize: LABEL_FONT, paintOrder: 'stroke' }}
               stroke="rgb(var(--bg-elevated))"
               strokeWidth={3}
               strokeLinejoin="round"
@@ -300,12 +372,12 @@ export function VectorCanvas({
               {v.label}
             </text>
             <text
-              x={tx + labelDx}
-              y={ty - 3}
-              textAnchor={anchor}
+              x={lay.lx}
+              y={lay.ly}
+              textAnchor={lay.anchor}
+              dominantBaseline="middle"
               className="fill-ink font-mono pointer-events-none"
-              fontSize={11}
-              style={{ fontSize: 11 }}
+              fontSize={LABEL_FONT}
             >
               {v.label}
             </text>

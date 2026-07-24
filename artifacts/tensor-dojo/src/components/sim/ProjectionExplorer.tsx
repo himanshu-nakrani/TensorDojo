@@ -93,7 +93,8 @@ export function ProjectionExplorer({ preset }: { preset?: ProjectionExplorerPres
         </div>
       }
     >
-      <div className="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-6">
+      <div className="sim-split">
+      <div className="sim-split__grid">
         <div>
           <VectorCanvas
             vectors={vectors}
@@ -168,7 +169,7 @@ export function ProjectionExplorer({ preset }: { preset?: ProjectionExplorerPres
           )}
         </div>
 
-        <div className="md:w-64 space-y-3 font-mono text-[12px] tabular-nums">
+        <div className="sim-split__aside space-y-3 font-mono text-[12px] tabular-nums">
           <Readout label="‖a‖" value={fmt(aMag)} />
           <Readout label="‖b‖" value={fmt(bMag)} />
           <Readout label="‖proj_b a‖" value={fmt(projMag)} accent />
@@ -186,6 +187,7 @@ export function ProjectionExplorer({ preset }: { preset?: ProjectionExplorerPres
             </div>
           </div>
         </div>
+      </div>
       </div>
     </SimFrame>
   );

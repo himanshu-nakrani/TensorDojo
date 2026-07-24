@@ -73,7 +73,11 @@ export function MatmulExplorer() {
 
   return (
     <SimFrame title="A · B = AB · hover AB to see the dot product" onReset={reset}>
-      <div className="grid grid-cols-[auto_auto_auto_auto_auto] items-start justify-center gap-x-4 gap-y-2 mb-5 font-mono text-[13px]">
+      {/* Scroll horizontally on narrow viewports rather than squeezing the
+          cells below their content width (which collided the output digits
+          and clipped the inputs). */}
+      <div className="scroll-x-themed overflow-x-auto pb-2 mb-5">
+      <div className="grid grid-cols-[auto_auto_auto_auto_auto] items-start w-max mx-auto gap-x-4 gap-y-2 font-mono text-[13px]">
         <GridLabel label="A" sub="2×3" />
         <span aria-hidden="true" />
         <GridLabel label="B" sub="3×2" />
@@ -110,6 +114,7 @@ export function MatmulExplorer() {
             /* keep last focus so the expansion line stays */
           }}
         />
+      </div>
       </div>
 
       {/* Expansion line */}
@@ -193,7 +198,7 @@ function EditableMatrix({
     <div
       className="inline-grid gap-1 p-2 rounded-md border border-border bg-bg/30"
       style={{
-        gridTemplateColumns: `repeat(${cols}, minmax(0, 56px))`,
+        gridTemplateColumns: `repeat(${cols}, 56px)`,
       }}
     >
       {Array.from({ length: rows }).flatMap((_, i) =>
@@ -247,7 +252,7 @@ function ReadonlyMatrix({
     <div
       className="inline-grid gap-1 p-2 rounded-md border border-accent/40 bg-accent-faint"
       style={{
-        gridTemplateColumns: `repeat(${cols}, minmax(0, 56px))`,
+        gridTemplateColumns: `repeat(${cols}, 56px)`,
       }}
     >
       {Array.from({ length: rows }).flatMap((_, i) =>

@@ -113,7 +113,8 @@ export function OptimizerRace() {
       onReset={() => setSeed((s) => s + 1)}
       resetLabel="Re-run"
     >
-      <div className="grid grid-cols-1 md:grid-cols-[1fr_240px] gap-5">
+      <div className="sim-split" style={{ ['--sim-aside-w' as string]: '240px' }}>
+      <div className="sim-split__grid">
         <div>
           <LossLandscape
             loss={([a, b]) => valley(a, b)}
@@ -148,7 +149,7 @@ export function OptimizerRace() {
           </div>
         </div>
 
-        <div className="space-y-3 font-mono text-[12px]">
+        <div className="sim-split__aside space-y-3 font-mono text-[12px]">
           <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-1">
             Final loss (after {NUM_STEPS} steps)
           </div>
@@ -173,6 +174,7 @@ export function OptimizerRace() {
             height={70}
           />
         </div>
+      </div>
       </div>
     </SimFrame>
   );
@@ -245,7 +247,8 @@ export function MomentumSweep() {
   const trace = useMemo(() => runMomentum(start, beta), [beta]);
   return (
     <SimFrame title="Momentum coefficient β">
-      <div className="grid grid-cols-1 md:grid-cols-[1fr_220px] gap-5">
+      <div className="sim-split" style={{ ['--sim-aside-w' as string]: '220px' }}>
+      <div className="sim-split__grid">
         <div>
           <LossLandscape
             loss={([a, b]) => valley(a, b)}
@@ -261,7 +264,7 @@ export function MomentumSweep() {
             ariaLabel="Momentum trajectory at a chosen beta."
           />
         </div>
-        <div className="space-y-3 font-mono text-[12px]">
+        <div className="sim-split__aside space-y-3 font-mono text-[12px]">
           <div>
             <div className="flex items-baseline justify-between mb-1">
               <span className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono">
@@ -305,6 +308,7 @@ export function MomentumSweep() {
             </p>
           </div>
         </div>
+      </div>
       </div>
     </SimFrame>
   );

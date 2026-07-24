@@ -77,7 +77,8 @@ export function BPETrainer({ preset }: { preset?: CorpusPreset }) {
         </div>
       }
     >
-      <div className="grid grid-cols-1 md:grid-cols-[1fr_320px] gap-6">
+      <div className="sim-split" style={{ ['--sim-aside-w' as string]: '320px' }}>
+      <div className="sim-split__grid">
         {/* Left: per-word symbol state. */}
         <div>
           <div className="flex items-baseline justify-between mb-2">
@@ -141,7 +142,7 @@ export function BPETrainer({ preset }: { preset?: CorpusPreset }) {
         </div>
 
         {/* Right: vocabulary list. */}
-        <div>
+        <div className="sim-split__aside">
           <div className="flex items-baseline justify-between mb-2">
             <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono">
               Vocabulary
@@ -169,6 +170,7 @@ export function BPETrainer({ preset }: { preset?: CorpusPreset }) {
             })}
           </div>
         </div>
+      </div>
       </div>
     </SimFrame>
   );

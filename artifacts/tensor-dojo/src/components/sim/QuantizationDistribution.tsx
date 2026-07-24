@@ -111,7 +111,8 @@ export function QuantizationDistribution() {
         </div>
       }
     >
-      <div className="grid grid-cols-1 md:grid-cols-[1.6fr_1fr] gap-6">
+      <div className="sim-split">
+      <div className="sim-split__grid">
         <div>
           <DistributionStrip
             label={`Original (fp16) — ${N_WEIGHTS.toLocaleString()} distinct values`}
@@ -133,7 +134,7 @@ export function QuantizationDistribution() {
         </div>
 
         {/* Right: memory & error panel */}
-        <div className="border border-border rounded p-4 bg-surface space-y-4">
+        <div className="sim-split__aside border border-border rounded p-4 bg-surface space-y-4">
           <div>
             <div className="flex items-baseline justify-between mb-2">
               <span className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono">
@@ -192,6 +193,7 @@ export function QuantizationDistribution() {
             </div>
           </div>
         </div>
+      </div>
       </div>
 
       <p className="mt-5 pt-4 border-t border-border text-[11px] text-dim font-mono leading-relaxed">

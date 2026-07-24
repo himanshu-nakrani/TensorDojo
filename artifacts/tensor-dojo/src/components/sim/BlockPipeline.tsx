@@ -894,7 +894,8 @@ function DepthView({
       <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono">
         Block depth view ({blockDepth} blocks stacked; toggles apply to every block)
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-[1fr_auto] gap-3">
+      <div className="sim-split">
+      <div className="sim-split__grid">
         <div className="space-y-2">
           {depthOutputs.map((out, b) => (
             <div
@@ -917,7 +918,7 @@ function DepthView({
             </div>
           ))}
         </div>
-        <div className="rounded-lg border border-border bg-bg/30 p-3 min-w-[180px]">
+        <div className="sim-split__aside rounded-lg border border-border bg-bg/30 p-3 min-w-[180px]">
           <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-2">
             Drift from input
           </div>
@@ -942,6 +943,7 @@ function DepthView({
             </div>
           )}
         </div>
+      </div>
       </div>
     </div>
   );

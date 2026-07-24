@@ -588,3 +588,77 @@
 .theme-switching * {
   transition: none !important;
 }
+
+/* ===========================================================================
+   Themed thin scrollbar for horizontally scrollable sim panels (e.g. the
+   matmul explorer). Uses theme tokens so the bar matches light/dark rather
+   than the browser default, which renders a bright track on the dark canvas.
+   =========================================================================== */
+.scroll-x-themed {
+  scrollbar-width: thin; /* Firefox */
+  scrollbar-color: rgb(var(--border-strong)) transparent;
+}
+.scroll-x-themed::-webkit-scrollbar {
+  height: 8px;
+}
+.scroll-x-themed::-webkit-scrollbar-track {
+  background: transparent;
+}
+.scroll-x-themed::-webkit-scrollbar-thumb {
+  background-color: rgb(var(--border-strong));
+  border-radius: 9999px;
+}
+.scroll-x-themed::-webkit-scrollbar-thumb:hover {
+  background-color: rgb(var(--fg-subtle));
+}
+
+/* Vertical sibling of .scroll-x-themed — for panels that scroll on the
+   y-axis (e.g. the lesson workbench aside, which scrolls independently of
+   the reading column). */
+.scroll-y-themed {
+  scrollbar-width: thin; /* Firefox */
+  scrollbar-color: rgb(var(--border-strong)) transparent;
+}
+.scroll-y-themed::-webkit-scrollbar {
+  width: 8px;
+}
+.scroll-y-themed::-webkit-scrollbar-track {
+  background: transparent;
+}
+.scroll-y-themed::-webkit-scrollbar-thumb {
+  background-color: rgb(var(--border-strong));
+  border-radius: 9999px;
+}
+.scroll-y-themed::-webkit-scrollbar-thumb:hover {
+  background-color: rgb(var(--fg-subtle));
+}
+
+/* ===========================================================================
+   Container-query split for sim panels that pair a canvas with a readout
+   column. The lesson workbench docks sims in a narrow (~390px) column, so a
+   viewport `md:` breakpoint wrongly triggers the two-column layout there and
+   crushes the canvas to a sliver. Query the container instead: stack (canvas
+   full-width on top, readouts below) until the container is wide enough.
+   =========================================================================== */
+.sim-split {
+  container-type: inline-size;
+}
+.sim-split__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+/* Let grid cells shrink to fit the panel instead of overflowing — the
+   readout tables and signed-bar rows would otherwise clip on the right. */
+.sim-split__grid > * {
+  min-width: 0;
+}
+/* Two columns only once the container is genuinely wide enough for the
+   canvas *and* the readout column (its width is per-widget via
+   --sim-aside-w, default 16rem). In the ~390px docked workbench this never
+   triggers, so the layout stays stacked and fully readable. */
+@container (min-width: 44rem) {
+  .sim-split__grid {
+    grid-template-columns: minmax(0, 1fr) var(--sim-aside-w, 16rem);
+  }
+}

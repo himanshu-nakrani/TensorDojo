@@ -124,7 +124,8 @@ export function BackpropCrossSection() {
 
   return (
     <SimFrame title="Loss cross-section: a single weight" onReset={reset}>
-      <div className="grid grid-cols-1 md:grid-cols-[1fr_240px] gap-5">
+      <div className="sim-split" style={{ ['--sim-aside-w' as string]: '240px' }}>
+      <div className="sim-split__grid">
         <div>
           <svg
             viewBox={`0 0 ${w} ${h}`}
@@ -171,7 +172,7 @@ export function BackpropCrossSection() {
             <span>+2</span>
           </div>
         </div>
-        <div className="space-y-3 font-mono text-[12px]">
+        <div className="sim-split__aside space-y-3 font-mono text-[12px]">
           <div>
             <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-1">
               Parameter
@@ -221,6 +222,7 @@ export function BackpropCrossSection() {
             </p>
           </div>
         </div>
+      </div>
       </div>
     </SimFrame>
   );

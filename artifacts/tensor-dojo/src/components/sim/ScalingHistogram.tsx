@@ -180,7 +180,8 @@ export function ScalingHistogram({ preset }: { preset?: ScalingHistogramPreset }
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
+        <div className="sim-split">
+        <div className="sim-split__grid">
           <div>
             <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-2">
               Dimension d_k
@@ -232,6 +233,7 @@ export function ScalingHistogram({ preset }: { preset?: ScalingHistogramPreset }
               at any dimension.
             </div>
           </div>
+        </div>
         </div>
       </div>
     </SimFrame>

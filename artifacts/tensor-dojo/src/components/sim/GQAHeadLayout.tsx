@@ -95,7 +95,8 @@ export function GQAHeadLayout() {
         </div>
       }
     >
-      <div className="grid grid-cols-1 md:grid-cols-[1.4fr_1fr] gap-6">
+      <div className="sim-split">
+      <div className="sim-split__grid">
         <HeadDiagram
           nQueryHeads={N_QUERY_HEADS}
           nKvHeads={preset.nKvHeads}
@@ -107,6 +108,7 @@ export function GQAHeadLayout() {
           cacheMHA={cacheMHA}
           ratio={ratio}
         />
+      </div>
       </div>
 
       <p className="mt-5 pt-4 border-t border-border text-[11px] text-dim font-mono leading-relaxed">
@@ -258,7 +260,7 @@ function CacheComparison({
   const currentPct = (cacheCurrent / cacheMHA) * 100;
 
   return (
-    <div className="border border-border rounded p-4 bg-surface">
+    <div className="sim-split__aside border border-border rounded p-4 bg-surface">
       <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-3">
         Per-request KV cache (seq={SEQ_LEN.toLocaleString()}, d
         <sub>head</sub>={D_HEAD}, L={N_LAYERS}, bf16)
