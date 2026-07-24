@@ -110,11 +110,11 @@ export function GradientDescentExplorer() {
     return { grid, max, NX, NY };
   }, []);
 
-  // Color the surface cells. Low loss → teal; high loss → red.
+  // Color the surface cells. Low loss → blue; high loss → red.
   // The fill is a theme token; opacity is computed per cell. Because
   // both --accent and --negative resolve to the same hex in the dark
   // theme as the original rgba constants, dark mode appearance is
-  // preserved. In light mode the tokens resolve to teal-700 / red-700
+  // preserved. In light mode the tokens resolve to blue-600 / red-700
   // so the cells read against the warm off-white.
   //
   // Opacities are rounded to 4 decimal places. Without this, React's

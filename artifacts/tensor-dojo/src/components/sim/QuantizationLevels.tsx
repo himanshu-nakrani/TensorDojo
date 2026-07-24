@@ -80,6 +80,7 @@ export function QuantizationLevels() {
                 key={b}
                 type="button"
                 onClick={() => setBits(b)}
+                aria-pressed={bits === b}
                 className={clsx(
                   'px-2 py-0.5 transition-colors focus-ring',
                   bits === b
@@ -97,6 +98,7 @@ export function QuantizationLevels() {
                 key={m}
                 type="button"
                 onClick={() => setMode(m)}
+                aria-pressed={mode === m}
                 className={clsx(
                   'px-2 py-0.5 transition-colors focus-ring',
                   mode === m
@@ -129,6 +131,7 @@ export function QuantizationLevels() {
               key={d}
               type="button"
               onClick={() => setDistName(d)}
+              aria-pressed={distName === d}
               className={clsx(
                 'px-2 py-1 rounded border transition-colors focus-ring',
                 distName === d

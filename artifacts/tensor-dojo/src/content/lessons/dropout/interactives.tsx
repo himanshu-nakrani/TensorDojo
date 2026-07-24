@@ -18,7 +18,7 @@ export const interactives: readonly InteractiveEntry[] = [
     id: 'dropout-explorer',
     title: 'Dropout explorer',
     description:
-      'A small 2 → 4 → 2 → 1 MLP on a fixed regression task. Pick a dropout probability p. The two training runs start from the same init: dropout-off (dashed gray test loss) and dropout-on (solid green test loss). The diagram below shows one snapshot of the active sub-network.',
+      'A small 2 → 4 → 2 → 1 MLP on a fixed regression task. Pick a dropout probability p. The two training runs start from the same init: dropout-off (dashed gray test loss) and dropout-on (solid blue test loss). The diagram below shows one snapshot of the active sub-network.',
     caption:
       'Dropout-on is noisier per step (each batch uses a different mask) but reaches a lower test loss. Each step "samples" a different sub-network from the exponential ensemble. The reader sees one snapshot of the mask — the actual training uses fresh masks every step.',
     Component: DropoutExplorer,

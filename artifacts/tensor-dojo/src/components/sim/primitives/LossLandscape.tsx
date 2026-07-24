@@ -57,7 +57,7 @@ function toScreenY(y: number): number {
  * Reusable 2D loss surface + overlaid trajectories. Shared
  * by the gradient-descent lesson's centerpiece and the new
  * SGD / optimizer lessons' centerpieces. The colormap is
- * teal (low) → red (high) using the theme's --accent and
+ * blue (low) → red (high) using the theme's --accent and
  * --negative tokens, with opacity scaled by the per-cell
  * value.
  *

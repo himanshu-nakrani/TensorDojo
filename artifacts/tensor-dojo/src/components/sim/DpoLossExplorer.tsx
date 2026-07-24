@@ -2,6 +2,7 @@
 
 import { useMemo, useRef, useState } from 'react';
 import { SimFrame } from '@/components/sim/primitives/SimFrame';
+import { Slider } from '@/components/sim/primitives/Slider';
 import { DPO_BASELINE_LOSS, dpoLoss } from '@/lib/math/dpo';
 
 /**
@@ -86,8 +87,44 @@ export function DpoLossExplorer() {
         }}
       />
 
+      {/* [a11y] Keyboard-operable equivalent to dragging the point:
+          two sliders drive the same r_w / r_l state, so the sim is
+          fully usable without a pointer (the SVG drag was the only
+          way to move the point before). */}
+      <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3">
+        <div>
+          <span className="block mb-2 text-[11px] uppercase tracking-[0.12em] text-dim font-mono">
+            r_w · chosen log-ratio
+          </span>
+          <Slider
+            value={rChosen}
+            min={-2}
+            max={2}
+            step={0.1}
+            onChange={setRChosen}
+            ariaLabel="Chosen completion log-ratio r_w"
+            formatValue={(v) => v.toFixed(1)}
+          />
+        </div>
+        <div>
+          <span className="block mb-2 text-[11px] uppercase tracking-[0.12em] text-dim font-mono">
+            r_l · rejected log-ratio
+          </span>
+          <Slider
+            value={rRejected}
+            min={-2}
+            max={2}
+            step={0.1}
+            onChange={setRRejected}
+            ariaLabel="Rejected completion log-ratio r_l"
+            formatValue={(v) => v.toFixed(1)}
+          />
+        </div>
+      </div>
+
       <div className="mt-3 text-[11px] text-dim font-mono leading-relaxed">
-        Drag the point. <span className="text-accent">Upper-left</span> = chosen winning (low loss).{' '}
+        Drag the point, or use the r_w / r_l sliders.{' '}
+        <span className="text-accent">Upper-left</span> = chosen winning (low loss).{' '}
         <span className="text-[rgb(var(--negative))]">Lower-right</span> = rejected winning (high loss).{' '}
         The loss only sees the *difference* between the two log-ratios.
       </div>
@@ -204,6 +241,12 @@ function LossHeatmap({
       ref={svgRef}
       viewBox={`0 0 ${W} ${H}`}
       width="100%"
+      role="img"
+      aria-label={`DPO loss surface. Point at chosen log-ratio r_w ${rChosen.toFixed(
+        2,
+      )}, rejected log-ratio r_l ${rRejected.toFixed(
+        2,
+      )}. Lower-left is lower loss; drag the point or use the r_w and r_l sliders.`}
       className="block h-auto touch-none cursor-crosshair select-none rounded-md border border-border"
       onPointerDown={handlePointer}
       onPointerMove={handlePointer}

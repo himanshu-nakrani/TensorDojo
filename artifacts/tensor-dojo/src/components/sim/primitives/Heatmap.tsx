@@ -13,8 +13,8 @@ interface HeatmapProps {
   /** Optional column labels (rendered above each column). */
   colLabels?: readonly string[];
   /**
-   * 'accent' (default): single-hue teal; cell intensity = |v| / max.
-   * 'diverging': teal for positive, muted red for negative, neutral at 0.
+   * 'accent' (default): single-hue blue; cell intensity = |v| / max.
+   * 'diverging': blue for positive, muted red for negative, neutral at 0.
    */
   colormap?: HeatmapColormap;
   /** Show the numeric value inside each cell. Default true. */
@@ -46,10 +46,10 @@ interface HeatmapProps {
 }
 
 /**
- * Map |v| / max (∈ [0,1]) to a teal fill. The fill is the theme accent
+ * Map |v| / max (∈ [0,1]) to a blue fill. The fill is the theme accent
  * at varying opacity; opacity is floored at 0.12 so the cell stays
  * visibly darker than the page background in both themes. (On a
- * light bg, a 5% tint of teal disappears entirely into the off-
+ * light bg, a 5% tint of blue disappears entirely into the off-
  * white; the floor prevents that. The visual relationship between
  * low-magnitude and high-magnitude cells is preserved.)
  *
@@ -63,7 +63,7 @@ function accentOpacity(t: number): number {
 }
 
 /**
- * Diverging: positive teal, negative red, 0 transparent. The intensity
+ * Diverging: positive blue, negative red, 0 transparent. The intensity
  * floor (0.15) is the smallest tint that still reads against the
  * background in both themes.
  */

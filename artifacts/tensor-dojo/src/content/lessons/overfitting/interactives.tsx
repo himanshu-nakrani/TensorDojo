@@ -20,7 +20,7 @@ export const interactives: readonly InteractiveEntry[] = [
     description:
       'A polynomial regression toy on a fixed 20-point noisy sin(2x) dataset. Drag the degree slider from 1 to 13; the fitted curve, the training set, and the held-out test set all update live. The bottom panel shows the train and test MSE as a function of degree — the classic U-shape on the test curve.',
     caption:
-      'The gray dashed line is the true sin(2x) curve. The green curve is the polynomial fit. Filled green circles are training points, filled red circles are test points. Below: a single plot that records train loss (green) and test loss (red) for every degree from 1 to 13. The vertical dashed line marks the current degree.',
+      'The gray dashed line is the true sin(2x) curve. The blue curve is the polynomial fit. Filled blue circles are training points, filled red circles are test points. Below: a single plot that records train loss (blue) and test loss (red) for every degree from 1 to 13. The vertical dashed line marks the current degree.',
     Component: OverfittingExplorer,
   },
   {

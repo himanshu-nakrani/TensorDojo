@@ -98,7 +98,7 @@ export function RMSNormCompare() {
             ).toFixed(3)}
           </span>
         </div>
-        <div className="grid grid-cols-8 gap-1 text-[11px] font-mono tabular-nums">
+        <div className="grid grid-cols-4 sm:grid-cols-8 gap-1 text-[11px] font-mono tabular-nums">
           {lnOut.map((v, i) => {
             const d = v - (rnOut[i] as number);
             return (
