@@ -1,9 +1,9 @@
-import { ConceptMapView } from "@/components/concept-graph/ConceptGraphView";
+import { ConceptMapView, layoutGraph } from "@/components/concept-graph/ConceptGraphView";
 import { loadConceptGraph } from "@/lib/content/loaders";
 import { listLessonMeta } from "@/lib/lessons-meta";
 import { buildTrackSections } from "@/lib/content/map-data";
 
-const STATIC_SECTIONS = (() => {
+export const STATIC_SECTIONS = (() => {
   const graph = loadConceptGraph();
   const lessons = listLessonMeta();
   const lessonMeta: Record<string, { title: string; minutes: number }> = {};
@@ -15,6 +15,9 @@ const STATIC_SECTIONS = (() => {
   }
   return buildTrackSections(graph, lessonMeta);
 })();
+
+export const STATIC_GRAPH = layoutGraph(STATIC_SECTIONS);
+export const STATIC_FIRST_SLUG = STATIC_SECTIONS[0]?.lessons[0]?.slug;
 
 export default function MapPage() {
   return (
@@ -40,7 +43,7 @@ export default function MapPage() {
       </header>
 
       <div className="rounded-xl border border-border bg-bg-elevated p-4 sm:p-6 card-surface">
-        <ConceptMapView sections={STATIC_SECTIONS} />
+        <ConceptMapView sections={STATIC_SECTIONS} graph={STATIC_GRAPH} firstSlug={STATIC_FIRST_SLUG} />
       </div>
     </main>
   );
