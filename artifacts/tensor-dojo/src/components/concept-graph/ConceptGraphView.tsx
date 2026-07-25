@@ -92,7 +92,7 @@ interface LaidOutGraph {
   incident: Map<string, Set<string>>;
 }
 
-function layoutGraph(sections: TrackSection[]): LaidOutGraph {
+export function layoutGraph(sections: TrackSection[]): LaidOutGraph {
   const g = new dagre.graphlib.Graph({ multigraph: true });
   g.setGraph({
     rankdir: 'LR',
@@ -240,7 +240,7 @@ interface View {
   k: number;
 }
 
-export function ConceptMapView({ sections }: { sections: TrackSection[] }) {
+export function ConceptMapView({ sections, graph, firstSlug }: { sections: TrackSection[], graph: LaidOutGraph, firstSlug: string | undefined }) {
   const [visited, setVisited] = useState<Set<string>>(() => new Set());
   const [resumeSlug, setResumeSlug] = useState<string | null>(null);
 
@@ -265,7 +265,7 @@ export function ConceptMapView({ sections }: { sections: TrackSection[] }) {
       </div>
 
       <div className="hidden md:block">
-        <MapGraph sections={sections} visited={visited} resumeSlug={resumeSlug} />
+        <MapGraph sections={sections} visited={visited} resumeSlug={resumeSlug} graph={graph} firstSlug={firstSlug} />
         <details className="mt-6">
           <summary className="focus-ring cursor-pointer text-[12px] uppercase tracking-[0.12em] text-fg-muted font-mono hover:text-ink transition-colors">
             Show accessible list view
@@ -285,14 +285,15 @@ function MapGraph({
   sections,
   visited,
   resumeSlug,
+  graph,
+  firstSlug
 }: {
   sections: TrackSection[];
   visited: Set<string>;
   resumeSlug: string | null;
+  graph: LaidOutGraph;
+  firstSlug: string | undefined;
 }) {
-  const graph = useMemo(() => layoutGraph(sections), [sections]);
-  const firstSlug = sections[0]?.lessons[0]?.slug;
-
   const containerRef = useRef<HTMLDivElement>(null);
   const [size, setSize] = useState({ w: 0, h: 0 });
   const [view, setView] = useState<View>({ x: 0, y: 0, k: 1 });

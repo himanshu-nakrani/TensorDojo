@@ -10,3 +10,6 @@
 ## 2025-02-18 - Optimized heavily queried static module access
 **Learning:** Found that core UI layout methods (`PrevNext.tsx`, `LessonCardList.tsx`) and central utility lookups (`getLessonMeta`, `trackForSlug`, `prevNext` in `lib/lessons-meta.ts`) were repeatedly performing O(N) array traversals (`.find()`, `.indexOf()`, `.includes()`, `.flatMap()`) across the same static structures on every UI navigation or re-render.
 **Action:** Always pre-compute static mappings (e.g. `SLUG_TO_META`, `SLUG_TO_TRACK`) in a module so highly accessed registry lookups operate in O(1) time. Avoid performing array traversals (especially nested ones) during runtime renders or navigation events if the underlying lists never change.
+## 2025-02-18 - ConceptGraphView route transition speedup
+**Learning:** Found that `ConceptGraphView.tsx` computed the heavy `dagre` layout for `MapPage.tsx` using `useMemo`. Because `MapPage` is lazy-loaded and remounts entirely across route navigation, `useMemo` cannot cache values across unmounts, resulting in repeated synchronous main-thread layouts when switching pages.
+**Action:** Lift heavy synchronous computations dependent on static modules to the static module scope (e.g. `STATIC_GRAPH` in `MapPage.tsx`) instead of inside React hooks, so they run exactly once at module load time rather than blocking renders.
