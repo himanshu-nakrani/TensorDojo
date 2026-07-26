@@ -1,0 +1,1038 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TensorDojo — Home redesign mockups</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --shell: #0b0f14;
+      --shell-elev: #121820;
+      --shell-line: #1e2936;
+      --shell-ink: #e8eef6;
+      --shell-muted: #8b9bb0;
+      --shell-accent: #60a5fa;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: "IBM Plex Sans", system-ui, sans-serif;
+      background: var(--shell);
+      color: var(--shell-ink);
+      min-height: 100vh;
+    }
+
+    /* ── Reviewer chrome ── */
+    .reviewer {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(11, 15, 20, 0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--shell-line);
+      padding: 12px 20px;
+    }
+    .reviewer-inner {
+      max-width: 1280px; margin: 0 auto;
+      display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px;
+    }
+    .reviewer h1 {
+      font-size: 13px; font-weight: 600; letter-spacing: 0.04em;
+      text-transform: uppercase; color: var(--shell-muted);
+      font-family: "IBM Plex Mono", monospace;
+    }
+    .reviewer h1 span { color: var(--shell-accent); }
+    .tabs { display: flex; flex-wrap: wrap; gap: 6px; margin-left: auto; }
+    .tab {
+      appearance: none; border: 1px solid var(--shell-line);
+      background: transparent; color: var(--shell-muted);
+      font: 500 12px/1 "IBM Plex Mono", monospace;
+      padding: 8px 12px; border-radius: 6px; cursor: pointer;
+      transition: 0.15s ease;
+    }
+    .tab:hover { border-color: #334155; color: var(--shell-ink); }
+    .tab[aria-selected="true"] {
+      background: rgba(96, 165, 250, 0.12);
+      border-color: rgba(96, 165, 250, 0.45);
+      color: var(--shell-accent);
+    }
+    .panel { display: none; }
+    .panel.active { display: block; }
+    .meta {
+      max-width: 1280px; margin: 0 auto; padding: 28px 20px 16px;
+    }
+    .meta h2 { font-size: 1.5rem; font-weight: 600; letter-spacing: -0.02em; margin-bottom: 8px; }
+    .meta p { color: var(--shell-muted); font-size: 15px; line-height: 1.55; max-width: 68ch; }
+    .meta .tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+    .tag {
+      font: 500 11px/1 "IBM Plex Mono", monospace;
+      text-transform: uppercase; letter-spacing: 0.08em;
+      padding: 6px 10px; border-radius: 999px;
+      border: 1px solid var(--shell-line); color: var(--shell-muted);
+    }
+    .tag.good { border-color: rgba(74, 222, 128, 0.35); color: #4ade80; }
+    .tag.warn { border-color: rgba(251, 191, 36, 0.35); color: #fbbf24; }
+    .frame-wrap {
+      max-width: 1280px; margin: 0 auto 48px; padding: 0 20px 40px;
+    }
+    .frame {
+      border: 1px solid var(--shell-line);
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 24px 80px rgba(0,0,0,0.45);
+      background: #020617;
+    }
+    .frame-bar {
+      display: flex; align-items: center; gap: 8px;
+      padding: 10px 14px; background: #0f172a;
+      border-bottom: 1px solid #1e293b;
+    }
+    .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .dot.r { background: #ef4444; } .dot.y { background: #eab308; } .dot.g { background: #22c55e; }
+    .url {
+      margin-left: 8px; flex: 1;
+      font: 400 11px/1 "IBM Plex Mono", monospace;
+      color: #64748b; background: #1e293b; padding: 6px 12px; border-radius: 6px;
+    }
+
+    /* Shared mock nav */
+    .m-nav {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 28px; border-bottom: 1px solid transparent;
+    }
+    .m-brand {
+      display: flex; align-items: center; gap: 8px;
+      font: 500 13px/1 "IBM Plex Mono", monospace;
+    }
+    .m-brand .gem { color: #60a5fa; }
+    .m-links { display: flex; align-items: center; gap: 20px; font-size: 13px; }
+    .m-links a { color: inherit; text-decoration: none; opacity: 0.75; }
+    .m-links a:hover { opacity: 1; }
+    .m-search {
+      font: 400 12px/1 "IBM Plex Mono", monospace;
+      opacity: 0.55; border: 1px solid currentColor; border-radius: 6px;
+      padding: 6px 10px; display: inline-flex; gap: 8px; align-items: center;
+    }
+
+    /* ═══════════ A · DOJO FLOOR ═══════════ */
+    .a-page {
+      background: #020617;
+      color: #e2e8f0;
+      min-height: 860px;
+      position: relative;
+      overflow: hidden;
+    }
+    .a-page::before {
+      content: "";
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse 70% 55% at 70% 55%, rgba(34, 211, 238, 0.12), transparent 60%),
+        radial-gradient(ellipse 40% 40% at 20% 30%, rgba(59, 130, 246, 0.08), transparent 50%),
+        linear-gradient(180deg, transparent 40%, #020617 95%),
+        repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(148,163,184,0.04) 40px),
+        repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(148,163,184,0.04) 40px);
+      pointer-events: none;
+    }
+    .a-page .m-nav { position: relative; z-index: 2; border-bottom-color: rgba(148,163,184,0.08); color: #94a3b8; }
+    .a-page .m-brand { color: #e2e8f0; }
+    .a-hero {
+      position: relative; z-index: 2;
+      display: grid; grid-template-columns: 1fr 1.15fr;
+      gap: 32px; padding: 56px 40px 40px; min-height: 560px; align-items: center;
+    }
+    .a-kicker {
+      font: 500 11px/1 "IBM Plex Mono", monospace;
+      letter-spacing: 0.18em; text-transform: uppercase; color: #22d3ee; margin-bottom: 20px;
+    }
+    .a-title {
+      font-size: clamp(2.4rem, 4vw, 3.4rem); font-weight: 600;
+      letter-spacing: -0.03em; line-height: 1.05; margin-bottom: 18px;
+    }
+    .a-title em {
+      font-style: normal;
+      background: linear-gradient(120deg, #67e8f9, #34d399);
+      -webkit-background-clip: text; background-clip: text; color: transparent;
+    }
+    .a-sub { font-size: 1.05rem; color: #94a3b8; line-height: 1.55; max-width: 36ch; margin-bottom: 28px; }
+    .a-ctas { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 36px; }
+    .btn-a {
+      display: inline-flex; align-items: center; gap: 8px;
+      font: 600 13px/1 "IBM Plex Mono", monospace;
+      padding: 14px 20px; border-radius: 8px; border: none; cursor: pointer;
+    }
+    .btn-a.primary { background: #22d3ee; color: #0f172a; }
+    .btn-a.ghost { background: transparent; color: #e2e8f0; border: 1px solid #334155; }
+    .a-belts {
+      display: flex; gap: 6px; flex-wrap: wrap;
+    }
+    .belt {
+      width: 36px; height: 6px; border-radius: 3px; background: #1e293b;
+    }
+    .belt.on { background: #22d3ee; box-shadow: 0 0 12px rgba(34,211,238,0.5); }
+    .belt-label {
+      font: 400 11px/1 "IBM Plex Mono", monospace; color: #64748b; margin-top: 10px;
+    }
+    .a-floor {
+      position: relative;
+      aspect-ratio: 1.1;
+      border-radius: 16px;
+      border: 1px solid rgba(34, 211, 238, 0.25);
+      background:
+        radial-gradient(circle at 50% 50%, rgba(34,211,238,0.08), transparent 55%),
+        #0b1220;
+      box-shadow:
+        0 0 0 1px rgba(34,211,238,0.08) inset,
+        0 40px 80px rgba(0,0,0,0.5);
+      overflow: hidden;
+    }
+    .a-floor-hud {
+      position: absolute; top: 16px; left: 16px; right: 16px;
+      display: flex; justify-content: space-between;
+      font: 500 10px/1 "IBM Plex Mono", monospace;
+      letter-spacing: 0.12em; text-transform: uppercase; color: #22d3ee;
+    }
+    .a-floor-hud span:last-child { color: #64748b; }
+    .a-canvas {
+      position: absolute; inset: 48px 24px 72px;
+    }
+    .a-canvas svg { width: 100%; height: 100%; }
+    .a-readout {
+      position: absolute; bottom: 16px; left: 16px; right: 16px;
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;
+      font-family: "IBM Plex Mono", monospace; font-size: 11px;
+    }
+    .a-readout div {
+      background: rgba(15,23,42,0.8); border: 1px solid #1e293b;
+      border-radius: 6px; padding: 8px 10px;
+    }
+    .a-readout dt { color: #64748b; font-size: 9px; letter-spacing: 0.1em; margin-bottom: 4px; }
+    .a-readout dd { color: #e2e8f0; font-weight: 600; }
+    .a-readout dd.hot { color: #22d3ee; }
+    .a-path {
+      position: relative; z-index: 2;
+      padding: 0 40px 48px;
+    }
+    .a-path h3 {
+      font: 500 11px/1 "IBM Plex Mono", monospace;
+      letter-spacing: 0.14em; text-transform: uppercase; color: #64748b; margin-bottom: 16px;
+    }
+    .a-path-rail {
+      display: grid; grid-template-columns: repeat(8, 1fr); gap: 8px;
+    }
+    .a-step {
+      border: 1px solid #1e293b; border-radius: 10px; padding: 12px 10px;
+      background: rgba(15,23,42,0.6); min-height: 88px;
+    }
+    .a-step.active { border-color: rgba(34,211,238,0.45); background: rgba(34,211,238,0.06); }
+    .a-step .n { font: 500 10px/1 "IBM Plex Mono", monospace; color: #22d3ee; margin-bottom: 8px; }
+    .a-step .t { font-size: 12px; font-weight: 500; line-height: 1.3; color: #cbd5e1; }
+
+    /* ═══════════ B · LAB NOTEBOOK ═══════════ */
+    .b-page {
+      background: #f6f1e8;
+      color: #1c1917;
+      min-height: 900px;
+      background-image:
+        linear-gradient(rgba(28,25,23,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(28,25,23,0.03) 1px, transparent 1px);
+      background-size: 28px 28px;
+    }
+    .b-page .m-nav { border-bottom-color: rgba(28,25,23,0.08); color: #57534e; }
+    .b-page .m-brand { color: #1c1917; }
+    .b-page .m-brand .gem { color: #1d4ed8; }
+    .b-hero {
+      display: grid; grid-template-columns: 1.15fr 0.95fr;
+      gap: 40px; padding: 48px 44px 36px; align-items: start;
+    }
+    .b-kicker {
+      font: 500 11px/1 "IBM Plex Mono", monospace;
+      letter-spacing: 0.16em; text-transform: uppercase; color: #78716c; margin-bottom: 18px;
+    }
+    .b-title {
+      font-family: "Newsreader", "Instrument Serif", Georgia, serif;
+      font-size: clamp(2.6rem, 4.2vw, 3.6rem);
+      font-weight: 400; letter-spacing: -0.02em; line-height: 1.08;
+      margin-bottom: 16px; color: #1c1917;
+    }
+    .b-title em {
+      font-style: italic; color: #1d4ed8;
+    }
+    .b-sub {
+      font-size: 1.08rem; color: #57534e; line-height: 1.6;
+      max-width: 38ch; margin-bottom: 28px;
+    }
+    .b-ctas { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 28px; }
+    .btn-b {
+      display: inline-flex; align-items: center; gap: 8px;
+      font: 600 14px/1 "IBM Plex Sans", sans-serif;
+      padding: 13px 18px; border-radius: 4px; border: none; cursor: pointer;
+    }
+    .btn-b.primary { background: #1d4ed8; color: #fff; }
+    .btn-b.ghost { background: transparent; color: #1c1917; border: 1px solid #d6d3d1; }
+    .b-note {
+      background: #fffcf7;
+      border: 1px solid #e7e0d4;
+      border-radius: 2px 12px 12px 2px;
+      box-shadow: 4px 8px 0 rgba(28,25,23,0.04), 0 20px 40px rgba(28,25,23,0.06);
+      padding: 22px 22px 18px;
+      position: relative;
+      transform: rotate(0.6deg);
+    }
+    .b-note::before {
+      content: "";
+      position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
+      background: linear-gradient(180deg, #1d4ed8, #60a5fa);
+    }
+    .b-note-label {
+      font: 500 10px/1 "IBM Plex Mono", monospace;
+      letter-spacing: 0.12em; text-transform: uppercase; color: #a8a29e; margin-bottom: 12px;
+    }
+    .b-note h3 {
+      font-family: "Newsreader", Georgia, serif;
+      font-size: 1.25rem; font-weight: 600; margin-bottom: 14px;
+    }
+    .b-note svg { width: 100%; height: auto; display: block; margin-bottom: 12px; }
+    .b-note p {
+      font-family: "IBM Plex Mono", monospace; font-size: 11px;
+      color: #78716c; line-height: 1.5;
+    }
+    .b-cards {
+      padding: 8px 44px 48px;
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;
+    }
+    .b-card {
+      background: #fffcf7;
+      border: 1px solid #e7e0d4;
+      border-radius: 4px;
+      padding: 18px 18px 16px;
+      box-shadow: 0 1px 0 rgba(28,25,23,0.04);
+    }
+    .b-card .num {
+      font: 500 11px/1 "IBM Plex Mono", monospace;
+      color: #1d4ed8; margin-bottom: 10px;
+    }
+    .b-card h4 { font-size: 15px; font-weight: 600; margin-bottom: 8px; letter-spacing: -0.01em; }
+    .b-card p { font-size: 13px; color: #57534e; line-height: 1.5; }
+    .b-ribbon {
+      margin: 0 44px 40px; padding: 14px 18px;
+      border-top: 1px dashed #d6d3d1; border-bottom: 1px dashed #d6d3d1;
+      display: flex; flex-wrap: wrap; gap: 24px;
+      font: 400 12px/1.4 "IBM Plex Mono", monospace; color: #78716c;
+    }
+    .b-ribbon strong { color: #1c1917; font-weight: 600; }
+
+    /* ═══════════ C · MISSION CONTROL ═══════════ */
+    .c-page {
+      background: #0a0e17;
+      color: #dbe4f0;
+      min-height: 920px;
+    }
+    .c-page .m-nav {
+      border-bottom-color: #1a2233; color: #7d8da6;
+      background: #0d121c;
+    }
+    .c-page .m-brand { color: #e8eef8; }
+    .c-body {
+      display: grid;
+      grid-template-columns: 240px 1fr 280px;
+      min-height: 820px;
+    }
+    .c-side {
+      border-right: 1px solid #1a2233;
+      padding: 20px 16px;
+      background: #0d121c;
+    }
+    .c-side h3 {
+      font: 500 10px/1 "IBM Plex Mono", monospace;
+      letter-spacing: 0.14em; text-transform: uppercase; color: #5b6b84;
+      margin-bottom: 14px; padding: 0 8px;
+    }
+    .c-track {
+      display: block; width: 100%; text-align: left;
+      background: transparent; border: none; color: #a8b6cc;
+      padding: 10px 10px; border-radius: 8px; cursor: pointer;
+      font: 500 12px/1.3 "IBM Plex Sans", sans-serif;
+      margin-bottom: 2px;
+    }
+    .c-track:hover { background: rgba(96,165,250,0.06); }
+    .c-track.active {
+      background: rgba(96,165,250,0.1);
+      color: #93c5fd;
+      box-shadow: inset 2px 0 0 #60a5fa;
+    }
+    .c-track .meta-row {
+      display: flex; justify-content: space-between;
+      font: 400 10px/1 "IBM Plex Mono", monospace;
+      color: #5b6b84; margin-top: 4px;
+    }
+    .c-main { padding: 24px 28px; }
+    .c-banner {
+      display: flex; justify-content: space-between; align-items: flex-end;
+      gap: 20px; margin-bottom: 20px;
+    }
+    .c-banner h2 {
+      font-size: 1.65rem; font-weight: 600; letter-spacing: -0.02em; line-height: 1.15;
+    }
+    .c-banner h2 span { color: #60a5fa; }
+    .c-banner p { color: #7d8da6; font-size: 13px; margin-top: 6px; max-width: 42ch; }
+    .c-banner .btn-c {
+      font: 600 12px/1 "IBM Plex Mono", monospace;
+      background: #3b82f6; color: #fff; border: none;
+      padding: 12px 16px; border-radius: 8px; white-space: nowrap;
+    }
+    .c-grid {
+      display: grid; grid-template-columns: 1.2fr 0.9fr; gap: 14px;
+    }
+    .c-panel {
+      background: #111827;
+      border: 1px solid #1e293b;
+      border-radius: 12px;
+      padding: 16px;
+      min-height: 280px;
+    }
+    .c-panel header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 14px;
+      font: 500 10px/1 "IBM Plex Mono", monospace;
+      letter-spacing: 0.12em; text-transform: uppercase; color: #64748b;
+    }
+    .c-panel header .live { color: #4ade80; }
+    .c-heatmap {
+      display: grid; grid-template-columns: repeat(6, 1fr); gap: 4px;
+      aspect-ratio: 1.35;
+    }
+    .c-heatmap i {
+      display: block; border-radius: 3px;
+      background: rgba(59, 130, 246, var(--o, 0.15));
+    }
+    .c-metrics {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+    }
+    .c-metric {
+      background: #0b1220; border: 1px solid #1e293b; border-radius: 8px;
+      padding: 14px 12px;
+    }
+    .c-metric .v {
+      font: 600 1.4rem/1 "IBM Plex Mono", monospace;
+      color: #e2e8f0; letter-spacing: -0.02em;
+    }
+    .c-metric .l {
+      font: 400 10px/1 "IBM Plex Mono", monospace;
+      color: #64748b; letter-spacing: 0.1em; text-transform: uppercase; margin-top: 6px;
+    }
+    .c-right {
+      border-left: 1px solid #1a2233;
+      padding: 20px 16px;
+      background: #0d121c;
+    }
+    .c-continue {
+      background: linear-gradient(160deg, rgba(59,130,246,0.16), rgba(15,23,42,0.4));
+      border: 1px solid rgba(96,165,250,0.35);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+    .c-continue .eyebrow {
+      font: 500 10px/1 "IBM Plex Mono", monospace;
+      letter-spacing: 0.12em; text-transform: uppercase; color: #60a5fa; margin-bottom: 10px;
+    }
+    .c-continue h3 { font-size: 15px; font-weight: 600; margin-bottom: 6px; }
+    .c-continue p { font-size: 12px; color: #7d8da6; line-height: 1.45; margin-bottom: 14px; }
+    .c-continue button {
+      width: 100%; border: none; border-radius: 8px;
+      background: #3b82f6; color: #fff;
+      font: 600 12px/1 "IBM Plex Mono", monospace;
+      padding: 12px; cursor: pointer;
+    }
+    .c-queue .item {
+      padding: 12px 4px; border-bottom: 1px solid #1a2233;
+      font-size: 12px;
+    }
+    .c-queue .item .id {
+      font: 500 10px/1 "IBM Plex Mono", monospace; color: #5b6b84; margin-bottom: 4px;
+    }
+    .c-queue .item .name { color: #cbd5e1; font-weight: 500; }
+
+    /* ═══════════ D · PROOF GALLERY ═══════════ */
+    .d-page {
+      background: #0c1017;
+      color: #e2e8f0;
+      min-height: 920px;
+      position: relative;
+    }
+    .d-page::before {
+      content: "";
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse 50% 40% at 50% 0%, rgba(59,130,246,0.12), transparent 60%);
+      pointer-events: none;
+    }
+    .d-page .m-nav { position: relative; z-index: 2; border-bottom-color: rgba(148,163,184,0.08); color: #94a3b8; }
+    .d-page .m-brand { color: #e2e8f0; }
+    .d-hero {
+      position: relative; z-index: 2;
+      text-align: center; padding: 48px 32px 28px;
+    }
+    .d-kicker {
+      font: 500 11px/1 "IBM Plex Mono", monospace;
+      letter-spacing: 0.18em; text-transform: uppercase; color: #60a5fa; margin-bottom: 16px;
+    }
+    .d-title {
+      font-size: clamp(2.2rem, 4vw, 3.1rem); font-weight: 600;
+      letter-spacing: -0.03em; line-height: 1.08; margin-bottom: 14px;
+      max-width: 18ch; margin-left: auto; margin-right: auto;
+    }
+    .d-title em {
+      font-style: normal;
+      background: linear-gradient(120deg, #93c5fd, #60a5fa);
+      -webkit-background-clip: text; background-clip: text; color: transparent;
+    }
+    .d-sub {
+      font-size: 1.05rem; color: #94a3b8; line-height: 1.55;
+      max-width: 48ch; margin: 0 auto 24px;
+    }
+    .d-ctas { display: flex; justify-content: center; flex-wrap: wrap; gap: 12px; margin-bottom: 36px; }
+    .btn-d {
+      display: inline-flex; align-items: center; gap: 8px;
+      font: 600 13px/1 "IBM Plex Mono", monospace;
+      padding: 13px 18px; border-radius: 8px; border: none; cursor: pointer;
+    }
+    .btn-d.primary { background: #3b82f6; color: #fff; }
+    .btn-d.ghost { background: transparent; color: #e2e8f0; border: 1px solid #334155; }
+    .d-gallery {
+      position: relative; z-index: 2;
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 16px; padding: 0 36px 28px;
+      align-items: end;
+    }
+    .d-card {
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid #1e293b;
+      border-radius: 14px;
+      padding: 14px;
+      backdrop-filter: blur(8px);
+      transition: transform 0.2s ease, border-color 0.2s;
+    }
+    .d-card:nth-child(2) {
+      transform: translateY(-18px);
+      border-color: rgba(96,165,250,0.45);
+      box-shadow: 0 24px 60px rgba(37,99,235,0.18);
+    }
+    .d-card header {
+      display: flex; justify-content: space-between; align-items: center;
+      font: 500 10px/1 "IBM Plex Mono", monospace;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: #64748b; margin-bottom: 12px;
+    }
+    .d-card header .live { color: #60a5fa; }
+    .d-viz {
+      aspect-ratio: 1.25;
+      border-radius: 10px;
+      background: #0b1220;
+      border: 1px solid #1e293b;
+      display: grid; place-items: center;
+      margin-bottom: 12px;
+      overflow: hidden;
+    }
+    .d-card h3 { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+    .d-card p { font-size: 12px; color: #94a3b8; line-height: 1.4; }
+    .d-stats {
+      position: relative; z-index: 2;
+      margin: 8px 36px 40px;
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      gap: 1px; background: #1e293b; border: 1px solid #1e293b; border-radius: 12px; overflow: hidden;
+    }
+    .d-stats div {
+      background: #111827; padding: 18px; text-align: center;
+    }
+    .d-stats .v {
+      font: 600 1.5rem/1 "IBM Plex Mono", monospace; letter-spacing: -0.02em;
+    }
+    .d-stats .l {
+      font: 400 10px/1 "IBM Plex Mono", monospace;
+      letter-spacing: 0.14em; text-transform: uppercase; color: #64748b; margin-top: 8px;
+    }
+    .d-path {
+      position: relative; z-index: 2;
+      padding: 0 36px 48px;
+    }
+    .d-path h3 {
+      font: 500 11px/1 "IBM Plex Mono", monospace;
+      letter-spacing: 0.14em; text-transform: uppercase; color: #64748b; margin-bottom: 14px;
+    }
+    .d-rail {
+      display: flex; gap: 0; align-items: center; overflow-x: auto;
+      padding-bottom: 4px;
+    }
+    .d-node {
+      flex: 0 0 auto;
+      display: flex; align-items: center; gap: 0;
+    }
+    .d-pill {
+      border: 1px solid #1e293b; background: #111827;
+      border-radius: 999px; padding: 8px 14px;
+      font: 500 11px/1 "IBM Plex Mono", monospace; color: #94a3b8;
+      white-space: nowrap;
+    }
+    .d-pill.on { border-color: rgba(96,165,250,0.5); color: #93c5fd; background: rgba(59,130,246,0.1); }
+    .d-line { width: 28px; height: 1px; background: #334155; }
+
+    @media (max-width: 900px) {
+      .a-hero, .b-hero, .c-body, .d-gallery { grid-template-columns: 1fr; }
+      .a-path-rail { grid-template-columns: repeat(4, 1fr); }
+      .b-cards { grid-template-columns: 1fr; }
+      .c-body { grid-template-columns: 1fr; }
+      .c-side, .c-right { display: none; }
+      .d-gallery { grid-template-columns: 1fr; }
+      .d-card:nth-child(2) { transform: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="reviewer">
+    <div class="reviewer-inner">
+      <h1>TensorDojo · <span>Home redesign</span></h1>
+      <div class="tabs" role="tablist" aria-label="Redesign alternatives">
+        <button class="tab" role="tab" aria-selected="true" data-panel="a">A · Dojo Floor</button>
+        <button class="tab" role="tab" aria-selected="false" data-panel="b">B · Lab Notebook</button>
+        <button class="tab" role="tab" aria-selected="false" data-panel="c">C · Mission Control</button>
+        <button class="tab" role="tab" aria-selected="false" data-panel="d">D · Proof Gallery</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ A ════ -->
+  <section class="panel active" id="panel-a" role="tabpanel">
+    <div class="meta">
+      <h2>A — Immersive Dojo Floor</h2>
+      <p>Make the product name literal: the first fold is a training mat. The sim is huge, copy is secondary, and the eight tracks become a belt/path under the floor. Best if you want the brand to feel like a place, not a landing page.</p>
+      <div class="tags">
+        <span class="tag good">Strong brand moment</span>
+        <span class="tag good">Sim-first (core differentiator)</span>
+        <span class="tag warn">Heavy visual; lighter sections need care</span>
+        <span class="tag">Dark · cyan accent</span>
+      </div>
+    </div>
+    <div class="frame-wrap">
+      <div class="frame">
+        <div class="frame-bar">
+          <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+          <div class="url">tensordojo.dev — Dojo Floor</div>
+        </div>
+        <div class="a-page">
+          <nav class="m-nav">
+            <div class="m-brand"><span class="gem">◆</span> tensor dojo</div>
+            <div class="m-links">
+              <a href="#">Lessons</a>
+              <a href="#">Concept map</a>
+              <span class="m-search">Search <kbd>⌘K</kbd></span>
+            </div>
+          </nav>
+          <div class="a-hero">
+            <div>
+              <div class="a-kicker">Training floor · Lesson 01</div>
+              <h1 class="a-title">Step onto the mat.<br />Learn AI by <em>manipulating it.</em></h1>
+              <p class="a-sub">Every concept is something you can move, change, and watch respond. Drag a vector tip. Read the math update.</p>
+              <div class="a-ctas">
+                <button class="btn-a primary">Enter the dojo →</button>
+                <button class="btn-a ghost">Browse all lessons</button>
+              </div>
+              <div class="a-belts">
+                <div class="belt on"></div><div class="belt on"></div><div class="belt"></div>
+                <div class="belt"></div><div class="belt"></div><div class="belt"></div>
+                <div class="belt"></div><div class="belt"></div>
+              </div>
+              <div class="belt-label">Belt 02 of 08 · Foundations of similarity</div>
+            </div>
+            <div class="a-floor">
+              <div class="a-floor-hud">
+                <span>◆ Live · drag a vector tip</span>
+                <span>Lesson 01</span>
+              </div>
+              <div class="a-canvas">
+                <svg viewBox="0 0 320 240" aria-hidden="true">
+                  <defs>
+                    <pattern id="g" width="32" height="32" patternUnits="userSpaceOnUse">
+                      <path d="M 32 0 L 0 0 0 32" fill="none" stroke="rgba(148,163,184,0.12)" stroke-width="1"/>
+                    </pattern>
+                  </defs>
+                  <rect width="320" height="240" fill="url(#g)"/>
+                  <line x1="160" y1="20" x2="160" y2="220" stroke="rgba(148,163,184,0.15)" />
+                  <line x1="20" y1="120" x2="300" y2="120" stroke="rgba(148,163,184,0.15)" />
+                  <line x1="160" y1="120" x2="250" y2="70" stroke="#22d3ee" stroke-width="2.5"/>
+                  <line x1="160" y1="120" x2="110" y2="45" stroke="#67e8f9" stroke-width="2.5"/>
+                  <circle cx="250" cy="70" r="7" fill="#22d3ee"/>
+                  <circle cx="110" cy="45" r="7" fill="#67e8f9"/>
+                  <text x="260" y="68" fill="#e2e8f0" font-family="IBM Plex Mono" font-size="14">a</text>
+                  <text x="96" y="40" fill="#e2e8f0" font-family="IBM Plex Mono" font-size="14">b</text>
+                </svg>
+              </div>
+              <div class="a-readout">
+                <div><dt>|A|</dt><dd>1.52</dd></div>
+                <div><dt>|B|</dt><dd>1.36</dd></div>
+                <div><dt>COS θ</dt><dd>0.106</dd></div>
+                <div><dt>A · B</dt><dd class="hot">0.22</dd></div>
+              </div>
+            </div>
+          </div>
+          <div class="a-path">
+            <h3>Eight belts · reading order</h3>
+            <div class="a-path-rail">
+              <div class="a-step active"><div class="n">01</div><div class="t">Foundations of similarity</div></div>
+              <div class="a-step"><div class="n">02</div><div class="t">How models pick what matters</div></div>
+              <div class="a-step"><div class="n">03</div><div class="t">How tokens become inputs</div></div>
+              <div class="a-step"><div class="n">04</div><div class="t">Building the transformer</div></div>
+              <div class="a-step"><div class="n">05</div><div class="t">What the model says</div></div>
+              <div class="a-step"><div class="n">06</div><div class="t">How models learn</div></div>
+              <div class="a-step"><div class="n">07</div><div class="t">How models don’t memorize</div></div>
+              <div class="a-step"><div class="n">08</div><div class="t">Adapting to new tasks</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════ B ════ -->
+  <section class="panel" id="panel-b" role="tabpanel">
+    <div class="meta">
+      <h2>B — Editorial Lab Notebook</h2>
+      <p>Light, paper-first, academic. Serif headlines and “handwritten” sim frames reframe TensorDojo as a scientific notebook rather than a SaaS landing page. Differentiates hard from every dark-AI product site.</p>
+      <div class="tags">
+        <span class="tag good">Maximum differentiation</span>
+        <span class="tag good">Readable, calm, trustworthy</span>
+        <span class="tag warn">Must still feel interactive, not static</span>
+        <span class="tag">Light · ink blue · paper</span>
+      </div>
+    </div>
+    <div class="frame-wrap">
+      <div class="frame">
+        <div class="frame-bar">
+          <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+          <div class="url">tensordojo.dev — Lab Notebook</div>
+        </div>
+        <div class="b-page">
+          <nav class="m-nav">
+            <div class="m-brand"><span class="gem">◆</span> tensor dojo</div>
+            <div class="m-links">
+              <a href="#">Lessons</a>
+              <a href="#">Concept map</a>
+              <span class="m-search">Search <kbd>⌘K</kbd></span>
+            </div>
+          </nav>
+          <div class="b-hero">
+            <div>
+              <div class="b-kicker">A lab for language models</div>
+              <h1 class="b-title">Learn AI the way scientists learn: by <em>touching the variables.</em></h1>
+              <p class="b-sub">58 interactive lessons. Real math on every page — not animated approximations. Drag a slider, edit a number, watch the formula answer back.</p>
+              <div class="b-ctas">
+                <button class="btn-b primary">Open lesson 01 →</button>
+                <button class="btn-b ghost">Browse the curriculum</button>
+              </div>
+              <div class="b-ribbon" style="margin:0;padding:12px 0;border:none;">
+                <span><strong>58</strong> lessons</span>
+                <span><strong>8</strong> tracks</span>
+                <span><strong>513</strong> tests</span>
+                <span><strong>0</strong> backend deps</span>
+              </div>
+            </div>
+            <div class="b-note">
+              <div class="b-note-label">Fig. 1 · Dot product as alignment</div>
+              <h3>When two vectors agree</h3>
+              <svg viewBox="0 0 280 160" aria-hidden="true">
+                <line x1="20" y1="140" x2="260" y2="140" stroke="#d6d3d1" />
+                <line x1="40" y1="20" x2="40" y2="140" stroke="#d6d3d1" />
+                <line x1="40" y1="140" x2="200" y2="70" stroke="#1d4ed8" stroke-width="2"/>
+                <line x1="40" y1="140" x2="120" y2="40" stroke="#3b82f6" stroke-width="2"/>
+                <circle cx="200" cy="70" r="5" fill="#1d4ed8"/>
+                <circle cx="120" cy="40" r="5" fill="#3b82f6"/>
+                <text x="208" y="68" fill="#1c1917" font-family="IBM Plex Mono" font-size="12">a</text>
+                <text x="108" y="34" fill="#1c1917" font-family="IBM Plex Mono" font-size="12">b</text>
+                <text x="150" y="155" fill="#a8a29e" font-family="IBM Plex Mono" font-size="10">a · b = |a||b| cos θ</text>
+              </svg>
+              <p>Drag either tip. The signed product and cosine update live — same arithmetic the transformer uses.</p>
+            </div>
+          </div>
+          <div class="b-cards">
+            <div class="b-card">
+              <div class="num">01 / Manipulate</div>
+              <h4>Manipulate, don’t memorize.</h4>
+              <p>Change an input, watch the output update. Every formula in every lesson is a live thing on the page.</p>
+            </div>
+            <div class="b-card">
+              <div class="num">02 / Math-honest</div>
+              <h4>Math-honest.</h4>
+              <p>The numbers in the simulators are the real operations on real values — not hand-waved animations.</p>
+            </div>
+            <div class="b-card">
+              <div class="num">03 / No jargon walls</div>
+              <h4>No jargon walls.</h4>
+              <p>New terms are grounded in something you’ve already moved with your hands.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════ C ════ -->
+  <section class="panel" id="panel-c" role="tabpanel">
+    <div class="meta">
+      <h2>C — Mission Control</h2>
+      <p>Skip the marketing page. Returning (and ambitious new) learners land in a dense product shell: track rail, live preview, continue strip, upcoming queue. Highest information density; lowest “landing page” feel.</p>
+      <div class="tags">
+        <span class="tag good">Power-user default</span>
+        <span class="tag good">Resume-first for return visits</span>
+        <span class="tag warn">Can intimidate first-timers</span>
+        <span class="tag">Dark · tool UI</span>
+      </div>
+    </div>
+    <div class="frame-wrap">
+      <div class="frame">
+        <div class="frame-bar">
+          <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+          <div class="url">tensordojo.dev — Mission Control</div>
+        </div>
+        <div class="c-page">
+          <nav class="m-nav">
+            <div class="m-brand"><span class="gem">◆</span> tensor dojo</div>
+            <div class="m-links">
+              <a href="#">Lessons</a>
+              <a href="#">Concept map</a>
+              <span class="m-search">Search <kbd>⌘K</kbd></span>
+            </div>
+          </nav>
+          <div class="c-body">
+            <aside class="c-side">
+              <h3>Tracks</h3>
+              <button class="c-track active">Foundations of similarity
+                <div class="meta-row"><span>01</span><span>3 lessons</span></div>
+              </button>
+              <button class="c-track">How models pick what matters
+                <div class="meta-row"><span>02</span><span>5 lessons</span></div>
+              </button>
+              <button class="c-track">How tokens become inputs
+                <div class="meta-row"><span>03</span><span>5 lessons</span></div>
+              </button>
+              <button class="c-track">Building the transformer
+                <div class="meta-row"><span>04</span><span>10 lessons</span></div>
+              </button>
+              <button class="c-track">What the model says
+                <div class="meta-row"><span>05</span><span>10 lessons</span></div>
+              </button>
+              <button class="c-track">How models learn
+                <div class="meta-row"><span>06</span><span>10 lessons</span></div>
+              </button>
+              <button class="c-track">Don’t memorize
+                <div class="meta-row"><span>07</span><span>5 lessons</span></div>
+              </button>
+              <button class="c-track">Adapting to new tasks
+                <div class="meta-row"><span>08</span><span>10 lessons</span></div>
+              </button>
+            </aside>
+            <main class="c-main">
+              <div class="c-banner">
+                <div>
+                  <h2>Learn AI by <span>manipulating it.</span></h2>
+                  <p>Mission control for 58 interactive lessons — real ops, live figures, zero backend.</p>
+                </div>
+                <button class="btn-c">Start with vectors →</button>
+              </div>
+              <div class="c-grid">
+                <div class="c-panel">
+                  <header>
+                    <span>Preview · Attention scores</span>
+                    <span class="live">● Live</span>
+                  </header>
+                  <div class="c-heatmap" id="heatmap"></div>
+                </div>
+                <div class="c-panel">
+                  <header><span>Curriculum signal</span><span>Live counts</span></header>
+                  <div class="c-metrics">
+                    <div class="c-metric"><div class="v">58</div><div class="l">Lessons</div></div>
+                    <div class="c-metric"><div class="v">8</div><div class="l">Tracks</div></div>
+                    <div class="c-metric"><div class="v">94</div><div class="l">Sims</div></div>
+                    <div class="c-metric"><div class="v">0</div><div class="l">Backend</div></div>
+                  </div>
+                  <p style="margin-top:16px;font-size:12px;color:#7d8da6;line-height:1.5;">
+                    Every figure is React + SVG you can move. Every math module has a co-located test suite.
+                  </p>
+                </div>
+              </div>
+            </main>
+            <aside class="c-right">
+              <div class="c-continue">
+                <div class="eyebrow">Continue training</div>
+                <h3>Dot product as alignment</h3>
+                <p>Lesson 01 · Foundations of similarity. Drag vector tips; watch a · b respond.</p>
+                <button>Resume →</button>
+              </div>
+              <h3 style="font:500 10px/1 'IBM Plex Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:#5b6b84;margin:8px 0 10px;">Up next</h3>
+              <div class="c-queue">
+                <div class="item"><div class="id">02</div><div class="name">Matrix multiplication</div></div>
+                <div class="item"><div class="id">03</div><div class="name">Vector projection</div></div>
+                <div class="item"><div class="id">04</div><div class="name">Softmax</div></div>
+                <div class="item"><div class="id">05</div><div class="name">Attention scores</div></div>
+              </div>
+            </aside>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════ D ════ -->
+  <section class="panel" id="panel-d" role="tabpanel">
+    <div class="meta">
+      <h2>D — Proof Gallery</h2>
+      <p>Show the product three times before asking for a click. A centered headline + staggered multi-sim gallery proves breadth (vectors, attention, loss) while keeping the current dark “Humanist Clarity” DNA. Lowest risk evolution of today.</p>
+      <div class="tags">
+        <span class="tag good">Best incremental ship</span>
+        <span class="tag good">Proves breadth of interactivity</span>
+        <span class="tag warn">Needs 2–3 lightweight hero presets</span>
+        <span class="tag">Dark · blue accent · current tokens</span>
+      </div>
+    </div>
+    <div class="frame-wrap">
+      <div class="frame">
+        <div class="frame-bar">
+          <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+          <div class="url">tensordojo.dev — Proof Gallery</div>
+        </div>
+        <div class="d-page">
+          <nav class="m-nav">
+            <div class="m-brand"><span class="gem">◆</span> tensor dojo</div>
+            <div class="m-links">
+              <a href="#">Lessons</a>
+              <a href="#">Concept map</a>
+              <span class="m-search">Search <kbd>⌘K</kbd></span>
+            </div>
+          </nav>
+          <div class="d-hero">
+            <div class="d-kicker">58 lessons · 94 live sims</div>
+            <h1 class="d-title">Learn AI by <em>manipulating it.</em></h1>
+            <p class="d-sub">Every concept is something you can move, change, and watch respond. Three demos from the curriculum — same math you’ll use inside.</p>
+            <div class="d-ctas">
+              <button class="btn-d primary">Start with vectors →</button>
+              <button class="btn-d ghost">Browse all lessons</button>
+            </div>
+          </div>
+          <div class="d-gallery">
+            <article class="d-card">
+              <header><span class="live">◆ Vectors</span><span>L01</span></header>
+              <div class="d-viz">
+                <svg width="180" height="120" viewBox="0 0 180 120" aria-hidden="true">
+                  <line x1="90" y1="10" x2="90" y2="110" stroke="#334155"/>
+                  <line x1="10" y1="60" x2="170" y2="60" stroke="#334155"/>
+                  <line x1="90" y1="60" x2="145" y2="30" stroke="#60a5fa" stroke-width="2"/>
+                  <line x1="90" y1="60" x2="55" y2="25" stroke="#93c5fd" stroke-width="2"/>
+                  <circle cx="145" cy="30" r="5" fill="#60a5fa"/>
+                  <circle cx="55" cy="25" r="5" fill="#93c5fd"/>
+                </svg>
+              </div>
+              <h3>Dot product</h3>
+              <p>Drag tips. Alignment becomes a number.</p>
+            </article>
+            <article class="d-card">
+              <header><span class="live">◆ Attention</span><span>L05</span></header>
+              <div class="d-viz">
+                <svg width="160" height="120" viewBox="0 0 160 120" aria-hidden="true">
+                  <g id="hm">
+                    <!-- filled by script -->
+                  </g>
+                </svg>
+              </div>
+              <h3>Attention scores</h3>
+              <p>Rotate a query; watch the weight row sharpen.</p>
+            </article>
+            <article class="d-card">
+              <header><span class="live">◆ Loss</span><span>L33</span></header>
+              <div class="d-viz">
+                <svg width="180" height="120" viewBox="0 0 180 120" aria-hidden="true">
+                  <defs>
+                    <radialGradient id="lg" cx="55%" cy="45%" r="50%">
+                      <stop offset="0%" stop-color="#1e3a8a"/>
+                      <stop offset="55%" stop-color="#1e40af"/>
+                      <stop offset="100%" stop-color="#0f172a"/>
+                    </radialGradient>
+                  </defs>
+                  <rect x="10" y="10" width="160" height="100" rx="6" fill="url(#lg)"/>
+                  <circle cx="98" cy="52" r="5" fill="#fbbf24" stroke="#0f172a" stroke-width="1"/>
+                  <path d="M40 90 Q 60 70 75 55 T 98 52" fill="none" stroke="#93c5fd" stroke-width="1.5" stroke-dasharray="3 2"/>
+                </svg>
+              </div>
+              <h3>Loss landscapes</h3>
+              <p>Click the surface. Watch SGD walk downhill.</p>
+            </article>
+          </div>
+          <div class="d-stats">
+            <div><div class="v">58</div><div class="l">Lessons</div></div>
+            <div><div class="v">8</div><div class="l">Tracks</div></div>
+            <div><div class="v">513</div><div class="l">Tests</div></div>
+            <div><div class="v">0</div><div class="l">Backend deps</div></div>
+          </div>
+          <div class="d-path">
+            <h3>Path through the curriculum</h3>
+            <div class="d-rail">
+              <div class="d-node"><span class="d-pill on">01 Similarity</span><span class="d-line"></span></div>
+              <div class="d-node"><span class="d-pill">02 Attention</span><span class="d-line"></span></div>
+              <div class="d-node"><span class="d-pill">03 Tokens</span><span class="d-line"></span></div>
+              <div class="d-node"><span class="d-pill">04 Transformer</span><span class="d-line"></span></div>
+              <div class="d-node"><span class="d-pill">05 Decoding</span><span class="d-line"></span></div>
+              <div class="d-node"><span class="d-pill">06 Training</span><span class="d-line"></span></div>
+              <div class="d-node"><span class="d-pill">07 Regularize</span><span class="d-line"></span></div>
+              <div class="d-node"><span class="d-pill">08 Adapt</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    // Tabs
+    const tabs = document.querySelectorAll(".tab");
+    const panels = {
+      a: document.getElementById("panel-a"),
+      b: document.getElementById("panel-b"),
+      c: document.getElementById("panel-c"),
+      d: document.getElementById("panel-d"),
+    };
+    tabs.forEach((tab) => {
+      tab.addEventListener("click", () => {
+        tabs.forEach((t) => t.setAttribute("aria-selected", "false"));
+        tab.setAttribute("aria-selected", "true");
+        Object.values(panels).forEach((p) => p.classList.remove("active"));
+        panels[tab.dataset.panel].classList.add("active");
+      });
+    });
+
+    // Mission-control heatmap
+    const hm = document.getElementById("heatmap");
+    if (hm) {
+      const vals = [0.15,0.22,0.4,0.7,0.35,0.18, 0.2,0.55,0.85,0.5,0.28,0.2, 0.18,0.3,0.6,0.95,0.55,0.25, 0.12,0.25,0.45,0.65,0.9,0.4, 0.1,0.18,0.3,0.5,0.7,0.85, 0.08,0.12,0.22,0.35,0.5,0.6];
+      vals.forEach((o) => {
+        const i = document.createElement("i");
+        i.style.setProperty("--o", String(o));
+        hm.appendChild(i);
+      });
+    }
+
+    // Proof gallery attention mini heatmap
+    const g = document.querySelector("#hm");
+    if (g) {
+      const cells = [0.2,0.4,0.8,0.3, 0.15,0.7,0.5,0.25, 0.1,0.3,0.9,0.45, 0.12,0.2,0.4,0.75];
+      cells.forEach((o, idx) => {
+        const x = (idx % 4) * 36 + 12;
+        const y = Math.floor(idx / 4) * 26 + 10;
+        const r = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+        r.setAttribute("x", x); r.setAttribute("y", y);
+        r.setAttribute("width", "30"); r.setAttribute("height", "22");
+        r.setAttribute("rx", "3");
+        r.setAttribute("fill", `rgba(96,165,250,${o})`);
+        g.appendChild(r);
+      });
+    }
+  </script>
+</body>
+</html>

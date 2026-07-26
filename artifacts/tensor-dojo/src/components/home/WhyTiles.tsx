@@ -26,9 +26,9 @@ const TILES: readonly Tile[] = [
 ];
 
 /**
- * "Why this works" section. Three editorial tiles, no state, no
- * fills. Type does the work; the bordered cards just provide
- * separation between the three statements.
+ * "Why this works" section — three paper cards in the lab-notebook
+ * voice. Type does the work; the lab-card surface provides quiet
+ * separation without SaaS glass chrome.
  */
 export function WhyTiles() {
   return (
@@ -39,26 +39,21 @@ export function WhyTiles() {
         </div>
         <h2
           id="why-heading"
-          className="text-[1.75rem] sm:text-[2rem] font-semibold text-ink leading-[1.15] tracking-[-0.01em]"
+          className="lab-display text-[1.85rem] sm:text-[2.15rem] text-ink leading-[1.15]"
         >
           A different way to learn the same math.
         </h2>
       </div>
       <ul className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5">
         {TILES.map((tile) => (
-          <li
-            key={tile.eyebrow}
-            className="rounded-xl border border-border bg-bg-elevated p-6 sm:p-7 card-surface"
-          >
-            <div className="text-[12px] uppercase tracking-[0.12em] font-mono text-fg-muted mb-3">
+          <li key={tile.eyebrow} className="lab-card p-6 sm:p-7">
+            <div className="text-[12px] uppercase tracking-[0.12em] font-mono text-accent mb-3">
               {tile.eyebrow}
             </div>
             <h3 className="text-[1.125rem] font-semibold text-ink tracking-[-0.005em] mb-2 leading-snug">
               {tile.headline}
             </h3>
-            <p className="text-[14px] text-muted leading-relaxed">
-              {tile.body}
-            </p>
+            <p className="text-[14px] text-muted leading-relaxed">{tile.body}</p>
           </li>
         ))}
       </ul>

@@ -1,5 +1,3 @@
-
-
 import { useEffect, useState } from 'react';
 import { Link } from 'wouter';
 import { getLastVisited } from '@/lib/progress/visits';
@@ -9,7 +7,7 @@ import { getLessonMeta } from '@/lib/lessons-meta';
  * Single-row resume affordance, rendered only when localStorage
  * actually has a last-visited lesson. First-time visitors see
  * nothing here, which keeps the landing page reading as pure
- * marketing for them.
+ * editorial for them.
  *
  * Lives directly under the hero on `/`. Independent from the
  * full resume card on `/lessons`, which uses the existing
@@ -38,7 +36,7 @@ export function ResumeStrip() {
   return (
     <Link
       href={`/lessons/${entry.meta.slug}`}
-      className="group focus-ring flex items-center justify-between gap-4 rounded-lg border border-accent bg-accent-faint px-5 py-4 transition-colors hover:bg-accent-soft"
+      className="group focus-ring flex items-center justify-between gap-4 rounded border border-accent bg-accent-faint px-5 py-4 transition-colors hover:bg-accent-soft"
       aria-label={`Resume: ${entry.meta.title}`}
     >
       <div className="flex items-center gap-4 min-w-0">

@@ -22,25 +22,29 @@
 
 :root {
   /* Typefaces — "Humanist Clarity": IBM Plex Sans for reading,
-     IBM Plex Mono for labels/code. Consumed by tailwind.config.ts
-     font-sans / font-mono. */
+     IBM Plex Mono for labels/code. Newsreader is the home-page
+     display serif ("lab notebook" editorial voice). Consumed by
+     tailwind.config.ts font-sans / font-mono / font-display. */
   --font-sans: 'IBM Plex Sans';
   --font-mono: 'IBM Plex Mono';
+  --font-display: 'Newsreader';
 
-  /* Surfaces — cool neutral near-white (slate scale) */
-  --bg: 248 250 252;              /* slate-50 page background */
-  --bg-elevated: 255 255 255;     /* card / workbench surface */
-  --bg-code: 241 245 249;         /* slate-100 — inline code, inputs, kbd */
+  /* Surfaces — warm paper-adjacent neutrals (lab notebook light).
+     Still AA-safe with the blue accent; cooler slate lives on as
+     dark-mode canvas. */
+  --bg: 246 241 232;              /* warm paper */
+  --bg-elevated: 255 252 247;     /* cream card / notebook page */
+  --bg-code: 238 232 221;         /* warm code/input well */
 
-  /* Text */
-  --fg: 15 23 42;                 /* slate-900 — headings, ink */
-  --fg-prose: 30 41 59;           /* slate-800 — long-form lesson prose */
-  --fg-muted: 71 85 105;          /* slate-600 — summaries, secondary UI */
-  --fg-subtle: 100 116 139;       /* slate-500 — eyebrows, hints; AA on --bg */
+  /* Text — warm ink, not pure cool slate */
+  --fg: 28 25 23;                 /* stone-900 */
+  --fg-prose: 41 37 36;           /* stone-800 */
+  --fg-muted: 87 83 78;           /* stone-600 */
+  --fg-subtle: 120 113 108;       /* stone-500 */
 
   /* Lines */
-  --border: 226 232 240;          /* slate-200 */
-  --border-strong: 203 213 225;   /* slate-300 */
+  --border: 231 224 212;          /* warm hairline */
+  --border-strong: 214 211 209;   /* stone-300 */
 
   /* The single accent (design-spec §8) — manipulated things only. */
   --accent: 37 99 235;            /* blue-600; ~5.2:1 on --bg */
@@ -70,7 +74,7 @@
   --accent-dim: rgba(37, 99, 235, 0.32);
 
   /* Hover state for the elevated surface. */
-  --bg-elevated-hover: 241 245 249;
+  --bg-elevated-hover: 245 239 230;
 
   /* Glow color for the focus ring on inputs. */
   --accent-shadow: rgba(37, 99, 235, 0.18);
@@ -81,11 +85,11 @@
   /* Subtle top-edge highlight on elevated cards. The dark theme
      uses a faint white inset to suggest light from above; light
      theme uses a faint black inset for the same suggestion. */
-  --shadow-inset: inset 0 1px 0 rgba(15, 23, 42, 0.04);
+  --shadow-inset: inset 0 1px 0 rgba(28, 25, 23, 0.04);
 
   /* Heatmap cell-number halo — matches --bg so text reads on any
      cell tint. Inline-styled as `rgb(var(--cell-halo))`. */
-  --cell-halo: 248 250 252;
+  --cell-halo: 246 241 232;
 
   /* Code blocks — deliberately inverted (dark panel on light page),
      the signature move of the approved "Humanist Clarity" design.
@@ -186,9 +190,71 @@
   border: 0;
 }
 
-/* The former graph-paper body background was retired with the
-   "Humanist Clarity" redesign — the page is a flat, cool near-white
-   (docs-style) so nothing competes with the text. */
+/* Lab-notebook paper grid — home page only. Lessons stay flat so
+   sims and prose don't compete with a graph underlay. */
+.lab-home {
+  background-image:
+    linear-gradient(rgb(var(--fg) / 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(var(--fg) / 0.035) 1px, transparent 1px);
+  background-size: 28px 28px;
+  background-attachment: local;
+}
+:root.dark .lab-home {
+  /* Dark mode: faint cool grid so the notebook metaphor survives
+     without washing out elevated cards. */
+  background-image:
+    linear-gradient(rgb(255 255 255 / 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(255 255 255 / 0.025) 1px, transparent 1px);
+}
+
+/* Home display headings — Newsreader editorial voice. */
+.lab-display {
+  font-family: var(--font-display), Georgia, serif;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  font-optical-sizing: auto;
+}
+
+/* Notebook figure card: cream page + left ink spine + soft paper shadow. */
+.lab-note {
+  position: relative;
+  background: rgb(var(--bg-elevated));
+  border: 1px solid rgb(var(--border));
+  border-radius: 2px 12px 12px 2px;
+  box-shadow:
+    4px 8px 0 rgb(var(--fg) / 0.03),
+    0 18px 40px rgb(var(--fg) / 0.06);
+}
+.lab-note::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  border-radius: 2px 0 0 2px;
+  background: linear-gradient(
+    180deg,
+    rgb(var(--accent)),
+    rgb(var(--accent) / 0.55)
+  );
+}
+:root.dark .lab-note {
+  box-shadow:
+    4px 8px 0 rgb(0 0 0 / 0.2),
+    0 18px 40px rgb(0 0 0 / 0.35);
+}
+
+/* Paper card — slightly softer corners than the app-wide rounded-xl. */
+.lab-card {
+  background: rgb(var(--bg-elevated));
+  border: 1px solid rgb(var(--border));
+  border-radius: 4px;
+  box-shadow: 0 1px 0 rgb(var(--fg) / 0.04);
+}
+:root.dark .lab-card {
+  box-shadow: var(--shadow-inset);
+}
 
 /* Selection — same accent on both themes. */
 ::selection {

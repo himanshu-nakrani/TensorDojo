@@ -7,6 +7,7 @@ import { TRACKS } from '@/lib/lessons-meta';
  * wants the full directory lands directly on the right place.
  *
  * Below the grid sits a single line linking to the concept map.
+ * Cards use the lab-notebook paper surface to match the home voice.
  */
 export function CurriculumGrid() {
   return (
@@ -17,7 +18,7 @@ export function CurriculumGrid() {
         </div>
         <h2
           id="curriculum-heading"
-          className="text-[1.75rem] sm:text-[2rem] font-semibold text-ink leading-[1.15] tracking-[-0.01em]"
+          className="lab-display text-[1.85rem] sm:text-[2.15rem] text-ink leading-[1.15]"
         >
           Eight tracks, in reading order.
         </h2>
@@ -29,7 +30,7 @@ export function CurriculumGrid() {
             <Link
               href={`/lessons#track-${track.id}`}
               aria-label={`${track.label}: ${track.slugs.length} lessons`}
-              className="group focus-ring relative block h-full rounded-xl border border-border bg-bg-elevated p-5 transition-colors hover:border-border-strong hover:bg-bg-elevated-hover"
+              className="group focus-ring relative block h-full lab-card p-5 transition-colors hover:border-border-strong hover:bg-bg-elevated-hover"
             >
               <div className="flex items-baseline justify-between gap-3 mb-2">
                 <span className="text-[11px] uppercase tracking-[0.12em] font-mono text-accent tabular-nums">
