@@ -40,10 +40,15 @@ const config: Config = {
       fontFamily: {
         sans: ['var(--font-sans)', 'ui-sans-serif', 'system-ui', 'sans-serif'],
         mono: ['var(--font-mono)', 'ui-monospace', 'SFMono-Regular', 'monospace'],
+        // Display serif for the home "lab notebook" editorial voice.
+        // Falls back to Georgia if Newsreader hasn't loaded yet.
+        display: ['var(--font-display)', 'Georgia', 'Times New Roman', 'serif'],
       },
       maxWidth: {
         prose: '680px',
         wide: '960px',
+        // Slightly wider canvas for the home hero two-column layout.
+        lab: '1100px',
       },
       fontSize: {
         'prose-base': ['1.0625rem', { lineHeight: '1.75' }],

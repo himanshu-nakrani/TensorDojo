@@ -40,7 +40,7 @@ export function FaqAccordion() {
         </div>
         <h2
           id="faq-heading"
-          className="text-[1.75rem] sm:text-[2rem] font-semibold text-ink leading-[1.15] tracking-[-0.01em]"
+          className="lab-display text-[1.85rem] sm:text-[2.15rem] text-ink leading-[1.15]"
         >
           Before you start.
         </h2>
