@@ -89,7 +89,9 @@ ${colorConfig
       itemConfig.color
     // Sanitize color to prevent CSS injection / XSS (remove chars that break out of rules/tags)
     const sanitizedColor = color?.replace(/[;{}"'<>]/g, '')
-    return sanitizedColor ? `  --color-${key}: ${sanitizedColor};` : null
+    // Sanitize key to prevent CSS injection / XSS (allow only alphanumeric and hyphens/underscores)
+    const sanitizedKey = key.replace(/[^a-zA-Z0-9-_]/g, '')
+    return sanitizedColor && sanitizedKey ? `  --color-${sanitizedKey}: ${sanitizedColor};` : null
   })
   .join("\n")}
 }
