@@ -25,6 +25,7 @@ export function ThemeToggle() {
       aria-label={label}
       title={label}
       className="focus-ring inline-flex h-11 w-11 items-center justify-center rounded-md text-fg-muted hover:text-ink hover:bg-bg-elevated-hover transition-colors"
+      aria-pressed={theme === 'dark'}
     >
       {theme === 'dark' ? <SunIcon /> : <MoonIcon />}
     </button>
