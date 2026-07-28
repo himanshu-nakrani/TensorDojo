@@ -74,6 +74,7 @@ export function GQAHeadLayout() {
                 key={p.label}
                 type="button"
                 onClick={() => setPreset(p)}
+                aria-pressed={preset.label === p.label}
                 className={clsx(
                   'px-2 py-0.5 transition-colors focus-ring',
                   preset.label === p.label
