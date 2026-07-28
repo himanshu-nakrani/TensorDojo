@@ -76,6 +76,7 @@ export function MoERouter() {
                 key={k}
                 type="button"
                 onClick={() => setTopK(k)}
+                aria-pressed={topK === k}
                 className={clsx(
                   'px-2 py-0.5 transition-colors focus-ring',
                   topK === k
