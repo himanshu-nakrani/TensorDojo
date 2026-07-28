@@ -8,3 +8,7 @@
 ## 2024-12-07 - TabIndex for main content wrapper
 **Learning:** React single-page apps using "#main" for skip links may not shift focus appropriately if the `<main>` or `<article>` element lacks a tabindex since they are not natively focusable elements. This causes screen readers to fail shifting focus when the skip link is activated.
 **Action:** Always verify that "Skip to main content" links point to a container with `tabIndex={-1}` applied so that programmatic focus works.
+
+## 2026-07-27 - Adding missing aria-pressed to toggle buttons
+**Learning:** Some custom toggle buttons in the application visually change states to show activation but are missing the `aria-pressed` attribute, so screen readers can't read their current state.
+**Action:** Remember to add `aria-pressed` to any button acting as a toggle switch that is visually styled to show selection (e.g. `ThemeToggle`, `AttentionMatrix` Math toggle).
