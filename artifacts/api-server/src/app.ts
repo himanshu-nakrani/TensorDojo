@@ -11,6 +11,9 @@ import { logger } from "./lib/logger";
 
 const app: Express = express();
 
+// Trust reverse proxy (like Nginx, Google Cloud Run) for accurate client IPs in rate limiting
+app.set("trust proxy", 1);
+
 // Disable x-powered-by header to prevent fingerprinting
 app.disable("x-powered-by");
 
@@ -85,7 +88,9 @@ const corsOrigin = process.env.CORS_ORIGIN || (isProduction ? "" : "*");
 app.use(
   cors({
     origin: isProduction
-      ? (corsOrigin && corsOrigin !== "*" ? corsOrigin.split(",") : false)
+      ? corsOrigin && corsOrigin !== "*"
+        ? corsOrigin.split(",")
+        : false
       : "*",
   }),
 );
