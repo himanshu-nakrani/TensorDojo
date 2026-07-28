@@ -135,6 +135,7 @@ export function AttentionMatrix({ preset }: { preset?: AttentionMatrixPreset }) 
                     ? 'border-accent text-accent'
                     : 'border-border text-muted hover:text-ink',
                 )}
+                aria-pressed={showMath}
               >
                 {showMath ? 'Math: on' : 'Math: off'}
               </button>
