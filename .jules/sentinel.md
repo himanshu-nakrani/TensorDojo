@@ -40,3 +40,7 @@
 **Vulnerability:** XSS/CSS Injection via unsanitized configuration keys used in `<style dangerouslySetInnerHTML>` inside UI chart components.
 **Learning:** Even if the values (like colors) are sanitized, the keys from external/user-provided configuration objects can be exploited if they are directly interpolated into the style string. A malicious object key (e.g., `"</style><script>alert('XSS')</script>": { color: "red" }`) will break out of the `<style>` context and execute arbitrary code.
 **Prevention:** Always sanitize ALL variables (both keys and values) before injecting them into `dangerouslySetInnerHTML`. Use a strict regex (like `/[^a-zA-Z0-9-_]/g`) to strip out any characters that could close tags or rules.
+## 2024-05-16 - [Fix OOM DoS vulnerability in rate limiter]
+**Vulnerability:** The custom in-memory rate limiter in `artifacts/api-server/src/app.ts` used an unbounded Map to track IP requests. This could lead to a Denial of Service (DoS) via Out Of Memory (OOM) crashes if an attacker spoofed IPs or used a botnet to flood the server, causing the Map to grow infinitely.
+**Learning:** In-memory rate limiters must enforce a maximum size or entry limit to prevent memory exhaustion, as malicious actors can easily generate unique cache keys (like IPs).
+**Prevention:** Always bound the size of in-memory caching or tracking structures (like Maps) used for security features or state tracking.

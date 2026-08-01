@@ -35,6 +35,7 @@ app.use((_req: Request, res: Response, next: NextFunction) => {
 const rateLimit = new Map<string, { count: number; resetTime: number }>();
 const RATE_LIMIT_WINDOW_MS = 60 * 1000; // 1 minute
 const RATE_LIMIT_MAX_REQUESTS = 100;
+const RATE_LIMIT_MAX_ENTRIES = 10000; // Prevent OOM by bounding map size
 
 setInterval(() => {
   const now = Date.now();
@@ -49,6 +50,11 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 
   let record = rateLimit.get(ip);
   if (!record || now > record.resetTime) {
+    // Evict oldest entry if we're at the limit to prevent unbounded memory growth
+    if (!record && rateLimit.size >= RATE_LIMIT_MAX_ENTRIES) {
+      const oldestKey = rateLimit.keys().next().value;
+      if (oldestKey) rateLimit.delete(oldestKey);
+    }
     record = { count: 0, resetTime: now + RATE_LIMIT_WINDOW_MS };
     rateLimit.set(ip, record);
   }
