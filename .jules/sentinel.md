@@ -40,3 +40,7 @@
 **Vulnerability:** XSS/CSS Injection via unsanitized configuration keys used in `<style dangerouslySetInnerHTML>` inside UI chart components.
 **Learning:** Even if the values (like colors) are sanitized, the keys from external/user-provided configuration objects can be exploited if they are directly interpolated into the style string. A malicious object key (e.g., `"</style><script>alert('XSS')</script>": { color: "red" }`) will break out of the `<style>` context and execute arbitrary code.
 **Prevention:** Always sanitize ALL variables (both keys and values) before injecting them into `dangerouslySetInnerHTML`. Use a strict regex (like `/[^a-zA-Z0-9-_]/g`) to strip out any characters that could close tags or rules.
+## 2024-08-02 - [Fix CSS Injection in Chart Components]
+**Vulnerability:** CSS injection and potential XSS vulnerability in `ChartStyle` components where colors parsed from chart configs were unsafely injected into a `<style dangerouslySetInnerHTML>` block, using a flawed denylist regex `/[;{}"'<>]/g`.
+**Learning:** Denylist regex sanitizations are inherently risky because they only block known bad characters and can easily miss creative evasion techniques. A strict allowlist is required when interpolating values into `<style>` tags.
+**Prevention:** Always use strict allowlist regexes when sanitizing dynamically injected CSS values. For CSS colors (hex, rgb, hsl), use a regex like `/[^a-zA-Z0-9-_.#(),%\s\/]/g` to ensure only mathematically valid characters pass through while stripping anything that could break out of a CSS rule.
