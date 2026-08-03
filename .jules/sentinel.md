@@ -44,3 +44,7 @@
 **Vulnerability:** CSS injection and potential XSS vulnerability in `ChartStyle` components where colors parsed from chart configs were unsafely injected into a `<style dangerouslySetInnerHTML>` block, using a flawed denylist regex `/[;{}"'<>]/g`.
 **Learning:** Denylist regex sanitizations are inherently risky because they only block known bad characters and can easily miss creative evasion techniques. A strict allowlist is required when interpolating values into `<style>` tags.
 **Prevention:** Always use strict allowlist regexes when sanitizing dynamically injected CSS values. For CSS colors (hex, rgb, hsl), use a regex like `/[^a-zA-Z0-9-_.#(),%\s\/]/g` to ensure only mathematically valid characters pass through while stripping anything that could break out of a CSS rule.
+## 2025-03-09 - Memory Exhaustion DoS in Custom Rate Limiter
+**Vulnerability:** The custom in-memory rate limiter in the Express API server stored IP states in an unbounded `Map`. An attacker could spoof numerous IP addresses or use a botnet, causing the map to grow indefinitely until the server crashes with an Out of Memory (OOM) error.
+**Learning:** Naive in-memory rate limiters must bound their maximum size. Clearing the entire map when full causes a rate-limiting bypass. Evicting the oldest entries (using `map.keys().next().value`) is a safer approach to prevent OOM while maintaining active limits.
+**Prevention:** Always enforce a size limit on in-memory caches or state maps to prevent memory exhaustion DoS attacks.

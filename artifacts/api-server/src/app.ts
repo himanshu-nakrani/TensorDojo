@@ -49,6 +49,15 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 
   let record = rateLimit.get(ip);
   if (!record || now > record.resetTime) {
+    // SECURITY: Prevent Memory Exhaustion (DoS)
+    // If the map grows too large, evict the oldest entry (FIFO) to prevent OOM
+    // while maintaining limits for the most recent clients.
+    if (rateLimit.size >= 10000) {
+      const oldestKey = rateLimit.keys().next().value;
+      if (oldestKey !== undefined) {
+        rateLimit.delete(oldestKey);
+      }
+    }
     record = { count: 0, resetTime: now + RATE_LIMIT_WINDOW_MS };
     rateLimit.set(ip, record);
   }
