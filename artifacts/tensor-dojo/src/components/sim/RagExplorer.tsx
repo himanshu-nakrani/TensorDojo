@@ -5,6 +5,14 @@ import clsx from 'clsx';
 import { SimFrame } from '@/components/sim/primitives/SimFrame';
 import { CORPUS, QUERIES, rankDocs, topK } from '@/lib/math/rag';
 
+// ⚡ Bolt Optimization: Pre-compute static rankings for all queries
+// since QUERIES and CORPUS are static modules, we can avoid O(N) ranking
+// on every query change (and empty-dep useMemo recomputation on remounts).
+const PRECOMPUTED_RANKINGS: Record<string, ReturnType<typeof rankDocs>> = {};
+for (const q of QUERIES) {
+  PRECOMPUTED_RANKINGS[q.id] = rankDocs(q.embedding, CORPUS);
+}
+
 /**
  * Demonstrate retrieval-augmented generation against a toy 10-doc
  * corpus. The user picks one of the preset queries; the centerpiece
@@ -17,10 +25,7 @@ export function RagExplorer() {
   const [k, setK] = useState(3);
 
   const query = QUERIES.find((q) => q.id === queryId)!;
-  const ranked = useMemo(
-    () => rankDocs(query.embedding, CORPUS),
-    [query],
-  );
+  const ranked = PRECOMPUTED_RANKINGS[queryId]!;
   const top = useMemo(() => topK(ranked, k), [ranked, k]);
   const topScore = ranked[0]?.score ?? 0;
 
