@@ -13,3 +13,6 @@
 ## 2025-02-18 - ConceptGraphView route transition speedup
 **Learning:** Found that `ConceptGraphView.tsx` computed the heavy `dagre` layout for `MapPage.tsx` using `useMemo`. Because `MapPage` is lazy-loaded and remounts entirely across route navigation, `useMemo` cannot cache values across unmounts, resulting in repeated synchronous main-thread layouts when switching pages.
 **Action:** Lift heavy synchronous computations dependent on static modules to the static module scope (e.g. `STATIC_GRAPH` in `MapPage.tsx`) instead of inside React hooks, so they run exactly once at module load time rather than blocking renders.
+## 2025-02-18 - RagExplorer static rankings
+**Learning:** `RagExplorer.tsx` was computing retrieval rankings for its static `QUERIES` against the static `CORPUS` inside a `useMemo` that depended on `queryId`. Since `useMemo` re-runs when its dependency changes, switching queries inside the explorer triggered unnecessary heavy computation.
+**Action:** When a simulation's state is strictly derived from selecting between pre-defined static presets (like queries vs a fixed document corpus), compute all possible results once at the module level rather than repeatedly at runtime.
