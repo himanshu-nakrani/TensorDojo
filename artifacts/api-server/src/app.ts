@@ -28,6 +28,7 @@ app.use((_req: Request, res: Response, next: NextFunction) => {
   );
   res.setHeader("Content-Security-Policy", "default-src 'none'");
   res.setHeader("Cache-Control", "no-store");
+  res.setHeader("Referrer-Policy", "no-referrer");
   next();
 });
 
