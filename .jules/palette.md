@@ -12,3 +12,7 @@
 ## 2026-07-27 - Adding missing aria-pressed to toggle buttons
 **Learning:** Some custom toggle buttons in the application visually change states to show activation but are missing the `aria-pressed` attribute, so screen readers can't read their current state.
 **Action:** Remember to add `aria-pressed` to any button acting as a toggle switch that is visually styled to show selection (e.g. `ThemeToggle`, `AttentionMatrix` Math toggle).
+
+## 2024-08-07 - W3C ARIA practices for toggle buttons
+**Learning:** If a button changes its textual label when activated (e.g., from "Play" to "Pause"), it shouldn't also use `aria-pressed`, as the changing label already conveys the state change. A screen reader might read "Pause, toggle button, pressed," which is slightly redundant.
+**Action:** Use `aria-pressed` on toggle buttons primarily when their textual label remains the same but their visual state changes (like selecting a block size).

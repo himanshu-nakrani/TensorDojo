@@ -100,6 +100,7 @@ export function FlashAttentionTiling() {
                   setTileIdx(0);
                   freshness.current = Array.from({ length: N * N }, () => 0);
                 }}
+                aria-pressed={block === b}
                 className={clsx(
                   'px-2 py-0.5 transition-colors focus-ring',
                   block === b
@@ -114,6 +115,7 @@ export function FlashAttentionTiling() {
           <button
             type="button"
             onClick={() => setPlaying((p) => !p)}
+            aria-pressed={playing}
             className="text-[11px] uppercase tracking-[0.12em] font-mono text-muted hover:text-ink focus-ring transition-colors"
           >
             {playing ? 'Pause' : 'Play'}
