@@ -154,8 +154,10 @@ export function getLessonMeta(slug: string): LessonMetaEntry | undefined {
   return SLUG_TO_META.get(slug);
 }
 
+const STATIC_LESSON_SLUGS = manifest.map((l) => l.meta.slug);
+
 export function listLessonSlugs(): string[] {
-  return manifest.map((l) => l.meta.slug);
+  return STATIC_LESSON_SLUGS;
 }
 
 /**

@@ -400,12 +400,16 @@ export function getLessonMeta(slug: string): LessonMeta | undefined {
   return metaBySlug[slug];
 }
 
+// ⚡ Bolt Optimization: Pre-compute static values for O(1) lookups and memory allocation reduction
+const STATIC_LESSON_META = Object.values(metaBySlug);
+const STATIC_LESSON_SLUGS = Object.keys(metaBySlug);
+
 export function listLessonMeta(): readonly LessonMeta[] {
-  return Object.values(metaBySlug);
+  return STATIC_LESSON_META;
 }
 
 export function listLessonSlugs(): string[] {
-  return Object.keys(metaBySlug);
+  return STATIC_LESSON_SLUGS;
 }
 
 export interface InteractiveEntry {

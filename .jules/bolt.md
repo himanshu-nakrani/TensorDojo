@@ -16,3 +16,6 @@
 ## 2025-02-18 - RagExplorer static rankings
 **Learning:** `RagExplorer.tsx` was computing retrieval rankings for its static `QUERIES` against the static `CORPUS` inside a `useMemo` that depended on `queryId`. Since `useMemo` re-runs when its dependency changes, switching queries inside the explorer triggered unnecessary heavy computation.
 **Action:** When a simulation's state is strictly derived from selecting between pre-defined static presets (like queries vs a fixed document corpus), compute all possible results once at the module level rather than repeatedly at runtime.
+## 2025-02-18 - Optimized repeated array mapping in lesson meta lists
+**Learning:** Found that `listLessonMeta()` and `listLessonSlugs()` were doing repeated `Object.values(metaBySlug)`, `Object.keys(metaBySlug)`, and `manifest.map(...)` array allocations on every call, heavily impacting the numerous callers that require these lists.
+**Action:** Always pre-compute static arrays derived from static objects (like `Object.values()` or `.map()` over constants) into module-level constants to avoid O(N) memory allocation and processing overhead on every call.
