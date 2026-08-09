@@ -1,6 +1,5 @@
 
 
-import { useMemo } from 'react';
 import { SimFrame } from '@/components/sim/primitives/SimFrame';
 import {
   chinchillaLoss,
@@ -38,43 +37,38 @@ const REAL_MODELS = [
 
 const BUDGETS_FOR_FRONTIER = [1e20, 3e20, 1e21, 3e21, 1e22, 3e22, 1e23, 3e23, 1e24, 3e24, 1e25];
 
-export function ScalingLawTrade() {
-  const grid = useMemo(() => {
-    const out: Array<Array<{ logN: number; logD: number; loss: number }>> = [];
-    for (let i = 0; i < GRID_D; i++) {
-      const logD = D_MIN_LOG + (i / (GRID_D - 1)) * (D_MAX_LOG - D_MIN_LOG);
-      const row: Array<{ logN: number; logD: number; loss: number }> = [];
-      for (let j = 0; j < GRID_N; j++) {
-        const logN = N_MIN_LOG + (j / (GRID_N - 1)) * (N_MAX_LOG - N_MIN_LOG);
-        row.push({
-          logN,
-          logD,
-          loss: chinchillaLoss(Math.pow(10, logN), Math.pow(10, logD)),
-        });
-      }
-      out.push(row);
+// ⚡ Bolt Optimization: Pre-compute static grids and constants
+// The ScalingLawTrade grid and optimal frontier depend entirely on constants
+// (GRID_N, GRID_D, BUDGETS_FOR_FRONTIER, etc) and pure math functions.
+// Moving them to module scope avoids O(N*D) calculations inside the component body,
+// and prevents remounting from recalculating when moving between pages.
+const STATIC_GRID = (() => {
+  const out: Array<Array<{ logN: number; logD: number; loss: number }>> = [];
+  for (let i = 0; i < GRID_D; i++) {
+    const logD = D_MIN_LOG + (i / (GRID_D - 1)) * (D_MAX_LOG - D_MIN_LOG);
+    const row: Array<{ logN: number; logD: number; loss: number }> = [];
+    for (let j = 0; j < GRID_N; j++) {
+      const logN = N_MIN_LOG + (j / (GRID_N - 1)) * (N_MAX_LOG - N_MIN_LOG);
+      row.push({
+        logN,
+        logD,
+        loss: chinchillaLoss(Math.pow(10, logN), Math.pow(10, logD)),
+      });
     }
-    return out;
-  }, []);
+    out.push(row);
+  }
+  return out;
+})();
 
-  const lossMin = useMemo(
-    () => Math.min(...grid.flat().map((c) => c.loss)),
-    [grid],
-  );
-  const lossMax = useMemo(
-    () => Math.max(...grid.flat().map((c) => c.loss)),
-    [grid],
-  );
+const STATIC_LOSS_MIN = Math.min(...STATIC_GRID.flat().map((c) => c.loss));
+const STATIC_LOSS_MAX = Math.max(...STATIC_GRID.flat().map((c) => c.loss));
 
-  const frontier = useMemo(
-    () =>
-      BUDGETS_FOR_FRONTIER.map((C) => {
-        const o = chinchillaOptimalSplit(C, { nSteps: 400 });
-        return { logN: Math.log10(o.N), logD: Math.log10(o.D), C };
-      }),
-    [],
-  );
+const STATIC_FRONTIER = BUDGETS_FOR_FRONTIER.map((C) => {
+  const o = chinchillaOptimalSplit(C, { nSteps: 400 });
+  return { logN: Math.log10(o.N), logD: Math.log10(o.D), C };
+});
 
+export function ScalingLawTrade() {
   const W = 560;
   const H = 360;
   const PAD_X = 56;
@@ -91,9 +85,9 @@ export function ScalingLawTrade() {
       <div className="border border-border rounded bg-surface p-2 mb-4">
         <svg viewBox={`0 0 ${W} ${H}`} className="w-full" style={{ height: H }}>
           {/* Heatmap cells */}
-          {grid.map((row, i) =>
+          {STATIC_GRID.map((row, i) =>
             row.map((cell, j) => {
-              const t = (cell.loss - lossMin) / (lossMax - lossMin);
+              const t = (cell.loss - STATIC_LOSS_MIN) / (STATIC_LOSS_MAX - STATIC_LOSS_MIN);
               // Low loss = accent (good), high loss = ink dim.
               const accentAlpha = (1 - t) * 0.7 + 0.05;
               return (
@@ -111,7 +105,7 @@ export function ScalingLawTrade() {
 
           {/* Frontier line */}
           <path
-            d={frontier
+            d={STATIC_FRONTIER
               .map((p, i) => `${i === 0 ? 'M' : 'L'} ${xScale(p.logN)} ${yScale(p.logD)}`)
               .join(' ')}
             fill="none"

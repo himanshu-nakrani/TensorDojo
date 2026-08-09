@@ -19,3 +19,6 @@
 ## 2025-02-18 - Optimized repeated array mapping in lesson meta lists
 **Learning:** Found that `listLessonMeta()` and `listLessonSlugs()` were doing repeated `Object.values(metaBySlug)`, `Object.keys(metaBySlug)`, and `manifest.map(...)` array allocations on every call, heavily impacting the numerous callers that require these lists.
 **Action:** Always pre-compute static arrays derived from static objects (like `Object.values()` or `.map()` over constants) into module-level constants to avoid O(N) memory allocation and processing overhead on every call.
+## 2025-02-18 - Pre-compute static ScalingLawTrade grid
+**Learning:** The \`ScalingLawTrade\` component was recalculating a complex static grid inside a \`useMemo\` hook on every component mount, causing unnecessary computation on route transitions. \`useMemo\` cache is lost when components completely remount across page navigation.
+**Action:** Move entirely static computations (that only rely on constants and pure functions) to module scope constants so they are evaluated exactly once upon bundle load, preventing main-thread blocking during navigation.
