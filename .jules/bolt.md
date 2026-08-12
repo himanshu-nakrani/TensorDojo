@@ -22,3 +22,6 @@
 ## 2025-02-18 - Pre-compute static ScalingLawTrade grid
 **Learning:** The \`ScalingLawTrade\` component was recalculating a complex static grid inside a \`useMemo\` hook on every component mount, causing unnecessary computation on route transitions. \`useMemo\` cache is lost when components completely remount across page navigation.
 **Action:** Move entirely static computations (that only rely on constants and pure functions) to module scope constants so they are evaluated exactly once upon bundle load, preventing main-thread blocking during navigation.
+## 2025-02-18 - Optimized sinusoidal positional encoding 1D lookup
+**Learning:** Found an unnecessary O(pos * d) matrix allocation when looking up the positional encoding for a single `pos` in `sinusoidalPE1D` inside a loop (like in `PositionalSineWave.tsx`), resulting in O(N^2 * d) behavior. Reusing batch or matrix functions for single-item lookups is an anti-pattern when it allocates an entire structure only to discard all but one row.
+**Action:** When a math utility function extracts a single row from a generated matrix, rewrite it to directly compute and allocate only the required 1D slice (reducing time and memory complexity from O(pos * d) to O(d)).

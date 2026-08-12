@@ -43,9 +43,20 @@ export function sinusoidalPE(maxPos: number, d: number): number[][] {
 }
 
 /**
- * Compute the PE for a single position. Convenience wrapper around
- * `sinusoidalPE(pos + 1, d)[pos]`.
+ * Compute the PE for a single position in O(d) time, avoiding the O(pos * d)
+ * matrix allocation of the full `sinusoidalPE(pos + 1, d)` call.
  */
 export function sinusoidalPE1D(pos: number, d: number): number[] {
-  return sinusoidalPE(pos + 1, d)[pos] ?? new Array<number>(d).fill(0);
+  if (d <= 0 || d % 2 !== 0) {
+    throw new Error(`sinusoidalPE: d must be a positive even integer (got ${d})`);
+  }
+  const row = new Array<number>(d);
+  const halfD = d / 2;
+  for (let i = 0; i < halfD; i += 1) {
+    const denom = Math.pow(PE_BASE, i / halfD);
+    const angle = pos / denom;
+    row[2 * i] = Math.sin(angle);
+    row[2 * i + 1] = Math.cos(angle);
+  }
+  return row;
 }
