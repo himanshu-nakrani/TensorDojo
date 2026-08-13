@@ -8,9 +8,8 @@ import { listLessonMeta, TRACKS } from '@/lib/lessons-meta';
  * - `band`    — bordered 4-cell strip (legacy layout; still available)
  *
  * Lesson and track counts are computed from the manifest so the
- * strip never drifts when lessons are added. The test count and
- * "no backend" claim are static — they change rarely and a stale
- * test count is less misleading than a wrong lesson count.
+ * strip never drifts when lessons are added. The quality claim is
+ * intentionally non-numeric so it cannot drift from the test runner.
  */
 export function StatsStrip({
   variant = 'inline',
@@ -23,7 +22,7 @@ export function StatsStrip({
   const stats: readonly { value: string; label: string }[] = [
     { value: String(lessonCount), label: 'lessons' },
     { value: String(trackCount), label: 'tracks' },
-    { value: '513', label: 'tests' },
+    { value: 'Math', label: 'backed by tests' },
     { value: '0', label: 'backend deps' },
   ];
 

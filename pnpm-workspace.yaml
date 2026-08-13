@@ -4,6 +4,9 @@ packages:
   - lib/integrations/*
   - scripts
 
+allowBuilds:
+  esbuild: true
+
 autoInstallPeers: false
 
 catalog:
@@ -64,7 +67,12 @@ overrides:
   '@tailwindcss/oxide>@tailwindcss/oxide-linux-x64-musl': '-'
   '@tailwindcss/oxide>@tailwindcss/oxide-win32-arm64-msvc': '-'
   '@tailwindcss/oxide>@tailwindcss/oxide-win32-x64-msvc': '-'
-  esbuild: 0.27.3
+  esbuild: 0.28.2
+  js-yaml: 4.3.1
+  fast-uri: 3.1.5
+  brace-expansion: 5.0.9
+  postcss: 8.5.26
+  nanoid: 3.3.18
   esbuild>@esbuild/aix-ppc64: '-'
   esbuild>@esbuild/android-arm: '-'
   esbuild>@esbuild/android-arm64: '-'

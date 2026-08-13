@@ -201,14 +201,15 @@ and serves the app in the preview pane.
 Production build and quality gates:
 
 ```bash
-pnpm --filter @workspace/tensor-dojo run build       # vite build
-pnpm --filter @workspace/tensor-dojo run serve       # preview the built app
-pnpm --filter @workspace/tensor-dojo run typecheck   # strict TS, no emit
+pnpm run build                                      # typecheck + tests + production build
+pnpm run test                                      # all active math tests
+pnpm --filter @workspace/tensor-dojo run serve      # preview the built app
+pnpm run typecheck                                  # strict TS, no emit
 ```
 
-Requires Node 18+ and pnpm 9+. The dev server reads `PORT` and
-`BASE_PATH` from the environment (both are set automatically by the
-workspace workflow).
+Requires Node 18+ and pnpm 9+. `PORT` and `BASE_PATH` are optional for local
+runs and default to `5173` and `/`; managed workflows may override them. See
+`artifacts/tensor-dojo/.env.example` for the local template.
 
 ---
 
@@ -331,7 +332,6 @@ The curriculum is complete enough to launch. What's still ahead:
 
 - Per-lesson quizzes (a `<Check>` MDX component, ungated)
 - Capstone notebooks: take the toy sims into real Hugging Face / PyTorch
-- Wiring the math test suites back into a test runner (Vitest) in the monorepo
 - Analytics + an actual launch post
 
 Issues and PRs welcome.

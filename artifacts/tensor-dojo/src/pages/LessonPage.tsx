@@ -32,23 +32,41 @@ function LessonContent({ slug }: { slug: string }) {
   const [lessonModule, setLessonModule] = useState<{ default: React.ComponentType } | null>(null);
   const [interactives, setInteractives] = useState<readonly InteractiveEntry[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
+    let cancelled = false;
     setLoading(true);
+    setError(null);
     setLessonModule(null);
     setInteractives([]);
 
     const loader = mdxLessonLoaders[slug];
     if (!loader) {
       setLoading(false);
-      return;
+      setError(new Error('This lesson is not available.'));
+      return () => {
+        cancelled = true;
+      };
     }
 
-    Promise.all([loader(), loadLessonInteractives(slug)]).then(([mod, ints]) => {
-      setLessonModule(mod);
-      setInteractives(ints);
-      setLoading(false);
-    });
+    Promise.all([loader(), loadLessonInteractives(slug)])
+      .then(([mod, ints]) => {
+        if (cancelled) return;
+        setLessonModule(mod);
+        setInteractives(ints);
+      })
+      .catch((cause: unknown) => {
+        if (cancelled) return;
+        setError(cause instanceof Error ? cause : new Error('The lesson could not be loaded.'));
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
   }, [slug]);
 
   if (loading) {
@@ -56,6 +74,24 @@ function LessonContent({ slug }: { slug: string }) {
       <LessonShell title={meta.title} minutes={meta.minutes} summary={meta.summary}>
         <div className="flex items-center justify-center py-32">
           <div className="text-muted text-sm font-mono">Loading lesson…</div>
+        </div>
+      </LessonShell>
+    );
+  }
+
+  if (error) {
+    return (
+      <LessonShell title={meta.title} minutes={meta.minutes} summary={meta.summary}>
+        <div className="mx-auto flex max-w-xl flex-col items-center gap-4 py-32 text-center">
+          <p className="text-sm font-mono uppercase tracking-[0.16em] text-muted">Unable to load lesson</p>
+          <p className="text-sm text-fg-muted">{error.message}</p>
+          <button
+            type="button"
+            className="rounded border border-border px-4 py-2 text-sm font-mono text-ink transition-colors hover:bg-bg-elevated"
+            onClick={() => window.location.reload()}
+          >
+            Retry
+          </button>
         </div>
       </LessonShell>
     );
