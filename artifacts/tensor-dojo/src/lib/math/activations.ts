@@ -38,7 +38,9 @@ export function silu(x: number): number {
 
 /** Two-channel gated SwiGLU: `silu(a) * b`. */
 export function swiglu(a: number, b: number): number {
-  return silu(a) * b;
+  const result = silu(a) * b;
+  // Avoid exposing IEEE-754 negative zero in UI readouts and serialized values.
+  return result === 0 ? 0 : result;
 }
 
 // ---------------------------------------------------------------
