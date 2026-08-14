@@ -29,6 +29,7 @@ app.use((_req: Request, res: Response, next: NextFunction) => {
   res.setHeader("Content-Security-Policy", "default-src 'none'");
   res.setHeader("Cache-Control", "no-store");
   res.setHeader("Referrer-Policy", "no-referrer");
+  res.setHeader("Permissions-Policy", "geolocation=(), microphone=(), camera=()");
   next();
 });
 
@@ -105,8 +106,9 @@ app.use(
   }),
 );
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+// SECURITY: Limit request body size to prevent DoS (Memory Exhaustion)
+app.use(express.json({ limit: "10mb" }));
+app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
 app.use("/api", router);
 

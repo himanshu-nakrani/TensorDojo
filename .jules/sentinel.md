@@ -48,3 +48,7 @@
 **Vulnerability:** The custom in-memory rate limiter in the Express API server stored IP states in an unbounded `Map`. An attacker could spoof numerous IP addresses or use a botnet, causing the map to grow indefinitely until the server crashes with an Out of Memory (OOM) error.
 **Learning:** Naive in-memory rate limiters must bound their maximum size. Clearing the entire map when full causes a rate-limiting bypass. Evicting the oldest entries (using `map.keys().next().value`) is a safer approach to prevent OOM while maintaining active limits.
 **Prevention:** Always enforce a size limit on in-memory caches or state maps to prevent memory exhaustion DoS attacks.
+## 2025-03-09 - Express JSON Body Size Limit and Permissions Policy
+**Vulnerability:** Missing request body size limits (`express.json()` and `express.urlencoded()`) and the `Permissions-Policy` header in the Express API server.
+**Learning:** Default limits in middleware can sometimes be too large or not explicit enough. Setting an explicit reasonable limit (e.g., 10mb) helps mitigate memory exhaustion DoS attacks. Also, modern security headers like `Permissions-Policy` should be explicitly set to reduce the application's attack surface.
+**Prevention:** Always set an explicit `limit` on body parsing middleware and include comprehensive security headers in Express applications.
