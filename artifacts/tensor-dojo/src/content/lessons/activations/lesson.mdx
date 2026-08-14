@@ -1,5 +1,6 @@
 import { MathCode } from '@/components/lesson/MathCode';
 import { Callout } from '@/components/lesson/Callout';
+import { Check } from '@/components/lesson/Check';
 
 ## Why a "bend" matters
 
@@ -91,6 +92,18 @@ That is what the second interactive shows.
 <Callout title="The gate makes some features disappear" targetInteractive="swiglu-gate">
   Set $b = 1.5$ (a real signal). Drag $a$ from $+3$ down to $-3$. At $a = 3$, the gate is $\operatorname{SiLU}(3) \approx 2.86$, and the output is roughly $4.3 \cdot$ the signal. At $a = 0$, the gate is $0$ and the output collapses to $0$ regardless of $b$. At $a = -3$, the gate is small and slightly negative — the signal is suppressed and softly inverted. This is the trick: the same FFN that "thinks" about features also chooses which features survive the layer.
 </Callout>
+
+<Check
+  question="If a = 0 in SwiGLU(a, b) = SiLU(a) · b, what happens to the output?"
+  options={[
+    'It becomes b, because SiLU(0) = 1.',
+    'It becomes 0, regardless of b.',
+    'It becomes negative, because the gate flips the signal.',
+    'It cannot be determined without knowing W₂.',
+  ]}
+  answer={1}
+  explanation="SiLU(0) = 0, so the elementwise product is zero for any value of b. The gate can suppress a feature completely before W₂ projects the hidden vector back to model space."
+/>
 
 ## Cost vs benefit
 
