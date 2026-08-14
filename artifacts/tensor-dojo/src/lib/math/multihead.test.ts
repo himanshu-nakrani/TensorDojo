@@ -42,4 +42,28 @@ describe('multiHeadAttention', () => {
     expect(out.length).toBe(2);
     expect(out[0]!.length).toBe(2);
   });
+
+  it('matches explicit identity projections in the optimized default path', () => {
+    const Q = [[1, 0, 0, 1], [0, 1, 1, 0]];
+    const K = [[0.5, 1, 0, 0.5], [1, 0.5, 0.5, 1]];
+    const V = [[1, 2, 3, 4], [4, 3, 2, 1]];
+    const identity = Array.from({ length: 4 }, (_, row) =>
+      Array.from({ length: 4 }, (_, col) => (row === col ? 1 : 0)),
+    );
+
+    const optimized = multiHeadAttention({ Q, K, V, h: 2, causal: true });
+    const explicit = multiHeadAttention({
+      Q,
+      K,
+      V,
+      h: 2,
+      causal: true,
+      Wq: identity,
+      Wk: identity,
+      Wv: identity,
+      Wout: identity,
+    });
+
+    expect(optimized).toEqual(explicit);
+  });
 });

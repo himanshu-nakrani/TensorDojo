@@ -52,15 +52,11 @@ export function multiHeadAttention(
   }
   const dK = dModel / h;
 
-  const Wq = input.Wq ?? identityMatrix(dModel);
-  const Wk = input.Wk ?? identityMatrix(dModel);
-  const Wv = input.Wv ?? identityMatrix(dModel);
-  const Wout = input.Wout ?? identityMatrix(dModel);
-
-  // Project to d_model (in the unprojected case, this is a no-op).
-  const Qp = matMul(Q, Wq);
-  const Kp = matMul(K, Wk);
-  const Vp = matMul(V, Wv);
+  // Default projections are identity transforms. Reuse the caller's matrices
+  // instead of allocating identity matrices and multiplying by them.
+  const Qp = input.Wq ? matMul(Q, input.Wq) : Q;
+  const Kp = input.Wk ? matMul(K, input.Wk) : K;
+  const Vp = input.Wv ? matMul(V, input.Wv) : V;
 
   // Reshape into heads: [n, d_model] -> [n, h, d_k] -> [h, n, d_k]
   const splitHeads = (X: readonly (readonly number[])[]): number[][][] => {
@@ -114,14 +110,6 @@ export function multiHeadAttention(
       }
     }
   }
-  // Project out
-  return matMul(concat, Wout);
-}
-
-function identityMatrix(n: number): number[][] {
-  const m: number[][] = Array.from({ length: n }, () =>
-    new Array<number>(n).fill(0),
-  );
-  for (let i = 0; i < n; i += 1) m[i]![i] = 1;
-  return m;
+  // The default output projection is also identity.
+  return input.Wout ? matMul(concat, input.Wout) : concat;
 }
