@@ -1,6 +1,6 @@
 
 
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import clsx from 'clsx';
 import { SimFrame } from '@/components/sim/primitives/SimFrame';
 import { cacheBytes, generateNaive, generateWithCache } from '@/lib/math/kvcache';
@@ -28,18 +28,31 @@ const DEFAULT_INDEX = 6; // 256
 
 type Scale = 'log' | 'linear';
 
+// ⚡ Bolt Optimization: Pre-compute static costs for all sequence lengths
+// Since SEQ_STEPS is static, we can avoid O(N) calculation in generateNaive()
+// inside a useMemo on every mount. This converts slide updates and route
+// navigation into simple O(1) object lookups.
+const STATIC_COSTS = (() => {
+  const costs: Record<number, { naive: number; cached: number; ratio: number; cacheGB: number }> = {};
+  for (const seq of SEQ_STEPS) {
+    const naive = generateNaive(seq, D_MODEL).total;
+    const cached = generateWithCache(seq, D_MODEL).total;
+    costs[seq] = {
+      naive,
+      cached,
+      ratio: naive / cached,
+      cacheGB: cacheBytes(seq, D_MODEL, N_LAYERS, BYTES_PER_EL) / 1024 ** 3,
+    };
+  }
+  return costs;
+})();
+
 export function KVCacheCostChart() {
   const [seqIndex, setSeqIndex] = useState(DEFAULT_INDEX);
   const [scale, setScale] = useState<Scale>('log');
   const seqLen = SEQ_STEPS[seqIndex]!;
 
-  const { naive, cached, ratio, cacheGB } = useMemo(() => {
-    const naive = generateNaive(seqLen, D_MODEL).total;
-    const cached = generateWithCache(seqLen, D_MODEL).total;
-    const ratio = naive / cached;
-    const cacheGB = cacheBytes(seqLen, D_MODEL, N_LAYERS, BYTES_PER_EL) / 1024 ** 3;
-    return { naive, cached, ratio, cacheGB };
-  }, [seqLen]);
+  const { naive, cached, ratio, cacheGB } = STATIC_COSTS[seqLen]!;
 
   // Bar widths: in log mode both bars are normalized by log(naive);
   // in linear mode by naive. Log mode makes the polynomial shape
