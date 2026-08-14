@@ -24,6 +24,13 @@ test('zero-attempt mastery records are not shown as mastered', async ({ page }) 
   await expect(page.getByText(/Mastered ·/i)).toHaveCount(0);
 });
 
+test('shareable interactive state reopens the requested workbench panel', async ({ page }) => {
+  await page.goto('/lessons/activations?interactive=swiglu-gate');
+  const panel = page.getByRole('button', { name: /SwiGLU: silu\(a\) gates b/i });
+  await expect(panel).toHaveAttribute('aria-expanded', 'true');
+  await expect(page.getByRole('button', { name: /Copy lesson link/i })).toBeVisible();
+});
+
 test('activation lesson loads the assessment and feedback loop', async ({ page }) => {
   await page.goto('/lessons/activations');
   await expect(page.getByRole('heading', { name: /Activations: the bend/i })).toBeVisible();
