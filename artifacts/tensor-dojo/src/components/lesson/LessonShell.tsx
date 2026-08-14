@@ -4,6 +4,7 @@ interface LessonShellProps {
   title: string;
   minutes: number;
   summary: string;
+  objectives?: readonly string[];
   children: ReactNode;
 }
 
@@ -18,6 +19,7 @@ export function LessonShell({
   title,
   minutes,
   summary,
+  objectives,
   children,
 }: LessonShellProps) {
   return (
@@ -38,6 +40,16 @@ export function LessonShell({
         <p className="text-xl text-muted font-medium leading-relaxed max-w-[640px]">
           {summary}
         </p>
+        {objectives && objectives.length > 0 && (
+          <section className="mt-6 rounded-md border border-border bg-surface px-4 py-3" aria-labelledby="lesson-objectives">
+            <h2 id="lesson-objectives" className="text-[11px] uppercase tracking-[0.14em] font-mono text-accent">
+              By the end of this lesson
+            </h2>
+            <ul className="mt-2 grid gap-1 text-sm leading-relaxed text-fg-muted">
+              {objectives.map((objective) => <li key={objective}>• {objective}</li>)}
+            </ul>
+          </section>
+        )}
       </header>
       {children}
     </article>

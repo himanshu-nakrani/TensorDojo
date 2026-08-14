@@ -29,4 +29,7 @@ test('activation lesson loads the assessment and feedback loop', async ({ page }
   await expect(feedback).toContainText('Correct.');
   await expect(feedback).toContainText('SiLU(0) = 0');
   await expect(page.getByRole('button', { name: /Try again/i })).toBeVisible();
+
+  await page.reload();
+  await expect(page.getByText(/Mastered · 1 attempt/i)).toBeVisible();
 });

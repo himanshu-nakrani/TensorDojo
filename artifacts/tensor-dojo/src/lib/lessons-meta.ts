@@ -77,6 +77,7 @@ export interface LessonMetaEntry {
     summary: string;
     minutes: number;
     order: number;
+    objectives?: readonly string[];
   };
 }
 

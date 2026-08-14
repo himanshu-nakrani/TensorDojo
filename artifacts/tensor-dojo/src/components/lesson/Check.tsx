@@ -1,6 +1,8 @@
-import { useId, useState } from 'react';
+import { useEffect, useId, useState } from 'react';
+import { getCheckResult, recordCheck, type CheckResult } from '@/lib/progress/mastery';
 
 interface CheckProps {
+  id: string;
   question: string;
   options: readonly string[];
   answer: number;
@@ -11,10 +13,15 @@ interface CheckProps {
  * A lightweight, local-only knowledge check for lesson MDX.
  * It deliberately does not block exploration or require an account.
  */
-export function Check({ question, options, answer, explanation }: CheckProps) {
+export function Check({ id, question, options, answer, explanation }: CheckProps) {
   const groupId = useId();
   const [selected, setSelected] = useState<number | null>(null);
   const [submitted, setSubmitted] = useState(false);
+  const [savedResult, setSavedResult] = useState<CheckResult | null>(null);
+
+  useEffect(() => {
+    setSavedResult(getCheckResult(id));
+  }, [id]);
 
   const isCorrect = submitted && selected === answer;
 
@@ -58,12 +65,22 @@ export function Check({ question, options, answer, explanation }: CheckProps) {
         })}
       </div>
 
+      {savedResult?.correct && !submitted && (
+        <p className="mt-3 text-xs font-mono text-green-700 dark:text-green-300" role="status">
+          Mastered · {savedResult.attempts} {savedResult.attempts === 1 ? 'attempt' : 'attempts'}
+        </p>
+      )}
+
       {!submitted ? (
         <button
           type="button"
           className="focus-ring mt-4 rounded-md bg-accent px-4 py-2 text-[12px] font-mono uppercase tracking-[0.1em] text-white enabled:hover:bg-accent-hover disabled:cursor-not-allowed disabled:opacity-50"
           disabled={selected === null}
-          onClick={() => setSubmitted(true)}
+          onClick={() => {
+            const correct = selected === answer;
+            setSubmitted(true);
+            setSavedResult(recordCheck(id, correct));
+          }}
         >
           Check answer
         </button>

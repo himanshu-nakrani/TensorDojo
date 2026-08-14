@@ -83,6 +83,7 @@ export interface LessonMeta {
   summary: string;
   minutes: number;
   order: number;
+  objectives?: readonly string[];
 }
 
 const metaBySlug: Readonly<Record<string, LessonMeta>> = {
