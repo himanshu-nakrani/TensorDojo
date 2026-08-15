@@ -13,6 +13,17 @@ test('unknown lesson routes render the not-found page', async ({ page }) => {
   await expect(page.getByRole('link', { name: /← Home/i })).toBeVisible();
 });
 
+test('zero-attempt mastery records are not shown as mastered', async ({ page }) => {
+  await page.addInitScript(() => {
+    localStorage.setItem('tld-mastery', JSON.stringify({
+      'activations.swiglu-zero-gate': { correct: true, attempts: 0, lastAttemptAt: Date.now() },
+    }));
+  });
+  await page.goto('/lessons/activations');
+  await expect(page.getByRole('heading', { name: /If a = 0 in SwiGLU/i })).toBeVisible();
+  await expect(page.getByText(/Mastered ·/i)).toHaveCount(0);
+});
+
 test('activation lesson loads the assessment and feedback loop', async ({ page }) => {
   await page.goto('/lessons/activations');
   await expect(page.getByRole('heading', { name: /Activations: the bend/i })).toBeVisible();

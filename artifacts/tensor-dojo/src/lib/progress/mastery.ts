@@ -23,7 +23,8 @@ function readRaw(): Mastery {
         typeof result.attempts === 'number' &&
         Number.isFinite(result.attempts) &&
         typeof result.lastAttemptAt === 'number' &&
-        Number.isFinite(result.lastAttemptAt)
+        Number.isFinite(result.lastAttemptAt) &&
+        result.attempts > 0
       ) {
         out[key] = {
           correct: result.correct,
