@@ -1,0 +1,34 @@
+import { Callout } from '@/components/lesson/Callout';
+import { Check } from '@/components/lesson/Check';
+
+## The parameter is not the whole memory bill
+
+A parameter may have a gradient and one or more optimizer moments. With Adam-like optimization, the auxiliary states can be several times larger than the weights themselves. Replicating all of that on every rank wastes the very memory that distributed training is meant to provide.
+
+## Shard different stages
+
+ZeRO-style systems partition optimizer states, gradients, and eventually parameters across workers. Fully sharded data parallel training gathers the needed parameter shards for a computation, then releases or reshards them. The logical model remains one set of weights even though no single device owns the whole state all the time.
+
+## Memory saved becomes communication
+
+Sharding reduces persistent memory but requires collectives to materialize parameters or gradients at the right moments. The design question is not whether communication exists; it is whether communication is cheaper than running a smaller model or a smaller batch.
+
+$$
+M_{\text{replicated}} \approx R(P + G + O) \quad \text{vs.} \quad M_{\text{sharded}} \approx P + G + O
+$$
+
+<Callout title="Work the idea" targetInteractive="memory-sharding">
+Use the **Memory Sharding Lab** workbench to vary one quantity at a time. Before moving the control, write down what you expect to change and what should remain fixed. Then compare the result with the equation above.
+</Callout>
+
+<Check
+  id="zero-and-fsdp.core-idea"
+  question={"Which training state can be sharded in ZeRO/FSDP-style systems?"}
+  options={["Parameters, gradients, and optimizer states.", "Only the tokenizer vocabulary.", "Only the final logits.", "Only the random seed."]}
+  answer={0}
+  explanation={"These methods reduce per-device memory by distributing parameters, gradients, and optimizer states across the data-parallel workers."}
+/>
+
+## Recap
+
+The central idea is **ZeRO and FSDP**. The implementation detail matters because it changes what the model can learn, how much memory or compute the system needs, or how confidently we can interpret its behavior. Keep the equation visible, name the controlled variables, and treat every benchmark or safeguard as part of the model’s operating definition.

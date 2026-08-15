@@ -1,0 +1,34 @@
+import { Callout } from '@/components/lesson/Callout';
+import { Check } from '@/components/lesson/Check';
+
+## Generation is an uneven workload
+
+Training batches are usually rectangular: every example contributes the same number of positions to a step. Autoregressive serving is ragged. One request may finish after ten tokens while another continues for a thousand. A static batch either pads the short request or waits for the long one.
+
+## Admit work as slots open
+
+Continuous batching treats active sequences as a changing set. When one request finishes, another can enter the batch at a safe scheduling boundary. The server must track per-request state, fair scheduling, maximum context, and cancellation without corrupting the shared attention computation.
+
+## Latency and throughput are different objectives
+
+A scheduler that maximizes tokens per second may delay a short request; a scheduler that minimizes tail latency may leave compute unused. Use the cost chart to identify which quantity improves when batch occupancy rises, and which quantity can get worse.
+
+$$
+\text{throughput} = \frac{\text{generated tokens}}{\text{wall-clock time}}
+$$
+
+<Callout title="Work the idea" targetInteractive="continuous-batching">
+Use the **Batching Throughput Lab** workbench to vary one quantity at a time. Before moving the control, write down what you expect to change and what should remain fixed. Then compare the result with the equation above.
+</Callout>
+
+<Check
+  id="continuous-batching.core-idea"
+  question={"What is the main reason continuous batching improves serving utilization?"}
+  options={["New requests can fill slots as earlier requests finish.", "All requests are forced to have the same length.", "It eliminates the KV cache.", "It changes the model weights for each user."]}
+  answer={0}
+  explanation={"Continuous batching keeps the batch populated despite different request completion times, reducing idle compute and padding waste."}
+/>
+
+## Recap
+
+The central idea is **Continuous batching**. The implementation detail matters because it changes what the model can learn, how much memory or compute the system needs, or how confidently we can interpret its behavior. Keep the equation visible, name the controlled variables, and treat every benchmark or safeguard as part of the model’s operating definition.

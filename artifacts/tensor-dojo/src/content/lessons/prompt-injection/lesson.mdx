@@ -1,0 +1,34 @@
+import { Callout } from '@/components/lesson/Callout';
+import { Check } from '@/components/lesson/Check';
+
+## The model sees a sequence
+
+System messages, user requests, retrieved pages, emails, and tool results may all become tokens in one context. The model can learn patterns that make imperative text look authoritative even when it came from an untrusted document. The boundary humans see in the application may be weak inside the sequence.
+
+## Defense in depth
+
+Prompt delimiters and explicit labels help, but robust systems also constrain tools, validate arguments, minimize privileges, filter outputs, and require confirmation for consequential actions. No single string such as “ignore previous instructions” is the whole threat model; the risk comes from granting a model authority over actions while mixing trusted and untrusted text.
+
+## Test the boundary adversarially
+
+Use the toggles to compare a plain prompt with isolation and tool-validation layers. Ask which layer catches an injection and which layer merely makes it less likely. Security claims should be tied to an explicit threat model and an observable control.
+
+$$
+\text{trusted instruction} \ne \text{untrusted content}
+$$
+
+<Callout title="Work the idea" targetInteractive="instruction-boundary">
+Use the **Instruction Boundary Lab** workbench to vary one quantity at a time. Before moving the control, write down what you expect to change and what should remain fixed. Then compare the result with the equation above.
+</Callout>
+
+<Check
+  id="prompt-injection.core-idea"
+  question={"Why is prompt injection primarily a system-design problem?"}
+  options={["The model may mix untrusted text with instructions while holding tool authority.", "A longer system prompt makes all tools safe.", "Injection only changes font size.", "Retrieved text cannot influence generation."]}
+  answer={0}
+  explanation={"When untrusted content enters the same model context as instructions and the model can take actions, isolation and authorization must be enforced beyond wording alone."}
+/>
+
+## Recap
+
+The central idea is **Prompt injection**. The implementation detail matters because it changes what the model can learn, how much memory or compute the system needs, or how confidently we can interpret its behavior. Keep the equation visible, name the controlled variables, and treat every benchmark or safeguard as part of the model’s operating definition.

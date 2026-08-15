@@ -1,0 +1,34 @@
+import { Callout } from '@/components/lesson/Callout';
+import { Check } from '@/components/lesson/Check';
+
+## A cache is a growing tensor
+
+During decoding, each new token adds a key and value vector for every layer and head. If requests have different lengths, a dense allocation sized for the maximum wastes space. If the server repeatedly moves cache rows to make them contiguous, memory copies become a hidden bottleneck.
+
+## Use a block table
+
+Paged attention divides the cache into fixed-size blocks and keeps a logical-to-physical block table for each sequence. The attention kernel follows the table when reading keys and values. Sequences can grow by claiming another block, and completed sequences release their blocks for reuse.
+
+## Fragmentation becomes visible
+
+The block size trades internal slack against metadata and kernel complexity. Small blocks reduce unused tail space but increase bookkeeping; large blocks make indexing simpler but can waste more memory for short requests. The workbench makes that tradeoff concrete.
+
+$$
+\text{blocks} = \left\lceil \frac{\text{tokens}}{\text{block size}} \right\rceil
+$$
+
+<Callout title="Work the idea" targetInteractive="paged-kv-cache">
+Use the **Paged KV Cache** workbench to vary one quantity at a time. Before moving the control, write down what you expect to change and what should remain fixed. Then compare the result with the equation above.
+</Callout>
+
+<Check
+  id="paged-attention.core-idea"
+  question={"Why does paged attention use fixed-size cache blocks?"}
+  options={["To reuse memory flexibly as requests grow and finish.", "To make every prompt exactly the same length.", "To avoid storing keys and values.", "To force all attention heads to share one vector."]}
+  answer={0}
+  explanation={"Fixed-size blocks allow variable-length requests to allocate and release cache memory without repeatedly moving a large contiguous tensor."}
+/>
+
+## Recap
+
+The central idea is **Paged attention**. The implementation detail matters because it changes what the model can learn, how much memory or compute the system needs, or how confidently we can interpret its behavior. Keep the equation visible, name the controlled variables, and treat every benchmark or safeguard as part of the model’s operating definition.

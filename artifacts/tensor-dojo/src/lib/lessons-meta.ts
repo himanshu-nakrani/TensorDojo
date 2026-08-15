@@ -69,6 +69,28 @@ import { meta as evaluationMeta } from '@/content/lessons/evaluation/meta';
 import { meta as instructionTuningRlhfMeta } from '@/content/lessons/instruction-tuning-rlhf/meta';
 import { meta as dpoMeta } from '@/content/lessons/dpo/meta';
 import { meta as distillationMeta } from '@/content/lessons/distillation/meta';
+import { meta as DataPipelineMeta } from '@/content/lessons/data-pipeline/meta';
+import { meta as DataMixturesMeta } from '@/content/lessons/data-mixtures/meta';
+import { meta as DataDeduplicationMeta } from '@/content/lessons/data-deduplication/meta';
+import { meta as ContextLengthMeta } from '@/content/lessons/context-length/meta';
+import { meta as DistributedDataParallelMeta } from '@/content/lessons/distributed-data-parallel/meta';
+import { meta as TensorParallelismMeta } from '@/content/lessons/tensor-parallelism/meta';
+import { meta as PipelineParallelismMeta } from '@/content/lessons/pipeline-parallelism/meta';
+import { meta as ZeroAndFsdpMeta } from '@/content/lessons/zero-and-fsdp/meta';
+import { meta as ContinuousBatchingMeta } from '@/content/lessons/continuous-batching/meta';
+import { meta as PagedAttentionMeta } from '@/content/lessons/paged-attention/meta';
+import { meta as PrefixCachingMeta } from '@/content/lessons/prefix-caching/meta';
+import { meta as RewardModelingMeta } from '@/content/lessons/reward-modeling/meta';
+import { meta as PpoRlhfMeta } from '@/content/lessons/ppo-rlhf/meta';
+import { meta as ConstitutionalAiMeta } from '@/content/lessons/constitutional-ai/meta';
+import { meta as RlaifMeta } from '@/content/lessons/rlaif/meta';
+import { meta as BenchmarkDesignMeta } from '@/content/lessons/benchmark-design/meta';
+import { meta as CalibrationMeta } from '@/content/lessons/calibration/meta';
+import { meta as HallucinationAndGroundingMeta } from '@/content/lessons/hallucination-and-grounding/meta';
+import { meta as PromptInjectionMeta } from '@/content/lessons/prompt-injection/meta';
+import { meta as RedTeamingMeta } from '@/content/lessons/red-teaming/meta';
+import { meta as InterpretabilityMeta } from '@/content/lessons/interpretability/meta';
+import { meta as MultimodalTransformersMeta } from '@/content/lessons/multimodal-transformers/meta';
 
 export interface LessonMetaEntry {
   meta: {
@@ -140,6 +162,28 @@ const manifest: readonly LessonMetaEntry[] = [
   { meta: instructionTuningRlhfMeta },
   { meta: dpoMeta },
   { meta: distillationMeta },
+  { meta: DataPipelineMeta },
+  { meta: DataMixturesMeta },
+  { meta: DataDeduplicationMeta },
+  { meta: ContextLengthMeta },
+  { meta: DistributedDataParallelMeta },
+  { meta: TensorParallelismMeta },
+  { meta: PipelineParallelismMeta },
+  { meta: ZeroAndFsdpMeta },
+  { meta: ContinuousBatchingMeta },
+  { meta: PagedAttentionMeta },
+  { meta: PrefixCachingMeta },
+  { meta: RewardModelingMeta },
+  { meta: PpoRlhfMeta },
+  { meta: ConstitutionalAiMeta },
+  { meta: RlaifMeta },
+  { meta: BenchmarkDesignMeta },
+  { meta: CalibrationMeta },
+  { meta: HallucinationAndGroundingMeta },
+  { meta: PromptInjectionMeta },
+  { meta: RedTeamingMeta },
+  { meta: InterpretabilityMeta },
+  { meta: MultimodalTransformersMeta },
 ];
 
 // ⚡ Bolt Optimization: Pre-compute slug to meta mapping for O(1) lookups
@@ -264,6 +308,20 @@ export const TRACKS: readonly LessonTrack[] = [
     description:
       'Take a pretrained model and steer it: full fine-tuning, freezing, LoRA, quantization, RLHF.',
     slugs: ['pretraining-vs-finetuning', 'freezing-vs-full-finetuning', 'catastrophic-forgetting', 'quantization', 'lora', 'qlora', 'evaluation', 'instruction-tuning-rlhf', 'dpo', 'distillation'],
+  },
+  {
+    id: 'scaling-model-systems',
+    label: 'Scaling model systems',
+    description:
+      'Data pipelines, distributed training, memory sharding, and serving systems that make large models practical.',
+    slugs: ['data-pipeline', 'data-mixtures', 'data-deduplication', 'context-length', 'distributed-data-parallel', 'tensor-parallelism', 'pipeline-parallelism', 'zero-and-fsdp', 'continuous-batching', 'paged-attention', 'prefix-caching'],
+  },
+  {
+    id: 'alignment-evaluation-safety',
+    label: 'Alignment, evaluation, and safety',
+    description:
+      'Reward models, evaluation design, grounding, interpretability, and the safeguards around capable language models.',
+    slugs: ['reward-modeling', 'ppo-rlhf', 'constitutional-ai', 'rlaif', 'benchmark-design', 'calibration', 'hallucination-and-grounding', 'prompt-injection', 'red-teaming', 'interpretability', 'multimodal-transformers'],
   },
 ];
 

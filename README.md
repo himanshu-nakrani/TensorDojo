@@ -7,7 +7,7 @@
 > **Learn how LLMs work by manipulating them.** Every concept is something you
 > can drag, edit, or step through — with the math underneath you can read.
 
-![lessons](https://img.shields.io/badge/lessons-58-blue)
+![lessons](https://img.shields.io/badge/lessons-80-blue)
 ![Vite](https://img.shields.io/badge/Vite-7-646cff)
 ![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178c6)
 ![React](https://img.shields.io/badge/React-19-61dafb)
@@ -17,9 +17,9 @@
   <img src="docs/screenshots/readme/dark/01-home.png" alt="TensorDojo landing page — Learn AI by manipulating it. A live dot-product demo with two draggable 2D vectors sits on the right of the hero." width="100%">
 </p>
 
-58 interactive lessons across 8 tracks. From the dot product at lesson 1
+80 interactive lessons across 10 tracks. From the dot product at lesson 1
 through attention, the transformer block, training mechanics, regularization,
-RAG, LoRA, DPO, and distillation. No videos. No backend. Every figure is
+RAG, distributed systems, alignment, safety, LoRA, DPO, and distillation. No videos. No backend. Every figure is
 React + SVG you can move; every math module has a co-located test suite.
 
 ---
@@ -46,7 +46,7 @@ thing you're manipulating**.
 
 ## What's inside
 
-Eight tracks, in reading order:
+Ten tracks, in reading order:
 
 | # | Track | Lessons | Sample of what you can move |
 |---|-------|:-------:|------------------------------|
@@ -58,11 +58,13 @@ Eight tracks, in reading order:
 | 6 | How models learn | 10 | Gradient descent η, optimizer race, LR schedule, mixed-precision underflow, checkpoint anchors |
 | 7 | How models don't memorize | 5 | Polynomial degree, weight decay λ, dropout p, BN batch stats |
 | 8 | Adapting models to new tasks | 10 | Layer freeze toggle, quantization bits, LoRA rank, QLoRA memory bars, DPO loss surface |
+| 9 | Scaling model systems | 11 | Data budgets, distributed replicas, pipeline stages, cache blocks |
+| 10 | Alignment, evaluation, and safety | 11 | Reward margins, policy updates, benchmark slices, grounding and safeguards |
 
-Total: **58 lessons, 94 lesson-specific sims, ~10 hours of reading**.
+Total: **80 lessons, 116 lesson-specific sims, ~14 hours of reading**.
 
 <details>
-<summary><strong>Full lesson list (58, in reading order)</strong></summary>
+<summary><strong>Full lesson list (80, in reading order)</strong></summary>
 
 **Foundations of similarity**
 1. Dot product as alignment
@@ -138,25 +140,50 @@ Total: **58 lessons, 94 lesson-specific sims, ~10 hours of reading**.
 57. DPO: skip the reward model
 58. Distillation: small model learns from big model
 
+**Scaling model systems**
+59. Data pipelines: the model only learns what arrives
+60. Data mixtures: choosing what the model sees
+61. Data deduplication: stop counting the same lesson twice
+62. Context length: the quadratic bill comes due
+63. Distributed data parallel: replicas share gradients
+64. Tensor parallelism: split one matrix across devices
+65. Pipeline parallelism: make layers flow like an assembly line
+66. ZeRO and FSDP: shard the state, not the idea
+67. Continuous batching: keep the GPU fed
+68. Paged attention: memory blocks for irregular sequences
+69. Prefix caching: reuse the prompt you already paid for
+
+**Alignment, evaluation, and safety**
+70. Reward models: turn preferences into a scalar
+71. PPO for RLHF: improve without moving too far
+72. Constitutional AI: critique against written principles
+73. RLAIF: when the judge is another model
+74. Benchmark design: what exactly did you measure?
+75. Calibration: confidence should mean something
+76. Hallucination and grounding: fluent is not the same as true
+77. Prompt injection: instructions can arrive as data
+78. Red teaming: search for the model’s sharp edges
+79. Interpretability: inspect the path from token to logit
+80. Multimodal transformers: put images and text in one sequence
+
 </details>
 
-The `/map` page shows the same eight tracks as columns of a single SVG
+The `/map` page shows the same ten tracks as columns of a single SVG
 canvas. In-track arrows are short verticals; cross-track prerequisites
 are dashed accent arcs. Your last-visited lesson is highlighted as the
 resume point.
 
 <p align="center">
-  <img src="docs/screenshots/readme/light/map.png" alt="Concept map: eight columns, one per track, with cross-track prerequisite arcs drawn as dashed accent curves." width="100%">
+  <img src="docs/screenshots/readme/light/map.png" alt="Concept map: ten columns, one per track, with cross-track prerequisite arcs drawn as dashed accent curves." width="100%">
 </p>
 
 ## How to use it
 
 - **Start at lesson 1** if you're new — the curriculum builds.
 - **Cmd-K** (or **Ctrl-K**) opens a search palette from anywhere; jump to
-  any of the 58 by title, summary, or track.
-- **Concept map** (`/map`) shows the eight tracks as columns with cross-track
-  prerequisite arcs; useful when you want to land on a specific topic and
-  follow its dependencies backward.
+  any of the 80 by title, summary, or track.
+- **Concept map** (`/map`) shows the ten tracks as columns with cross-track prerequisite arcs; useful when you want to land on a specific topic and
+follow its dependencies backward.
 - **Resume point** is highlighted on `/` and `/map` from `localStorage` —
   no account, no backend.
 - **←/→** navigates prev/next within a lesson when no input is focused.
@@ -203,7 +230,7 @@ Production build and quality gates:
 ```bash
 pnpm run build                                      # typecheck + manifest check + tests + production build
 pnpm run test                                      # all active math tests
-pnpm run validate:lessons                           # verify all 58 lesson registries
+pnpm run validate:lessons                           # verify all 80 lesson registries
 pnpm run benchmark:math                             # run tensor-operation baselines
 pnpm run test:e2e:install                            # install Chromium for browser tests
 pnpm run test:e2e                                   # run browser regression tests
@@ -219,7 +246,7 @@ runs and default to `5173` and `/`; managed workflows may override them. See
 
 ## Adding a new lesson
 
-The pattern used for all 58 live lessons — no speculation. Paths below
+The pattern used for all 80 live lessons — no speculation. Paths below
 are relative to `artifacts/tensor-dojo/src/`.
 
 <details>
