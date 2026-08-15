@@ -38,19 +38,35 @@ export function multiHeadAttention(
   input: MultiHeadAttentionInput,
 ): number[][] {
   const { Q, K, V, h, causal } = input;
+  if (!Number.isInteger(h) || h <= 0) {
+    throw new Error(`multiHeadAttention: h must be a positive integer (got ${h})`);
+  }
   const n = Q.length;
+  if (n === 0) {
+    throw new Error('multiHeadAttention: Q, K, and V must contain at least one row');
+  }
   if (K.length !== n || V.length !== n) {
     throw new Error(
       `multiHeadAttention: Q, K, V must have the same length (got ${Q.length}, ${K.length}, ${V.length})`,
     );
   }
   const dModel = Q[0]!.length;
+  if (dModel === 0) {
+    throw new Error('multiHeadAttention: d_model must be greater than zero');
+  }
+  validateTensor('Q', Q, n, dModel);
+  validateTensor('K', K, n, dModel);
+  validateTensor('V', V, n, dModel);
   if (dModel % h !== 0) {
     throw new Error(
       `multiHeadAttention: d_model must be divisible by h (got ${dModel} / ${h})`,
     );
   }
   const dK = dModel / h;
+  validateProjection('Wq', input.Wq, dModel);
+  validateProjection('Wk', input.Wk, dModel);
+  validateProjection('Wv', input.Wv, dModel);
+  validateProjection('Wout', input.Wout, dModel);
 
   // Default projections are identity transforms. Reuse the caller's matrices
   // instead of allocating identity matrices and multiplying by them.
@@ -112,4 +128,35 @@ export function multiHeadAttention(
   }
   // The default output projection is also identity.
   return input.Wout ? matMul(concat, input.Wout) : concat;
+}
+
+function validateTensor(
+  name: string,
+  tensor: readonly (readonly number[])[],
+  rows: number,
+  cols: number,
+): void {
+  if (tensor.length !== rows) {
+    throw new Error(`multiHeadAttention: ${name} must have ${rows} rows (got ${tensor.length})`);
+  }
+  for (let row = 0; row < tensor.length; row += 1) {
+    const values = tensor[row]!;
+    if (values.length !== cols) {
+      throw new Error(
+        `multiHeadAttention: ${name} row ${row} must have ${cols} columns (got ${values.length})`,
+      );
+    }
+    if (values.some((value) => !Number.isFinite(value))) {
+      throw new Error(`multiHeadAttention: ${name} contains a non-finite value at row ${row}`);
+    }
+  }
+}
+
+function validateProjection(
+  name: string,
+  projection: readonly (readonly number[])[] | undefined,
+  dModel: number,
+): void {
+  if (projection === undefined) return;
+  validateTensor(name, projection, dModel, dModel);
 }

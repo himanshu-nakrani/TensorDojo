@@ -43,6 +43,19 @@ describe('multiHeadAttention', () => {
     expect(out[0]!.length).toBe(2);
   });
 
+  it('rejects malformed K and V rows before the optimized path runs', () => {
+    const Q = [[1, 0], [0, 1]];
+    expect(() => multiHeadAttention({ Q, K: [[1, 0], [0]], V: Q, h: 1 })).toThrow(/K row 1 must have 2 columns/);
+    expect(() => multiHeadAttention({ Q, K: Q, V: [[1, 0], [0, 1, 2]], h: 1 })).toThrow(/V row 1 must have 2 columns/);
+  });
+
+  it('rejects non-finite tensors, invalid head counts, and malformed projections', () => {
+    const Q = [[1, 0], [0, 1]];
+    expect(() => multiHeadAttention({ Q: [[Number.NaN, 0], [0, 1]], K: Q, V: Q, h: 1 })).toThrow(/Q contains a non-finite value/);
+    expect(() => multiHeadAttention({ Q, K: Q, V: Q, h: 0 })).toThrow(/h must be a positive integer/);
+    expect(() => multiHeadAttention({ Q, K: Q, V: Q, h: 1, Wq: [[1, 0]] })).toThrow(/Wq must have 2 rows/);
+  });
+
   it('matches explicit identity projections in the optimized default path', () => {
     const Q = [[1, 0, 0, 1], [0, 1, 1, 0]];
     const K = [[0.5, 1, 0, 0.5], [1, 0.5, 0.5, 1]];
