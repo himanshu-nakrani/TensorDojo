@@ -1,0 +1,34 @@
+import { Callout } from '@/components/lesson/Callout';
+import { Check } from '@/components/lesson/Check';
+
+## A logit is the end of a path
+
+The model turns token embeddings into hidden states through repeated attention, normalization, and feed-forward transformations. The final hidden state is projected into vocabulary logits. Interpretability asks which internal features and pathways contributed to a specific output, not merely whether the output was correct.
+
+## Attention is a clue, not a verdict
+
+An attention matrix shows where one representation reads from another at a layer and head. It can reveal alignment or information flow, but a high attention weight is not automatically an explanation of the final prediction. Other heads, residual paths, and nonlinear features may matter more.
+
+## Intervene to test a hypothesis
+
+A stronger interpretability experiment changes or ablates an activation and measures the output difference. If a feature is causally involved, intervening on it should change a targeted behavior in a predictable way. Use the matrix to form a hypothesis, then ask what intervention would distinguish correlation from mechanism.
+
+$$
+\text{logit}(w) = \text{unembedding}\bigl(h_{\text{final}}\bigr)_w
+$$
+
+<Callout title="Work the idea" targetInteractive="attribution-path">
+Use the **Attribution Path Lab** workbench to vary one quantity at a time. Before moving the control, write down what you expect to change and what should remain fixed. Then compare the result with the equation above.
+</Callout>
+
+<Check
+  id="interpretability.core-idea"
+  question={"Why should an attention visualization not be treated as a complete explanation?"}
+  options={["Other heads, residual paths, and nonlinear features can also affect the logit.", "Attention weights are unrelated to any computation.", "The final logit is always copied from one attention cell.", "Interpretability never uses interventions."]}
+  answer={0}
+  explanation={"Attention is one observable part of a larger computation. It can suggest information flow without proving that it alone caused the output."}
+/>
+
+## Recap
+
+The central idea is **Interpretability**. The implementation detail matters because it changes what the model can learn, how much memory or compute the system needs, or how confidently we can interpret its behavior. Keep the equation visible, name the controlled variables, and treat every benchmark or safeguard as part of the model’s operating definition.

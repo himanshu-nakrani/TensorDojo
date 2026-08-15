@@ -1,0 +1,34 @@
+import { Callout } from '@/components/lesson/Callout';
+import { Check } from '@/components/lesson/Check';
+
+## Find failures before users do
+
+A red team does not ask whether the model is generally helpful. It constructs inputs that target a known failure mode: jailbreaks, data leakage, prompt injection, unsafe advice, or misleading confidence. The same model can be safe on ordinary prompts and fail under a small adversarial change.
+
+## The system is the target
+
+Testing only the base model misses tool permissions, retrieval sources, wrappers, memory, and monitoring. A harmless answer can become harmful when the model can send mail, execute code, or expose a private document. Red-team cases should follow the path from input through model output to external effect.
+
+## Turn findings into regression tests
+
+A useful probe becomes a durable test case with a severity, expected behavior, and owner. Mitigations should be evaluated for both attack resistance and false positives. The goal is not a perfect score; it is a measured reduction in unacceptable failure modes.
+
+$$
+\text{risk} = \text{likelihood} \times \text{impact}
+$$
+
+<Callout title="Work the idea" targetInteractive="red-team-probes">
+Use the **Red-Team Probe Lab** workbench to vary one quantity at a time. Before moving the control, write down what you expect to change and what should remain fixed. Then compare the result with the equation above.
+</Callout>
+
+<Check
+  id="red-teaming.core-idea"
+  question={"What should happen to a valuable red-team finding after the test?"}
+  options={["It should become a tracked regression case with an expected behavior.", "It should be deleted so the score improves.", "It should be treated as proof that all inputs are unsafe.", "It should change the model vocabulary."]}
+  answer={0}
+  explanation={"Red-team discoveries are most useful when converted into reproducible regression tests with severity and expected outcomes."}
+/>
+
+## Recap
+
+The central idea is **Red teaming**. The implementation detail matters because it changes what the model can learn, how much memory or compute the system needs, or how confidently we can interpret its behavior. Keep the equation visible, name the controlled variables, and treat every benchmark or safeguard as part of the model’s operating definition.

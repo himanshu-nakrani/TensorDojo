@@ -15,7 +15,7 @@ export default function LessonsPage() {
           Every lesson, by track.
         </h1>
         <p className="text-[1rem] text-muted leading-relaxed">
-          Fifty-eight interactive lessons across eight tracks, in reading order.
+          Eighty interactive lessons across ten tracks, in reading order.
           Each card opens a workbench where the math is something you can move.
         </p>
       </header>

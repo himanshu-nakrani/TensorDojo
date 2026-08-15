@@ -2,7 +2,7 @@ import { Link } from 'wouter';
 import { TRACKS } from '@/lib/lessons-meta';
 
 /**
- * Eight track tiles in a responsive grid. Each tile is a link into
+ * Ten track tiles in a responsive grid. Each tile is a link into
  * the corresponding section anchor on `/lessons` so a learner who
  * wants the full directory lands directly on the right place.
  *
@@ -20,7 +20,7 @@ export function CurriculumGrid() {
           id="curriculum-heading"
           className="lab-display text-[1.85rem] sm:text-[2.15rem] text-ink leading-[1.15]"
         >
-          Eight tracks, in reading order.
+          Ten tracks, in reading order.
         </h2>
       </div>
 

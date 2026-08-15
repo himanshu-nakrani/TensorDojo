@@ -1,0 +1,34 @@
+import { Callout } from '@/components/lesson/Callout';
+import { Check } from '@/components/lesson/Check';
+
+## Every token can look at every token
+
+For a sequence of length n, queries and keys produce an n by n score matrix. This gives the transformer flexible access to context, but it also means that doubling n creates four times as many pairwise scores before values are combined. The quadratic term is a memory and compute constraint, not merely a benchmark footnote.
+
+## Useful context has a price
+
+A longer window can connect a definition near the beginning of a document to a question near the end. But the model must store or recompute more keys and values, and the attention kernel must move more data. Long-context methods therefore change the attention pattern, the position representation, the memory layout, or all three.
+
+## Use a fixed question
+
+When you move the context control, keep the hidden size fixed and ask what changed: the number of token representations, the pairwise score matrix, or both. The right mental model is that context length changes the geometry of the computation even when the model weights do not change.
+
+$$
+\text{attention scores} \in \mathbb{R}^{n \times n} \quad \Rightarrow \quad \text{work} \propto n^2
+$$
+
+<Callout title="Work the idea" targetInteractive="context-window">
+Use the **Context Window Explorer** workbench to vary one quantity at a time. Before moving the control, write down what you expect to change and what should remain fixed. Then compare the result with the equation above.
+</Callout>
+
+<Check
+  id="context-length.core-idea"
+  question={"If sequence length changes from n to 2n in full self-attention, how does the score-matrix area change?"}
+  options={["It doubles.", "It becomes four times as large.", "It becomes half as large.", "It does not change."]}
+  answer={1}
+  explanation={"The score matrix has n squared entries. Replacing n with 2n gives (2n) squared, which is four times the original area."}
+/>
+
+## Recap
+
+The central idea is **Context length**. The implementation detail matters because it changes what the model can learn, how much memory or compute the system needs, or how confidently we can interpret its behavior. Keep the equation visible, name the controlled variables, and treat every benchmark or safeguard as part of the model’s operating definition.

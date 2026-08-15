@@ -1,0 +1,34 @@
+import { Callout } from '@/components/lesson/Callout';
+import { Check } from '@/components/lesson/Check';
+
+## Replicate the weights, split the examples
+
+In data parallel training, every worker holds the same parameters. Each worker reads a different mini-batch and computes a local gradient. An all-reduce operation averages or sums those gradients so every replica applies the same update and stays synchronized.
+
+## The batch grows with the world
+
+With R workers and a local batch of B examples, the global batch is approximately R times B. That can improve hardware utilization, but it also changes the optimization noise scale. Learning-rate schedules, warmup, and gradient accumulation must be interpreted in terms of the global batch rather than the local one alone.
+
+## Communication is part of the algorithm
+
+The gradient average is mathematically simple and operationally expensive. The workers cannot finish an update independently if they must agree on the next weights. Move between training presets and ask whether the bottleneck is arithmetic, input throughput, or synchronization.
+
+$$
+g = \frac{1}{R} \sum_{r=1}^{R} g_r
+$$
+
+<Callout title="Work the idea" targetInteractive="replica-training">
+Use the **Replica Training Lab** workbench to vary one quantity at a time. Before moving the control, write down what you expect to change and what should remain fixed. Then compare the result with the equation above.
+</Callout>
+
+<Check
+  id="distributed-data-parallel.core-idea"
+  question={"What must data-parallel workers do before applying a synchronized parameter update?"}
+  options={["Average or sum their local gradients.", "Discard all gradients except worker zero.", "Change the vocabulary independently.", "Replace the model with a new random initialization."]}
+  answer={0}
+  explanation={"Data-parallel replicas compute local gradients on different batches, then communicate an aggregate so all workers apply the same update."}
+/>
+
+## Recap
+
+The central idea is **Distributed data parallel**. The implementation detail matters because it changes what the model can learn, how much memory or compute the system needs, or how confidently we can interpret its behavior. Keep the equation visible, name the controlled variables, and treat every benchmark or safeguard as part of the model’s operating definition.
