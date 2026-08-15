@@ -1,7 +1,7 @@
 /// <reference types="vite/client" />
 
 /**
- * MDX modules (the 58 lesson files under src/content/lessons).
+ * MDX modules (the 80 lesson files under src/content/lessons).
  * Self-contained on purpose — no import from 'mdx/types', so the
  * declaration keeps working regardless of which @mdx-js packages
  * happen to ship type stubs.

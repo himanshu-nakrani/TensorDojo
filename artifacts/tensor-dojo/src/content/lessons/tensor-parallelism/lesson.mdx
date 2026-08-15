@@ -1,0 +1,34 @@
+import { Callout } from '@/components/lesson/Callout';
+import { Check } from '@/components/lesson/Check';
+
+## One linear layer, many devices
+
+A projection y = xW can be split by columns of W. Each device computes a slice of the output, and concatenating those slices reconstructs the full vector. A row split uses a different communication pattern: devices produce partial sums that must be reduced. The math is unchanged; the placement of the terms changes.
+
+## Partitioning creates communication edges
+
+Tensor parallelism saves per-device memory and increases aggregate throughput, but every split introduces a boundary where activations or partial results must move. A useful design keeps communication on fast links and chooses partitions that balance both storage and arithmetic.
+
+## Shape discipline prevents silent bugs
+
+Use the shape lab to write the dimensions before thinking about hardware. If X is B by d and W is d by h, the output is B by h. A column partition gives each device B by h/p, while a row partition requires a reduction over matching partial outputs.
+
+$$
+Y = XW = [XW_1 \; XW_2 \; \cdots \; XW_p]
+$$
+
+<Callout title="Work the idea" targetInteractive="sharded-matmul">
+Use the **Sharded Matmul** workbench to vary one quantity at a time. Before moving the control, write down what you expect to change and what should remain fixed. Then compare the result with the equation above.
+</Callout>
+
+<Check
+  id="tensor-parallelism.core-idea"
+  question={"If W is split by columns across p devices, what does each device produce for XW?"}
+  options={["A slice of the output columns.", "A complete output with a different vocabulary.", "Only the scalar loss.", "An input slice with a new batch size."]}
+  answer={0}
+  explanation={"Column-wise partitioning gives each device a subset of W columns, so it computes the matching subset of output columns."}
+/>
+
+## Recap
+
+The central idea is **Tensor parallelism**. The implementation detail matters because it changes what the model can learn, how much memory or compute the system needs, or how confidently we can interpret its behavior. Keep the equation visible, name the controlled variables, and treat every benchmark or safeguard as part of the model’s operating definition.

@@ -1,0 +1,34 @@
+import { Callout } from '@/components/lesson/Callout';
+import { Check } from '@/components/lesson/Check';
+
+## Make the rubric explicit
+
+A constitution is a collection of principles such as helpfulness, honesty, or non-harm. The model is asked to inspect a candidate answer against a principle and then propose a revision. The process turns a vague alignment target into text that can be shown, debated, and revised.
+
+## Critique is a generated label
+
+The critique itself may be produced by a model, so it is not automatically neutral or correct. Principles can conflict, prompts can be ambiguous, and a model can learn to recite the rubric without changing its behavior. The method changes where supervision enters; it does not remove the need for evaluation.
+
+## Separate policy from proof
+
+Use the mitigation toggles to compare an unreviewed response with a critique-and-revision path. Ask which failure modes the principle addresses and which remain outside its wording. A constitution is a steering instrument, not a formal guarantee of safety.
+
+$$
+\text{response} \rightarrow \text{critique} \rightarrow \text{revision}
+$$
+
+<Callout title="Work the idea" targetInteractive="principle-critique">
+Use the **Principle Critique Lab** workbench to vary one quantity at a time. Before moving the control, write down what you expect to change and what should remain fixed. Then compare the result with the equation above.
+</Callout>
+
+<Check
+  id="constitutional-ai.core-idea"
+  question={"What is the purpose of the critique step in Constitutional AI?"}
+  options={["To compare a response with an explicit principle before revision.", "To increase the vocabulary size.", "To remove all human-defined behavior.", "To skip evaluation entirely."]}
+  answer={0}
+  explanation={"The critique step asks whether the candidate response follows the written principle and supplies guidance for a revised answer."}
+/>
+
+## Recap
+
+The central idea is **Constitutional AI**. The implementation detail matters because it changes what the model can learn, how much memory or compute the system needs, or how confidently we can interpret its behavior. Keep the equation visible, name the controlled variables, and treat every benchmark or safeguard as part of the model’s operating definition.

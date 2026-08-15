@@ -1,7 +1,7 @@
 /**
  * Client-safe lesson manifest. Only the per-lesson manifest for
  * the currently-rendered slug is imported into the page chunk.
- * The previous design statically imported all 21 lessons'
+ * The previous design statically imported all lessons'
  * interactives into a single bundle, which made the lesson
  * route 60 kB / 166 kB at the heaviest — the brief's < 160 kB
  * target was missed because the heavy centerpieces
@@ -11,8 +11,7 @@
  *
  * The lesson page now imports its own `interactives.tsx` via a
  * dynamic `import()` keyed on the slug, so only the current
- * lesson's component code is in the route's chunk. The other
- * 20 lessons' interactives live in separate, lazy chunks.
+ * lesson's component code is in the route's chunk. The other lessons' interactives live in separate, lazy chunks.
  *
  * Meta is still statically imported (it's tiny — just the title,
  * summary, minutes, slug, order), and lives in `lib/lessons-meta`.
@@ -76,6 +75,28 @@ import { meta as evaluationMeta } from '@/content/lessons/evaluation/meta';
 import { meta as instructionTuningRlhfMeta } from '@/content/lessons/instruction-tuning-rlhf/meta';
 import { meta as dpoMeta } from '@/content/lessons/dpo/meta';
 import { meta as distillationMeta } from '@/content/lessons/distillation/meta';
+import { meta as DataPipelineMeta } from '@/content/lessons/data-pipeline/meta';
+import { meta as DataMixturesMeta } from '@/content/lessons/data-mixtures/meta';
+import { meta as DataDeduplicationMeta } from '@/content/lessons/data-deduplication/meta';
+import { meta as ContextLengthMeta } from '@/content/lessons/context-length/meta';
+import { meta as DistributedDataParallelMeta } from '@/content/lessons/distributed-data-parallel/meta';
+import { meta as TensorParallelismMeta } from '@/content/lessons/tensor-parallelism/meta';
+import { meta as PipelineParallelismMeta } from '@/content/lessons/pipeline-parallelism/meta';
+import { meta as ZeroAndFsdpMeta } from '@/content/lessons/zero-and-fsdp/meta';
+import { meta as ContinuousBatchingMeta } from '@/content/lessons/continuous-batching/meta';
+import { meta as PagedAttentionMeta } from '@/content/lessons/paged-attention/meta';
+import { meta as PrefixCachingMeta } from '@/content/lessons/prefix-caching/meta';
+import { meta as RewardModelingMeta } from '@/content/lessons/reward-modeling/meta';
+import { meta as PpoRlhfMeta } from '@/content/lessons/ppo-rlhf/meta';
+import { meta as ConstitutionalAiMeta } from '@/content/lessons/constitutional-ai/meta';
+import { meta as RlaifMeta } from '@/content/lessons/rlaif/meta';
+import { meta as BenchmarkDesignMeta } from '@/content/lessons/benchmark-design/meta';
+import { meta as CalibrationMeta } from '@/content/lessons/calibration/meta';
+import { meta as HallucinationAndGroundingMeta } from '@/content/lessons/hallucination-and-grounding/meta';
+import { meta as PromptInjectionMeta } from '@/content/lessons/prompt-injection/meta';
+import { meta as RedTeamingMeta } from '@/content/lessons/red-teaming/meta';
+import { meta as InterpretabilityMeta } from '@/content/lessons/interpretability/meta';
+import { meta as MultimodalTransformersMeta } from '@/content/lessons/multimodal-transformers/meta';
 
 export interface LessonMeta {
   slug: string;
@@ -145,6 +166,28 @@ const metaBySlug: Readonly<Record<string, LessonMeta>> = {
   'instruction-tuning-rlhf': instructionTuningRlhfMeta,
   dpo: dpoMeta,
   distillation: distillationMeta,
+  "data-pipeline": DataPipelineMeta,
+  "data-mixtures": DataMixturesMeta,
+  "data-deduplication": DataDeduplicationMeta,
+  "context-length": ContextLengthMeta,
+  "distributed-data-parallel": DistributedDataParallelMeta,
+  "tensor-parallelism": TensorParallelismMeta,
+  "pipeline-parallelism": PipelineParallelismMeta,
+  "zero-and-fsdp": ZeroAndFsdpMeta,
+  "continuous-batching": ContinuousBatchingMeta,
+  "paged-attention": PagedAttentionMeta,
+  "prefix-caching": PrefixCachingMeta,
+  "reward-modeling": RewardModelingMeta,
+  "ppo-rlhf": PpoRlhfMeta,
+  "constitutional-ai": ConstitutionalAiMeta,
+  "rlaif": RlaifMeta,
+  "benchmark-design": BenchmarkDesignMeta,
+  "calibration": CalibrationMeta,
+  "hallucination-and-grounding": HallucinationAndGroundingMeta,
+  "prompt-injection": PromptInjectionMeta,
+  "red-teaming": RedTeamingMeta,
+  "interpretability": InterpretabilityMeta,
+  "multimodal-transformers": MultimodalTransformersMeta,
 };
 
 /** Map of slug → dynamic importer for the per-lesson interactives. */
@@ -393,6 +436,94 @@ const interactivesLoaders: Readonly<Record<string, () => Promise<{
     })),
   distillation: () =>
     import('@/content/lessons/distillation/interactives').then((m) => ({
+      interactives: m.interactives,
+    })),
+  "data-pipeline": () =>
+    import('@/content/lessons/data-pipeline/interactives').then((m) => ({
+      interactives: m.interactives,
+    })),
+  "data-mixtures": () =>
+    import('@/content/lessons/data-mixtures/interactives').then((m) => ({
+      interactives: m.interactives,
+    })),
+  "data-deduplication": () =>
+    import('@/content/lessons/data-deduplication/interactives').then((m) => ({
+      interactives: m.interactives,
+    })),
+  "context-length": () =>
+    import('@/content/lessons/context-length/interactives').then((m) => ({
+      interactives: m.interactives,
+    })),
+  "distributed-data-parallel": () =>
+    import('@/content/lessons/distributed-data-parallel/interactives').then((m) => ({
+      interactives: m.interactives,
+    })),
+  "tensor-parallelism": () =>
+    import('@/content/lessons/tensor-parallelism/interactives').then((m) => ({
+      interactives: m.interactives,
+    })),
+  "pipeline-parallelism": () =>
+    import('@/content/lessons/pipeline-parallelism/interactives').then((m) => ({
+      interactives: m.interactives,
+    })),
+  "zero-and-fsdp": () =>
+    import('@/content/lessons/zero-and-fsdp/interactives').then((m) => ({
+      interactives: m.interactives,
+    })),
+  "continuous-batching": () =>
+    import('@/content/lessons/continuous-batching/interactives').then((m) => ({
+      interactives: m.interactives,
+    })),
+  "paged-attention": () =>
+    import('@/content/lessons/paged-attention/interactives').then((m) => ({
+      interactives: m.interactives,
+    })),
+  "prefix-caching": () =>
+    import('@/content/lessons/prefix-caching/interactives').then((m) => ({
+      interactives: m.interactives,
+    })),
+  "reward-modeling": () =>
+    import('@/content/lessons/reward-modeling/interactives').then((m) => ({
+      interactives: m.interactives,
+    })),
+  "ppo-rlhf": () =>
+    import('@/content/lessons/ppo-rlhf/interactives').then((m) => ({
+      interactives: m.interactives,
+    })),
+  "constitutional-ai": () =>
+    import('@/content/lessons/constitutional-ai/interactives').then((m) => ({
+      interactives: m.interactives,
+    })),
+  "rlaif": () =>
+    import('@/content/lessons/rlaif/interactives').then((m) => ({
+      interactives: m.interactives,
+    })),
+  "benchmark-design": () =>
+    import('@/content/lessons/benchmark-design/interactives').then((m) => ({
+      interactives: m.interactives,
+    })),
+  "calibration": () =>
+    import('@/content/lessons/calibration/interactives').then((m) => ({
+      interactives: m.interactives,
+    })),
+  "hallucination-and-grounding": () =>
+    import('@/content/lessons/hallucination-and-grounding/interactives').then((m) => ({
+      interactives: m.interactives,
+    })),
+  "prompt-injection": () =>
+    import('@/content/lessons/prompt-injection/interactives').then((m) => ({
+      interactives: m.interactives,
+    })),
+  "red-teaming": () =>
+    import('@/content/lessons/red-teaming/interactives').then((m) => ({
+      interactives: m.interactives,
+    })),
+  "interpretability": () =>
+    import('@/content/lessons/interpretability/interactives').then((m) => ({
+      interactives: m.interactives,
+    })),
+  "multimodal-transformers": () =>
+    import('@/content/lessons/multimodal-transformers/interactives').then((m) => ({
       interactives: m.interactives,
     })),
 };

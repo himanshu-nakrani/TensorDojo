@@ -1,0 +1,34 @@
+import { Callout } from '@/components/lesson/Callout';
+import { Check } from '@/components/lesson/Check';
+
+## Reward is not enough
+
+A policy can raise a learned reward by exploiting quirks in the reward model. In language generation, large updates can also damage fluency, factual behavior, or the broad capabilities inherited from pretraining. RLHF therefore needs an anchor, usually a reference policy, that limits how far the new policy moves.
+
+## The probability ratio
+
+PPO compares the probability of an action under the new policy with its probability under the old policy. The ratio r_t is multiplied by an advantage estimate and then clipped to a narrow interval. Clipping prevents one batch of high-advantage tokens from dominating the update.
+
+## The KL penalty is a second lens
+
+Many implementations add a penalty when the policy diverges from a reference model. The coefficient controls the tradeoff between preference reward and staying close to the original distribution. Move the controls and look for the point where reward rises but the policy becomes unstable.
+
+$$
+\min\left(r_t(\theta)A_t,\operatorname{clip}(r_t(\theta),1-\epsilon,1+\epsilon)A_t\right)
+$$
+
+<Callout title="Work the idea" targetInteractive="policy-update">
+Use the **Policy Update Lab** workbench to vary one quantity at a time. Before moving the control, write down what you expect to change and what should remain fixed. Then compare the result with the equation above.
+</Callout>
+
+<Check
+  id="ppo-rlhf.core-idea"
+  question={"Why does PPO clip the policy probability ratio?"}
+  options={["To limit destructive updates caused by large advantages.", "To make every token equally likely.", "To remove the reward model.", "To make the context window infinite."]}
+  answer={0}
+  explanation={"Clipping limits how much a single update can change action probabilities, reducing unstable or overly large policy shifts."}
+/>
+
+## Recap
+
+The central idea is **PPO for RLHF**. The implementation detail matters because it changes what the model can learn, how much memory or compute the system needs, or how confidently we can interpret its behavior. Keep the equation visible, name the controlled variables, and treat every benchmark or safeguard as part of the model’s operating definition.
