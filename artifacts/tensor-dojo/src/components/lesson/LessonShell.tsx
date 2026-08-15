@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 
 interface LessonShellProps {
   title: string;
@@ -23,13 +23,28 @@ export function LessonShell({
   children,
 }: LessonShellProps) {
   const [copied, setCopied] = useState(false);
+  const copiedResetTimer = useRef<number | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (copiedResetTimer.current !== null) {
+        window.clearTimeout(copiedResetTimer.current);
+      }
+    };
+  }, []);
 
   const copyLessonLink = async () => {
     if (typeof window === 'undefined') return;
     try {
       await navigator.clipboard.writeText(window.location.href);
       setCopied(true);
-      window.setTimeout(() => setCopied(false), 1800);
+      if (copiedResetTimer.current !== null) {
+        window.clearTimeout(copiedResetTimer.current);
+      }
+      copiedResetTimer.current = window.setTimeout(() => {
+        copiedResetTimer.current = null;
+        setCopied(false);
+      }, 1800);
     } catch {
       setCopied(false);
     }

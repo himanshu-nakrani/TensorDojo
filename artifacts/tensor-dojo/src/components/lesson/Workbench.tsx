@@ -163,12 +163,10 @@ export function Workbench({
   }, [writeInteractiveToUrl]);
 
   const toggleInteractive = useCallback((id: string) => {
-    setActive((prev) => {
-      const next = prev === id ? '' : id;
-      writeInteractiveToUrl(next);
-      return next;
-    });
-  }, [writeInteractiveToUrl]);
+    const next = active === id ? '' : id;
+    setActive(next);
+    writeInteractiveToUrl(next);
+  }, [active, writeInteractiveToUrl]);
 
   const interactiveById = useMemo(() => {
     const m = new Map<string, InteractiveEntry>();
