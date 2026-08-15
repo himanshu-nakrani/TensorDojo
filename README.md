@@ -205,6 +205,8 @@ pnpm run build                                      # typecheck + manifest check
 pnpm run test                                      # all active math tests
 pnpm run validate:lessons                           # verify all 58 lesson registries
 pnpm run benchmark:math                             # run tensor-operation baselines
+pnpm run test:e2e:install                            # install Chromium for browser tests
+pnpm run test:e2e                                   # run browser regression tests
 pnpm --filter @workspace/tensor-dojo run serve      # preview the built app
 pnpm run typecheck                                  # strict TS, no emit
 ```
