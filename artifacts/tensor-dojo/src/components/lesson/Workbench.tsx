@@ -93,16 +93,29 @@ export function Workbench({
   // first id we can see *as a client*. This means the initial
   // expanded item is correct both during SSR (where defaultActive
   // happens to round-trip) and on first client render.
-  const [active, setActive] = useState<string>(
-    defaultActive || interactives[0]?.id || '',
-  );
+  const [active, setActive] = useState<string>(() => {
+    if (typeof window !== 'undefined') {
+      const requested = new URLSearchParams(window.location.search).get('interactive');
+      if (requested && interactives.some((entry) => entry.id === requested)) return requested;
+    }
+    return defaultActive || interactives[0]?.id || '';
+  });
   const [pulse, setPulse] = useState<{ id: string; version: number } | null>(
     null,
   );
   const refs = useRef<Record<string, HTMLDivElement | null>>({});
 
+  const writeInteractiveToUrl = useCallback((id: string) => {
+    if (typeof window === 'undefined') return;
+    const url = new URL(window.location.href);
+    if (id) url.searchParams.set('interactive', id);
+    else url.searchParams.delete('interactive');
+    window.history.replaceState({}, '', `${url.pathname}${url.search}${url.hash}`);
+  }, []);
+
   const focusInteractive = useCallback((id: string) => {
     setActive(id);
+    writeInteractiveToUrl(id);
     // Allow the accordion to expand, then scroll into view and pulse
     // *after* the scroll resolves so the eye lands on a fresh ring
     // rather than one mid-decay.
@@ -147,11 +160,13 @@ export function Workbench({
         window.setTimeout(fire, 350);
       }
     }, 60);
-  }, []);
+  }, [writeInteractiveToUrl]);
 
   const toggleInteractive = useCallback((id: string) => {
-    setActive((prev) => (prev === id ? '' : id));
-  }, []);
+    const next = active === id ? '' : id;
+    setActive(next);
+    writeInteractiveToUrl(next);
+  }, [active, writeInteractiveToUrl]);
 
   const interactiveById = useMemo(() => {
     const m = new Map<string, InteractiveEntry>();

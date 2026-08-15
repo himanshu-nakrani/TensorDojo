@@ -38,29 +38,41 @@ export function multiHeadAttention(
   input: MultiHeadAttentionInput,
 ): number[][] {
   const { Q, K, V, h, causal } = input;
+  if (!Number.isInteger(h) || h <= 0) {
+    throw new Error(`multiHeadAttention: h must be a positive integer (got ${h})`);
+  }
   const n = Q.length;
+  if (n === 0) {
+    throw new Error('multiHeadAttention: Q, K, and V must contain at least one row');
+  }
   if (K.length !== n || V.length !== n) {
     throw new Error(
       `multiHeadAttention: Q, K, V must have the same length (got ${Q.length}, ${K.length}, ${V.length})`,
     );
   }
   const dModel = Q[0]!.length;
+  if (dModel === 0) {
+    throw new Error('multiHeadAttention: d_model must be greater than zero');
+  }
+  validateTensor('Q', Q, n, dModel);
+  validateTensor('K', K, n, dModel);
+  validateTensor('V', V, n, dModel);
   if (dModel % h !== 0) {
     throw new Error(
       `multiHeadAttention: d_model must be divisible by h (got ${dModel} / ${h})`,
     );
   }
   const dK = dModel / h;
+  validateProjection('Wq', input.Wq, dModel);
+  validateProjection('Wk', input.Wk, dModel);
+  validateProjection('Wv', input.Wv, dModel);
+  validateProjection('Wout', input.Wout, dModel);
 
-  const Wq = input.Wq ?? identityMatrix(dModel);
-  const Wk = input.Wk ?? identityMatrix(dModel);
-  const Wv = input.Wv ?? identityMatrix(dModel);
-  const Wout = input.Wout ?? identityMatrix(dModel);
-
-  // Project to d_model (in the unprojected case, this is a no-op).
-  const Qp = matMul(Q, Wq);
-  const Kp = matMul(K, Wk);
-  const Vp = matMul(V, Wv);
+  // Default projections are identity transforms. Reuse the caller's matrices
+  // instead of allocating identity matrices and multiplying by them.
+  const Qp = input.Wq ? matMul(Q, input.Wq) : Q;
+  const Kp = input.Wk ? matMul(K, input.Wk) : K;
+  const Vp = input.Wv ? matMul(V, input.Wv) : V;
 
   // Reshape into heads: [n, d_model] -> [n, h, d_k] -> [h, n, d_k]
   const splitHeads = (X: readonly (readonly number[])[]): number[][][] => {
@@ -114,14 +126,37 @@ export function multiHeadAttention(
       }
     }
   }
-  // Project out
-  return matMul(concat, Wout);
+  // The default output projection is also identity.
+  return input.Wout ? matMul(concat, input.Wout) : concat;
 }
 
-function identityMatrix(n: number): number[][] {
-  const m: number[][] = Array.from({ length: n }, () =>
-    new Array<number>(n).fill(0),
-  );
-  for (let i = 0; i < n; i += 1) m[i]![i] = 1;
-  return m;
+function validateTensor(
+  name: string,
+  tensor: readonly (readonly number[])[],
+  rows: number,
+  cols: number,
+): void {
+  if (tensor.length !== rows) {
+    throw new Error(`multiHeadAttention: ${name} must have ${rows} rows (got ${tensor.length})`);
+  }
+  for (let row = 0; row < tensor.length; row += 1) {
+    const values = tensor[row]!;
+    if (values.length !== cols) {
+      throw new Error(
+        `multiHeadAttention: ${name} row ${row} must have ${cols} columns (got ${values.length})`,
+      );
+    }
+    if (values.some((value) => !Number.isFinite(value))) {
+      throw new Error(`multiHeadAttention: ${name} contains a non-finite value at row ${row}`);
+    }
+  }
+}
+
+function validateProjection(
+  name: string,
+  projection: readonly (readonly number[])[] | undefined,
+  dModel: number,
+): void {
+  if (projection === undefined) return;
+  validateTensor(name, projection, dModel, dModel);
 }

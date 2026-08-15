@@ -4,8 +4,12 @@
   "license": "MIT",
   "scripts": {
     "preinstall": "sh -c 'rm -f package-lock.json yarn.lock; case \"$npm_config_user_agent\" in pnpm/*) ;; *) echo \"Use pnpm instead\" >&2; exit 1 ;; esac'",
-    "build": "pnpm run typecheck && pnpm test && pnpm -r --if-present run build",
+    "build": "pnpm run typecheck && pnpm run validate:lessons && pnpm test && pnpm -r --if-present run build",
     "test": "pnpm --filter @workspace/tensor-dojo run test",
+    "test:e2e:install": "playwright install chromium",
+    "test:e2e": "playwright test",
+    "benchmark:math": "pnpm --filter @workspace/scripts run benchmark:math",
+    "validate:lessons": "node scripts/validate-lesson-manifest.mjs",
     "typecheck:libs": "tsc --build",
     "typecheck": "pnpm run typecheck:libs && pnpm -r --filter \"./artifacts/**\" --filter \"./scripts\" --if-present run typecheck"
   },
@@ -14,6 +18,7 @@
     "@replit/connectors-sdk": "^0.4.1"
   },
   "devDependencies": {
+    "@playwright/test": "1.55.0",
     "prettier": "^3.9.5",
     "typescript": "~5.9.3"
   }

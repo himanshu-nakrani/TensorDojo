@@ -71,7 +71,7 @@ function LessonContent({ slug }: { slug: string }) {
 
   if (loading) {
     return (
-      <LessonShell title={meta.title} minutes={meta.minutes} summary={meta.summary}>
+      <LessonShell title={meta.title} minutes={meta.minutes} summary={meta.summary} objectives={meta.objectives}>
         <div className="flex items-center justify-center py-32">
           <div className="text-muted text-sm font-mono">Loading lesson…</div>
         </div>
@@ -81,7 +81,7 @@ function LessonContent({ slug }: { slug: string }) {
 
   if (error) {
     return (
-      <LessonShell title={meta.title} minutes={meta.minutes} summary={meta.summary}>
+      <LessonShell title={meta.title} minutes={meta.minutes} summary={meta.summary} objectives={meta.objectives}>
         <div className="mx-auto flex max-w-xl flex-col items-center gap-4 py-32 text-center">
           <p className="text-sm font-mono uppercase tracking-[0.16em] text-muted">Unable to load lesson</p>
           <p className="text-sm text-fg-muted">{error.message}</p>
@@ -103,7 +103,7 @@ function LessonContent({ slug }: { slug: string }) {
   const defaultActive = interactives[0]?.id ?? '';
 
   return (
-    <LessonShell title={meta.title} minutes={meta.minutes} summary={meta.summary}>
+    <LessonShell title={meta.title} minutes={meta.minutes} summary={meta.summary} objectives={meta.objectives}>
       <VisitTracker slug={slug} />
       <Workbench
         interactives={interactives}

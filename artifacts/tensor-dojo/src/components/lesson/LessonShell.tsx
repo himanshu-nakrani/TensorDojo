@@ -1,9 +1,10 @@
-import { ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 
 interface LessonShellProps {
   title: string;
   minutes: number;
   summary: string;
+  objectives?: readonly string[];
   children: ReactNode;
 }
 
@@ -18,8 +19,37 @@ export function LessonShell({
   title,
   minutes,
   summary,
+  objectives,
   children,
 }: LessonShellProps) {
+  const [copied, setCopied] = useState(false);
+  const copiedResetTimer = useRef<number | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (copiedResetTimer.current !== null) {
+        window.clearTimeout(copiedResetTimer.current);
+      }
+    };
+  }, []);
+
+  const copyLessonLink = async () => {
+    if (typeof window === 'undefined') return;
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      setCopied(true);
+      if (copiedResetTimer.current !== null) {
+        window.clearTimeout(copiedResetTimer.current);
+      }
+      copiedResetTimer.current = window.setTimeout(() => {
+        copiedResetTimer.current = null;
+        setCopied(false);
+      }, 1800);
+    } catch {
+      setCopied(false);
+    }
+  };
+
   return (
     <article
       id="main"
@@ -38,6 +68,24 @@ export function LessonShell({
         <p className="text-xl text-muted font-medium leading-relaxed max-w-[640px]">
           {summary}
         </p>
+        {objectives && objectives.length > 0 && (
+          <section className="mt-6 rounded-md border border-border bg-surface px-4 py-3" aria-labelledby="lesson-objectives">
+            <h2 id="lesson-objectives" className="text-[11px] uppercase tracking-[0.14em] font-mono text-accent">
+              By the end of this lesson
+            </h2>
+            <ul className="mt-2 grid gap-1 text-sm leading-relaxed text-fg-muted">
+              {objectives.map((objective) => <li key={objective}>• {objective}</li>)}
+            </ul>
+          </section>
+        )}
+        <button
+          type="button"
+          onClick={copyLessonLink}
+          className="focus-ring mt-5 inline-flex min-h-[44px] items-center rounded-md border border-border px-3 py-2 text-[11px] uppercase tracking-[0.12em] font-mono text-muted hover:border-accent hover:text-accent"
+          aria-live="polite"
+        >
+          {copied ? 'Link copied' : 'Copy lesson link'}
+        </button>
       </header>
       {children}
     </article>

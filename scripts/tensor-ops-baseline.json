@@ -1,0 +1,14 @@
+{
+  "commit": "9d65f21",
+  "tolerancePercent": 20,
+  "benchmarks": {
+    "swiglu.updated": 0.92925084,
+    "dot": 0.000966554,
+    "matMul": 0.11187557,
+    "softmax": 0.015874202,
+    "layerNormBatch": 0.25983712,
+    "attentionForward": 0.43616536,
+    "ffn": 1.2487696,
+    "multiHeadAttention": 2.8494835
+  }
+}

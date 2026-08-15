@@ -201,8 +201,12 @@ and serves the app in the preview pane.
 Production build and quality gates:
 
 ```bash
-pnpm run build                                      # typecheck + tests + production build
+pnpm run build                                      # typecheck + manifest check + tests + production build
 pnpm run test                                      # all active math tests
+pnpm run validate:lessons                           # verify all 58 lesson registries
+pnpm run benchmark:math                             # run tensor-operation baselines
+pnpm run test:e2e:install                            # install Chromium for browser tests
+pnpm run test:e2e                                   # run browser regression tests
 pnpm --filter @workspace/tensor-dojo run serve      # preview the built app
 pnpm run typecheck                                  # strict TS, no emit
 ```
@@ -330,9 +334,25 @@ the headline equation of a section, inline for everything else.
 
 The curriculum is complete enough to launch. What's still ahead:
 
-- Per-lesson quizzes (a `<Check>` MDX component, ungated)
 - Capstone notebooks: take the toy sims into real Hugging Face / PyTorch
 - Analytics + an actual launch post
+
+### Authoring assessments
+
+Lessons can add a local, immediate knowledge check with the reusable MDX component:
+
+```mdx
+import { Check } from '@/components/lesson/Check';
+
+<Check
+  question="What happens when a = 0 in SwiGLU(a, b)?"
+  options={["It becomes b", "It becomes 0", "It becomes negative"]}
+  answer={1}
+  explanation="SiLU(0) = 0, so the gate suppresses the feature."
+/>
+```
+
+Checks are intentionally local-only and non-blocking. They provide immediate explanations without requiring an account or backend.
 
 Issues and PRs welcome.
 
