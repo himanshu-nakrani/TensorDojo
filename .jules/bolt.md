@@ -28,3 +28,6 @@
 ## 2025-02-18 - KVCacheCostChart slider latency optimization
 **Learning:** The `KVCacheCostChart` computed the cost curves in `useMemo`, triggering an O(N) recalculation loop of `generateNaive` and `generateWithCache` every time the slider was moved, and losing its cache entirely on route transitions. Because the slider steps (`SEQ_STEPS`) and parameters (`D_MODEL`) were static module constants, this was entirely redundant work.
 **Action:** When a React component's visual state only sweeps through a hardcoded set of predefined values evaluated against static pure functions, hoist the computations into a module-level static dictionary mapped by those step values. This converts slider drags from triggering calculation loops into O(1) object lookups, ensuring 60fps interaction.
+## 2025-02-18 - ScalingLawSurface pre-computation
+**Learning:** Found that `ScalingLawSurface.tsx` generated the optimal point and curve geometry arrays inside a `useMemo` on mount, which is heavy math running on the main thread and causes UI jank when opening the page.
+**Action:** Lift fully static computations that rely only on constant `BUDGET_STEPS` data into module scope `STATIC_SURFACES` array to move calculation to module load time, eliminating main-thread blocking on route remounts.
