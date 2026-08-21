@@ -1,6 +1,6 @@
 
 
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import clsx from 'clsx';
 import { SimFrame } from '@/components/sim/primitives/SimFrame';
 import { speculativeSpeedup } from '@/lib/math/specdecode';
@@ -21,24 +21,29 @@ const RATIOS = [
   { label: '1:100 (n-gram → 70B)', draft: 1, verify: 100 },
 ] as const;
 
+// ⚡ Bolt Optimization: Pre-compute static grids for all ratios.
+// Since ALPHAS, GAMMAS, and RATIOS are static, we can avoid O(N^2)
+// calculation inside useMemo on every mount. This converts state updates
+// and route navigation into simple O(1) array lookups.
+const STATIC_GRIDS = RATIOS.map((r) => {
+  const g: number[][] = [];
+  let max = 0;
+  for (const a of ALPHAS) {
+    const row: number[] = [];
+    for (const gamma of GAMMAS) {
+      const s = speculativeSpeedup(a, gamma, r.draft, r.verify);
+      row.push(s);
+      if (s > max) max = s;
+    }
+    g.push(row);
+  }
+  return { ratio: r, grid: g, maxSpeedup: max };
+});
+
 export function SpeculativeSpeedup() {
   const [ratioIdx, setRatioIdx] = useState(0);
 
-  const { ratio, grid, maxSpeedup } = useMemo(() => {
-    const r = RATIOS[ratioIdx]!;
-    const g: number[][] = [];
-    let max = 0;
-    for (const a of ALPHAS) {
-      const row: number[] = [];
-      for (const gamma of GAMMAS) {
-        const s = speculativeSpeedup(a, gamma, r.draft, r.verify);
-        row.push(s);
-        if (s > max) max = s;
-      }
-      g.push(row);
-    }
-    return { ratio: r, grid: g, maxSpeedup: max };
-  }, [ratioIdx]);
+  const { ratio, grid, maxSpeedup } = STATIC_GRIDS[ratioIdx]!;
 
   const reset = () => setRatioIdx(0);
 
