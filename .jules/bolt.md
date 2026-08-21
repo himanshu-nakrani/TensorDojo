@@ -31,3 +31,6 @@
 ## 2025-02-18 - ScalingLawSurface pre-computation
 **Learning:** Found that `ScalingLawSurface.tsx` generated the optimal point and curve geometry arrays inside a `useMemo` on mount, which is heavy math running on the main thread and causes UI jank when opening the page.
 **Action:** Lift fully static computations that rely only on constant `BUDGET_STEPS` data into module scope `STATIC_SURFACES` array to move calculation to module load time, eliminating main-thread blocking on route remounts.
+## 2025-02-18 - GradientDescentExplorer surface initialization optimization
+**Learning:** Found an unnecessary O(N*M) calculation `surface` inside a `useMemo` on every component mount in `GradientDescentExplorer.tsx`. The calculation relied purely on static variables (`X_RANGE`, `Y_RANGE`, `loss`), meaning it could be pre-computed once.
+**Action:** Always extract static, heavy computations out of `useMemo` hooks (which lose their cache across route navigation/remounts) and into module-level constants evaluated exactly once.

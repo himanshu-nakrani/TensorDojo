@@ -83,7 +83,6 @@ export function LessonCardList() {
                   <li key={lesson.meta.slug}>
                     <Link
                       href={`/lessons/${lesson.meta.slug}`}
-                      aria-label={`${lesson.meta.title}${isVisited ? ' — visited' : ''}${isResume ? ' — resume here' : ''}`}
                       className="group block rounded-lg border border-border bg-surface p-4 transition-colors hover:border-border-strong hover:bg-surface-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg focus-visible:border-accent focus-visible:bg-surface-2"
                     >
                       <div className="flex items-baseline justify-between gap-4 mb-1">
@@ -99,6 +98,8 @@ export function LessonCardList() {
                           />
                           <h3 className="text-[1.05rem] font-semibold text-ink tracking-[-0.005em] truncate">
                             {lesson.meta.title}
+                            {isVisited && <span className="sr-only"> (Visited)</span>}
+                            {isResume && <span className="sr-only"> (Resume here)</span>}
                           </h3>
                         </div>
                         <div className="flex items-center gap-3 shrink-0">
@@ -140,7 +141,6 @@ function ResumeCard({
   return (
     <Link
       href={`/lessons/${slug}`}
-      aria-label={`Resume: ${title} (${minutes} min)`}
       className="group block rounded-lg border border-accent bg-accent-faint p-5 transition-colors hover:bg-accent-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
     >
       <div className="flex items-baseline justify-between gap-4 mb-1.5">
@@ -154,6 +154,7 @@ function ResumeCard({
       <div className="flex items-baseline justify-between gap-4">
         <h3 className="text-[1.15rem] font-semibold text-ink tracking-[-0.005em]">
           {title}
+          <span className="sr-only"> (Resume here)</span>
         </h3>
         <span
           aria-hidden="true"
