@@ -35,6 +35,27 @@ const REAL_MODELS = [
   { label: 'LLaMA-2 70B', N: 70e9 },
 ] as const;
 
+// ⚡ Bolt Optimization: Pre-compute static curves and optimal points
+// We avoid calling chinchillaOptimalSplit and recomputing the curve array
+// inside useMemo, saving main-thread time on page navigation/mounting.
+const STATIC_SURFACES = BUDGET_STEPS.map((budget) => {
+  const C = budget.C;
+  const optimal = chinchillaOptimalSplit(C, { nSteps: 400 });
+  const points: Array<{ N: number; loss: number }> = [];
+  const logNMin = Math.log10(optimal.N) - 2.5;
+  const logNMax = Math.log10(optimal.N) + 2.5;
+  const STEPS = 100;
+  for (let i = 0; i < STEPS; i++) {
+    const lN = logNMin + (i / (STEPS - 1)) * (logNMax - logNMin);
+    const N = Math.pow(10, lN);
+    const D = C / (6 * N);
+    if (D > 0) {
+      points.push({ N, loss: chinchillaLoss(N, D) });
+    }
+  }
+  return { optimal, curve: points };
+});
+
 export function ScalingLawSurface() {
   const [budgetIdx, setBudgetIdx] = useState(4); // ~Chinchilla budget
   const budget = BUDGET_STEPS[budgetIdx]!;
@@ -42,7 +63,7 @@ export function ScalingLawSurface() {
 
   // Marker is the user's chosen N (log).
   // Default to the optimum so they see the bottom of the curve.
-  const optimal = useMemo(() => chinchillaOptimalSplit(C, { nSteps: 400 }), [C]);
+  const { optimal, curve } = STATIC_SURFACES[budgetIdx]!;
   const [userLogN, setUserLogN] = useState(() => Math.log10(optimal.N));
 
   // Recompute the user's N at the current budget.
@@ -54,22 +75,6 @@ export function ScalingLawSurface() {
   // need at the optimum to match this loss. Roughly: loss difference
   // exponentiated through the dominant scaling exponent.
   const effectiveWasteFactor = userLoss / optimal.loss;
-
-  // Curve points: N spans log range so the U-shape is centered.
-  const curve = useMemo(() => {
-    const points: Array<{ N: number; loss: number }> = [];
-    const logNMin = Math.log10(optimal.N) - 2.5;
-    const logNMax = Math.log10(optimal.N) + 2.5;
-    const STEPS = 100;
-    for (let i = 0; i < STEPS; i++) {
-      const lN = logNMin + (i / (STEPS - 1)) * (logNMax - logNMin);
-      const N = Math.pow(10, lN);
-      const D = C / (6 * N);
-      if (D <= 0) continue;
-      points.push({ N, loss: chinchillaLoss(N, D) });
-    }
-    return points;
-  }, [optimal.N, C]);
 
   // SVG geometry.
   const W = 600;
@@ -94,7 +99,7 @@ export function ScalingLawSurface() {
 
   const reset = () => {
     setBudgetIdx(4);
-    setUserLogN(Math.log10(optimal.N));
+    setUserLogN(Math.log10(STATIC_SURFACES[4]!.optimal.N));
   };
 
   return (
@@ -131,7 +136,7 @@ export function ScalingLawSurface() {
             setBudgetIdx(i);
             // Re-center the marker on the new optimum so the reader
             // doesn't have to chase it.
-            const o = chinchillaOptimalSplit(BUDGET_STEPS[i]!.C, { nSteps: 400 });
+            const o = STATIC_SURFACES[i]!.optimal;
             setUserLogN(Math.log10(o.N));
           }}
           className="w-full focus-ring"
