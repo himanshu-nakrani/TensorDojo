@@ -28,3 +28,6 @@
 ## 2025-02-18 - KVCacheCostChart slider latency optimization
 **Learning:** The `KVCacheCostChart` computed the cost curves in `useMemo`, triggering an O(N) recalculation loop of `generateNaive` and `generateWithCache` every time the slider was moved, and losing its cache entirely on route transitions. Because the slider steps (`SEQ_STEPS`) and parameters (`D_MODEL`) were static module constants, this was entirely redundant work.
 **Action:** When a React component's visual state only sweeps through a hardcoded set of predefined values evaluated against static pure functions, hoist the computations into a module-level static dictionary mapped by those step values. This converts slider drags from triggering calculation loops into O(1) object lookups, ensuring 60fps interaction.
+## 2025-02-18 - GradientDescentExplorer surface initialization optimization
+**Learning:** Found an unnecessary O(N*M) calculation `surface` inside a `useMemo` on every component mount in `GradientDescentExplorer.tsx`. The calculation relied purely on static variables (`X_RANGE`, `Y_RANGE`, `loss`), meaning it could be pre-computed once.
+**Action:** Always extract static, heavy computations out of `useMemo` hooks (which lose their cache across route navigation/remounts) and into module-level constants evaluated exactly once.
