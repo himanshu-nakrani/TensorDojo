@@ -31,3 +31,6 @@
 ## 2025-02-18 - Pre-compute static SpeculativeSpeedup grids
 **Learning:** `SpeculativeSpeedup.tsx` computed a complex 2D heatmap matrix (iterating `ALPHAS` and `GAMMAS`) inside a `useMemo` on every mount. Since the inputs were static module constants, this resulted in completely unnecessary recalculations, breaking caching upon route transition.
 **Action:** Lift fully deterministic loops evaluating static inputs into a module-level constant arrays/dictionaries (`STATIC_GRIDS`), evaluating exactly once on bundle load and replacing heavy main-thread work with O(1) lookups during rendering.
+## 2025-02-18 - GradientDescentExplorer surface initialization optimization
+**Learning:** Found an unnecessary O(N*M) calculation `surface` inside a `useMemo` on every component mount in `GradientDescentExplorer.tsx`. The calculation relied purely on static variables (`X_RANGE`, `Y_RANGE`, `loss`), meaning it could be pre-computed once.
+**Action:** Always extract static, heavy computations out of `useMemo` hooks (which lose their cache across route navigation/remounts) and into module-level constants evaluated exactly once.

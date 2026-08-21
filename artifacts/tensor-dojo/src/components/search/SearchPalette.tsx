@@ -230,7 +230,7 @@ function PaletteOverlay({
             <SearchIcon />
             <Command.Input
               autoFocus
-              placeholder="Search 58 lessons by title, summary, or track…"
+              placeholder={`Search ${grouped.reduce((n, g) => n + g.items.length, 0)} lessons by title, summary, or track…`}
               className="flex-1 bg-transparent text-[14px] text-ink placeholder:text-fg-subtle rounded-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
             />
             <kbd className="hidden sm:inline-block rounded border border-border px-1.5 py-0.5 text-[10px] font-mono text-fg-muted">

@@ -18,6 +18,27 @@ interface Preset {
   description: string;
 }
 
+// ⚡ Bolt Optimization: Pre-compute static costs for loss surface
+// Moving entirely static computations to module scope constants avoids O(N*M) calculation
+// in a useMemo on every component mount, preventing main-thread blocking during navigation.
+const STATIC_SURFACE = (() => {
+  const grid: number[][] = [];
+  const NX = 60;
+  const NY = 60;
+  for (let i = 0; i < NY; i += 1) {
+    const row: number[] = [];
+    const y = Y_RANGE[0] + (i / (NY - 1)) * (Y_RANGE[1] - Y_RANGE[0]);
+    for (let j = 0; j < NX; j += 1) {
+      const x = X_RANGE[0] + (j / (NX - 1)) * (X_RANGE[1] - X_RANGE[0]);
+      row.push(loss([x, y]));
+    }
+    grid.push(row);
+  }
+  const flat = grid.flat();
+  const max = Math.max(...flat);
+  return { grid, max, NX, NY };
+})();
+
 const PRESETS: readonly Preset[] = [
   {
     id: 'converges',
@@ -91,25 +112,6 @@ export function GradientDescentExplorer() {
     setEta(p.eta);
   };
 
-  // Pre-compute the loss surface as a colormap (downsampled).
-  const surface = useMemo(() => {
-    const grid: number[][] = [];
-    const NX = 60;
-    const NY = 60;
-    for (let i = 0; i < NY; i += 1) {
-      const row: number[] = [];
-      const y = Y_RANGE[0] + (i / (NY - 1)) * (Y_RANGE[1] - Y_RANGE[0]);
-      for (let j = 0; j < NX; j += 1) {
-        const x = X_RANGE[0] + (j / (NX - 1)) * (X_RANGE[1] - X_RANGE[0]);
-        row.push(loss([x, y]));
-      }
-      grid.push(row);
-    }
-    const flat = grid.flat();
-    const max = Math.max(...flat);
-    return { grid, max, NX, NY };
-  }, []);
-
   // Color the surface cells. Low loss → blue; high loss → red.
   // The fill is a theme token; opacity is computed per cell. Because
   // both --accent and --negative resolve to the same hex in the dark
@@ -127,11 +129,11 @@ export function GradientDescentExplorer() {
   const cellStyle = (
     v: number,
   ): { fill: string; opacity: number } => {
-    if (v > surface.max * 0.6) {
-      const t = Math.min(1, v / surface.max);
+    if (v > STATIC_SURFACE.max * 0.6) {
+      const t = Math.min(1, v / STATIC_SURFACE.max);
       return { fill: 'rgb(var(--negative))', opacity: round4(t * 0.7) };
     }
-    const t = Math.max(0, 1 - v / (surface.max * 0.5));
+    const t = Math.max(0, 1 - v / (STATIC_SURFACE.max * 0.5));
     return { fill: 'rgb(var(--accent))', opacity: round4(t * 0.4) };
   };
 
@@ -180,16 +182,16 @@ export function GradientDescentExplorer() {
             aria-label="2D loss surface with a gradient-descent trajectory."
           >
             {/* Surface cells */}
-            {surface.grid.map((row, i) =>
+            {STATIC_SURFACE.grid.map((row, i) =>
               row.map((v, j) => {
                 const s = cellStyle(v);
                 return (
                   <rect
                     key={`c${i}-${j}`}
-                    x={toScreenX(X_RANGE[0] + (j / (surface.NX - 1)) * (X_RANGE[1] - X_RANGE[0]))}
-                    y={toScreenY(Y_RANGE[0] + (i / (surface.NY - 1)) * (Y_RANGE[1] - Y_RANGE[0]))}
-                    width={PLOT_W / (surface.NX - 1) + 0.5}
-                    height={PLOT_H / (surface.NY - 1) + 0.5}
+                    x={toScreenX(X_RANGE[0] + (j / (STATIC_SURFACE.NX - 1)) * (X_RANGE[1] - X_RANGE[0]))}
+                    y={toScreenY(Y_RANGE[0] + (i / (STATIC_SURFACE.NY - 1)) * (Y_RANGE[1] - Y_RANGE[0]))}
+                    width={PLOT_W / (STATIC_SURFACE.NX - 1) + 0.5}
+                    height={PLOT_H / (STATIC_SURFACE.NY - 1) + 0.5}
                     fill={s.fill}
                     opacity={s.opacity}
                   />
