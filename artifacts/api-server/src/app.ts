@@ -24,12 +24,15 @@ app.use((_req: Request, res: Response, next: NextFunction) => {
   res.setHeader("X-XSS-Protection", "1; mode=block");
   res.setHeader(
     "Strict-Transport-Security",
-    "max-age=31536000; includeSubDomains",
+    "max-age=31536000; includeSubDomains; preload",
   );
   res.setHeader("Content-Security-Policy", "default-src 'none'");
   res.setHeader("Cache-Control", "no-store");
   res.setHeader("Referrer-Policy", "no-referrer");
   res.setHeader("Permissions-Policy", "geolocation=(), microphone=(), camera=()");
+  res.setHeader("X-DNS-Prefetch-Control", "off");
+  res.setHeader("X-Download-Options", "noopen");
+  res.setHeader("X-Permitted-Cross-Domain-Policies", "none");
   next();
 });
 
