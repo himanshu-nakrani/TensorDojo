@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Direction B — Instrument Panel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  /* ============ DIRECTION B · INSTRUMENT PANEL ============
+     Dark-first precision instrument. Deep neutral canvas, hairline
+     bezels, dense mono readouts, signal-green accent reserved for
+     anything live/manipulable. Light variant = cool lab bench.    */
+  :root {
+    --bg: #EEF1F5;
+    --panel: #FFFFFF;
+    --panel-2: #F6F8FA;
+    --well: #E4E9EF;
+    --ink: #17202B;
+    --muted: #55616F;
+    --dim: #7C8896;
+    --line: #D5DBE3;
+    --line-strong: #B9C2CD;
+    --accent: #0E9C6D;
+    --accent-fg: #FFFFFF;
+    --signal: #0E9C6D;
+    --amber: #B45309;
+  }
+  .dark {
+    --bg: #0B0E13;
+    --panel: #12161D;
+    --panel-2: #171C25;
+    --well: #0E1116;
+    --ink: #DFE6EF;
+    --muted: #97A3B2;
+    --dim: #6E7A89;
+    --line: #232A35;
+    --line-strong: #39434F;
+    --accent: #3DD68C;
+    --accent-fg: #06130C;
+    --signal: #3DD68C;
+    --amber: #FFB224;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  body { font-family: 'JetBrains Mono', monospace; color: var(--ink); background: #C9CFD8; }
+  .dark-canvas body { }
+  .case-label {
+    font: 700 11px/1 'JetBrains Mono', monospace; letter-spacing: .2em; text-transform: uppercase;
+    padding: 14px 24px; color: #45505C; background: #C9CFD8; border-top: 1px solid #AEB6C2;
+  }
+  .canvas {
+    color: var(--ink);
+    background: var(--bg); color: var(--ink);
+    background-image:
+      linear-gradient(var(--line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line) 1px, transparent 1px);
+    background-size: 160px 160px;
+    padding: 40px 32px 56px;
+  }
+  .shell { max-width: 1080px; margin: 0 auto; }
+  .label { font: 600 10.5px 'JetBrains Mono', monospace; letter-spacing: .16em; text-transform: uppercase; color: var(--dim); }
+
+  /* nav — a machined top rail */
+  .nav {
+    display: flex; align-items: center; gap: 26px;
+    background: var(--panel); border: 1px solid var(--line-strong);
+    border-radius: 4px; padding: 12px 18px;
+    box-shadow: inset 0 -2px 0 var(--well);
+  }
+  .wordmark { font: 700 15px 'Space Grotesk'; letter-spacing: -.01em; display: flex; gap: 10px; align-items: center; }
+  .led { width: 8px; height: 8px; border-radius: 50%; background: var(--signal); box-shadow: 0 0 8px color-mix(in srgb, var(--signal) 80%, transparent); animation: blink 2.4s infinite; }
+  @keyframes blink { 50% { opacity: .4; } }
+  @media (prefers-reduced-motion: reduce) { .led { animation: none; } }
+  .nav a { color: var(--muted); text-decoration: none; font: 600 11.5px 'JetBrains Mono', monospace; letter-spacing: .14em; text-transform: uppercase; padding: 7px 10px; border-radius: 3px; }
+  .nav a.on { color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+  .kbd { margin-left: auto; display: flex; gap: 10px; align-items: center; border: 1px solid var(--line-strong); background: var(--panel-2); padding: 7px 12px; border-radius: 3px; font: 600 11px 'JetBrains Mono', monospace; letter-spacing: .1em; color: var(--muted); }
+
+  /* lesson header — instrument ident plate */
+  .ident { margin-top: 48px; border: 1px solid var(--line-strong); border-radius: 4px; background: var(--panel); overflow: hidden; }
+  .ident-top { display: flex; justify-content: space-between; align-items: center; padding: 10px 18px; background: var(--panel-2); border-bottom: 1px solid var(--line); }
+  .ident-top .r { display: flex; gap: 16px; }
+  .chip { font: 600 10px 'JetBrains Mono', monospace; letter-spacing: .14em; color: var(--muted); border: 1px solid var(--line-strong); border-radius: 3px; padding: 4px 8px; }
+  .chip.acc { color: var(--accent-fg); background: var(--accent); border-color: var(--accent); }
+  h1 { font: 700 clamp(30px, 4vw, 42px)/1.05 'Space Grotesk'; letter-spacing: -.02em; padding: 22px 20px 6px; max-width: 22ch; }
+  .ident-meta { display: flex; gap: 0; border-top: 1px solid var(--line); margin-top: 18px; }
+  .im { flex: 1; padding: 12px 18px; border-right: 1px solid var(--line); }
+  .im:last-child { border-right: 0; }
+  .im b { display: block; font: 700 13px 'JetBrains Mono', monospace; margin-top: 3px; color: var(--ink); }
+  .meter { height: 3px; background: var(--well); border-radius: 2px; margin-top: 8px; position: relative; }
+  .meter i { position: absolute; inset: 0 70% 0 0; background: var(--accent); border-radius: 2px; }
+
+  /* prose — reading pane with a left status gutter */
+  .prose-wrap { margin-top: 36px; display: grid; grid-template-columns: 210px minmax(0,66ch); gap: 28px; }
+  .gutter { display: flex; flex-direction: column; gap: 14px; }
+  .g-cell { border: 1px solid var(--line); border-radius: 4px; background: var(--panel); padding: 10px 12px; }
+  .g-cell b { display: block; font: 700 15px 'JetBrains Mono', monospace; margin-top: 4px; }
+  .g-cell b.acc { color: var(--accent); }
+  .prose { font: 400 15.5px/1.75 'Space Grotesk', sans-serif; color: var(--muted); letter-spacing: .002em; }
+  .prose h2 { font: 600 21px/1.25 'Space Grotesk'; color: var(--ink); letter-spacing: -.01em; margin-bottom: 12px; display: flex; align-items: center; gap: 12px; }
+  .prose h2::before { content: ''; width: 22px; height: 3px; background: var(--accent); border-radius: 2px; }
+  .prose p + p { margin-top: 13px; }
+  .prose strong { color: var(--ink); }
+  .prose code { font: 600 .82em 'JetBrains Mono', monospace; background: var(--panel-2); border: 1px solid var(--line); border-radius: 3px; padding: 2px 6px; color: var(--ink); }
+  .prose a { color: var(--accent); text-decoration: none; box-shadow: inset 0 -1px 0 var(--accent); }
+  .callout {
+    margin-top: 20px; border: 1px solid var(--line-strong); border-left: none; border-radius: 4px;
+    background: var(--panel); padding: 0; display: grid; grid-template-columns: 44px minmax(0,1fr) auto; align-items: stretch; overflow: hidden;
+  }
+  .callout .tag { background: var(--accent); color: var(--accent-fg); display: grid; place-items: center; font: 700 10px 'JetBrains Mono', monospace; letter-spacing: .08em; writing-mode: vertical-rl; transform: rotate(180deg); padding: 8px 0; }
+  .callout .txt { padding: 13px 16px; font-size: 14px; color: var(--ink); }
+  .callout .go { padding: 13px 16px; font: 700 11px 'JetBrains Mono', monospace; letter-spacing: .12em; color: var(--accent); white-space: nowrap; }
+
+  /* sim — the instrument */
+  .sim-card { margin-top: 36px; border: 1px solid var(--line-strong); border-radius: 6px; background: var(--panel); box-shadow: 0 1px 0 var(--well), inset 0 1px 0 rgba(255,255,255,.04); }
+  .dark .sim-card { box-shadow: inset 0 1px 0 rgba(255,255,255,.03), 0 12px 32px -18px rgba(0,0,0,.8); }
+  .sim-head { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-bottom: 1px solid var(--line-strong); background: var(--panel-2); }
+  .live { display: inline-flex; align-items: center; gap: 8px; font: 700 10.5px 'JetBrains Mono', monospace; letter-spacing: .16em; color: var(--accent); }
+  .reset { margin-left: auto; font: 700 10.5px 'JetBrains Mono', monospace; letter-spacing: .14em; color: var(--muted); background: var(--panel); border: 1px solid var(--line-strong); border-radius: 3px; padding: 6px 12px; }
+  .sim-body { display: grid; grid-template-columns: minmax(0,1fr) 260px; }
+  .stage {
+    margin: 16px; border: 1px solid var(--line); border-radius: 4px; background: var(--well);
+    min-height: 230px; position: relative; display: grid; place-items: center;
+    color: var(--dim); font: 600 10px 'JetBrains Mono', monospace; letter-spacing: .18em;
+  }
+  /* ruler ticks along stage edges */
+  .stage::before {
+    content: ''; position: absolute; left: 10px; right: 10px; bottom: 6px; height: 5px;
+    background: repeating-linear-gradient(90deg, var(--line-strong) 0 1px, transparent 1px 12%);
+  }
+  .stage::after {
+    content: ''; position: absolute; top: 10px; bottom: 6px; right: 6px; width: 5px;
+    background: repeating-linear-gradient(180deg, var(--line-strong) 0 1px, transparent 1px 12%);
+  }
+  .controls { border-left: 1px solid var(--line); padding: 16px; display: flex; flex-direction: column; gap: 15px; background: var(--panel-2); }
+  .ctl-label { display: flex; justify-content: space-between; font: 600 10px 'JetBrains Mono', monospace; letter-spacing: .14em; color: var(--dim); text-transform: uppercase; }
+  .ctl-label output { color: var(--accent); font-weight: 700; }
+  .track { position: relative; height: 6px; border-radius: 3px; background: var(--well); margin-top: 8px; border: 1px solid var(--line); }
+  .track i { position: absolute; inset: 0 30% 0 0; background: linear-gradient(90deg, color-mix(in srgb, var(--accent) 55%, transparent), var(--accent)); border-radius: 2px; }
+  .thumb { position: absolute; top: 50%; left: 70%; width: 14px; height: 18px; border-radius: 3px; background: var(--accent); border: 2px solid var(--bg); transform: translate(-50%, -50%); box-shadow: 0 0 10px color-mix(in srgb, var(--accent) 60%, transparent); }
+  .pills { display: flex; flex-direction: column; gap: 6px; }
+  .pill { display: flex; justify-content: space-between; align-items: center; font: 600 10.5px 'JetBrains Mono', monospace; letter-spacing: .12em; color: var(--muted); border: 1px solid var(--line-strong); border-radius: 3px; padding: 8px 10px; background: var(--panel); }
+  .pill i { width: 26px; height: 14px; border-radius: 2px; background: var(--well); border: 1px solid var(--line-strong); position: relative; }
+  .pill.on { color: var(--ink); }
+  .pill.on i { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 18%, var(--panel)); }
+  .pill.on i::after { content: ''; position: absolute; top: 1px; bottom: 1px; right: 1px; width: 10px; border-radius: 2px; background: var(--accent); }
+  .readouts { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid var(--line-strong); }
+  .ro { padding: 12px 16px; border-right: 1px solid var(--line); background: var(--panel-2); }
+  .ro:last-child { border-right: 0; }
+  .ro b { display: block; font: 700 19px 'JetBrains Mono', monospace; letter-spacing: -.02em; margin-top: 3px; }
+  .ro b small { font-size: 11px; color: var(--dim); font-weight: 600; }
+  .ro span { font-size: 9.5px; }
+
+  /* workbench item */
+  .wb-item { margin-top: 16px; border: 1px solid var(--accent); border-radius: 6px; background: var(--panel); box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 25%, transparent), 0 10px 30px -18px color-mix(in srgb, var(--accent) 70%, transparent); }
+  .wb-head { display: flex; align-items: center; gap: 14px; padding: 14px 16px; cursor: pointer; }
+  .chev { color: var(--accent); font: 700 11px 'JetBrains Mono', monospace; }
+  .wb-title { font: 600 15px 'Space Grotesk'; color: var(--ink); margin-top: 3px; }
+  .wb-desc { font: 400 12.5px 'Space Grotesk'; color: var(--muted); margin-top: 2px; }
+  .badge { margin-left: auto; display: inline-flex; gap: 7px; align-items: center; font: 700 9.5px 'JetBrains Mono', monospace; letter-spacing: .16em; color: var(--accent); }
+  .wb-caption { border-top: 1px solid var(--line); background: var(--panel-2); padding: 10px 16px; font: 500 11px 'JetBrains Mono', monospace; line-height: 1.7; color: var(--dim); }
+
+  /* footer — status bar */
+  .foot { margin-top: 44px; border: 1px solid var(--line-strong); border-radius: 4px; background: var(--panel-2); padding: 10px 16px; display: flex; justify-content: space-between; align-items: center; }
+  .foot span { font: 600 10px 'JetBrains Mono', monospace; letter-spacing: .14em; color: var(--muted); }
+</style>
+</head>
+<body>
+
+<div class="case-label">direction b — instrument panel · light (lab bench)</div>
+<section class="canvas"><div class="shell" id="blocks"></div></section>
+
+<div class="case-label">direction b — instrument panel · dark (primary)</div>
+<section class="canvas dark"><div class="shell" id="blocks-dark"></div></section>
+
+<template id="tpl">
+  <header class="nav">
+    <span class="wordmark"><span class="led" aria-hidden="true"></span> tensor dojo</span>
+    <a class="on" href="#">LESSONS</a>
+    <a href="#">CONCEPT MAP</a>
+    <span class="kbd">⌘K · SEARCH</span>
+  </header>
+
+  <div class="ident">
+    <div class="ident-top">
+      <span class="label">UNIT T04·07 / TRANSFORMER BLOCK</span>
+      <span class="r"><span class="chip acc">TRACK 04</span><span class="chip">07/10</span></span>
+    </div>
+    <h1>Multi-head attention</h1>
+    <div class="ident-meta">
+      <div class="im"><span class="label">READ TIME</span><b>12 MIN</b></div>
+      <div class="im"><span class="label">INTERACTIVES</span><b>3 UNITS</b><div class="meter"><i></i></div></div>
+      <div class="im"><span class="label">PROGRESS</span><b>68%</b><div class="meter"><i style="inset:0 32% 0 0"></i></div></div>
+      <div class="im"><span class="label">STATUS</span><b style="color:var(--accent)">IN PROGRESS</b></div>
+    </div>
+  </div>
+
+  <div class="prose-wrap">
+    <aside class="gutter">
+      <div class="g-cell"><span class="label">SECTION</span><b>01 / 06</b></div>
+      <div class="g-cell"><span class="label">HEADS</span><b class="acc">8</b></div>
+      <div class="g-cell"><span class="label">DIM / HEAD</span><b>64</b></div>
+    </aside>
+    <div class="prose">
+      <h2>One head, many perspectives</h2>
+      <p>Each head learns its own projection of every token, so the model can track several relations at once. In <em>“the cat that chased the mouse”</em>, one head follows the subject while another resolves the clause boundary.</p>
+      <p>Scores come from a scaled dot product between queries and keys: <code>softmax(Q·Kᵀ/√d)</code>. Temperature flattens or sharpens that distribution — <a href="#">see it live below</a>.</p>
+      <div class="callout">
+        <span class="tag">TRY</span>
+        <span class="txt">Open the matrix explorer — dim a head and watch which words lose their verbs.</span>
+        <span class="go">→ RUN</span>
+      </div>
+    </div>
+  </div>
+
+  <figure class="sim-card">
+    <figcaption class="sim-head">
+      <span class="live"><span class="led" aria-hidden="true"></span>ATTENTION MATRIX — HEAD 2/8</span>
+      <button class="reset">RESET ⟲</button>
+    </figcaption>
+    <div class="sim-body">
+      <div class="stage">FIGURE AREA · 24×24 GRID</div>
+      <div class="controls">
+        <label>
+          <span class="ctl-label"><span>TEMPERATURE τ</span><output>0.80</output></span>
+          <span class="track"><i></i><span class="thumb"></span></span>
+        </label>
+        <span class="pills">
+          <span class="pill on">SOFTMAX<i></i></span>
+          <span class="pill on">CAUSAL MASK<i></i></span>
+          <span class="pill">SCALE √d<i></i></span>
+        </span>
+      </div>
+    </div>
+    <div class="readouts">
+      <div class="ro"><span class="label">ENTROPY</span><b>1.24<small> nats</small></b></div>
+      <div class="ro"><span class="label">TOP-1 SHARE</span><b>38<small> %</small></b></div>
+      <div class="ro"><span class="label">TOKENS ≥10%</span><b>4</b></div>
+    </div>
+  </figure>
+
+  <div class="wb-item">
+    <div class="wb-head">
+      <span class="chev">▾▾</span>
+      <span><span class="label">ACTIVE · INTERACTIVE</span>
+        <div class="wb-title">Attention matrix</div>
+        <div class="wb-desc">Hover a cell to trace one query’s attention weights.</div>
+      </span>
+      <span class="badge"><span class="led" aria-hidden="true"></span>LIVE</span>
+    </div>
+    <div class="wb-caption">caption — each row is a query token; brightness is attention weight after softmax at temperature τ.</div>
+  </div>
+
+  <footer class="foot">
+    <span>◆ TENSOR DOJO — LEARN LLMS BY MANIPULATING THEM</span>
+    <span>© 2026 HIMANSHU-NAKRANI · ALL SYSTEMS LOCAL</span>
+  </footer>
+</template>
+
+<script>
+  const html = document.getElementById('tpl').innerHTML;
+  document.getElementById('blocks').innerHTML = html;
+  const d = document.getElementById('blocks-dark');
+  d.innerHTML = html;
+  d.querySelectorAll('[id]').forEach(el => el.removeAttribute('id'));
+</script>
+</body>
+</html>

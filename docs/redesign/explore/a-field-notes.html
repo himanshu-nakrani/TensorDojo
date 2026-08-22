@@ -1,0 +1,300 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Direction A — Field Notes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  /* ============ DIRECTION A · FIELD NOTES ============
+     Warm paper, soft-serif display (Fraunces), mono annotations,
+     technical-drawing devices: registration ticks, dashed rules,
+     dimension lines, a ruled margin down the prose column.       */
+  :root {
+    --bg: #FAF7F0;
+    --bg-elevated: #FFFFFF;
+    --bg-code: #F3EFE5;
+    --ink: #211D16;
+    --muted: #6B6355;
+    --dim: #8A8172;
+    --line: #E4DCC9;
+    --line-strong: #CFC4AB;
+    --accent: #1F7A45;
+    --accent-fg: #FFFFFF;
+    --accent-wash: rgba(31, 122, 69, 0.08);
+    --paper-minor: rgba(33, 29, 22, 0.025);
+    --paper-major: rgba(33, 29, 22, 0.05);
+  }
+  .dark {
+    --bg: #191612;
+    --bg-elevated: #221E18;
+    --bg-code: #262119;
+    --ink: #EDE6D6;
+    --muted: #B3AA97;
+    --dim: #948B79;
+    --line: #373127;
+    --line-strong: #4A4437;
+    --accent: #5BBE83;
+    --accent-fg: #10241A;
+    --accent-wash: rgba(91, 190, 131, 0.10);
+    --paper-minor: rgba(255, 244, 214, 0.02);
+    --paper-major: rgba(255, 244, 214, 0.04);
+  }
+  * { box-sizing: border-box; margin: 0; }
+  body { font-family: 'Inter', system-ui, sans-serif; color: var(--ink); background: #ECE7DC; }
+  .case-label {
+    font: 600 11px/1 'JetBrains Mono', monospace;
+    letter-spacing: .18em; text-transform: uppercase;
+    padding: 14px 24px; color: #6B6355; background: #ECE7DC;
+    border-top: 1px solid #D8D0BF;
+  }
+  .canvas {
+    color: var(--ink);
+    background-color: var(--bg);
+    background-image:
+      linear-gradient(var(--paper-major) 1px, transparent 1px),
+      linear-gradient(90deg, var(--paper-major) 1px, transparent 1px),
+      linear-gradient(var(--paper-minor) 1px, transparent 1px),
+      linear-gradient(90deg, var(--paper-minor) 1px, transparent 1px);
+    background-size: 120px 120px, 120px 120px, 24px 24px, 24px 24px;
+    padding: 40px 32px 56px;
+  }
+  .shell { max-width: 960px; margin: 0 auto; }
+  .mono { font-family: 'JetBrains Mono', monospace; }
+  .eyebrow {
+    font: 600 11px/1.4 'JetBrains Mono', monospace;
+    letter-spacing: .16em; text-transform: uppercase; color: var(--dim);
+  }
+  .eyebrow b { color: var(--accent); font-weight: 600; }
+
+  /* nav — a ruled header strip with a stamped wordmark */
+  .nav {
+    display: flex; align-items: center; gap: 28px;
+    border: 1px solid var(--line); border-radius: 10px;
+    background: var(--bg-elevated); padding: 14px 20px;
+    box-shadow: 0 1px 0 rgba(33,29,22,.05), inset 0 1px 0 rgba(255,255,255,.5);
+  }
+  .dark .nav { box-shadow: none; }
+  .wordmark { display: flex; gap: 10px; align-items: center; font: 600 15px 'Fraunces', serif; }
+  .wordmark .die {
+    width: 22px; height: 22px; border: 1.5px solid var(--ink); border-radius: 50%;
+    display: grid; place-items: center; font: 700 10px/1 'JetBrains Mono', monospace;
+  }
+  .nav a { color: var(--muted); text-decoration: none; font-size: 13.5px; font-weight: 500; }
+  .nav a.on { color: var(--accent); }
+  .kbd {
+    margin-left: auto; border: 1px solid var(--line-strong); border-bottom-width: 2px;
+    border-radius: 6px; padding: 5px 12px; font: 600 12px 'JetBrains Mono', monospace;
+    color: var(--muted); background: var(--bg);
+  }
+
+  /* lesson header — eyebrow, dimension line under the title */
+  .lesson-head { margin-top: 52px; position: relative; }
+  .backlink { font: 500 13px Inter; color: var(--dim); text-decoration: none; }
+  h1 {
+    font: 600 clamp(34px, 4.6vw, 46px)/1.08 'Fraunces', serif;
+    letter-spacing: -0.015em; margin: 14px 0 10px; max-width: 16ch;
+  }
+  h1 em { font-style: italic; color: var(--accent); }
+  .dimension {
+    position: relative; height: 10px; width: 240px; margin-bottom: 12px;
+  }
+  .dimension::before {
+    content: ''; position: absolute; inset: 4px 0 4px;
+    border-top: 1px solid var(--line-strong); border-bottom: 1px solid var(--line-strong);
+  }
+  .dimension::after {
+    content: ''; position: absolute; top: 0; bottom: 0; left: 0; width: 1px; background: var(--line-strong);
+    box-shadow: 239px 0 0 var(--line-strong);
+  }
+  .meta-row { display: flex; gap: 18px; align-items: baseline; }
+  .meta { font: 500 12.5px 'JetBrains Mono', monospace; color: var(--muted); }
+  .meta .tick { color: var(--accent); }
+
+  /* prose column — ruled notebook margin on the left */
+  .prose-wrap { display: grid; grid-template-columns: 26px minmax(0, 68ch); margin-top: 44px; }
+  .margin-rule {
+    border-left: 1.5px solid var(--line-strong);
+    background:
+      radial-gradient(circle at 50% 100%, var(--line-strong) 0 1.5px, transparent 1.5px) 0 0 / 1.5px 96px repeat-y;
+  }
+  .prose { padding-left: 28px; font-size: 17px; line-height: 1.75; color: var(--muted); }
+  .prose h2 {
+    font: 600 26px/1.2 'Fraunces', serif; color: var(--ink); letter-spacing: -0.01em;
+    margin-bottom: 14px; display: flex; gap: 14px; align-items: baseline;
+  }
+  .secno {
+    font: 600 12px 'JetBrains Mono', monospace; color: var(--accent);
+    border: 1px solid var(--line-strong); border-radius: 999px; padding: 3px 9px;
+    transform: translateY(-3px); background: var(--bg-elevated);
+  }
+  .prose p + p { margin-top: 14px; }
+  .prose strong { color: var(--ink); }
+  .prose code {
+    font: 500 0.85em 'JetBrains Mono', monospace; background: var(--bg-code);
+    border: 1px solid var(--line); border-radius: 5px; padding: 1.5px 6px; color: var(--ink);
+  }
+  .prose a { color: var(--accent); text-decoration: none; border-bottom: 1px dashed var(--accent); }
+  .callout {
+    margin-top: 22px; border: 1px solid var(--line); border-left: 3px solid var(--accent);
+    border-radius: 8px; background: var(--accent-wash); padding: 14px 18px;
+    display: flex; justify-content: space-between; gap: 16px; align-items: center;
+    color: var(--ink); font-size: 15px;
+  }
+  .callout .go { font: 600 12px 'JetBrains Mono', monospace; letter-spacing: .1em; color: var(--accent); white-space: nowrap; }
+
+  /* sim card — registration ticks in the corners, dashed rule above controls */
+  .sim-card { position: relative; margin-top: 40px; border: 1px solid var(--line-strong); border-radius: 12px; background: var(--bg-elevated); }
+  .reg { position: absolute; width: 14px; height: 14px; pointer-events: none; }
+  .reg::before, .reg::after { content: ''; position: absolute; background: var(--accent); opacity: .55; }
+  .reg::before { width: 14px; height: 1.5px; top: 50%; }
+  .reg::after { height: 14px; width: 1.5px; left: 50%; }
+  .reg.tl { top: -7px; left: -7px; } .reg.tr { top: -7px; right: -7px; }
+  .reg.bl { bottom: -7px; left: -7px; } .reg.br { bottom: -7px; right: -7px; }
+  .sim-head {
+    display: flex; align-items: center; gap: 12px; padding: 14px 20px;
+    border-bottom: 1px dashed var(--line-strong);
+  }
+  .live-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); animation: pulse 2s infinite; }
+  @keyframes pulse { 50% { opacity: .35; } }
+  @media (prefers-reduced-motion: reduce) { .live-dot { animation: none; } }
+  .sim-title { font: 600 12px 'JetBrains Mono', monospace; letter-spacing: .14em; }
+  .reset { margin-left: auto; font: 600 11px 'JetBrains Mono', monospace; letter-spacing: .12em; color: var(--muted); border: 1px solid var(--line-strong); border-radius: 6px; padding: 6px 12px; background: none; }
+  .sim-body { display: grid; grid-template-columns: minmax(0, 1fr) 250px; gap: 20px; padding: 20px; }
+  .stage {
+    border: 1px solid var(--line); border-radius: 8px; min-height: 220px;
+    display: grid; place-items: center; color: var(--dim);
+    font: 500 11px 'JetBrains Mono', monospace; letter-spacing: .14em;
+    background-image: repeating-linear-gradient(45deg, var(--paper-minor) 0 1px, transparent 1px 8px);
+  }
+  .controls { display: flex; flex-direction: column; gap: 16px; }
+  .ctl-label { font: 600 10.5px 'JetBrains Mono', monospace; letter-spacing: .14em; color: var(--dim); display: flex; justify-content: space-between; }
+  .ctl-label output { color: var(--accent); }
+  .track { position: relative; height: 4px; border-radius: 2px; background: var(--line); margin-top: 9px; }
+  .track i { position: absolute; inset: 0 30% 0 0; background: var(--accent); border-radius: 2px; }
+  .thumb { position: absolute; top: 50%; left: 70%; width: 16px; height: 16px; border-radius: 50%; background: var(--accent); border: 3px solid var(--bg-elevated); box-shadow: 0 0 0 1px var(--accent); transform: translate(-50%, -50%); }
+  .pills { display: flex; flex-wrap: wrap; gap: 8px; }
+  .pill {
+    font: 600 10.5px 'JetBrains Mono', monospace; letter-spacing: .1em;
+    border: 1px solid var(--line-strong); border-radius: 999px; padding: 6px 12px; color: var(--muted);
+    display: inline-flex; gap: 7px; align-items: center;
+  }
+  .pill.on { border-color: var(--accent); color: var(--accent); background: var(--accent-wash); }
+  .pill.on::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+  .readouts { border-top: 1px dashed var(--line-strong); padding: 16px 20px 18px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  .ro b { display: block; font: 700 20px 'Fraunces', serif; font-variant-numeric: tabular-nums; color: var(--ink); }
+  .ro span { font: 500 10px 'JetBrains Mono', monospace; letter-spacing: .12em; color: var(--dim); text-transform: uppercase; }
+
+  /* workbench accordion item */
+  .wb-item { margin-top: 18px; border: 1px solid var(--accent); border-radius: 12px; background: var(--bg-elevated); overflow: hidden; }
+  .wb-head { display: flex; align-items: center; gap: 16px; padding: 16px 20px; cursor: pointer; }
+  .chev { color: var(--accent); font: 600 12px 'JetBrains Mono', monospace; }
+  .wb-title { font: 600 15.5px Inter; color: var(--ink); margin-top: 3px; }
+  .wb-desc { font-size: 13px; color: var(--muted); margin-top: 2px; }
+  .badge { margin-left: auto; font: 600 10px 'JetBrains Mono', monospace; letter-spacing: .14em; color: var(--accent); border: 1px solid var(--accent); border-radius: 999px; padding: 4px 10px; white-space: nowrap; }
+  .wb-caption { border-top: 1px dashed var(--line-strong); padding: 12px 20px; font: 500 12px 'JetBrains Mono', monospace; line-height: 1.7; color: var(--dim); }
+
+  /* footer */
+  .foot { margin-top: 48px; border-top: 1px solid var(--line-strong); padding-top: 20px; display: flex; justify-content: space-between; align-items: center; color: var(--muted); font-size: 13px; }
+  .foot .mono { font-size: 11px; letter-spacing: .12em; }
+</style>
+</head>
+<body>
+
+<div class="case-label">direction a — field notes · light</div>
+<section class="canvas"><div class="shell" id="blocks"></div></section>
+
+<div class="case-label">direction a — field notes · dark</div>
+<section class="canvas dark"><div class="shell" id="blocks-dark"></div></section>
+
+<template id="tpl">
+  <header class="nav">
+    <span class="wordmark"><span class="die">◆</span> tensor dojo</span>
+    <a class="on" href="#">Lessons</a>
+    <a href="#">Concept map</a>
+    <span class="kbd">⌘K&nbsp;&nbsp;Search</span>
+  </header>
+
+  <div class="lesson-head">
+    <a class="backlink" href="#">← All lessons</a>
+    <h1>Multi-head <em>attention</em>, from scratch.</h1>
+    <div class="dimension" aria-hidden="true"></div>
+    <div class="meta-row">
+      <span class="eyebrow"><b>TRACK 04</b>&nbsp;&nbsp;TRANSFORMER BLOCK&nbsp;&nbsp;·&nbsp;&nbsp;<span class="mono">07/10</span></span>
+      <span class="meta"><span class="tick">▸</span> 12 MIN READ</span>
+      <span class="meta"><span class="tick">▸</span> 3 INTERACTIVES</span>
+    </div>
+  </div>
+
+  <div class="prose-wrap">
+    <div class="margin-rule" aria-hidden="true"></div>
+    <div class="prose">
+      <h2><span class="secno">01</span>One head, many perspectives</h2>
+      <p>Each head learns its own projection of every token, so the model can track several relations at once. In <em>“the cat that chased the mouse”</em>, one head follows the subject while another resolves the clause boundary.</p>
+      <p>The scores come from a scaled dot product between queries and keys: <code>softmax(Q·Kᵀ / √d)</code>. Temperature flattens or sharpens that distribution — <a href="#">see it live below</a>.</p>
+      <div class="callout">
+        <span>Open the matrix explorer — dim a head and watch which words lose their verbs.</span>
+        <span class="go">TRY IT →</span>
+      </div>
+    </div>
+  </div>
+
+  <figure class="sim-card">
+    <span class="reg tl"></span><span class="reg tr"></span><span class="reg bl"></span><span class="reg br"></span>
+    <figcaption class="sim-head">
+      <span class="live-dot" aria-hidden="true"></span>
+      <span class="sim-title">ATTENTION MATRIX · HEAD 2 OF 8</span>
+      <button class="reset">RESET ⟲</button>
+    </figcaption>
+    <div class="sim-body">
+      <div class="stage">FIGURE AREA — 24 × 24 GRID</div>
+      <div class="controls">
+        <label>
+          <span class="ctl-label"><span>TEMPERATURE τ</span><output>0.80</output></span>
+          <span class="track"><i></i><span class="thumb"></span></span>
+        </label>
+        <span class="ctl-label"><span>TOGGLES</span></span>
+        <span class="pills">
+          <span class="pill on">SOFTMAX</span>
+          <span class="pill on">CAUSAL MASK</span>
+          <span class="pill">SCALE √d</span>
+        </span>
+      </div>
+    </div>
+    <div class="readouts">
+      <div class="ro"><b>1.24</b><span>entropy nats</span></div>
+      <div class="ro"><b>38%</b><span>top-1 share</span></div>
+      <div class="ro"><b>4</b><span>tokens ≥ 10%</span></div>
+    </div>
+  </figure>
+
+  <div class="wb-item">
+    <div class="wb-head">
+      <span class="chev">▾</span>
+      <span><span class="eyebrow">ACTIVE · INTERACTIVE</span>
+        <div class="wb-title">Attention matrix</div>
+        <div class="wb-desc">Hover a cell to trace one query’s attention weights.</div>
+      </span>
+      <span class="badge">LIVE</span>
+    </div>
+    <div class="wb-caption">caption — each row is a query token; brightness is attention weight after softmax at temperature τ.</div>
+  </div>
+
+  <footer class="foot">
+    <span class="wordmark" style="font-size:14px"><span class="die">◆</span> tensor dojo</span>
+    <span class="mono">LEARN LLMS BY MANIPULATING THEM</span>
+    <span class="mono">© 2026 HIMANSHU-NAKRANI</span>
+  </footer>
+</template>
+
+<script>
+  const html = document.getElementById('tpl').innerHTML;
+  document.getElementById('blocks').innerHTML = html;
+  const d = document.getElementById('blocks-dark');
+  d.innerHTML = html;
+  // keep ids unique
+  d.querySelectorAll('[id]').forEach(el => el.removeAttribute('id'));
+</script>
+</body>
+</html>

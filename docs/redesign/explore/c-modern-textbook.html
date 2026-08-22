@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Direction C — Modern Textbook</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  /* ============ DIRECTION C · MODERN TEXTBOOK ============
+     Editorial serif set large, generous whitespace, numbered
+     figures and footnote-style annotations. Accent (deep oxford
+     blue) reserved for links, figures, and interactive controls. */
+  :root {
+    --bg: #FBFAF7;
+    --bg-elevated: #FFFFFF;
+    --bg-code: #F4F3EE;
+    --ink: #191919;
+    --muted: #4A4A46;
+    --dim: #7B7970;
+    --line: #E6E4DC;
+    --line-strong: #C9C6BA;
+    --accent: #2B5288;
+    --accent-fg: #FFFFFF;
+    --accent-wash: rgba(43, 82, 136, 0.06);
+    --gold: #A16207;
+  }
+  .dark {
+    --bg: #16181A;
+    --bg-elevated: #1D2023;
+    --bg-code: #22262A;
+    --ink: #ECEAE4;
+    --muted: #B5B2AA;
+    --dim: #8E8B83;
+    --line: #2C2F33;
+    --line-strong: #3E4247;
+    --accent: #8FB4E3;
+    --accent-fg: #10202F;
+    --accent-wash: rgba(143, 180, 227, 0.08);
+    --gold: #D9B36A;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  body { font-family: 'Inter', system-ui, sans-serif; color: var(--ink); background: #EFEEE8; }
+  .case-label {
+    font: 600 11px/1 'JetBrains Mono', monospace; letter-spacing: .18em; text-transform: uppercase;
+    padding: 14px 24px; color: #6E6C63; background: #EFEEE8; border-top: 1px solid #DBD9CF;
+  }
+  .canvas { background: var(--bg); padding: 44px 32px 60px; color: var(--ink); }
+  .shell { max-width: 1040px; margin: 0 auto; }
+
+  /* nav — quiet utility bar with double rule beneath (book title page device) */
+  .nav { display: flex; align-items: baseline; gap: 30px; padding-bottom: 12px; border-bottom: 1px solid var(--ink); position: relative; }
+  .nav::after { content: ''; position: absolute; left: 0; right: 0; bottom: -4px; border-bottom: 1px solid var(--ink); }
+  .wordmark { font: 500 17px 'Newsreader', serif; letter-spacing: .01em; display: flex; gap: 10px; align-items: baseline; }
+  .wordmark i { font-style: normal; color: var(--accent); font-size: 13px; transform: translateY(-1px); display: inline-block; }
+  .nav a { color: var(--muted); text-decoration: none; font-size: 13.5px; }
+  .nav a.on { color: var(--accent); text-decoration: underline; text-underline-offset: 4px; }
+  .kbd { margin-left: auto; font: 500 13px 'JetBrains Mono', monospace; color: var(--muted); border: 1px solid var(--line-strong); border-radius: 999px; padding: 4px 14px; background: var(--bg-elevated); }
+
+  /* chapter opener */
+  .opener { max-width: 720px; margin: 64px auto 0; text-align: center; }
+  .chapter { font: 600 12px 'JetBrains Mono', monospace; letter-spacing: .28em; text-transform: uppercase; color: var(--gold); }
+  h1 { font: 500 clamp(38px, 5vw, 54px)/1.12 'Newsreader', serif; letter-spacing: -.01em; margin: 16px auto 14px; max-width: 20ch; }
+  h1 em { font-style: italic; }
+  .deck { font: 400 19px/1.55 'Newsreader', serif; font-style: italic; color: var(--muted); max-width: 52ch; margin: 0 auto; }
+  .ornament { display: flex; align-items: center; gap: 14px; justify-content: center; margin-top: 26px; color: var(--line-strong); }
+  .ornament::before, .ornament::after { content: ''; height: 1px; width: 90px; background: currentColor; }
+  .ornament span { font-size: 12px; color: var(--gold); }
+  .meta-line { margin-top: 20px; font: 500 12.5px Inter; color: var(--dim); display: flex; gap: 22px; justify-content: center; }
+  .meta-line b { color: var(--accent); font-weight: 600; }
+
+  /* prose — measure + footnotes */
+  .prose-wrap { max-width: 66ch; margin: 56px auto 0; }
+  .prose { font: 400 19px/1.75 'Newsreader', serif; color: var(--muted); }
+  .prose h2 { font: 500 29px/1.25 'Newsreader', serif; color: var(--ink); margin-bottom: 16px; letter-spacing: -.005em; }
+  .prose h2 sup { font: 600 12px 'JetBrains Mono', monospace; color: var(--gold); letter-spacing: .1em; margin-left: 10px; vertical-align: super; }
+  .prose p + p { margin-top: 15px; }
+  .prose strong { color: var(--ink); font-weight: 600; }
+  .prose code { font: 500 .78em 'JetBrains Mono', monospace; background: var(--bg-code); border: 1px solid var(--line); border-radius: 4px; padding: 2px 6px; color: var(--ink); }
+  .prose a { color: var(--accent); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+  .footnote { font-size: 14px; line-height: 1.6; color: var(--dim); border-top: 1px solid var(--line); margin-top: 26px; padding-top: 12px; }
+  .footnote b { color: var(--gold); font-weight: 600; }
+  .callout {
+    margin: 26px 0 0; border: 1px solid var(--line); border-radius: 10px; background: var(--accent-wash);
+    padding: 18px 22px; display: flex; gap: 16px; align-items: center; justify-content: space-between;
+  }
+  .callout .t { font: 500 17px/1.5 'Newsreader', serif; color: var(--ink); }
+  .callout .go { font: 600 12px 'JetBrains Mono', monospace; letter-spacing: .12em; color: var(--accent); white-space: nowrap; }
+
+  /* figure — numbered, captioned like a book plate */
+  .figure { max-width: 900px; margin: 48px auto 0; border: 1px solid var(--line-strong); border-radius: 12px; background: var(--bg-elevated); overflow: hidden; }
+  .fig-head { display: flex; align-items: center; gap: 12px; padding: 13px 20px; border-bottom: 1px solid var(--line); }
+  .fig-no { font: 600 11.5px 'JetBrains Mono', monospace; letter-spacing: .14em; color: var(--accent); text-transform: uppercase; }
+  .fig-title { font: 500 15px 'Newsreader', serif; font-style: italic; color: var(--muted); }
+  .reset { margin-left: auto; font: 600 12px Inter; color: var(--muted); border: 1px solid var(--line-strong); border-radius: 999px; padding: 6px 14px; background: none; }
+  .fig-body { display: grid; grid-template-columns: minmax(0,1fr) 250px; }
+  .stage {
+    min-height: 240px; display: grid; place-items: center; color: var(--dim);
+    font: 500 11.5px 'JetBrains Mono', monospace; letter-spacing: .14em;
+  }
+  .controls { border-left: 1px solid var(--line); padding: 18px; display: flex; flex-direction: column; gap: 16px; }
+  .ctl-label { display: flex; justify-content: space-between; font: 500 13px Inter; color: var(--muted); }
+  .ctl-label output { color: var(--accent); font-weight: 600; }
+  .track { position: relative; height: 4px; border-radius: 2px; background: var(--line); margin-top: 9px; }
+  .track i { position: absolute; inset: 0 30% 0 0; background: var(--accent); border-radius: 2px; }
+  .thumb { position: absolute; top: 50%; left: 70%; width: 15px; height: 15px; border-radius: 50%; background: var(--accent-fg); border: 2px solid var(--accent); box-shadow: 0 1px 4px rgba(0,0,0,.18); transform: translate(-50%,-50%); }
+  .pills { display: flex; flex-direction: column; gap: 8px; }
+  .pill {
+    display: flex; justify-content: space-between; align-items: center;
+    font: 500 13px Inter; color: var(--muted);
+    border: 1px solid var(--line-strong); border-radius: 8px; padding: 9px 12px;
+  }
+  .pill i { width: 15px; height: 15px; border-radius: 4px; border: 1.5px solid var(--line-strong); }
+  .pill.on { color: var(--ink); border-color: var(--accent); background: var(--accent-wash); }
+  .pill.on i { border-color: var(--accent); background: linear-gradient(var(--accent), var(--accent)) center / 8px 8px no-repeat, var(--accent-fg); }
+  .fig-caption { border-top: 1px solid var(--line); padding: 13px 20px; font: 400 14px/1.6 'Newsreader', serif; color: var(--dim); }
+  .fig-caption b { font: 600 11px 'JetBrains Mono', monospace; letter-spacing: .12em; color: var(--accent); margin-right: 10px; }
+
+  /* workbench item */
+  .wb-item { max-width: 900px; margin: 18px auto 0; border: 1.5px solid var(--accent); border-radius: 12px; background: var(--bg-elevated); }
+  .wb-head { display: flex; align-items: center; gap: 16px; padding: 17px 20px; cursor: pointer; }
+  .chev { width: 26px; height: 26px; border-radius: 999px; background: var(--accent); color: var(--accent-fg); display: grid; place-items: center; font-size: 11px; }
+  .wb-title { font: 500 18px 'Newsreader', serif; color: var(--ink); margin-top: 2px; }
+  .wb-desc { font: 400 13.5px Inter; color: var(--muted); margin-top: 2px; }
+  .badge { margin-left: auto; font: 600 10.5px 'JetBrains Mono', monospace; letter-spacing: .14em; color: var(--accent); white-space: nowrap; }
+  .badge::before { content: '● '; font-size: 8px; vertical-align: 2px; }
+
+  .foot { margin-top: 56px; border-top: 1px solid var(--ink); position: relative; padding-top: 18px; display: flex; justify-content: space-between; align-items: baseline; }
+  .foot::after { content: ''; position: absolute; left: 0; right: 0; top: 3px; border-top: 1px solid var(--ink); }
+  .foot span { font-size: 13px; color: var(--muted); }
+  .foot .colophon { font: 400 13.5px 'Newsreader', serif; font-style: italic; }
+</style>
+</head>
+<body>
+
+<div class="case-label">direction c — modern textbook · light</div>
+<section class="canvas"><div class="shell" id="blocks"></div></section>
+
+<div class="case-label">direction c — modern textbook · dark</div>
+<section class="canvas dark"><div class="shell" id="blocks-dark"></div></section>
+
+<template id="tpl">
+  <header class="nav">
+    <span class="wordmark"><i>◆</i> Tensor Dojo</span>
+    <a class="on" href="#">Lessons</a>
+    <a href="#">Concept map</a>
+    <span class="kbd">⌘K Search</span>
+  </header>
+
+  <div class="opener">
+    <div class="chapter">Chapter 04 · Attention &nbsp;·&nbsp; §07 of 10</div>
+    <h1>Multi-head attention</h1>
+    <p class="deck">How a model learns to look in several directions at once — and why eight pairs of eyes beat one.</p>
+    <div class="ornament" aria-hidden="true"><span>❧</span></div>
+    <div class="meta-line">
+      <span><b>12 min</b> read</span>
+      <span><b>3</b> interactives</span>
+      <span><b>Prereq:</b> scaled dot-product attention</span>
+    </div>
+  </div>
+
+  <div class="prose-wrap">
+    <div class="prose">
+      <h2>One head, many perspectives<sup>§ 7.1</sup></h2>
+      <p>Each head learns its own projection of every token, so the model can track several relations at once. In <em>“the cat that chased the mouse”</em>, one head follows the subject while another resolves the clause boundary.<sup style="color:var(--gold)">¹</sup></p>
+      <p>Scores come from a scaled dot product between queries and keys: <code>softmax(Q·Kᵀ/√d)</code>. Temperature flattens or sharpens that distribution — <a href="#">see it live below</a>.</p>
+      <div class="callout">
+        <span class="t">Open the matrix explorer — dim a head and watch which words lose their verbs.</span>
+        <span class="go">TRY IT →</span>
+      </div>
+      <p class="footnote"><b>¹</b> Michel et al., “Are Sixteen Heads Really Better than One?” (2019) — often, no. But the useful ones matter a lot.</p>
+    </div>
+  </div>
+
+  <figure class="figure">
+    <figcaption class="fig-head">
+      <span class="fig-no">Fig. 7.1 — Live</span>
+      <span class="fig-title">Attention weights across heads, at temperature τ</span>
+      <button class="reset">Reset ⟲</button>
+    </figcaption>
+    <div class="fig-body">
+      <div class="stage">FIGURE AREA · 24 × 24 GRID</div>
+      <div class="controls">
+        <label>
+          <span class="ctl-label"><span>Temperature τ</span><output>0.80</output></span>
+          <span class="track"><i></i><span class="thumb"></span></span>
+        </label>
+        <span class="ctl-label"><span>Options</span></span>
+        <span class="pills">
+          <span class="pill on">Softmax<i></i></span>
+          <span class="pill on">Causal mask<i></i></span>
+          <span class="pill">Scale by √d<i></i></span>
+        </span>
+      </div>
+    </div>
+    <div class="fig-caption"><b>READING</b>Each row is a query token; brightness is the attention weight after softmax. Lower τ sharpens every row toward its top choice.</div>
+  </figure>
+
+  <div class="wb-item">
+    <div class="wb-head">
+      <span class="chev">▾</span>
+      <span>
+        <span class="fig-no" style="font-size:10px">ACTIVE · INTERACTIVE</span>
+        <div class="wb-title">Attention matrix</div>
+        <div class="wb-desc">Hover a cell to trace one query’s attention weights.</div>
+      </span>
+      <span class="badge">LIVE</span>
+    </div>
+  </div>
+
+  <footer class="foot">
+    <span class="wordmark" style="font-size:15px"><i>◆</i> Tensor Dojo</span>
+    <span class="colophon">Learn LLMs by manipulating them.</span>
+    <span>© 2026 himanshu-nakrani</span>
+  </footer>
+</template>
+
+<script>
+  const html = document.getElementById('tpl').innerHTML;
+  document.getElementById('blocks').innerHTML = html;
+  const d = document.getElementById('blocks-dark');
+  d.innerHTML = html;
+  d.querySelectorAll('[id]').forEach(el => el.removeAttribute('id'));
+</script>
+</body>
+</html>

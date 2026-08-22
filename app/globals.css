@@ -21,28 +21,30 @@
    =========================================================================== */
 
 :root {
-  /* Surfaces */
-  --bg: 251 250 248;              /* warm off-white page background */
-  --bg-elevated: 255 255 255;     /* card / workbench surface */
-  --bg-code: 244 241 236;         /* code block fill (slightly warmer) */
+  /* Surfaces — "lab bench" light variant. Cool neutral greys with
+     blue undertones; white panels sit on the bench grey. */
+  --bg: 238 241 245;              /* bench grey #EEF1F5 */
+  --bg-elevated: 255 255 255;     /* panel */
+  --bg-code: 246 248 250;         /* panel-2 — code + control wells */
 
   /* Text */
-  --fg: 26 24 21;
-  --fg-muted: 74 71 66;
-  --fg-subtle: 111 108 104;       /* eyebrows, hints — AA on --bg */
+  --fg: 23 32 43;                 /* #17202B */
+  --fg-muted: 85 97 111;          /* #55616F — 5.6:1 on --bg */
+  --fg-subtle: 95 107 120;        /* #5F6B78 — AA on --bg and panels */
 
   /* Lines */
-  --border: 230 226 219;
-  --border-strong: 207 201 191;
+  --border: 213 219 227;          /* #D5DBE3 */
+  --border-strong: 185 194 205;   /* #B9C2CD */
 
-  /* The single accent (design-spec §8) — manipulated things only. */
-  --accent: 21 128 61;            /* green-700; ~5.4:1 on --bg */
-  --accent-hover: 22 101 52;      /* green-800 */
-  --accent-fg: 255 255 255;       /* text/icon on accent surfaces */
+  /* The single signal (design-spec §8) — live/manipulable only.
+     #0E9C6D in light; #3DD68C in dark. */
+  --accent: 14 156 109;
+  --accent-hover: 11 122 85;
+  --accent-fg: 255 255 255;
 
   /* Charting tokens */
-  --grid: 236 232 225;
-  --positive: 21 128 61;
+  --grid: 213 219 227;
+  --positive: 14 156 109;
   --negative: 185 28 28;          /* red-700; AA on --bg */
   --warning: 180 83 9;            /* amber-700; AA on --bg for text */
 
@@ -51,90 +53,85 @@
      optimizer traces, four batch-size traces). Distinct from
      --accent/--positive/--negative; chosen to be perceptually
      distinguishable and theme-aware. */
-  --series-1: 21 128 61;          /* green — same hue as accent in light */
+  --series-1: 14 156 109;         /* signal green — same hue as accent */
   --series-2: 217 119 6;          /* amber-600 */
   --series-3: 124 58 237;         /* violet-600 */
   --series-4: 14 116 144;         /* cyan-700 */
 
   /* Pre-baked translucent variants — kept as full rgba because they
      describe a specific visual, not a "themed color at 30%". */
-  --accent-soft: rgba(21, 128, 61, 0.10);
-  --accent-faint: rgba(21, 128, 61, 0.06);
-  --accent-dim: rgba(21, 128, 61, 0.32);
+  --accent-soft: rgba(14, 156, 109, 0.10);
+  --accent-faint: rgba(14, 156, 109, 0.06);
+  --accent-dim: rgba(14, 156, 109, 0.32);
 
   /* Hover state for the elevated surface. */
-  --bg-elevated-hover: 244 241 236;
+  --bg-elevated-hover: 228 233 239;
 
   /* Glow color for the focus ring on inputs. */
-  --accent-shadow: rgba(21, 128, 61, 0.18);
+  --accent-shadow: rgba(14, 156, 109, 0.18);
 
   /* Pre-baked negative bar bg (the "wrong answer" red with built-in alpha). */
   --negative-bg: rgba(185, 28, 28, 0.7);
 
-  /* Subtle top-edge highlight on elevated cards. The dark theme
-     uses a faint white inset to suggest light from above; light
-     theme uses a faint black inset for the same suggestion. */
-  --shadow-inset: inset 0 1px 0 rgba(31, 26, 22, 0.04);
+  /* Subtle top-edge highlight on elevated cards. */
+  --shadow-inset: inset 0 1px 0 rgba(23, 32, 43, 0.03);
 
   /* Heatmap cell-number halo — matches --bg so text reads on any
      cell tint. Inline-styled as `rgb(var(--cell-halo))`. */
-  --cell-halo: 251 250 248;
+  --cell-halo: 238 241 245;
 
-  /* Graph-paper background lines. Two perpendicular families of
-     thin lines at very low opacity — minor at 24px, major every 5
-     (120px). The pattern reinforces the "this is a math notebook"
-     metaphor without making the page busy. */
-  --paper-minor: rgba(31, 26, 22, 0.018);
-  --paper-major: rgba(31, 26, 22, 0.035);
+  /* Graticule background lines — a cool blue-tinted instrument
+     grid instead of the old warm paper. Minor at 32px, major every
+     5 cells (160px). */
+  --paper-minor: rgba(23, 32, 43, 0.022);
+  --paper-major: rgba(23, 32, 43, 0.045);
 }
 
 :root.dark {
-  /* GitHub-inspired dark grey palette. The previous #0B0D10
-     read as near-black and gave the page a heavier feel than
-     intended; #0d1117 / #161b22 are GitHub's canvas + surface
-     pair and provide enough warmth that the page reads as a
-     deliberately dark grey rather than an OLED-black void. */
-  --bg: 13 17 23;
-  --bg-elevated: 22 27 34;
-  --bg-code: 22 27 34;
+  /* Instrument Panel dark — the primary theme. Deep blue-black
+     canvas, raised panels one step lighter, control wells darker
+     than panels (recessed), hairline bezels throughout. */
+  --bg: 11 14 19;                 /* #0B0E13 canvas */
+  --bg-elevated: 18 22 29;        /* #12161D panel */
+  --bg-code: 23 28 37;            /* #171C25 panel-2 */
 
-  --fg: 230 233 239;              /* slightly warmer/brighter than slate-200 */
-  --fg-muted: 184 191 204;         /* was 156 163 175 — bumped for readability on the lighter bg */
-  --fg-subtle: 168 178 196;        /* was 148 163 184 — same reason */
+  --fg: 223 230 239;              /* #DFE6EF */
+  --fg-muted: 151 163 178;        /* #97A3B2 */
+  --fg-subtle: 116 128 143;       /* #74808F — AA on canvas and panels */
 
-  --border: 41 48 56;              /* was 33 38 45 — visible against #161b22 */
-  --border-strong: 62 70 80;       /* was 48 54 61 */
+  --border: 35 42 53;             /* #232A35 */
+  --border-strong: 57 67 79;      /* #39434F */
 
-  --accent: 74 222 128;            /* green-400 — bright on the GH dark canvas */
-  --accent-hover: 134 239 172;     /* green-300 */
-  --accent-fg: 13 17 23;
+  --accent: 61 214 140;           /* #3DD68C — signal green on the dark canvas */
+  --accent-hover: 110 231 168;    /* #6EE7A8 */
+  --accent-fg: 6 19 12;
 
-  --grid: 33 38 45;
-  --positive: 74 222 128;
+  --grid: 35 42 53;
+  --positive: 61 214 140;
   --negative: 248 113 113;
-  --warning: 251 191 36;           /* amber-400 — bright on the GH dark canvas */
+  --warning: 255 178 36;           /* #FFB224 — amber readout */
 
-  --series-1: 74 222 128;          /* green */
-  --series-2: 251 191 36;          /* amber-400 */
+  --series-1: 61 214 140;          /* signal green */
+  --series-2: 255 178 36;          /* amber */
   --series-3: 167 139 250;         /* violet-400 */
   --series-4: 56 189 248;          /* sky-400 */
 
-  --accent-soft: rgba(74, 222, 128, 0.16);
-  --accent-faint: rgba(74, 222, 128, 0.10);
-  --accent-dim: rgba(74, 222, 128, 0.28);
+  --accent-soft: rgba(61, 214, 140, 0.14);
+  --accent-faint: rgba(61, 214, 140, 0.08);
+  --accent-dim: rgba(61, 214, 140, 0.30);
 
-  --bg-elevated-hover: 29 36 46;
-  --accent-shadow: rgba(74, 222, 128, 0.15);
+  --bg-elevated-hover: 26 32 41;
+  --accent-shadow: rgba(61, 214, 140, 0.16);
 
   --negative-bg: rgba(248, 113, 113, 0.7);
-  --shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.02);
+  --shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.03);
 
-  --cell-halo: 13 17 23;
+  --cell-halo: 11 14 19;
 
-  /* On the GH dark canvas the grid lines need to be lighter than
-     the background, not darker. Same minor/major split. */
-  --paper-minor: rgba(255, 255, 255, 0.012);
-  --paper-major: rgba(255, 255, 255, 0.024);
+  /* Cool graticule lines — blue-tinted so the grid reads as an
+     instrument graticule rather than paper. */
+  --paper-minor: rgba(160, 190, 230, 0.016);
+  --paper-major: rgba(160, 190, 230, 0.034);
 }
 
 /* ===========================================================================
@@ -171,14 +168,15 @@
 }
 
 /* ===========================================================================
-   Graph-paper background.
+   Graticule background.
 
    Drawn on the body with four stacked linear gradients: a major and
-   a minor grid line in each axis. The minor grid is at 24px; the
-   major lands every 5 cells (120px). Opacities are token-driven
-   (--paper-minor, --paper-major) and theme-aware: dark lines on the
-   warm off-white in light mode, faint white lines on the GH dark
-   canvas in dark mode.
+   a minor grid line in each axis, like the graticule on an
+   instrument display. The minor grid is at 32px; the major lands
+   every 5 cells (160px). Opacities are token-driven
+   (--paper-minor, --paper-major) and theme-aware: dark blue-grey
+   lines on the bench-grey canvas in light mode, faint cool lines on
+   the deep instrument canvas in dark mode.
 
    background-attachment: fixed so the grid stays anchored to the
    viewport, not the document — scrolling a long lesson doesn't
@@ -195,10 +193,10 @@ body {
     linear-gradient(to right, var(--paper-minor), var(--paper-minor) 1px, transparent 1px, transparent),
     linear-gradient(to bottom, var(--paper-minor), var(--paper-minor) 1px, transparent 1px, transparent);
   background-size:
-    120px 120px,
-    120px 120px,
-    24px 24px,
-    24px 24px;
+    160px 160px,
+    160px 160px,
+    32px 32px,
+    32px 32px;
   background-position: 0 0;
   background-attachment: fixed;
 }
