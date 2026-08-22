@@ -208,10 +208,14 @@ body {
 }
 
 /* ===========================================================================
-   Slider (themed via tokens). The .slider element is rendered by the
-   Slider primitive with a CSS custom property --fill set inline.
+   Slider (themed via tokens). Styled on the element type so every
+   range input is themed — sims that render raw <input type="range">
+   can never regress to the browser's default blue. The .slider
+   class is still honored; the Slider primitive adds it and sets a
+   --fill custom property inline to drive the filled-track gradient.
    =========================================================================== */
-.slider {
+.slider,
+input[type='range'] {
   -webkit-appearance: none;
   appearance: none;
   background: transparent;
@@ -220,17 +224,20 @@ body {
   padding: 0;
   margin: 0;
 }
-.slider:focus {
+.slider:focus,
+input[type='range']:focus {
   outline: none;
 }
-.slider:focus-visible {
+.slider:focus-visible,
+input[type='range']:focus-visible {
   outline: 2px solid rgb(var(--accent));
   outline-offset: 4px;
   border-radius: 2px;
 }
 
 /* WebKit / Blink — fill to var(--fill), unfilled in --border-strong. */
-.slider::-webkit-slider-runnable-track {
+.slider::-webkit-slider-runnable-track,
+input[type='range']::-webkit-slider-runnable-track {
   height: 4px;
   border-radius: 2px;
   background: linear-gradient(
@@ -241,7 +248,8 @@ body {
     rgb(var(--border-strong)) 100%
   );
 }
-.slider::-webkit-slider-thumb {
+.slider::-webkit-slider-thumb,
+input[type='range']::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
   height: 16px;
@@ -253,10 +261,12 @@ body {
   box-shadow: 0 0 0 1px rgb(var(--accent));
   transition: transform 120ms ease-out, box-shadow 120ms ease-out;
 }
-.slider:hover::-webkit-slider-thumb {
+.slider:hover::-webkit-slider-thumb,
+input[type='range']:hover::-webkit-slider-thumb {
   transform: scale(1.12);
 }
-.slider:focus-visible::-webkit-slider-thumb {
+.slider:focus-visible::-webkit-slider-thumb,
+input[type='range']:focus-visible::-webkit-slider-thumb {
   box-shadow:
     0 0 0 1px rgb(var(--bg)),
     0 0 0 4px rgb(var(--accent));
@@ -264,17 +274,20 @@ body {
 }
 
 /* Firefox */
-.slider::-moz-range-track {
+.slider::-moz-range-track,
+input[type='range']::-moz-range-track {
   height: 4px;
   border-radius: 2px;
   background: rgb(var(--border-strong));
 }
-.slider::-moz-range-progress {
+.slider::-moz-range-progress,
+input[type='range']::-moz-range-progress {
   height: 4px;
   border-radius: 2px;
   background: rgb(var(--accent));
 }
-.slider::-moz-range-thumb {
+.slider::-moz-range-thumb,
+input[type='range']::-moz-range-thumb {
   height: 16px;
   width: 16px;
   border-radius: 50%;
@@ -284,10 +297,12 @@ body {
   cursor: pointer;
   transition: transform 120ms ease-out, box-shadow 120ms ease-out;
 }
-.slider:hover::-moz-range-thumb {
+.slider:hover::-moz-range-thumb,
+input[type='range']:hover::-moz-range-thumb {
   transform: scale(1.12);
 }
-.slider:focus-visible::-moz-range-thumb {
+.slider:focus-visible::-moz-range-thumb,
+input[type='range']:focus-visible::-moz-range-thumb {
   box-shadow:
     0 0 0 1px rgb(var(--bg)),
     0 0 0 4px rgb(var(--accent));
@@ -296,13 +311,19 @@ body {
 
 @media (prefers-reduced-motion: reduce) {
   .slider::-webkit-slider-thumb,
-  .slider::-moz-range-thumb {
+  input[type='range']::-webkit-slider-thumb,
+  .slider::-moz-range-thumb,
+  input[type='range']::-moz-range-thumb {
     transition: none;
   }
   .slider:hover::-webkit-slider-thumb,
   .slider:focus-visible::-webkit-slider-thumb,
+  input[type='range']:hover::-webkit-slider-thumb,
+  input[type='range']:focus-visible::-webkit-slider-thumb,
   .slider:hover::-moz-range-thumb,
-  .slider:focus-visible::-moz-range-thumb {
+  .slider:focus-visible::-moz-range-thumb,
+  input[type='range']:hover::-moz-range-thumb,
+  input[type='range']:focus-visible::-moz-range-thumb {
     transform: none;
   }
 }

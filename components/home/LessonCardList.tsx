@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { TRACKS, listLessonMeta, type LessonMetaEntry } from '@/lib/lessons-meta';
 import { getVisited, getLastVisited } from '@/lib/progress/visits';
+import { ResumeCta } from '@/components/ui/ResumeCta';
 
 interface TrackBucket {
   id: string;
@@ -48,10 +49,13 @@ export function LessonCardList() {
   return (
     <div className="max-w-prose space-y-10">
       {resumeLesson && (
-        <ResumeCard
-          slug={resumeLesson.meta.slug}
-          title={resumeLesson.meta.title}
-          minutes={resumeLesson.meta.minutes}
+        <ResumeCta
+          layout="card"
+          target={{
+            slug: resumeLesson.meta.slug,
+            title: resumeLesson.meta.title,
+            minutes: resumeLesson.meta.minutes,
+          }}
         />
       )}
       {buckets.map((bucket) => {
@@ -125,43 +129,5 @@ export function LessonCardList() {
         );
       })}
     </div>
-  );
-}
-
-function ResumeCard({
-  slug,
-  title,
-  minutes,
-}: {
-  slug: string;
-  title: string;
-  minutes: number;
-}) {
-  return (
-    <Link
-      href={`/lessons/${slug}`}
-      aria-label={`Resume: ${title} (${minutes} min)`}
-      className="group block rounded-lg border border-accent bg-accent-faint p-5 transition-colors hover:bg-accent-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
-    >
-      <div className="flex items-baseline justify-between gap-4 mb-1.5">
-        <span className="text-label uppercase tracking-[0.12em] text-accent font-mono">
-          Resume where you left off
-        </span>
-        <span className="text-label uppercase tracking-[0.12em] text-dim font-mono tabular-nums">
-          {minutes} min
-        </span>
-      </div>
-      <div className="flex items-baseline justify-between gap-4">
-        <h3 className="text-[1.15rem] font-semibold text-ink tracking-[-0.005em]">
-          {title}
-        </h3>
-        <span
-          aria-hidden="true"
-          className="text-accent translate-x-0 group-hover:translate-x-0.5 transition-transform motion-reduce:transition-none"
-        >
-          →
-        </span>
-      </div>
-    </Link>
   );
 }

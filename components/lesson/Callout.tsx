@@ -3,6 +3,7 @@
 import { useEffect, useState, type ReactNode } from 'react';
 import clsx from 'clsx';
 import { useWorkbench } from './Workbench';
+import { Button } from '@/components/ui/Button';
 
 interface CalloutProps {
   /** Small label rendered in the top-left, in monospace caps. */
@@ -78,13 +79,13 @@ export function Callout({
         {children}
       </div>
       {targetInteractive && !(isNarrow && inlineOpen) && (
-        <button
-          type="button"
+        <Button
+          variant="ghost"
           onClick={handleOpen}
-          className="focus-ring mt-3 inline-flex items-center min-h-[44px] px-3 py-2 text-caption uppercase tracking-[0.12em] font-mono text-accent hover:text-accent-hover hover:bg-accent-soft rounded-md transition-colors -mx-3"
+          className="-mx-3 mt-3 px-3"
         >
           {isNarrow && inlineEntry ? 'Try it here →' : 'Open in workbench →'}
-        </button>
+        </Button>
       )}
       {inlineOpen && inlineEntry && (
         <InlineInteractive
@@ -118,15 +119,15 @@ function InlineInteractive({
             {title}
           </div>
         </div>
-        <button
-          type="button"
+        <Button
+          variant="secondary"
           onClick={onClose}
-          className="focus-ring shrink-0 inline-flex items-center gap-1 rounded-md border border-border bg-surface px-2.5 py-1 text-label font-mono uppercase tracking-[0.14em] text-muted hover:text-ink hover:border-border-strong transition-colors"
+          className="min-h-[36px] shrink-0 px-2.5 py-1 text-label"
           aria-label="Close inline interactive"
         >
           <span aria-hidden="true">×</span>
           Close
-        </button>
+        </Button>
       </div>
       {children}
     </div>
