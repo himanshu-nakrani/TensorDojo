@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import clsx from 'clsx';
 import { ThemeToggle } from './ThemeToggle';
+import { ProgressReadout } from './ProgressReadout';
 import { useSearchPalette } from '@/components/search/SearchPalette';
 
 interface NavLink {
@@ -155,6 +156,7 @@ export function TopNav() {
                 </Link>
               );
             })}
+            <ProgressReadout />
             <button
               type="button"
               onClick={search.open}

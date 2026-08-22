@@ -5,9 +5,9 @@ import { listLessonMeta, TRACKS } from '@/lib/lessons-meta';
  * curriculum grid. Four metrics, separated by hairline dividers.
  *
  * Lesson and track counts are computed from the manifest so the
- * strip never drifts when lessons are added. The test count and
+ * strip never drifts when lessons are added. The sim count and
  * "no backend" claim are static — they change rarely and a stale
- * test count is less misleading than a wrong lesson count.
+ * sim count is less misleading than a wrong lesson count.
  */
 export function StatsStrip() {
   const lessonCount = listLessonMeta().length;
@@ -16,7 +16,7 @@ export function StatsStrip() {
   const stats: readonly { value: string; label: string }[] = [
     { value: String(lessonCount), label: 'Lessons' },
     { value: String(trackCount), label: 'Tracks' },
-    { value: '513', label: 'Tests' },
+    { value: '84', label: 'Sims' },
     { value: '0', label: 'Backend deps' },
   ];
 

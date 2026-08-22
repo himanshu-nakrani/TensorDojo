@@ -1,6 +1,6 @@
 # Content Directory
 
-All lesson content for TensorDojo. 31 lessons across 8 tracks, served
+All lesson content for TensorDojo. 58 lessons across 8 tracks, served
 by the Next.js routes in `app/lessons/[slug]/`.
 
 ## Structure
