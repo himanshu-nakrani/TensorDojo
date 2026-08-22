@@ -31,9 +31,9 @@ export default function MapPage() {
   const sections = buildTrackSections(graph, lessonMeta);
 
   return (
-    <main id="main" className="mx-auto px-4 sm:px-6 py-12 sm:py-16 max-w-[1500px]">
+    <main id="main" className="mx-auto px-4 sm:px-6 py-12 sm:py-16 max-w-shell">
       <header className="mb-10 max-w-prose">
-        <div className="text-[12px] uppercase tracking-[0.18em] text-fg-muted font-mono mb-3">
+        <div className="text-caption uppercase tracking-[0.18em] text-muted font-mono mb-3">
           Concept map
         </div>
         <h1 className="text-[2.25rem] sm:text-[2.5rem] font-semibold text-ink leading-[1.1] tracking-[-0.01em] mb-4">

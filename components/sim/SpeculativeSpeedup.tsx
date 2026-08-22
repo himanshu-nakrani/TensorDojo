@@ -55,7 +55,7 @@ export function SpeculativeSpeedup() {
       headerWrap
       headerAction={
         <div className="flex items-center gap-3 flex-wrap">
-          <div className="flex border border-border rounded overflow-hidden font-mono text-[11px]">
+          <div className="flex border border-border rounded overflow-hidden font-mono text-label">
             {RATIOS.map((r, i) => (
               <button
                 key={r.label}
@@ -75,7 +75,7 @@ export function SpeculativeSpeedup() {
           <button
             type="button"
             onClick={reset}
-            className="text-[11px] uppercase tracking-[0.12em] font-mono text-muted hover:text-ink focus-ring transition-colors"
+            className="text-label uppercase tracking-[0.12em] font-mono text-muted hover:text-ink focus-ring transition-colors"
           >
             Reset
           </button>
@@ -83,7 +83,7 @@ export function SpeculativeSpeedup() {
       }
     >
       <div className="border border-border rounded p-3 bg-surface mb-4 overflow-x-auto">
-        <table className="font-mono text-[11px] tabular-nums">
+        <table className="font-mono text-label tabular-nums">
           <thead>
             <tr>
               <th className="text-dim text-left pr-3 pb-1 sticky left-0 bg-surface">α \ γ</th>
@@ -123,7 +123,7 @@ export function SpeculativeSpeedup() {
         </table>
       </div>
 
-      <p className="text-[11px] text-dim font-mono leading-relaxed">
+      <p className="text-label text-dim font-mono leading-relaxed">
         Each cell is the wall-clock speedup over plain decoding for the given
         (α, γ) with draft-to-target cost ratio{' '}
         <span className="text-ink">{ratio.label}</span>. Red cells are

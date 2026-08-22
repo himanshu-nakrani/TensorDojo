@@ -68,7 +68,7 @@ export function Callout({
     >
       <div
         className={clsx(
-          'text-[11px] uppercase tracking-[0.12em] font-mono mb-2',
+          'text-label uppercase tracking-[0.12em] font-mono mb-2',
           variant === 'try' ? 'text-accent' : 'text-muted',
         )}
       >
@@ -81,7 +81,7 @@ export function Callout({
         <button
           type="button"
           onClick={handleOpen}
-          className="focus-ring mt-3 inline-flex items-center min-h-[44px] px-3 py-2 text-[12px] uppercase tracking-[0.12em] font-mono text-accent hover:text-accent-hover hover:bg-accent-soft rounded-md transition-colors -mx-3"
+          className="focus-ring mt-3 inline-flex items-center min-h-[44px] px-3 py-2 text-caption uppercase tracking-[0.12em] font-mono text-accent hover:text-accent-hover hover:bg-accent-soft rounded-md transition-colors -mx-3"
         >
           {isNarrow && inlineEntry ? 'Try it here →' : 'Open in workbench →'}
         </button>
@@ -111,7 +111,7 @@ function InlineInteractive({
     <div className="mt-4 -mx-2 sm:mx-0 rounded-lg border border-border bg-bg p-3 sm:p-4">
       <div className="flex items-center justify-between mb-3 gap-3">
         <div className="min-w-0">
-          <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono">
+          <div className="text-label uppercase tracking-[0.12em] text-dim font-mono">
             Interactive
           </div>
           <div className="text-sm font-semibold text-ink tracking-[-0.005em] truncate">
@@ -121,7 +121,7 @@ function InlineInteractive({
         <button
           type="button"
           onClick={onClose}
-          className="focus-ring shrink-0 inline-flex items-center gap-1 rounded-md border border-border bg-surface px-2.5 py-1 text-[11px] font-mono uppercase tracking-[0.14em] text-muted hover:text-ink hover:border-border-strong transition-colors"
+          className="focus-ring shrink-0 inline-flex items-center gap-1 rounded-md border border-border bg-surface px-2.5 py-1 text-label font-mono uppercase tracking-[0.14em] text-muted hover:text-ink hover:border-border-strong transition-colors"
           aria-label="Close inline interactive"
         >
           <span aria-hidden="true">×</span>

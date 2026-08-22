@@ -108,7 +108,7 @@ export function PreferencePolicyTrainer() {
     <SimFrame
       title="Step a policy on preference pairs · watch one response win"
       headerAction={
-        <span className="text-[11px] font-mono text-muted tabular-nums">
+        <span className="text-label font-mono text-muted tabular-nums">
           step {totalSteps % N_PREFS} of {N_PREFS} &middot; epoch {epoch}
         </span>
       }
@@ -116,15 +116,15 @@ export function PreferencePolicyTrainer() {
       <div className="space-y-5">
       {/* Prompt */}
       <div className="rounded border border-border bg-bg/50 px-3 py-2">
-        <span className="text-[11px] uppercase tracking-[0.14em] text-dim font-mono mr-2">
+        <span className="text-label uppercase tracking-[0.14em] text-dim font-mono mr-2">
           Prompt
         </span>
-        <span className="font-mono text-[12px] text-ink">{PROMPT}</span>
+        <span className="font-mono text-caption text-ink">{PROMPT}</span>
       </div>
 
       {/* Probability bars */}
       <section aria-label="Policy probabilities">
-        <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-3">
+        <div className="text-label uppercase tracking-[0.12em] text-dim font-mono mb-3">
           Policy probabilities
         </div>
         <div className="space-y-2">
@@ -133,10 +133,10 @@ export function PreferencePolicyTrainer() {
             return (
               <div key={i} className="flex items-center gap-2 min-w-0">
                 {/* Response label */}
-                <span className="font-mono text-[11px] text-muted w-4 shrink-0 tabular-nums">
+                <span className="font-mono text-label text-muted w-4 shrink-0 tabular-nums">
                   {i}
                 </span>
-                <span className="font-mono text-[11px] text-ink w-52 shrink-0 truncate">
+                <span className="font-mono text-label text-ink w-52 shrink-0 truncate">
                   {resp}
                 </span>
                 {/* Bar */}
@@ -151,7 +151,7 @@ export function PreferencePolicyTrainer() {
                   />
                 </div>
                 {/* Percentage */}
-                <span className="font-mono text-[11px] text-ink tabular-nums w-12 text-right shrink-0">
+                <span className="font-mono text-label text-ink tabular-nums w-12 text-right shrink-0">
                   {pct.toFixed(1)}%
                 </span>
               </div>
@@ -161,8 +161,8 @@ export function PreferencePolicyTrainer() {
       </section>
 
       {/* Next preference preview */}
-      <div className="rounded border border-border bg-bg/40 px-3 py-2 font-mono text-[11px] text-muted">
-        <span className="text-dim uppercase tracking-[0.14em] text-[11px] mr-2">
+      <div className="rounded border border-border bg-bg/40 px-3 py-2 font-mono text-label text-muted">
+        <span className="text-dim uppercase tracking-[0.14em] text-label mr-2">
           Next preference
         </span>
         response {nextPref.preferred} preferred over response{' '}
@@ -178,21 +178,21 @@ export function PreferencePolicyTrainer() {
         <button
           type="button"
           onClick={handleStep}
-          className="rounded border border-border bg-surface px-3 py-1.5 font-mono text-[12px] hover:border-border-strong transition-colors"
+          className="rounded border border-border bg-surface px-3 py-1.5 font-mono text-caption hover:border-border-strong transition-colors"
         >
           Step
         </button>
         <button
           type="button"
           onClick={handleStep6}
-          className="rounded border border-border bg-surface px-3 py-1.5 font-mono text-[12px] hover:border-border-strong transition-colors"
+          className="rounded border border-border bg-surface px-3 py-1.5 font-mono text-caption hover:border-border-strong transition-colors"
         >
           Step &times;6
         </button>
         <button
           type="button"
           onClick={handleReset}
-          className="rounded border border-border bg-surface px-3 py-1.5 font-mono text-[12px] hover:border-border-strong transition-colors text-muted"
+          className="rounded border border-border bg-surface px-3 py-1.5 font-mono text-caption hover:border-border-strong transition-colors text-muted"
         >
           Reset
         </button>

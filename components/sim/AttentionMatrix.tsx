@@ -105,7 +105,7 @@ export function AttentionMatrix({ preset }: { preset?: AttentionMatrixPreset }) 
     >
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
-          <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-2">
+          <div className="text-label uppercase tracking-[0.12em] text-dim font-mono mb-2">
             Q & K vectors
           </div>
           <VectorCanvas
@@ -114,7 +114,7 @@ export function AttentionMatrix({ preset }: { preset?: AttentionMatrixPreset }) 
             height={300}
             ariaLabel="8 draggable 2D vectors: 4 Q and 4 K, one per token."
           />
-          <p className="mt-2 text-[11px] text-muted font-mono">
+          <p className="mt-2 text-label text-muted font-mono">
             Drag any tip — Q and K are on the same plane so the angle between
             them is direct. The matrices below update live.
           </p>
@@ -123,14 +123,14 @@ export function AttentionMatrix({ preset }: { preset?: AttentionMatrixPreset }) 
         <div className="space-y-5">
           <div>
             <div className="flex items-baseline justify-between mb-2">
-              <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono">
+              <div className="text-label uppercase tracking-[0.12em] text-dim font-mono">
                 Scores = QKᵀ
               </div>
               <button
                 type="button"
                 onClick={() => setShowMath((s) => !s)}
                 className={clsx(
-                  'text-[11px] uppercase tracking-[0.12em] font-mono px-2 py-0.5 rounded border focus-ring transition-colors',
+                  'text-label uppercase tracking-[0.12em] font-mono px-2 py-0.5 rounded border focus-ring transition-colors',
                   showMath
                     ? 'border-accent text-accent'
                     : 'border-border text-muted hover:text-ink',
@@ -151,14 +151,14 @@ export function AttentionMatrix({ preset }: { preset?: AttentionMatrixPreset }) 
               ariaLabel="Score matrix: dot product of each Q with each K."
             />
             {showMath && (
-              <p className="mt-2 text-[11px] text-muted font-mono">
+              <p className="mt-2 text-label text-muted font-mono">
                 scores[i][j] = Q[i] · K[j]
               </p>
             )}
           </div>
 
           <div>
-            <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-2">
+            <div className="text-label uppercase tracking-[0.12em] text-dim font-mono mb-2">
               Weights = softmax(scores)
             </div>
             <Heatmap
@@ -172,7 +172,7 @@ export function AttentionMatrix({ preset }: { preset?: AttentionMatrixPreset }) 
               onCellHover={setHover}
               ariaLabel="Attention weight matrix: row-wise softmax of scores."
             />
-            <p className="mt-2 text-[11px] text-muted font-mono">
+            <p className="mt-2 text-label text-muted font-mono">
               Each row sums to{' '}
               <span className="text-ink tabular-nums">{fmt(weights[0]?.reduce((a, b) => a + b, 0) ?? 1, 3)}</span>.
               Read across a row to see what that token attends to.
@@ -181,7 +181,7 @@ export function AttentionMatrix({ preset }: { preset?: AttentionMatrixPreset }) 
         </div>
       </div>
 
-      <p className="mt-4 text-[11px] text-dim font-mono">
+      <p className="mt-4 text-label text-dim font-mono">
         Hover any cell — both matrices highlight the same (i, j) so you can see which Q–K pair produced which cell.
       </p>
     </SimFrame>

@@ -67,7 +67,7 @@ export function InContextLearningExplorer() {
           onClick={() => setNoisy((n) => !n)}
           aria-pressed={noisy}
           className={clsx(
-            'text-[11px] uppercase tracking-[0.12em] font-mono px-2 py-0.5 rounded border focus-ring transition-colors',
+            'text-label uppercase tracking-[0.12em] font-mono px-2 py-0.5 rounded border focus-ring transition-colors',
             noisy
               ? 'border-[rgb(var(--negative))] text-[rgb(var(--negative))]'
               : 'border-border text-muted hover:text-ink hover:border-border-strong',
@@ -79,7 +79,7 @@ export function InContextLearningExplorer() {
     >
       {/* Shots selector */}
       <div className="mb-5">
-        <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-2">
+        <div className="text-label uppercase tracking-[0.12em] text-dim font-mono mb-2">
           number of in-context examples
         </div>
         <div className="flex gap-2">
@@ -90,7 +90,7 @@ export function InContextLearningExplorer() {
               onClick={() => setShots(k)}
               aria-pressed={shots === k}
               className={clsx(
-                'text-[12px] font-mono px-3 py-1.5 rounded border focus-ring transition-colors',
+                'text-caption font-mono px-3 py-1.5 rounded border focus-ring transition-colors',
                 shots === k
                   ? 'border-accent text-accent bg-accent-soft'
                   : 'border-border text-muted hover:text-ink hover:border-border-strong',
@@ -103,9 +103,9 @@ export function InContextLearningExplorer() {
       </div>
 
       {/* Prompt rendering */}
-      <div className="rounded-lg border border-border bg-bg/40 p-4 mb-4 text-[13px] font-mono leading-relaxed">
+      <div className="rounded-lg border border-border bg-bg/40 p-4 mb-4 text-body-sm font-mono leading-relaxed">
         {examples.length === 0 && (
-          <span className="text-fg-subtle italic">
+          <span className="text-dim italic">
             (no in-context examples)
           </span>
         )}
@@ -117,7 +117,7 @@ export function InContextLearningExplorer() {
                 {ex.shape} → <span className={COLOR_TEXT[ex.color]}>{ex.color}</span>
               </span>
               {isMislabeled && (
-                <span className="text-[10px] uppercase tracking-[0.12em] text-[rgb(var(--negative))]">
+                <span className="text-micro uppercase tracking-[0.12em] text-[rgb(var(--negative))]">
                   mislabeled
                 </span>
               )}
@@ -127,14 +127,14 @@ export function InContextLearningExplorer() {
         <div className="mt-2 pt-2 border-t border-border flex items-baseline gap-2">
           <span className="text-ink">
             {query} →{' '}
-            <span className="text-fg-subtle italic">?</span>
+            <span className="text-dim italic">?</span>
           </span>
         </div>
       </div>
 
       {/* Query shape selector */}
       <div className="mb-4">
-        <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-2">
+        <div className="text-label uppercase tracking-[0.12em] text-dim font-mono mb-2">
           query shape
         </div>
         <div className="flex gap-2">
@@ -159,7 +159,7 @@ export function InContextLearningExplorer() {
 
       {/* Predicted distribution */}
       <div className="rounded-lg border border-border bg-bg/40 p-4">
-        <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-3">
+        <div className="text-label uppercase tracking-[0.12em] text-dim font-mono mb-3">
           predicted distribution P(color | prompt, {query})
         </div>
         <DistributionBars probs={probs} />
@@ -254,7 +254,7 @@ function DistributionBars({ probs }: { probs: Record<Color, number> }) {
                 textAnchor="middle"
                 fontSize={11}
                 fontFamily="var(--font-mono), ui-monospace, monospace"
-                className="fill-fg-muted"
+                className="fill-muted"
               >
                 {c}
               </text>

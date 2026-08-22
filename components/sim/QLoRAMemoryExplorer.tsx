@@ -104,7 +104,7 @@ export function QLoRAMemoryExplorer() {
       </div>
 
       {/* Legend */}
-      <div className="mt-5 flex flex-wrap gap-x-4 gap-y-2 text-[10px] font-mono text-fg-muted">
+      <div className="mt-5 flex flex-wrap gap-x-4 gap-y-2 text-micro font-mono text-muted">
         {(Object.keys(COMPONENT_LABEL) as Component[]).map((c) => (
           <div key={c} className="flex items-center gap-1.5">
             <svg width={10} height={10}>
@@ -115,7 +115,7 @@ export function QLoRAMemoryExplorer() {
         ))}
       </div>
 
-      <div className="mt-3 text-[11px] text-dim font-mono leading-relaxed">
+      <div className="mt-3 text-label text-dim font-mono leading-relaxed">
         Three reductions stack: 4-bit base (4× smaller weights) + LoRA (100× smaller grads/optimizer) + checkpointing (smaller activations). A 70B model goes from ~870 GB to ~58 GB.
       </div>
     </SimFrame>
@@ -154,7 +154,7 @@ function RegimeRow({
 
   return (
     <div className="grid grid-cols-[80px_1fr_auto] items-center gap-3">
-      <span className="text-[12px] font-semibold text-ink text-right">
+      <span className="text-caption font-semibold text-ink text-right">
         {label}
       </span>
       <div
@@ -192,8 +192,8 @@ function RegimeRow({
       </div>
       <span
         className={clsx(
-          'text-[12px] font-mono tabular-nums whitespace-nowrap w-24 text-right',
-          regimeFitsOn ? 'text-accent' : 'text-fg-muted',
+          'text-caption font-mono tabular-nums whitespace-nowrap w-24 text-right',
+          regimeFitsOn ? 'text-accent' : 'text-muted',
         )}
       >
         {totalGB.toFixed(1)} GB
@@ -226,11 +226,11 @@ function Slider({
       <div className="flex items-baseline justify-between mb-2">
         <label
           htmlFor={id}
-          className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono"
+          className="text-label uppercase tracking-[0.12em] text-dim font-mono"
         >
           {label}
         </label>
-        <span className="font-mono text-[14px] text-accent tabular-nums">
+        <span className="font-mono text-body text-accent tabular-nums">
           {format(value)}
         </span>
       </div>

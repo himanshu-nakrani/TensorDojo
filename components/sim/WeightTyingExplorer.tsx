@@ -96,11 +96,11 @@ export function WeightTyingExplorer() {
         <div className="flex items-baseline justify-between mb-2">
           <label
             htmlFor="wt-angle"
-            className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono"
+            className="text-label uppercase tracking-[0.12em] text-dim font-mono"
           >
             hidden state direction
           </label>
-          <span className="font-mono text-[14px] text-accent tabular-nums">
+          <span className="font-mono text-body text-accent tabular-nums">
             {angleDeg.toFixed(0)}°
           </span>
         </div>
@@ -125,7 +125,7 @@ export function WeightTyingExplorer() {
 
       {/* Param savings */}
       <div className="mt-5">
-        <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-3">
+        <div className="text-label uppercase tracking-[0.12em] text-dim font-mono mb-3">
           parameter cost of the embed + output-projection pair
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-3">
@@ -196,11 +196,11 @@ function Slider({
       <div className="flex items-baseline justify-between mb-2">
         <label
           htmlFor={id}
-          className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono"
+          className="text-label uppercase tracking-[0.12em] text-dim font-mono"
         >
           {label}
         </label>
-        <span className="font-mono text-[14px] text-accent tabular-nums">
+        <span className="font-mono text-body text-accent tabular-nums">
           {format(value)}
         </span>
       </div>
@@ -229,13 +229,13 @@ function Stat({
 }) {
   return (
     <div className="rounded-md border border-border bg-bg/40 px-3 py-2 flex flex-col">
-      <span className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono">
+      <span className="text-label uppercase tracking-[0.12em] text-dim font-mono">
         {label}
       </span>
       <span
         className={clsx(
-          'text-[14px] font-mono tabular-nums',
-          tone === 'accent' ? 'text-accent' : 'text-fg-muted',
+          'text-body font-mono tabular-nums',
+          tone === 'accent' ? 'text-accent' : 'text-muted',
         )}
       >
         {value}
@@ -268,7 +268,7 @@ function EmbeddingPlot({
 
   return (
     <div className="rounded-lg border border-border bg-bg/40 p-3">
-      <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-2">
+      <div className="text-label uppercase tracking-[0.12em] text-dim font-mono mb-2">
         embedding space (2D toy · V = 10)
       </div>
       <svg viewBox={`0 0 ${W} ${H}`} width="100%" className="block h-auto">
@@ -358,7 +358,7 @@ function EmbeddingPlot({
           h
         </text>
       </svg>
-      <div className="mt-1 text-[10px] font-mono text-fg-subtle text-center">
+      <div className="mt-1 text-micro font-mono text-dim text-center">
         each dot is a row of E · h is the hidden state at the output
       </div>
     </div>
@@ -374,7 +374,7 @@ function LogitsList({
 
   return (
     <div className="rounded-lg border border-border bg-bg/40 p-3">
-      <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-3">
+      <div className="text-label uppercase tracking-[0.12em] text-dim font-mono mb-3">
         output logits = E · h (sorted)
       </div>
       <div className="space-y-1.5">
@@ -385,8 +385,8 @@ function LogitsList({
             <div key={s.word} className="flex items-center gap-3">
               <span
                 className={clsx(
-                  'text-[12px] font-mono w-14 truncate',
-                  isTop ? 'text-accent font-semibold' : 'text-fg-muted',
+                  'text-caption font-mono w-14 truncate',
+                  isTop ? 'text-accent font-semibold' : 'text-muted',
                 )}
               >
                 {s.word}
@@ -408,8 +408,8 @@ function LogitsList({
               </div>
               <span
                 className={clsx(
-                  'text-[11px] font-mono w-14 text-right tabular-nums',
-                  isTop ? 'text-accent font-semibold' : 'text-fg-muted',
+                  'text-label font-mono w-14 text-right tabular-nums',
+                  isTop ? 'text-accent font-semibold' : 'text-muted',
                 )}
               >
                 {s.logit >= 0 ? '+' : ''}

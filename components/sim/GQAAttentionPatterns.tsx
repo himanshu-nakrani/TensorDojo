@@ -112,7 +112,7 @@ export function GQAAttentionPatterns() {
       onReset={reset}
       headerAction={
         <div className="flex items-center gap-3">
-          <div className="flex border border-border rounded overflow-hidden font-mono text-[11px]">
+          <div className="flex border border-border rounded overflow-hidden font-mono text-label">
             {PRESETS.map((p) => (
               <button
                 key={p.label}
@@ -132,14 +132,14 @@ export function GQAAttentionPatterns() {
           <button
             type="button"
             onClick={() => setSeed((s) => s + 1)}
-            className="text-[11px] uppercase tracking-[0.12em] font-mono text-muted hover:text-ink focus-ring transition-colors"
+            className="text-label uppercase tracking-[0.12em] font-mono text-muted hover:text-ink focus-ring transition-colors"
           >
             Re-sample
           </button>
           <button
             type="button"
             onClick={reset}
-            className="text-[11px] uppercase tracking-[0.12em] font-mono text-muted hover:text-ink focus-ring transition-colors"
+            className="text-label uppercase tracking-[0.12em] font-mono text-muted hover:text-ink focus-ring transition-colors"
           >
             Reset
           </button>
@@ -148,7 +148,7 @@ export function GQAAttentionPatterns() {
     >
       <div className="space-y-1.5">
         {/* Header row: token indices */}
-        <div className="grid grid-cols-[60px_24px_repeat(6,1fr)] gap-1 items-center font-mono text-[11px] text-dim">
+        <div className="grid grid-cols-[60px_24px_repeat(6,1fr)] gap-1 items-center font-mono text-label text-dim">
           <div></div>
           <div></div>
           {Array.from({ length: N_TOKENS }, (_, i) => (
@@ -163,8 +163,8 @@ export function GQAAttentionPatterns() {
             key={qh}
             className="grid grid-cols-[60px_24px_repeat(6,1fr)] gap-1 items-center"
           >
-            <span className="text-[11px] font-mono text-ink">Q{qh}</span>
-            <span className="text-[11px] font-mono text-dim text-right">
+            <span className="text-label font-mono text-ink">Q{qh}</span>
+            <span className="text-label font-mono text-dim text-right">
               ↘KV{kvIdx}
             </span>
             {weights.map((w, t) => (
@@ -181,7 +181,7 @@ export function GQAAttentionPatterns() {
         ))}
       </div>
 
-      <p className="mt-5 pt-4 border-t border-border text-[11px] text-dim font-mono leading-relaxed">
+      <p className="mt-5 pt-4 border-t border-border text-label text-dim font-mono leading-relaxed">
         Under <span className="text-ink">MHA</span> every query head reads a
         different K, so the rows look qualitatively different. Switch to{' '}
         <span className="text-ink">GQA-2</span>: pairs of query heads now

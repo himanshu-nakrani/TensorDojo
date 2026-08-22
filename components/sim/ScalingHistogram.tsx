@@ -98,10 +98,10 @@ export function ScalingHistogram({ preset }: { preset?: ScalingHistogramPreset }
     >
       <div className="space-y-4">
         <div>
-          <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-2">
+          <div className="text-label uppercase tracking-[0.12em] text-dim font-mono mb-2">
             Q · K distribution · {N_PAIRS.toLocaleString()} random pairs
           </div>
-          <div className="text-[11px] text-muted font-mono mb-1 tabular-nums">
+          <div className="text-label text-muted font-mono mb-1 tabular-nums">
             empirical std = {empiricalStd.toFixed(2)}
             <span className="text-dim">
               {' '}
@@ -175,14 +175,14 @@ export function ScalingHistogram({ preset }: { preset?: ScalingHistogramPreset }
               },
             )}
           </svg>
-          <div className="text-[11px] text-dim font-mono mt-1 text-center">
+          <div className="text-label text-dim font-mono mt-1 text-center">
             Q · K{scale ? ' / √d_k' : ''} ({(scale ? 'scaled' : 'raw')})
           </div>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
           <div>
-            <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-2">
+            <div className="text-label uppercase tracking-[0.12em] text-dim font-mono mb-2">
               Dimension d_k
             </div>
             <div className="flex items-center gap-2">
@@ -192,7 +192,7 @@ export function ScalingHistogram({ preset }: { preset?: ScalingHistogramPreset }
                   type="button"
                   onClick={() => setDK(d)}
                   className={clsx(
-                    'px-2.5 py-1 rounded font-mono text-[11px] tabular-nums focus-ring transition-colors',
+                    'px-2.5 py-1 rounded font-mono text-label tabular-nums focus-ring transition-colors',
                     d === dK
                       ? 'bg-accent text-bg'
                       : 'bg-bg/40 text-muted hover:text-ink border border-border',
@@ -203,21 +203,21 @@ export function ScalingHistogram({ preset }: { preset?: ScalingHistogramPreset }
                 </button>
               ))}
             </div>
-            <div className="text-[11px] text-dim font-mono mt-2">
+            <div className="text-label text-dim font-mono mt-2">
               As d_k grows, Q · K spreads wider. Pre-softmax scores are
               bigger, softmax saturates, gradients vanish.
             </div>
           </div>
 
           <div>
-            <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-2">
+            <div className="text-label uppercase tracking-[0.12em] text-dim font-mono mb-2">
               Scale by 1/√d_k
             </div>
             <button
               type="button"
               onClick={() => setScale((s) => !s)}
               className={clsx(
-                'text-[11px] uppercase tracking-[0.12em] font-mono px-3 py-1.5 rounded border focus-ring transition-colors',
+                'text-label uppercase tracking-[0.12em] font-mono px-3 py-1.5 rounded border focus-ring transition-colors',
                 scale
                   ? 'border-accent text-accent bg-accent-faint'
                   : 'border-border text-muted hover:text-ink',
@@ -226,7 +226,7 @@ export function ScalingHistogram({ preset }: { preset?: ScalingHistogramPreset }
             >
               {scale ? 'Scaling on (×1/√d_k)' : 'Scale off'}
             </button>
-            <div className="text-[11px] text-dim font-mono mt-2">
+            <div className="text-label text-dim font-mono mt-2">
               Divide every score by √d_k. The histogram snaps back to
               unit scale. Softmax now sees scores with the same scale
               at any dimension.

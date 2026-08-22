@@ -55,7 +55,7 @@ export function BPETrainer({ preset }: { preset?: CorpusPreset }) {
             type="button"
             onClick={() => setStep((s) => Math.max(0, s - 1))}
             disabled={step === 0}
-            className="text-[11px] uppercase tracking-[0.12em] font-mono px-2 py-0.5 rounded border border-border text-muted hover:text-ink focus-ring transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+            className="text-label uppercase tracking-[0.12em] font-mono px-2 py-0.5 rounded border border-border text-muted hover:text-ink focus-ring transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
           >
             Back
           </button>
@@ -63,14 +63,14 @@ export function BPETrainer({ preset }: { preset?: CorpusPreset }) {
             type="button"
             onClick={() => setStep((s) => Math.min(totalSteps, s + 1))}
             disabled={step >= totalSteps}
-            className="text-[11px] uppercase tracking-[0.12em] font-mono px-2 py-0.5 rounded border border-accent text-accent hover:text-accent-hover focus-ring transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+            className="text-label uppercase tracking-[0.12em] font-mono px-2 py-0.5 rounded border border-accent text-accent hover:text-accent-hover focus-ring transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
           >
             Step
           </button>
           <button
             type="button"
             onClick={reset}
-            className="text-[11px] uppercase tracking-[0.12em] font-mono text-muted hover:text-ink focus-ring transition-colors"
+            className="text-label uppercase tracking-[0.12em] font-mono text-muted hover:text-ink focus-ring transition-colors"
           >
             Reset
           </button>
@@ -81,16 +81,16 @@ export function BPETrainer({ preset }: { preset?: CorpusPreset }) {
         {/* Left: per-word symbol state. */}
         <div>
           <div className="flex items-baseline justify-between mb-2">
-            <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono">
+            <div className="text-label uppercase tracking-[0.12em] text-dim font-mono">
               Corpus (split into symbols)
             </div>
-            <div className="text-[11px] text-dim font-mono tabular-nums">
+            <div className="text-label text-dim font-mono tabular-nums">
               step <span className="text-ink">{step}</span>
               {' / '}
               <span className="text-ink">{totalSteps}</span>
             </div>
           </div>
-          <div className="space-y-1.5 font-mono text-[12px]">
+          <div className="space-y-1.5 font-mono text-caption">
             {wordsNow.map((word, wi) => {
               const original = training.initialWords[wi]!.join('').replace(EOW, '');
               return (
@@ -121,7 +121,7 @@ export function BPETrainer({ preset }: { preset?: CorpusPreset }) {
             })}
           </div>
           {currentMerge && (
-            <div className="mt-4 pt-3 border-t border-border text-[11px] font-mono text-dim">
+            <div className="mt-4 pt-3 border-t border-border text-label font-mono text-dim">
               Step {currentMerge.step}: merged{' '}
               <span className="text-ink">{displaySym(currentMerge.merge.a)}</span>{' '}
               +{' '}
@@ -131,7 +131,7 @@ export function BPETrainer({ preset }: { preset?: CorpusPreset }) {
             </div>
           )}
           {step === 0 && (
-            <p className="mt-4 pt-3 border-t border-border text-[11px] text-dim font-mono leading-relaxed">
+            <p className="mt-4 pt-3 border-t border-border text-label text-dim font-mono leading-relaxed">
               Each word starts as its individual characters, with{' '}
               <span className="text-ink">{EOW}</span> marking the end of a word.
               Press <span className="text-accent">Step</span> to merge the most
@@ -143,14 +143,14 @@ export function BPETrainer({ preset }: { preset?: CorpusPreset }) {
         {/* Right: vocabulary list. */}
         <div>
           <div className="flex items-baseline justify-between mb-2">
-            <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono">
+            <div className="text-label uppercase tracking-[0.12em] text-dim font-mono">
               Vocabulary
             </div>
-            <div className="text-[11px] text-dim font-mono tabular-nums">
+            <div className="text-label text-dim font-mono tabular-nums">
               <span className="text-ink">{vocabNow.length}</span> tokens
             </div>
           </div>
-          <div className="flex flex-wrap gap-1 font-mono text-[12px]">
+          <div className="flex flex-wrap gap-1 font-mono text-caption">
             {vocabNow.map((sym, i) => {
               const isNew = currentMerge && sym === currentMerge.merge.merged;
               return (

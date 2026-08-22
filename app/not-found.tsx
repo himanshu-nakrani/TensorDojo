@@ -9,7 +9,7 @@ export default function NotFound() {
   const total = listSlugs().length;
   return (
     <main id="main" className="mx-auto px-6 sm:px-10 py-32 max-w-prose flex flex-col">
-      <div className="text-[11px] uppercase tracking-[0.18em] text-dim font-mono mb-6">
+      <div className="text-label uppercase tracking-[0.18em] text-dim font-mono mb-6">
         404 — page not found
       </div>
       <h1 className="text-[2.25rem] sm:text-[2.5rem] font-semibold text-ink leading-[1.1] tracking-[-0.01em] mb-5">

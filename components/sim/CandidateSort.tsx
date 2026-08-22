@@ -68,7 +68,7 @@ export function CandidateSort({ preset }: { preset?: CandidateSortPreset }) {
       title="Re-rank 5 candidates by q · c"
       onReset={() => setQuery([...DEFAULT_QUERY])}
     >
-      <p className="text-[12px] text-muted mb-5 font-mono">
+      <p className="text-caption text-muted mb-5 font-mono">
         Drag <span className="text-accent">q</span> (only q is draggable). The 5 fixed candidates re-sort by{' '}
         <span className="text-ink">q · cᵢ</span> in real time.
       </p>
@@ -80,7 +80,7 @@ export function CandidateSort({ preset }: { preset?: CandidateSortPreset }) {
         ariaLabel="Query vector q (draggable) and five fixed candidate vectors."
       />
 
-      <ol className="mt-5 space-y-2 font-mono text-[13px]">
+      <ol className="mt-5 space-y-2 font-mono text-body-sm">
         {scored.map((c, i) => (
           <li
             key={c.id}

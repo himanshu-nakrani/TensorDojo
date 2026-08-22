@@ -96,7 +96,7 @@ export function ChainOfThoughtExplorer() {
               }}
               aria-pressed={mode === m}
               className={clsx(
-                'text-[11px] uppercase tracking-[0.12em] font-mono px-3 py-0.5 rounded border focus-ring transition-colors',
+                'text-label uppercase tracking-[0.12em] font-mono px-3 py-0.5 rounded border focus-ring transition-colors',
                 mode === m
                   ? 'border-accent text-accent bg-accent-soft'
                   : 'border-border text-muted hover:text-ink hover:border-border-strong',
@@ -110,13 +110,13 @@ export function ChainOfThoughtExplorer() {
     >
       {/* Problem statement */}
       <div className="rounded-lg border border-border bg-bg/40 p-4 mb-4">
-        <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-2">
+        <div className="text-label uppercase tracking-[0.12em] text-dim font-mono mb-2">
           problem
         </div>
         <div className="text-[15px] font-mono text-ink">
           13 × 4 + 27 = ?
         </div>
-        <div className="text-[11px] text-fg-muted mt-1 font-mono">
+        <div className="text-label text-muted mt-1 font-mono">
           true answer: 79
         </div>
       </div>
@@ -141,12 +141,12 @@ function DirectPanel({ dist }: { dist: AnswerDist }) {
   return (
     <>
       <div className="rounded-lg border border-border bg-bg/40 p-4 mb-4">
-        <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-2">
+        <div className="text-label uppercase tracking-[0.12em] text-dim font-mono mb-2">
           prompt
         </div>
-        <div className="text-[13px] font-mono text-ink leading-relaxed">
+        <div className="text-body-sm font-mono text-ink leading-relaxed">
           Q: 13 × 4 + 27 = ?<br />
-          A: <span className="text-fg-subtle italic">[one token]</span>
+          A: <span className="text-dim italic">[one token]</span>
         </div>
       </div>
       <DistributionBars dist={dist} truth="79" label="P(answer | prompt)" />
@@ -172,10 +172,10 @@ function CotPanel({
   return (
     <>
       <div className="rounded-lg border border-border bg-bg/40 p-4 mb-4">
-        <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-2">
+        <div className="text-label uppercase tracking-[0.12em] text-dim font-mono mb-2">
           prompt + trace so far
         </div>
-        <div className="text-[13px] font-mono text-ink leading-relaxed">
+        <div className="text-body-sm font-mono text-ink leading-relaxed">
           Q: 13 × 4 + 27 = ? Think step by step.<br />
           A:{' '}
           {trace.map((t, i) => (
@@ -187,7 +187,7 @@ function CotPanel({
           {next && (
             <span>
               {next.prefix}
-              <span className="text-fg-subtle italic">[next token]</span>
+              <span className="text-dim italic">[next token]</span>
             </span>
           )}
           {done && (
@@ -200,7 +200,7 @@ function CotPanel({
 
       {next && !done && (
         <>
-          <div className="mb-3 text-[11px] uppercase tracking-[0.12em] text-dim font-mono">
+          <div className="mb-3 text-label uppercase tracking-[0.12em] text-dim font-mono">
             step {trace.length + 1} · {next.prompt}
           </div>
           <DistributionBars
@@ -225,9 +225,9 @@ function CotPanel({
           onClick={onStep}
           disabled={done}
           className={clsx(
-            'text-[11px] uppercase tracking-[0.12em] font-mono px-3 py-1 rounded border focus-ring transition-colors',
+            'text-label uppercase tracking-[0.12em] font-mono px-3 py-1 rounded border focus-ring transition-colors',
             done
-              ? 'border-border text-fg-subtle cursor-not-allowed'
+              ? 'border-border text-dim cursor-not-allowed'
               : 'border-accent text-accent bg-accent-soft hover:bg-accent/15',
           )}
         >
@@ -236,7 +236,7 @@ function CotPanel({
         <button
           type="button"
           onClick={onReset}
-          className="text-[11px] uppercase tracking-[0.12em] font-mono px-3 py-1 rounded border border-border text-muted hover:text-ink hover:border-border-strong focus-ring transition-colors"
+          className="text-label uppercase tracking-[0.12em] font-mono px-3 py-1 rounded border border-border text-muted hover:text-ink hover:border-border-strong focus-ring transition-colors"
         >
           Reset
         </button>
@@ -260,7 +260,7 @@ function DistributionBars({
 
   return (
     <div>
-      <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-3">
+      <div className="text-label uppercase tracking-[0.12em] text-dim font-mono mb-3">
         {label}
       </div>
       <div className="space-y-1.5">
@@ -271,8 +271,8 @@ function DistributionBars({
             <div key={k} className="flex items-center gap-3">
               <span
                 className={clsx(
-                  'text-[12px] font-mono tabular-nums w-12 text-right',
-                  isTruth ? 'text-accent font-semibold' : 'text-fg-muted',
+                  'text-caption font-mono tabular-nums w-12 text-right',
+                  isTruth ? 'text-accent font-semibold' : 'text-muted',
                 )}
               >
                 {k}
@@ -293,8 +293,8 @@ function DistributionBars({
               </div>
               <span
                 className={clsx(
-                  'text-[11px] font-mono tabular-nums w-12',
-                  isTruth ? 'text-accent font-semibold' : 'text-fg-muted',
+                  'text-label font-mono tabular-nums w-12',
+                  isTruth ? 'text-accent font-semibold' : 'text-muted',
                 )}
               >
                 {(v * 100).toFixed(0)}%

@@ -72,7 +72,7 @@ export function GradientProduct() {
 
       {/* Summary stat */}
       <div className="rounded-lg border border-border bg-bg/40 p-3 mb-4 flex items-baseline justify-between">
-        <span className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono">
+        <span className="text-label uppercase tracking-[0.12em] text-dim font-mono">
           layer-1 gradient magnitude
         </span>
         <span
@@ -85,9 +85,9 @@ export function GradientProduct() {
         </span>
       </div>
 
-      <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-2 flex items-center justify-between">
+      <div className="text-label uppercase tracking-[0.12em] text-dim font-mono mb-2 flex items-center justify-between">
         <span>output</span>
-        <span className="text-fg-muted normal-case tracking-normal font-mono">
+        <span className="text-muted normal-case tracking-normal font-mono">
           ← backward pass ←
         </span>
         <span>input</span>
@@ -96,7 +96,7 @@ export function GradientProduct() {
       {/* Bar chart of gradient magnitude per layer */}
       <BarStack grads={grads} />
 
-      <p className="mt-3 text-[11px] text-dim font-mono">
+      <p className="mt-3 text-label text-dim font-mono">
         {residual
           ? 'Residual on: each layer adds the identity to its Jacobian. The product stays near 1 even for σ ≠ 1.'
           : `Plain stack: per-layer Jacobian ‖J‖ = ${sigma.toFixed(2)}. After N=${N} layers the gradient is multiplied by σ^N = ${(sigma ** N).toExponential(2)}.`}
@@ -151,12 +151,12 @@ function Slider({
       <div className="flex items-baseline justify-between mb-2">
         <label
           htmlFor={id}
-          className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono"
+          className="text-label uppercase tracking-[0.12em] text-dim font-mono"
         >
           {label}
         </label>
         {accent && (
-          <span className="font-mono text-[14px] text-accent tabular-nums">
+          <span className="font-mono text-body text-accent tabular-nums">
             {value.toFixed(2)}
           </span>
         )}
@@ -190,7 +190,7 @@ function ToggleButton({
       onClick={onToggle}
       aria-pressed={on}
       className={clsx(
-        'text-[11px] uppercase tracking-[0.12em] font-mono px-2 py-0.5 rounded border focus-ring transition-colors',
+        'text-label uppercase tracking-[0.12em] font-mono px-2 py-0.5 rounded border focus-ring transition-colors',
         on
           ? 'border-accent text-accent bg-accent-soft'
           : 'border-border text-muted hover:text-ink hover:border-border-strong',
@@ -237,7 +237,7 @@ function BarStack({ grads }: { grads: readonly number[] }) {
           <text
             x={W - PAD + 2}
             y={yToPx(lv) + 3}
-            className="fill-fg-subtle"
+            className="fill-dim"
             fontSize={8}
             fontFamily="var(--font-mono), ui-monospace, monospace"
           >

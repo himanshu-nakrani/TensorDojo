@@ -44,19 +44,19 @@ export function PositionalEncodingHeatmap({ preset }: { preset?: PositionalEncod
     <SimFrame title="PE[pos, dim] heatmap · probe distance" onReset={reset}>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
-          <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-2">
+          <div className="text-label uppercase tracking-[0.12em] text-dim font-mono mb-2">
             PE heatmap ({maxPos} positions × {d} dims)
           </div>
           <div className="grid gap-1" style={{ gridTemplateColumns: `repeat(${d}, minmax(0, 1fr))` }}>
             {/* Header row of position indices */}
-            <div className="text-[11px] text-dim font-mono text-center">pos</div>
+            <div className="text-label text-dim font-mono text-center">pos</div>
             {Array.from({ length: d }, (_, dim) => (
-              <div key={dim} className="text-[11px] text-dim font-mono text-center">{dim}</div>
+              <div key={dim} className="text-label text-dim font-mono text-center">{dim}</div>
             ))}
             {/* Rows */}
             {pe.map((row, pos) => (
               <Fragment key={`row-${pos}`}>
-                <div className="text-[11px] text-dim font-mono text-center pr-1">{pos}</div>
+                <div className="text-label text-dim font-mono text-center pr-1">{pos}</div>
                 {row.map((v, dim) => (
                   <div
                     key={`c${pos}-${dim}`}
@@ -77,12 +77,12 @@ export function PositionalEncodingHeatmap({ preset }: { preset?: PositionalEncod
           </div>
         </div>
 
-        <div className="space-y-3 font-mono text-[12px]">
+        <div className="space-y-3 font-mono text-caption">
           <SliderRow label="max position" value={maxPos} min={4} max={32} step={1} onChange={setMaxPos} />
           <SliderRow label="d (model dim)" value={d} min={4} max={32} step={2} onChange={(v) => setD(v % 2 === 0 ? v : v + 1)} />
 
           <div className="pt-3 border-t border-border space-y-2">
-            <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono">
+            <div className="text-label uppercase tracking-[0.12em] text-dim font-mono">
               Distance probe
             </div>
             <div className="grid grid-cols-2 gap-2">
@@ -93,7 +93,7 @@ export function PositionalEncodingHeatmap({ preset }: { preset?: PositionalEncod
               <span className="text-dim">PE(a) · PE(b)</span>
               <span className="text-accent tabular-nums">{dotAB.toFixed(3)}</span>
             </div>
-            <p className="text-[11px] text-dim leading-relaxed">
+            <p className="text-label text-dim leading-relaxed">
               As |a − b| grows, the dot product changes smoothly — that is how the model "feels" distance.
             </p>
           </div>
@@ -121,7 +121,7 @@ function SliderRow({
   return (
     <div>
       <div className="flex items-baseline justify-between mb-1">
-        <span className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono">
+        <span className="text-label uppercase tracking-[0.12em] text-dim font-mono">
           {label}
         </span>
         <span className="text-ink tabular-nums">{value}</span>
@@ -154,7 +154,7 @@ function NumberRow({
 }) {
   return (
     <label className="block">
-      <div className="text-[11px] text-dim font-mono mb-1">{label}</div>
+      <div className="text-label text-dim font-mono mb-1">{label}</div>
       <NumberInput
         value={value}
         min={0}

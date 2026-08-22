@@ -175,21 +175,21 @@ function PaletteOverlay({
             <Command.Input
               autoFocus
               placeholder="Search 58 lessons by title, summary, or track…"
-              className="flex-1 bg-transparent text-[14px] text-ink placeholder:text-fg-subtle focus:outline-none"
+              className="flex-1 bg-transparent text-body text-ink placeholder:text-dim focus:outline-none"
             />
-            <kbd className="hidden sm:inline-block rounded border border-border px-1.5 py-0.5 text-[10px] font-mono text-fg-muted">
+            <kbd className="hidden sm:inline-block rounded border border-border px-1.5 py-0.5 text-micro font-mono text-muted">
               esc
             </kbd>
           </div>
           <Command.List className="max-h-[60vh] overflow-y-auto py-2">
-            <Command.Empty className="px-4 py-8 text-center text-[13px] font-mono text-fg-muted">
+            <Command.Empty className="px-4 py-8 text-center text-body-sm font-mono text-muted">
               No lessons match.
             </Command.Empty>
             {grouped.map(({ track, items }) => (
               <Command.Group
                 key={track.id}
                 heading={track.label}
-                className="px-2 [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:py-1.5 [&_[cmdk-group-heading]]:text-[10px] [&_[cmdk-group-heading]]:uppercase [&_[cmdk-group-heading]]:tracking-[0.12em] [&_[cmdk-group-heading]]:text-dim [&_[cmdk-group-heading]]:font-mono"
+                className="px-2 [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:py-1.5 [&_[cmdk-group-heading]]:text-micro [&_[cmdk-group-heading]]:uppercase [&_[cmdk-group-heading]]:tracking-[0.12em] [&_[cmdk-group-heading]]:text-dim [&_[cmdk-group-heading]]:font-mono"
               >
                 {items.map((item) => (
                   <Command.Item
@@ -200,14 +200,14 @@ function PaletteOverlay({
                     className="group flex flex-col gap-0.5 rounded-md px-3 py-2 cursor-pointer data-[selected=true]:bg-accent-soft data-[selected=true]:text-ink"
                   >
                     <div className="flex items-baseline justify-between gap-3">
-                      <span className="text-[14px] text-ink font-medium leading-tight">
+                      <span className="text-body text-ink font-medium leading-tight">
                         {item.title}
                       </span>
-                      <span className="text-[10px] font-mono text-fg-subtle shrink-0 tabular-nums">
+                      <span className="text-micro font-mono text-dim shrink-0 tabular-nums">
                         {item.minutes} min
                       </span>
                     </div>
-                    <span className="text-[12px] text-fg-muted leading-snug line-clamp-2">
+                    <span className="text-caption text-muted leading-snug line-clamp-2">
                       {item.summary}
                     </span>
                   </Command.Item>
@@ -215,7 +215,7 @@ function PaletteOverlay({
               </Command.Group>
             ))}
           </Command.List>
-          <div className="flex items-center justify-between border-t border-border px-4 py-2 text-[11px] font-mono text-fg-subtle">
+          <div className="flex items-center justify-between border-t border-border px-4 py-2 text-label font-mono text-dim">
             <div className="flex items-center gap-3">
               <Hint icon="↵">open</Hint>
               <Hint icon="↑↓">navigate</Hint>
@@ -231,7 +231,7 @@ function PaletteOverlay({
 function Hint({ icon, children }: { icon: string; children: ReactNode }) {
   return (
     <span className="inline-flex items-center gap-1">
-      <kbd className="inline-block rounded border border-border px-1.5 py-0.5 text-[10px] text-fg-muted">
+      <kbd className="inline-block rounded border border-border px-1.5 py-0.5 text-micro text-muted">
         {icon}
       </kbd>
       <span>{children}</span>
@@ -251,7 +251,7 @@ function SearchIcon() {
       strokeLinecap="round"
       strokeLinejoin="round"
       aria-hidden="true"
-      className="text-fg-subtle"
+      className="text-dim"
     >
       <circle cx="7" cy="7" r="4.5" />
       <line x1="10.5" y1="10.5" x2="14" y2="14" />

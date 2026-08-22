@@ -64,7 +64,7 @@ export function ConceptMapView({ sections }: { sections: TrackSection[] }) {
           resumeSlug={resumeSlug}
         />
         <details className="mt-8">
-          <summary className="focus-ring cursor-pointer text-[12px] uppercase tracking-[0.12em] text-fg-muted font-mono hover:text-ink transition-colors">
+          <summary className="focus-ring cursor-pointer text-caption uppercase tracking-[0.12em] text-muted font-mono hover:text-ink transition-colors">
             Show accessible list view
           </summary>
           <div className="mt-4">
@@ -95,10 +95,10 @@ function MapList({
     <div className="space-y-6">
       {sections.map((section) => (
         <section key={section.id}>
-          <h2 className="text-[12px] uppercase tracking-[0.12em] text-ink font-mono font-semibold mb-1">
+          <h2 className="text-caption uppercase tracking-[0.12em] text-ink font-mono font-semibold mb-1">
             {section.label}
           </h2>
-          <div className="text-[11px] text-fg-muted font-mono mb-3">
+          <div className="text-label text-muted font-mono mb-3">
             {section.lessons.length} lesson
             {section.lessons.length === 1 ? '' : 's'}
           </div>
@@ -137,7 +137,7 @@ function MapList({
                             {lesson.title}
                           </h3>
                         </div>
-                        <div className="mt-1 flex items-center gap-3 text-[12px] font-mono text-fg-muted">
+                        <div className="mt-1 flex items-center gap-3 text-caption font-mono text-muted">
                           <span>{lesson.minutes} min</span>
                           {prereqCount > 0 && (
                             <span className="inline-flex items-center gap-1 text-accent">
@@ -146,17 +146,17 @@ function MapList({
                             </span>
                           )}
                           {isResume && (
-                            <span className="px-1.5 py-0.5 rounded bg-accent text-accent-fg uppercase tracking-[0.12em] text-[11px]">
+                            <span className="px-1.5 py-0.5 rounded bg-accent text-accent-fg uppercase tracking-[0.12em] text-label">
                               Resume
                             </span>
                           )}
                         </div>
                         {prereqCount > 0 && (
-                          <ul className="mt-2 space-y-0.5 text-[12px] text-muted">
+                          <ul className="mt-2 space-y-0.5 text-caption text-muted">
                             {lesson.crossTrackPrereqs.map((p) => (
                               <li key={`${p.from}->${p.to}`}>
                                 ↗ {p.fromTitle}{' '}
-                                <span className="text-fg-subtle">
+                                <span className="text-dim">
                                   ({p.fromTrackLabel})
                                 </span>
                               </li>
@@ -284,7 +284,7 @@ function MapCanvas({
             >
               <path
                 d="M 0 0 L 10 5 L 0 10 z"
-                className="fill-fg-subtle"
+                className="fill-dim"
               />
             </marker>
           </defs>
@@ -325,7 +325,7 @@ function MapCanvas({
                   y1={y1}
                   x2={x}
                   y2={y2}
-                  className="stroke-fg-subtle"
+                  className="stroke-dim"
                   strokeWidth={1.5}
                   markerEnd="url(#arrow-in-track)"
                 />
@@ -352,10 +352,10 @@ function MapCanvas({
                   width: `${NODE_W}px`,
                 }}
               >
-                <h2 className="text-[12px] uppercase tracking-[0.12em] text-ink font-mono font-semibold leading-snug">
+                <h2 className="text-caption uppercase tracking-[0.12em] text-ink font-mono font-semibold leading-snug">
                   {section.label}
                 </h2>
-                <div className="text-[11px] text-fg-muted font-mono mt-0.5">
+                <div className="text-label text-muted font-mono mt-0.5">
                   {section.lessons.length} lesson
                   {section.lessons.length === 1 ? '' : 's'}
                 </div>
@@ -452,7 +452,7 @@ function LessonNode({
       >
         {resume && (
           <div
-            className="absolute -top-2.5 left-3 text-[11px] uppercase tracking-[0.12em] font-mono px-1.5 py-0.5 rounded bg-accent text-accent-fg"
+            className="absolute -top-2.5 left-3 text-label uppercase tracking-[0.12em] font-mono px-1.5 py-0.5 rounded bg-accent text-accent-fg"
             aria-hidden="true"
           >
             Resume
@@ -472,7 +472,7 @@ function LessonNode({
             title={visited ? 'Visited' : 'Not yet visited'}
           />
         </div>
-        <div className="absolute bottom-1.5 left-2.5 text-[11px] font-mono text-fg-muted">
+        <div className="absolute bottom-1.5 left-2.5 text-label font-mono text-muted">
           {lesson.minutes} min
         </div>
       </Link>
@@ -489,7 +489,7 @@ function LessonNode({
               e.stopPropagation();
               setPrereqOpen((o) => !o);
             }}
-            className="focus-ring inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded border border-accent/40 bg-surface text-accent text-[11px] font-mono hover:bg-accent-soft transition-colors"
+            className="focus-ring inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded border border-accent/40 bg-surface text-accent text-label font-mono hover:bg-accent-soft transition-colors"
           >
             ↗{prereqCount}
           </button>
@@ -500,14 +500,14 @@ function LessonNode({
               onClick={(e) => e.stopPropagation()}
               className="absolute right-0 bottom-full mb-2 w-[220px] rounded-md border border-border-strong bg-surface p-3 shadow-lg text-left"
             >
-              <div className="text-[11px] uppercase tracking-[0.12em] font-mono text-dim mb-2">
+              <div className="text-label uppercase tracking-[0.12em] font-mono text-dim mb-2">
                 Cross-track prereqs
               </div>
-              <ul className="space-y-1 text-[12px] text-muted">
+              <ul className="space-y-1 text-caption text-muted">
                 {lesson.crossTrackPrereqs.map((p) => (
                   <li key={`${p.from}->${p.to}`}>
                     ↗ {p.fromTitle}{' '}
-                    <span className="text-fg-subtle">
+                    <span className="text-dim">
                       ({p.fromTrackLabel})
                     </span>
                   </li>
@@ -523,7 +523,7 @@ function LessonNode({
 
 function Legend({ hasResume }: { hasResume: boolean }) {
   return (
-    <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-[11px] font-mono text-fg-muted pt-4 border-t border-border">
+    <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-label font-mono text-muted pt-4 border-t border-border">
       <span className="uppercase tracking-[0.12em] text-dim">Legend</span>
       <span className="inline-flex items-center gap-1.5">
         <span aria-hidden="true" className="inline-block h-2.5 w-2.5 rounded-full bg-accent ring-2 ring-accent/20" />
@@ -538,12 +538,12 @@ function Legend({ hasResume }: { hasResume: boolean }) {
       </span>
       <span className="inline-flex items-center gap-1.5">
         <svg width="22" height="6" aria-hidden="true">
-          <line x1="0" y1="3" x2="20" y2="3" className="stroke-fg-subtle" strokeWidth="1.5" />
+          <line x1="0" y1="3" x2="20" y2="3" className="stroke-dim" strokeWidth="1.5" />
         </svg>
         next in track
       </span>
       <span className="inline-flex items-center gap-1.5">
-        <span className="inline-flex items-center px-1 rounded border border-accent/40 text-accent text-[11px] font-mono">
+        <span className="inline-flex items-center px-1 rounded border border-accent/40 text-accent text-label font-mono">
           ↗N
         </span>
         N cross-track prerequisites (tap to view)

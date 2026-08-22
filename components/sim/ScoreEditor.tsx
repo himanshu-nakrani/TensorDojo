@@ -60,29 +60,29 @@ export function ScoreEditor({ preset }: { preset?: ScoreEditorPreset }) {
 
   return (
     <SimFrame title="Nudge scores with ↑ ↓ · feel the handoff" onReset={reset}>
-      <p className="text-[12px] text-muted mb-5 font-mono">
+      <p className="text-caption text-muted mb-5 font-mono">
         Focus a cell and nudge with{' '}
-        <kbd className="px-1.5 py-0.5 rounded border border-border-strong text-ink bg-surface-2 text-[11px]">
+        <kbd className="px-1.5 py-0.5 rounded border border-border-strong text-ink bg-surface-2 text-label">
           ↑
         </kbd>{' '}
-        <kbd className="px-1.5 py-0.5 rounded border border-border-strong text-ink bg-surface-2 text-[11px]">
+        <kbd className="px-1.5 py-0.5 rounded border border-border-strong text-ink bg-surface-2 text-label">
           ↓
         </kbd>
         . Hold{' '}
-        <kbd className="px-1.5 py-0.5 rounded border border-border-strong text-ink bg-surface-2 text-[11px]">
+        <kbd className="px-1.5 py-0.5 rounded border border-border-strong text-ink bg-surface-2 text-label">
           Shift
         </kbd>{' '}
         for a 10× step.
       </p>
 
-      <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,2fr)_minmax(0,2.5rem)] gap-x-4 gap-y-3 items-center font-mono text-[13px]">
-        <div className="text-[11px] uppercase tracking-[0.12em] text-dim">
+      <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,2fr)_minmax(0,2.5rem)] gap-x-4 gap-y-3 items-center font-mono text-body-sm">
+        <div className="text-label uppercase tracking-[0.12em] text-dim">
           Score
         </div>
-        <div className="text-[11px] uppercase tracking-[0.12em] text-dim">
+        <div className="text-label uppercase tracking-[0.12em] text-dim">
           Probability
         </div>
-        <div className="text-[11px] uppercase tracking-[0.12em] text-dim text-right">
+        <div className="text-label uppercase tracking-[0.12em] text-dim text-right">
           p
         </div>
 
@@ -104,7 +104,7 @@ export function ScoreEditor({ preset }: { preset?: ScoreEditorPreset }) {
                     inputRefs.current[i] = el;
                   }}
                 />
-                <span className="text-[11px] text-dim">{SCORE_LABELS[i]}</span>
+                <span className="text-label text-dim">{SCORE_LABELS[i]}</span>
               </div>
               <div className="relative h-7 bg-bg/40 rounded-sm overflow-hidden">
                 <div
@@ -128,7 +128,7 @@ export function ScoreEditor({ preset }: { preset?: ScoreEditorPreset }) {
         })}
       </div>
 
-      <div className="flex items-center justify-end gap-3 pt-4 mt-4 border-t border-border text-[11px] font-mono text-muted">
+      <div className="flex items-center justify-end gap-3 pt-4 mt-4 border-t border-border text-label font-mono text-muted">
         <span>Σ pᵢ</span>
         <span className="text-ink tabular-nums">= {sumLabel}</span>
       </div>

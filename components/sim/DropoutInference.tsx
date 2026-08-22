@@ -36,13 +36,13 @@ export function DropoutInference() {
       title="Inverted dropout: the inference scaling"
       headerAction={
         <div className="flex items-center gap-3">
-          <div className="text-[11px] text-dim font-mono tabular-nums">
+          <div className="text-label text-dim font-mono tabular-nums">
             training (p={p.toFixed(2)}) vs inference (p=0)
           </div>
           <button
             type="button"
             onClick={reset}
-            className="text-[11px] uppercase tracking-[0.12em] font-mono text-muted hover:text-ink focus-ring transition-colors"
+            className="text-label uppercase tracking-[0.12em] font-mono text-muted hover:text-ink focus-ring transition-colors"
           >
             Reset
           </button>
@@ -50,10 +50,10 @@ export function DropoutInference() {
       }
       headerWrap
     >
-      <div className="space-y-3 font-mono text-[12px]">
+      <div className="space-y-3 font-mono text-caption">
         <div>
           <div className="flex items-baseline justify-between mb-1">
-            <span className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono">
+            <span className="text-label uppercase tracking-[0.12em] text-dim font-mono">
               Training dropout p
             </span>
             <span className="text-ink tabular-nums">{p.toFixed(2)}</span>
@@ -69,7 +69,7 @@ export function DropoutInference() {
           />
         </div>
 
-        <div className="pt-3 border-t border-border space-y-1.5 text-[11px]">
+        <div className="pt-3 border-t border-border space-y-1.5 text-label">
           <div className="flex items-baseline justify-between">
             <span className="text-dim">Naive E[y] (training)</span>
             <span className="text-ink tabular-nums">{(1 - p).toFixed(2)} · x</span>
@@ -105,7 +105,7 @@ export function DropoutInference() {
           </div>
         </div>
 
-        <p className="text-[11px] text-fg-subtle font-mono leading-relaxed pt-2">
+        <p className="text-label text-dim font-mono leading-relaxed pt-2">
           The naive form makes training-time activations
           systematically smaller than inference-time. The
           inverted form scales the kept activations up by

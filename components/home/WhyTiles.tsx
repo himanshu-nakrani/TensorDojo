@@ -34,7 +34,7 @@ export function WhyTiles() {
   return (
     <section aria-labelledby="why-heading">
       <div className="mb-8">
-        <div className="text-[12px] uppercase tracking-[0.12em] text-fg-muted font-mono mb-3">
+        <div className="text-caption uppercase tracking-[0.12em] text-muted font-mono mb-3">
           Why this works
         </div>
         <h2
@@ -50,13 +50,13 @@ export function WhyTiles() {
             key={tile.eyebrow}
             className="rounded-xl border border-border bg-surface p-6 sm:p-7 card-surface"
           >
-            <div className="text-[12px] uppercase tracking-[0.12em] font-mono text-fg-muted mb-3">
+            <div className="text-caption uppercase tracking-[0.12em] font-mono text-muted mb-3">
               {tile.eyebrow}
             </div>
             <h3 className="text-[1.125rem] font-semibold text-ink tracking-[-0.005em] mb-2 leading-snug">
               {tile.headline}
             </h3>
-            <p className="text-[14px] text-muted leading-relaxed">
+            <p className="text-body text-muted leading-relaxed">
               {tile.body}
             </p>
           </li>

@@ -101,7 +101,7 @@ export function SlidingWindowExplorer() {
         />
       </div>
 
-      <p className="mt-3 text-[11px] text-dim font-mono leading-relaxed">
+      <p className="mt-3 text-label text-dim font-mono leading-relaxed">
         At fixed w, doubling n doubles sliding-window cost but quadruples full-attention cost.
         The receptive field of L · w grows with depth, so distant tokens still influence the output indirectly.
       </p>
@@ -133,11 +133,11 @@ function Slider({
       <div className="flex items-baseline justify-between mb-2">
         <label
           htmlFor={id}
-          className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono"
+          className="text-label uppercase tracking-[0.12em] text-dim font-mono"
         >
           {label}
         </label>
-        <span className="font-mono text-[14px] text-accent tabular-nums">
+        <span className="font-mono text-body text-accent tabular-nums">
           {format(value)}
         </span>
       </div>
@@ -158,10 +158,10 @@ function Slider({
 function Stat({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-md border border-border bg-bg/40 px-3 py-2 flex items-baseline justify-between">
-      <span className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono">
+      <span className="text-label uppercase tracking-[0.12em] text-dim font-mono">
         {label}
       </span>
-      <span className="text-[12px] font-mono text-accent tabular-nums">
+      <span className="text-caption font-mono text-accent tabular-nums">
         {value}
       </span>
     </div>
@@ -210,8 +210,8 @@ function MaskPanel({
   return (
     <div className="rounded-lg border border-border bg-bg/40 p-3">
       <div className="flex items-baseline justify-between mb-2">
-        <span className="text-[13px] font-semibold text-ink">{title}</span>
-        <span className="text-[11px] font-mono text-fg-muted">{subtitle}</span>
+        <span className="text-body-sm font-semibold text-ink">{title}</span>
+        <span className="text-label font-mono text-muted">{subtitle}</span>
       </div>
       <svg
         viewBox={`0 0 ${size} ${size}`}
@@ -240,12 +240,12 @@ function MaskPanel({
           textAnchor="middle"
           fontSize={9}
           fontFamily="var(--font-mono), ui-monospace, monospace"
-          className="fill-fg-subtle"
+          className="fill-dim"
         >
           key position j →
         </text>
       </svg>
-      <div className="mt-1 text-[10px] font-mono text-fg-subtle text-center">
+      <div className="mt-1 text-micro font-mono text-dim text-center">
         rows: query i  ·  shaded cells = attended
       </div>
     </div>

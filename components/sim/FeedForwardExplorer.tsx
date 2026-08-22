@@ -128,7 +128,7 @@ export function FeedForwardExplorer() {
     >
       {/* Token selector */}
       <div className="mb-4 flex flex-wrap items-center gap-2">
-        <span className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mr-1">
+        <span className="text-label uppercase tracking-[0.12em] text-dim font-mono mr-1">
           Token
         </span>
         {TOKENS.map((t) => (
@@ -137,7 +137,7 @@ export function FeedForwardExplorer() {
             type="button"
             onClick={() => setTokenId(t.id)}
             className={
-              'text-[11px] uppercase tracking-[0.12em] font-mono px-2 py-0.5 rounded border focus-ring transition-colors ' +
+              'text-label uppercase tracking-[0.12em] font-mono px-2 py-0.5 rounded border focus-ring transition-colors ' +
               (tokenId === t.id
                 ? 'border-accent text-accent'
                 : 'border-border text-muted hover:text-ink')
@@ -152,10 +152,10 @@ export function FeedForwardExplorer() {
       {/* Expansion factor */}
       <div className="mb-4">
         <div className="flex items-baseline justify-between mb-1">
-          <span className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono">
+          <span className="text-label uppercase tracking-[0.12em] text-dim font-mono">
             Expansion factor (d_hidden / d_model)
           </span>
-          <span className="text-ink font-mono tabular-nums text-[12px]">
+          <span className="text-ink font-mono tabular-nums text-caption">
             {expansion}× → d_hidden = {dHidden}
           </span>
         </div>
@@ -172,7 +172,7 @@ export function FeedForwardExplorer() {
 
       {/* Activation toggle */}
       <div className="mb-5 flex flex-wrap items-center gap-2">
-        <span className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mr-1">
+        <span className="text-label uppercase tracking-[0.12em] text-dim font-mono mr-1">
           Activation
         </span>
         {(
@@ -186,7 +186,7 @@ export function FeedForwardExplorer() {
             type="button"
             onClick={() => setActivation(a.id)}
             className={
-              'text-[11px] uppercase tracking-[0.12em] font-mono px-2 py-0.5 rounded border focus-ring transition-colors ' +
+              'text-label uppercase tracking-[0.12em] font-mono px-2 py-0.5 rounded border focus-ring transition-colors ' +
               (activation === a.id
                 ? 'border-accent text-accent'
                 : 'border-border text-muted hover:text-ink')
@@ -202,7 +202,7 @@ export function FeedForwardExplorer() {
       <div className="space-y-5">
         {steps.map((s) => (
           <div key={s.label}>
-            <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-2">
+            <div className="text-label uppercase tracking-[0.12em] text-dim font-mono mb-2">
               {s.label}
             </div>
             <Heatmap

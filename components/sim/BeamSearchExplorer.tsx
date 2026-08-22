@@ -72,7 +72,7 @@ export function BeamSearchExplorer() {
         <button
           type="button"
           onClick={reset}
-          className="text-[11px] uppercase tracking-[0.12em] font-mono text-muted hover:text-ink focus-ring transition-colors"
+          className="text-label uppercase tracking-[0.12em] font-mono text-muted hover:text-ink focus-ring transition-colors"
         >
           Reset
         </button>
@@ -84,11 +84,11 @@ export function BeamSearchExplorer() {
           <div className="flex items-baseline justify-between mb-2">
             <label
               htmlFor="beam-k"
-              className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono"
+              className="text-label uppercase tracking-[0.12em] text-dim font-mono"
             >
               beam width  k
             </label>
-            <span className="font-mono text-[14px] text-accent tabular-nums">
+            <span className="font-mono text-body text-accent tabular-nums">
               {k}
             </span>
           </div>
@@ -109,9 +109,9 @@ export function BeamSearchExplorer() {
           onClick={advance}
           disabled={atEnd}
           className={clsx(
-            'focus-ring inline-flex items-center justify-center min-h-[40px] px-4 rounded-md text-[13px] font-mono border transition-colors',
+            'focus-ring inline-flex items-center justify-center min-h-[40px] px-4 rounded-md text-body-sm font-mono border transition-colors',
             atEnd
-              ? 'border-border text-fg-subtle cursor-not-allowed'
+              ? 'border-border text-dim cursor-not-allowed'
               : 'border-border-strong text-ink hover:border-accent hover:text-accent',
           )}
         >
@@ -122,9 +122,9 @@ export function BeamSearchExplorer() {
           onClick={() => setPlaying((p) => !p)}
           disabled={atEnd}
           className={clsx(
-            'focus-ring inline-flex items-center justify-center min-h-[40px] px-4 rounded-md text-[13px] font-mono font-semibold transition-colors',
+            'focus-ring inline-flex items-center justify-center min-h-[40px] px-4 rounded-md text-body-sm font-mono font-semibold transition-colors',
             atEnd
-              ? 'bg-surface text-fg-subtle cursor-not-allowed'
+              ? 'bg-surface text-dim cursor-not-allowed'
               : playing
                 ? 'bg-surface text-ink border border-border-strong'
                 : 'bg-accent text-accent-fg hover:bg-accent-hover',
@@ -136,13 +136,13 @@ export function BeamSearchExplorer() {
 
       {/* Step header */}
       <div className="flex items-baseline justify-between mb-3">
-        <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono">
+        <div className="text-label uppercase tracking-[0.12em] text-dim font-mono">
           Step {step} of ≤ {MAX_STEPS}
           {' · '}
           {sorted.length} active beam{sorted.length === 1 ? '' : 's'}
         </div>
         {atEnd && (
-          <div className="text-[11px] uppercase tracking-[0.12em] text-accent font-mono">
+          <div className="text-label uppercase tracking-[0.12em] text-accent font-mono">
             {allFinished ? '✓ All beams reached <eos>' : 'Step limit'}
           </div>
         )}
@@ -166,8 +166,8 @@ export function BeamSearchExplorer() {
                 <div className="flex items-baseline justify-between gap-3 mb-1.5">
                   <span
                     className={clsx(
-                      'text-[11px] uppercase tracking-[0.12em] font-mono',
-                      isBest ? 'text-accent' : 'text-fg-muted',
+                      'text-label uppercase tracking-[0.12em] font-mono',
+                      isBest ? 'text-accent' : 'text-muted',
                     )}
                   >
                     Beam {idx + 1}
@@ -175,8 +175,8 @@ export function BeamSearchExplorer() {
                   </span>
                   <span
                     className={clsx(
-                      'font-mono text-[12px] tabular-nums',
-                      isBest ? 'text-accent' : 'text-fg-muted',
+                      'font-mono text-caption tabular-nums',
+                      isBest ? 'text-accent' : 'text-muted',
                     )}
                   >
                     log p = {beam.logProb.toFixed(3)}
@@ -187,7 +187,7 @@ export function BeamSearchExplorer() {
                     <span
                       key={i}
                       className={clsx(
-                        'inline-flex items-center px-2 py-0.5 rounded font-mono text-[12px] tabular-nums',
+                        'inline-flex items-center px-2 py-0.5 rounded font-mono text-caption tabular-nums',
                         tok === '<eos>'
                           ? 'border border-accent/50 text-accent'
                           : i === beam.tokens.length - 1 && !beam.finished
@@ -205,7 +205,7 @@ export function BeamSearchExplorer() {
         })}
       </ol>
 
-      <p className="mt-5 pt-4 border-t border-border text-[12px] text-fg-muted font-mono leading-relaxed">
+      <p className="mt-5 pt-4 border-t border-border text-caption text-muted font-mono leading-relaxed">
         k = 1 is greedy decoding. Greedy from <code>the</code> never
         reaches &lt;eos&gt; on this toy bigram — it loops on the
         higher-probability token at each step. Bump k to 2 and the

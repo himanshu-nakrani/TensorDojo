@@ -72,14 +72,14 @@ export const WorkbenchItem = forwardRef<HTMLDivElement, WorkbenchItemProps>(
         >
           <Chevron open={isActive} />
           <span className="flex-1 min-w-0">
-            <span className="block text-[12px] uppercase tracking-[0.12em] text-dim font-mono">
+            <span className="block text-caption uppercase tracking-[0.12em] text-dim font-mono">
               {isActive ? 'Active · Interactive' : 'Interactive'}
             </span>
             <span className="block text-sm font-semibold text-ink tracking-[-0.005em]">
               {title}
             </span>
             {description && (
-              <span className="block text-[13px] text-muted mt-0.5">
+              <span className="block text-body-sm text-muted mt-0.5">
                 {description}
               </span>
             )}
@@ -95,7 +95,7 @@ export const WorkbenchItem = forwardRef<HTMLDivElement, WorkbenchItemProps>(
           >
             {children}
             {caption && (
-              <p className="mt-4 text-[12px] text-dim font-mono leading-relaxed border-t border-border pt-3">
+              <p className="mt-4 text-caption text-dim font-mono leading-relaxed border-t border-border pt-3">
                 {caption}
               </p>
             )}

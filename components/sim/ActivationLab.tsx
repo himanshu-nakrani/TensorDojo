@@ -89,7 +89,7 @@ export function ActivationLab() {
             onClick={() => setShowDeriv((d) => !d)}
             aria-pressed={showDeriv}
             className={clsx(
-              'text-[11px] uppercase tracking-[0.12em] font-mono focus-ring transition-colors px-2 py-0.5 rounded border',
+              'text-label uppercase tracking-[0.12em] font-mono focus-ring transition-colors px-2 py-0.5 rounded border',
               showDeriv
                 ? 'border-accent text-accent bg-accent-soft'
                 : 'border-border text-muted hover:text-ink hover:border-border-strong',
@@ -100,7 +100,7 @@ export function ActivationLab() {
           <button
             type="button"
             onClick={() => setX(1)}
-            className="text-[11px] uppercase tracking-[0.12em] font-mono text-muted hover:text-ink focus-ring transition-colors"
+            className="text-label uppercase tracking-[0.12em] font-mono text-muted hover:text-ink focus-ring transition-colors"
           >
             Reset
           </button>
@@ -112,11 +112,11 @@ export function ActivationLab() {
         <div className="flex items-baseline justify-between mb-2">
           <label
             htmlFor="activation-x"
-            className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono"
+            className="text-label uppercase tracking-[0.12em] text-dim font-mono"
           >
             input x
           </label>
-          <span className="font-mono text-[14px] text-accent tabular-nums">
+          <span className="font-mono text-body text-accent tabular-nums">
             {x.toFixed(2)}
           </span>
         </div>
@@ -131,7 +131,7 @@ export function ActivationLab() {
           aria-valuetext={`${x.toFixed(2)}`}
           className="w-full accent-[rgb(var(--accent))]"
         />
-        <div className="flex justify-between mt-1 text-[11px] text-dim font-mono tabular-nums">
+        <div className="flex justify-between mt-1 text-label text-dim font-mono tabular-nums">
           <span>{X_MIN}</span>
           <span>0</span>
           <span>+{X_MAX}</span>
@@ -212,14 +212,14 @@ function CurvePanel({
   return (
     <div className="rounded-lg border border-border bg-bg/40 p-3">
       <div className="flex items-baseline justify-between mb-1">
-        <div className="text-[13px] font-semibold text-ink tracking-[-0.005em]">
+        <div className="text-body-sm font-semibold text-ink tracking-[-0.005em]">
           {act.label}
         </div>
-        <div className="text-[11px] font-mono text-accent tabular-nums">
+        <div className="text-label font-mono text-accent tabular-nums">
           {yAtX.toFixed(3)}
         </div>
       </div>
-      <div className="text-[11px] text-dim font-mono mb-2">{act.formula}</div>
+      <div className="text-label text-dim font-mono mb-2">{act.formula}</div>
 
       <svg
         viewBox={`0 0 ${W} ${H}`}
@@ -258,7 +258,7 @@ function CurvePanel({
           <path
             d={pathFp}
             fill="none"
-            className="stroke-fg-muted"
+            className="stroke-muted"
             strokeWidth={1.25}
             strokeDasharray="3 3"
             strokeLinecap="round"
@@ -271,7 +271,7 @@ function CurvePanel({
           x2={dotPx}
           y1={PAD}
           y2={H - PAD}
-          className="stroke-fg-subtle"
+          className="stroke-dim"
           strokeWidth={0.75}
           strokeDasharray="2 3"
         />
@@ -285,7 +285,7 @@ function CurvePanel({
       </svg>
 
       {showDeriv && (
-        <div className="mt-1 text-[11px] font-mono text-fg-muted tabular-nums">
+        <div className="mt-1 text-label font-mono text-muted tabular-nums">
           f′(x) = {ypAtX.toFixed(3)}
         </div>
       )}

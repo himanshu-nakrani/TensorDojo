@@ -280,7 +280,7 @@ function WideLayout({
         ))}
       </div>
       {narrowItems.length > 0 && (
-        <div className="mx-auto w-full max-w-[720px] space-y-4">
+        <div className="mx-auto w-full max-w-prose space-y-4">
           {narrowItems.map((entry) => (
             <Item
               key={entry.id}

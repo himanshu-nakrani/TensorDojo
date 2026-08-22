@@ -10,21 +10,21 @@ export function Footer() {
     <footer className="mt-24 sm:mt-32 pt-8 border-t border-border">
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-8 max-w-wide">
         <div>
-          <div className="inline-flex items-center gap-2 text-[13px] font-mono text-ink mb-2">
+          <div className="inline-flex items-center gap-2 text-body-sm font-mono text-ink mb-2">
             <span aria-hidden="true" className="text-accent">◆</span>
             <span className="tracking-[0.04em] font-semibold">tensor dojo</span>
           </div>
-          <p className="text-[13px] text-fg-muted font-mono leading-relaxed">
+          <p className="text-body-sm text-muted font-mono leading-relaxed">
             Learn AI by manipulating it.
           </p>
         </div>
 
         <nav aria-label="Footer" className="sm:justify-self-center">
-          <ul className="space-y-2 text-[13px] font-mono">
+          <ul className="space-y-2 text-body-sm font-mono">
             <li>
               <Link
                 href="/lessons"
-                className="focus-ring text-fg-muted hover:text-ink transition-colors rounded-sm"
+                className="focus-ring text-muted hover:text-ink transition-colors rounded-sm"
               >
                 Lessons
               </Link>
@@ -32,7 +32,7 @@ export function Footer() {
             <li>
               <Link
                 href="/map"
-                className="focus-ring text-fg-muted hover:text-ink transition-colors rounded-sm"
+                className="focus-ring text-muted hover:text-ink transition-colors rounded-sm"
               >
                 Concept map
               </Link>
@@ -40,7 +40,7 @@ export function Footer() {
           </ul>
         </nav>
 
-        <div className="sm:justify-self-end text-[13px] font-mono text-fg-muted">
+        <div className="sm:justify-self-end text-body-sm font-mono text-muted">
           <p>
             Built by{' '}
             <a
@@ -55,7 +55,7 @@ export function Footer() {
           </p>
         </div>
       </div>
-      <div className="mt-8 pb-6 text-[11px] font-mono text-fg-subtle">
+      <div className="mt-8 pb-6 text-label font-mono text-dim">
         © {new Date().getFullYear()} Tensor Dojo.
       </div>
     </footer>

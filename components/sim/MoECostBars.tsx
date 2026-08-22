@@ -51,7 +51,7 @@ export function MoECostBars() {
                   : 'bg-surface border border-border hover:border-border-strong',
               )}
             >
-              <div className="flex items-baseline justify-between mb-2 font-mono text-[11px]">
+              <div className="flex items-baseline justify-between mb-2 font-mono text-label">
                 <span className={selectedIdx === i ? 'text-accent' : 'text-ink'}>
                   {cfg.label}
                 </span>
@@ -78,7 +78,7 @@ export function MoECostBars() {
         })}
       </div>
 
-      <p className="mt-4 text-[11px] text-dim font-mono leading-relaxed">
+      <p className="mt-4 text-label text-dim font-mono leading-relaxed">
         Both bars are relative to a single-expert dense FFN.{' '}
         <span className="text-ink">Total params</span> grows linearly with the
         number of experts;{' '}
@@ -105,7 +105,7 @@ function BarRow({
 }) {
   return (
     <div>
-      <div className="flex items-baseline justify-between text-[11px] font-mono mb-0.5">
+      <div className="flex items-baseline justify-between text-label font-mono mb-0.5">
         <span className={variant === 'muted' ? 'text-dim' : 'text-accent'}>{label}</span>
         <span className="text-dim tabular-nums">{value}</span>
       </div>

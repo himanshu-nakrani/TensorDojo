@@ -35,7 +35,7 @@ export function FaqAccordion() {
   return (
     <section aria-labelledby="faq-heading">
       <div className="mb-8">
-        <div className="text-[12px] uppercase tracking-[0.12em] text-fg-muted font-mono mb-3">
+        <div className="text-caption uppercase tracking-[0.12em] text-muted font-mono mb-3">
           Questions
         </div>
         <h2
@@ -56,7 +56,7 @@ export function FaqAccordion() {
               <span>{entry.q}</span>
               <span
                 aria-hidden="true"
-                className="text-fg-muted transition-transform duration-200 group-open:rotate-90 motion-reduce:transition-none"
+                className="text-muted transition-transform duration-200 group-open:rotate-90 motion-reduce:transition-none"
               >
                 <svg
                   width="12"

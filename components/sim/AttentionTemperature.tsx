@@ -28,23 +28,23 @@ export function AttentionTemperature({ preset }: { preset?: AttentionTemperature
   return (
     <div className="rounded-xl border border-border bg-surface p-6 sm:p-8 card-surface">
       <div className="flex items-baseline justify-between mb-5">
-        <h3 className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono">
+        <h3 className="text-label uppercase tracking-[0.12em] text-dim font-mono">
           Same matrices · drag T to soften the weights
         </h3>
         <button
           type="button"
           onClick={() => setTemperature(1.0)}
-          className="text-[11px] uppercase tracking-[0.12em] font-mono text-muted hover:text-ink focus-ring transition-colors"
+          className="text-label uppercase tracking-[0.12em] font-mono text-muted hover:text-ink focus-ring transition-colors"
         >
           Reset
         </button>
       </div>
 
       <div className="mb-3 flex items-baseline justify-between">
-        <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono">
+        <div className="text-label uppercase tracking-[0.12em] text-dim font-mono">
           Temperature
         </div>
-        <div className="text-[11px] text-dim font-mono tabular-nums">
+        <div className="text-label text-dim font-mono tabular-nums">
           T = {temperature.toFixed(2)}
         </div>
       </div>
@@ -57,7 +57,7 @@ export function AttentionTemperature({ preset }: { preset?: AttentionTemperature
         formatValue={(v) => v.toFixed(2)}
         ariaLabel="Temperature"
       />
-      <div className="flex justify-between mt-2 text-[11px] text-dim font-mono tabular-nums">
+      <div className="flex justify-between mt-2 text-label text-dim font-mono tabular-nums">
         <span>{TEMP_MIN.toFixed(1)} sharp</span>
         <span>{TEMP_MAX.toFixed(1)} flat</span>
       </div>

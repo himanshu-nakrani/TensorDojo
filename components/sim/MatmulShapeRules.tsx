@@ -50,7 +50,7 @@ export function MatmulShapeRules() {
         {matches ? (
           <ShapeBox rows={m} cols={n} label="AB" tone="accent" />
         ) : (
-          <div className="rounded-md border border-[var(--negative-bg)] bg-[var(--negative-bg)]/10 px-3 py-2 text-[12px] font-mono text-[rgb(var(--negative))]">
+          <div className="rounded-md border border-[var(--negative-bg)] bg-[var(--negative-bg)]/10 px-3 py-2 text-caption font-mono text-[rgb(var(--negative))]">
             shapes don&apos;t match
           </div>
         )}
@@ -58,8 +58,8 @@ export function MatmulShapeRules() {
 
       <p
         className={clsx(
-          'mt-5 pt-4 border-t border-border text-[12px] font-mono leading-relaxed',
-          matches ? 'text-fg-muted' : 'text-[rgb(var(--negative))]',
+          'mt-5 pt-4 border-t border-border text-caption font-mono leading-relaxed',
+          matches ? 'text-muted' : 'text-[rgb(var(--negative))]',
         )}
       >
         {matches
@@ -88,7 +88,7 @@ function Slider({
         <label
           htmlFor={id}
           className={clsx(
-            'text-[11px] uppercase tracking-[0.12em] font-mono',
+            'text-label uppercase tracking-[0.12em] font-mono',
             accent ? 'text-[rgb(var(--negative))]' : 'text-dim',
           )}
         >
@@ -96,7 +96,7 @@ function Slider({
         </label>
         <span
           className={clsx(
-            'font-mono text-[13px] tabular-nums',
+            'font-mono text-body-sm tabular-nums',
             accent ? 'text-[rgb(var(--negative))]' : 'text-accent',
           )}
         >
@@ -135,12 +135,12 @@ function ShapeBox({
     <div className="flex flex-col items-center gap-1">
       <div
         className={clsx(
-          'text-[11px] font-semibold tracking-[-0.005em]',
+          'text-label font-semibold tracking-[-0.005em]',
           tone === 'accent' ? 'text-accent' : 'text-ink',
         )}
       >
         {label}{' '}
-        <span className="text-[11px] font-mono text-fg-muted">
+        <span className="text-label font-mono text-muted">
           ({rows}×{cols})
         </span>
       </div>
@@ -173,7 +173,7 @@ function ShapeBox({
 
 function Operator({ children }: { children: React.ReactNode }) {
   return (
-    <span className="px-1 text-[18px] font-mono text-fg-muted self-center">
+    <span className="px-1 text-[18px] font-mono text-muted self-center">
       {children}
     </span>
   );

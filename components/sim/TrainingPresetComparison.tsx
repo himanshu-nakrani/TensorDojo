@@ -73,7 +73,7 @@ export function TrainingPresetComparison() {
             setTimeout(run, 0);
           }}
           disabled={running}
-          className="text-[11px] uppercase tracking-[0.12em] font-mono text-muted hover:text-ink focus-ring transition-colors disabled:opacity-40"
+          className="text-label uppercase tracking-[0.12em] font-mono text-muted hover:text-ink focus-ring transition-colors disabled:opacity-40"
         >
           {running ? 'Running…' : 'Re-run'}
         </button>
@@ -127,7 +127,7 @@ export function TrainingPresetComparison() {
             strokeWidth={1}
           />
         </svg>
-        <div className="grid grid-cols-3 gap-3 font-mono text-[11px]">
+        <div className="grid grid-cols-3 gap-3 font-mono text-label">
           {PRESET_CONFIGS.map((p, i) => {
             const r = results?.[i];
             const final: number | null = r ? r.losses[r.losses.length - 1] ?? null : null;
@@ -143,16 +143,16 @@ export function TrainingPresetComparison() {
                     className="inline-block w-2 h-2 rounded-full"
                     style={{ background: COLORS[i % COLORS.length] }}
                   />
-                  <span className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono">
+                  <span className="text-label uppercase tracking-[0.12em] text-dim font-mono">
                     {p.label}
                   </span>
                 </div>
-                <div className="text-ink text-[11px] leading-snug">
+                <div className="text-ink text-label leading-snug">
                   {p.description}
                 </div>
                 <div className="mt-2 space-y-0.5">
                   <div className="flex items-baseline justify-between">
-                    <span className="text-fg-subtle">final loss</span>
+                    <span className="text-dim">final loss</span>
                     <span
                       className={
                         r?.diverged
@@ -168,7 +168,7 @@ export function TrainingPresetComparison() {
                     </span>
                   </div>
                   <div className="flex items-baseline justify-between">
-                    <span className="text-fg-subtle">test acc</span>
+                    <span className="text-dim">test acc</span>
                     <span className="text-ink tabular-nums">
                       {testAcc !== null && testAcc !== undefined
                         ? `${(testAcc * 100).toFixed(1)}%`

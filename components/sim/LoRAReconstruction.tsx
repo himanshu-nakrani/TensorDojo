@@ -72,7 +72,7 @@ function HeatmapWithLabel({
 }) {
   return (
     <div className="flex flex-col items-center gap-2">
-      <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono text-center">
+      <div className="text-label uppercase tracking-[0.12em] text-dim font-mono text-center">
         {label}
       </div>
       <Heatmap
@@ -99,7 +99,7 @@ function Stats({
   frobError: number;
 }) {
   return (
-    <div className="flex flex-wrap gap-x-6 gap-y-1 text-[11px] font-mono text-muted pt-2 border-t border-border">
+    <div className="flex flex-wrap gap-x-6 gap-y-1 text-label font-mono text-muted pt-2 border-t border-border">
       <span>
         rank{' '}
         <span className="text-ink tabular-nums">{rank}</span>
@@ -150,7 +150,7 @@ export function LoRAReconstruction() {
       {/* Rank slider */}
       <div>
         <div className="flex items-baseline justify-between mb-1">
-          <span className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono">
+          <span className="text-label uppercase tracking-[0.12em] text-dim font-mono">
             rank r
           </span>
           <span className="text-ink font-mono text-sm tabular-nums">{r}</span>
@@ -186,7 +186,7 @@ export function LoRAReconstruction() {
       />
 
       {/* Caption */}
-      <p className="text-[11px] text-muted font-mono leading-relaxed">
+      <p className="text-label text-muted font-mono leading-relaxed">
         The target ΔW is a rank-3 matrix — a sum of three rank-1 outer products with
         weights 1.0, 0.6, 0.3. Drag the slider to see how adding each extra rank
         captures one more directional pattern. At r=3 the residual is near zero;

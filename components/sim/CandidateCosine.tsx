@@ -129,7 +129,7 @@ export function CandidateCosine({ preset }: { preset?: CandidateCosinePreset }) 
     >
       <div className="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-6">
         <div>
-          <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-2">
+          <div className="text-label uppercase tracking-[0.12em] text-dim font-mono mb-2">
             Query <span className="text-accent">q</span> (drag) · 5 fixed candidates · c_R has a length slider below
           </div>
           <VectorCanvas
@@ -138,13 +138,13 @@ export function CandidateCosine({ preset }: { preset?: CandidateCosinePreset }) 
             height={300}
             ariaLabel="Query vector q and 5 fixed candidate vectors. Drag q to recompute."
           />
-          <p className="mt-2 text-[11px] text-muted font-mono">
+          <p className="mt-2 text-label text-muted font-mono">
             Drag <span className="text-accent">q</span>, then slide c_R's length below. The dot product changes with c_R's length; the cosine similarity does not.
           </p>
         </div>
 
         <div className="md:w-[420px] space-y-2">
-          <header className="grid grid-cols-[80px_1fr_1fr] gap-3 text-[11px] uppercase tracking-[0.12em] text-dim font-mono pb-1 border-b border-border">
+          <header className="grid grid-cols-[80px_1fr_1fr] gap-3 text-label uppercase tracking-[0.12em] text-dim font-mono pb-1 border-b border-border">
             <span>candidate</span>
             <span className="text-right">q · c</span>
             <span className="text-right">cos θ</span>
@@ -153,14 +153,14 @@ export function CandidateCosine({ preset }: { preset?: CandidateCosinePreset }) 
             <div
               key={r.id}
               className={clsx(
-                'grid grid-cols-[80px_1fr_1fr] gap-3 items-center font-mono text-[12px] tabular-nums',
+                'grid grid-cols-[80px_1fr_1fr] gap-3 items-center font-mono text-caption tabular-nums',
                 r.resizable && 'bg-bg/40 rounded px-2 py-1 -mx-2',
               )}
             >
               <div className="flex flex-col">
                 <span className="text-ink">{r.label}</span>
                 {r.resizable && (
-                  <span className="text-[11px] text-dim">‖c_R‖ = {fmt(magnitude(r.value), 1)}</span>
+                  <span className="text-label text-dim">‖c_R‖ = {fmt(magnitude(r.value), 1)}</span>
                 )}
               </div>
               <SignedBar value={r.qDot} max={maxAbs} />
@@ -171,10 +171,10 @@ export function CandidateCosine({ preset }: { preset?: CandidateCosinePreset }) 
           <div className="pt-3 mt-2 border-t border-border space-y-2">
             <label className="block">
               <div className="flex items-baseline justify-between mb-1">
-                <span className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono">
+                <span className="text-label uppercase tracking-[0.12em] text-dim font-mono">
                   c_R length
                 </span>
-                <span className="font-mono text-[12px] text-ink tabular-nums">
+                <span className="font-mono text-caption text-ink tabular-nums">
                   {fmt(resizableLen, 2)}
                 </span>
               </div>
@@ -226,7 +226,7 @@ function SignedBar({
       />
       <span
         className={clsx(
-          'absolute right-1 top-1/2 -translate-y-1/2 text-[11px] font-mono tabular-nums',
+          'absolute right-1 top-1/2 -translate-y-1/2 text-label font-mono tabular-nums',
           accent ? 'text-accent' : 'text-ink',
         )}
       >

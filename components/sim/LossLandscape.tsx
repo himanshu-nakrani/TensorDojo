@@ -111,7 +111,7 @@ export function LossLandscape() {
         <button
           type="button"
           onClick={() => setStart(null)}
-          className="text-[11px] uppercase tracking-[0.12em] font-mono text-muted hover:text-ink focus-ring transition-colors"
+          className="text-label uppercase tracking-[0.12em] font-mono text-muted hover:text-ink focus-ring transition-colors"
         >
           Reset
         </button>
@@ -132,7 +132,7 @@ export function LossLandscape() {
               aria-checked={active}
               onClick={() => setSurfaceId(s.id)}
               className={clsx(
-                'focus-ring text-[11px] uppercase tracking-[0.12em] font-mono px-2.5 py-1 rounded border transition-colors',
+                'focus-ring text-label uppercase tracking-[0.12em] font-mono px-2.5 py-1 rounded border transition-colors',
                 active
                   ? 'border-accent text-accent bg-accent-soft'
                   : 'border-border text-muted hover:text-ink hover:border-border-strong',
@@ -145,7 +145,7 @@ export function LossLandscape() {
       </div>
 
       {/* Description of the active surface */}
-      <p className="text-[12px] text-muted leading-relaxed mb-4">
+      <p className="text-caption text-muted leading-relaxed mb-4">
         {surface.description}
       </p>
 
@@ -248,11 +248,11 @@ export function LossLandscape() {
             <div className="flex items-baseline justify-between mb-1.5">
               <label
                 htmlFor="lr-slider"
-                className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono"
+                className="text-label uppercase tracking-[0.12em] text-dim font-mono"
               >
                 learning rate
               </label>
-              <span className="font-mono text-[13px] text-accent tabular-nums">
+              <span className="font-mono text-body-sm text-accent tabular-nums">
                 {lr.toFixed(3)}
               </span>
             </div>
@@ -266,14 +266,14 @@ export function LossLandscape() {
               onChange={(e) => setLR(parseFloat(e.target.value))}
               className="w-full accent-[rgb(var(--accent))]"
             />
-            <div className="flex justify-between text-[11px] text-fg-subtle font-mono tabular-nums mt-0.5">
+            <div className="flex justify-between text-label text-dim font-mono tabular-nums mt-0.5">
               <span>0.005</span>
               <span>1.5</span>
             </div>
           </div>
 
-          <div className="rounded-md border border-border bg-bg/30 px-3 py-2 font-mono text-[12px] space-y-1.5">
-            <div className="flex justify-between text-fg-muted">
+          <div className="rounded-md border border-border bg-bg/30 px-3 py-2 font-mono text-caption space-y-1.5">
+            <div className="flex justify-between text-muted">
               <span>start</span>
               <span className="tabular-nums">
                 {start
@@ -281,13 +281,13 @@ export function LossLandscape() {
                   : '—'}
               </span>
             </div>
-            <div className="flex justify-between text-fg-muted">
+            <div className="flex justify-between text-muted">
               <span>steps</span>
               <span className="tabular-nums">
                 {path ? path.length - 1 : 0}
               </span>
             </div>
-            <div className="flex justify-between text-fg-muted">
+            <div className="flex justify-between text-muted">
               <span>final loss</span>
               <span className="text-accent tabular-nums">
                 {path
@@ -303,7 +303,7 @@ export function LossLandscape() {
           </div>
 
           {!start && (
-            <p className="mt-3 text-[11px] text-fg-muted font-mono leading-relaxed">
+            <p className="mt-3 text-label text-muted font-mono leading-relaxed">
               Click the heatmap to drop a starting point. SGD will
               walk to a stationary point from there.
             </p>

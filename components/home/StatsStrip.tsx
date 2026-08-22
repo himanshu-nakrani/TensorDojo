@@ -30,7 +30,7 @@ export function StatsStrip() {
           <dd className="text-[1.75rem] sm:text-[2rem] font-semibold text-ink tabular-nums tracking-[-0.02em] leading-none font-mono">
             {stat.value}
           </dd>
-          <dt className="mt-2 text-[11px] uppercase tracking-[0.16em] font-mono text-fg-muted">
+          <dt className="mt-2 text-label uppercase tracking-[0.16em] font-mono text-muted">
             {stat.label}
           </dt>
         </div>

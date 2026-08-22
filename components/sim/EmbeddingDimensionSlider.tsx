@@ -145,9 +145,9 @@ export function EmbeddingDimensionSlider({ preset }: { preset?: EmbeddingDimensi
             })}
           </svg>
         </div>
-        <div className="space-y-2 font-mono text-[12px]">
+        <div className="space-y-2 font-mono text-caption">
           <div>
-            <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-1">
+            <div className="text-label uppercase tracking-[0.12em] text-dim font-mono mb-1">
               Dimension d
             </div>
             <input
@@ -164,7 +164,7 @@ export function EmbeddingDimensionSlider({ preset }: { preset?: EmbeddingDimensi
             <div className="text-ink tabular-nums text-right">{d}</div>
           </div>
           <div>
-            <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-1">
+            <div className="text-label uppercase tracking-[0.12em] text-dim font-mono mb-1">
               Query
             </div>
             <input
@@ -175,7 +175,7 @@ export function EmbeddingDimensionSlider({ preset }: { preset?: EmbeddingDimensi
               className="number-input font-mono w-full"
             />
           </div>
-          <p className="text-[11px] text-dim leading-relaxed">
+          <p className="text-label text-dim leading-relaxed">
             As d grows, same-cluster tokens cluster more tightly and different clusters separate. The 2D plot is a projection; the real embedding is d-dimensional.
           </p>
         </div>

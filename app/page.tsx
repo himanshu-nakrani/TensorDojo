@@ -31,7 +31,7 @@ export default function HomePage() {
             headline. Desktop puts the interactive on the right. */}
         <div className="relative order-2 lg:order-1 max-w-[560px]">
           <div
-            className="animate-fade-up text-[12px] uppercase tracking-[0.18em] text-fg-muted font-mono mb-5"
+            className="animate-fade-up text-caption uppercase tracking-[0.18em] text-muted font-mono mb-5"
             style={{ '--delay': '0ms' } as React.CSSProperties}
           >
             Tensor Dojo
@@ -58,14 +58,14 @@ export default function HomePage() {
           >
             <Link
               href="/lessons/dot-product"
-              className="focus-ring inline-flex items-center gap-2 min-h-[48px] px-5 py-3 rounded-md text-[14px] font-mono font-semibold bg-accent text-accent-fg hover:bg-accent-hover transition-colors"
+              className="focus-ring inline-flex items-center gap-2 min-h-[48px] px-5 py-3 rounded-md text-body font-mono font-semibold bg-accent text-accent-fg hover:bg-accent-hover transition-colors"
             >
               Start with vectors
               <span aria-hidden="true">→</span>
             </Link>
             <Link
               href="/lessons"
-              className="focus-ring inline-flex items-center gap-2 min-h-[48px] px-5 py-3 rounded-md text-[14px] font-mono text-ink border border-border-strong hover:border-accent hover:text-accent transition-colors"
+              className="focus-ring inline-flex items-center gap-2 min-h-[48px] px-5 py-3 rounded-md text-body font-mono text-ink border border-border-strong hover:border-accent hover:text-accent transition-colors"
             >
               Browse all lessons
             </Link>

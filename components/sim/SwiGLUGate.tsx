@@ -46,7 +46,7 @@ export function SwiGLUGate() {
         <SignedBar label="silu(a) · b" value={out} accent />
       </div>
 
-      <p className="mt-5 pt-4 border-t border-border text-[12px] text-fg-muted font-mono leading-relaxed">
+      <p className="mt-5 pt-4 border-t border-border text-caption text-muted font-mono leading-relaxed">
         Drag a far negative. silu(a) collapses toward zero, so the
         product collapses toward zero regardless of b. That is the
         gate: a decides how much of b gets through.
@@ -71,11 +71,11 @@ function SliderRow({
       <div className="flex items-baseline justify-between mb-2">
         <label
           htmlFor={id}
-          className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono"
+          className="text-label uppercase tracking-[0.12em] text-dim font-mono"
         >
           {label}
         </label>
-        <span className="font-mono text-[14px] text-accent tabular-nums">
+        <span className="font-mono text-body text-accent tabular-nums">
           {value.toFixed(2)}
         </span>
       </div>
@@ -114,13 +114,13 @@ function SignedBar({
   return (
     <div>
       <div className="flex items-baseline justify-between mb-1.5">
-        <span className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono">
+        <span className="text-label uppercase tracking-[0.12em] text-dim font-mono">
           {label}
         </span>
         <span
           className={
             (accent ? 'text-accent ' : 'text-ink ') +
-            'font-mono text-[12px] tabular-nums'
+            'font-mono text-caption tabular-nums'
           }
         >
           {value.toFixed(2)}
@@ -139,7 +139,7 @@ function SignedBar({
                 ? 'bg-accent'
                 : 'bg-[var(--negative-bg)]'
               : isPositive
-                ? 'bg-fg-subtle'
+                ? 'bg-dim'
                 : 'bg-[var(--negative-bg)]')
           }
           style={

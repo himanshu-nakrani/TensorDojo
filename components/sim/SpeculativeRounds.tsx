@@ -103,7 +103,7 @@ export function SpeculativeRounds() {
       headerWrap
       headerAction={
         <div className="flex items-center gap-3 flex-wrap">
-          <div className="flex border border-border rounded overflow-hidden font-mono text-[11px]">
+          <div className="flex border border-border rounded overflow-hidden font-mono text-label">
             {GAMMA_OPTIONS.map((g) => (
               <button
                 key={g}
@@ -120,7 +120,7 @@ export function SpeculativeRounds() {
               </button>
             ))}
           </div>
-          <div className="flex border border-border rounded overflow-hidden font-mono text-[11px]">
+          <div className="flex border border-border rounded overflow-hidden font-mono text-label">
             {ALPHA_OPTIONS.map((a, i) => (
               <button
                 key={a.label}
@@ -140,14 +140,14 @@ export function SpeculativeRounds() {
           <button
             type="button"
             onClick={() => setSeed((s) => s + 1)}
-            className="text-[11px] uppercase tracking-[0.12em] font-mono text-muted hover:text-ink focus-ring transition-colors"
+            className="text-label uppercase tracking-[0.12em] font-mono text-muted hover:text-ink focus-ring transition-colors"
           >
             Re-sample
           </button>
           <button
             type="button"
             onClick={reset}
-            className="text-[11px] uppercase tracking-[0.12em] font-mono text-muted hover:text-ink focus-ring transition-colors"
+            className="text-label uppercase tracking-[0.12em] font-mono text-muted hover:text-ink focus-ring transition-colors"
           >
             Reset
           </button>
@@ -155,7 +155,7 @@ export function SpeculativeRounds() {
       }
     >
       <div className="border border-border rounded p-4 bg-surface mb-4">
-        <div className="flex flex-wrap gap-1 font-mono text-[12px] leading-relaxed">
+        <div className="flex flex-wrap gap-1 font-mono text-caption leading-relaxed">
           {cells.map((c, i) => {
             const prevRound = i > 0 ? cells[i - 1]!.roundIdx : -1;
             const newRound = c.roundIdx !== prevRound;
@@ -184,21 +184,21 @@ export function SpeculativeRounds() {
         </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-4 pt-3 border-t border-border font-mono text-[11px]">
+      <div className="grid grid-cols-3 gap-4 pt-3 border-t border-border font-mono text-label">
         <div>
-          <div className="text-[11px] uppercase tracking-[0.12em] text-dim mb-1">
+          <div className="text-label uppercase tracking-[0.12em] text-dim mb-1">
             Rounds
           </div>
           <div className="text-ink tabular-nums">{rounds}</div>
         </div>
         <div>
-          <div className="text-[11px] uppercase tracking-[0.12em] text-dim mb-1">
+          <div className="text-label uppercase tracking-[0.12em] text-dim mb-1">
             Tokens produced
           </div>
           <div className="text-ink tabular-nums">{totalAccepted}</div>
         </div>
         <div>
-          <div className="text-[11px] uppercase tracking-[0.12em] text-dim mb-1">
+          <div className="text-label uppercase tracking-[0.12em] text-dim mb-1">
             Tokens per round (this run)
           </div>
           <div className="text-accent tabular-nums">
@@ -207,7 +207,7 @@ export function SpeculativeRounds() {
         </div>
       </div>
 
-      <p className="mt-4 text-[11px] text-dim font-mono leading-relaxed">
+      <p className="mt-4 text-label text-dim font-mono leading-relaxed">
         Green tokens are accepted from the draft model. Red strikethroughs
         are draft tokens the target rejected — the target's corrective
         token (filled accent) starts the next round at that position. Each

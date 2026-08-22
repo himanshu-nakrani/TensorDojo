@@ -35,11 +35,11 @@ export function DpoLossExplorer() {
         <div className="flex items-baseline justify-between mb-2">
           <label
             htmlFor="dpo-beta"
-            className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono"
+            className="text-label uppercase tracking-[0.12em] text-dim font-mono"
           >
             β · KL strength
           </label>
-          <span className="font-mono text-[14px] text-accent tabular-nums">
+          <span className="font-mono text-body text-accent tabular-nums">
             {beta.toFixed(2)}
           </span>
         </div>
@@ -56,7 +56,7 @@ export function DpoLossExplorer() {
       </div>
 
       {/* Loss readouts */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4 text-[12px] font-mono">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4 text-caption font-mono">
         <Stat
           label="L(r_w, r_l)"
           value={loss.toFixed(3)}
@@ -86,7 +86,7 @@ export function DpoLossExplorer() {
         }}
       />
 
-      <div className="mt-3 text-[11px] text-dim font-mono leading-relaxed">
+      <div className="mt-3 text-label text-dim font-mono leading-relaxed">
         Drag the point. <span className="text-accent">Upper-left</span> = chosen winning (low loss).{' '}
         <span className="text-[rgb(var(--negative))]">Lower-right</span> = rejected winning (high loss).{' '}
         The loss only sees the *difference* between the two log-ratios.
@@ -106,7 +106,7 @@ function Stat({
 }) {
   const colorMap = {
     accent: 'text-accent',
-    muted: 'text-fg-muted',
+    muted: 'text-muted',
     negative: 'text-[rgb(var(--negative))]',
   };
   return (
@@ -257,7 +257,7 @@ function LossHeatmap({
         textAnchor="middle"
         fontSize={11}
         fontFamily="var(--font-mono), ui-monospace, monospace"
-        className="fill-fg-muted"
+        className="fill-muted"
       >
         rejected log-ratio  r_l = log π_θ(y_l) − log π_ref(y_l)
       </text>
@@ -267,7 +267,7 @@ function LossHeatmap({
         textAnchor="middle"
         fontSize={11}
         fontFamily="var(--font-mono), ui-monospace, monospace"
-        className="fill-fg-muted"
+        className="fill-muted"
         transform={`rotate(-90, 10, ${H / 2})`}
       >
         chosen log-ratio  r_w
@@ -281,7 +281,7 @@ function LossHeatmap({
             textAnchor="middle"
             fontSize={9}
             fontFamily="var(--font-mono), ui-monospace, monospace"
-            className="fill-fg-subtle"
+            className="fill-dim"
           >
             {v >= 0 ? `+${v}` : v}
           </text>
@@ -291,7 +291,7 @@ function LossHeatmap({
             textAnchor="end"
             fontSize={9}
             fontFamily="var(--font-mono), ui-monospace, monospace"
-            className="fill-fg-subtle"
+            className="fill-dim"
           >
             {v >= 0 ? `+${v}` : v}
           </text>

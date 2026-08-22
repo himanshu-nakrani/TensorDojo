@@ -66,13 +66,13 @@ export function MultiHeadExplorer({ preset }: { preset?: MultiHeadExplorerPreset
       <div className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-2">
+            <div className="text-label uppercase tracking-[0.12em] text-dim font-mono mb-2">
               Per-head attention weights ({n} tokens × {n} positions)
             </div>
             <div className="grid grid-cols-2 gap-2">
               {headWeights.map((w, head) => (
                 <div key={head} className="rounded border border-border p-1.5 bg-bg/30">
-                  <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-1">head {head + 1}</div>
+                  <div className="text-label uppercase tracking-[0.12em] text-dim font-mono mb-1">head {head + 1}</div>
                   <div
                     className="grid gap-px"
                     style={{ gridTemplateColumns: `repeat(${n}, minmax(0, 1fr))` }}
@@ -100,12 +100,12 @@ export function MultiHeadExplorer({ preset }: { preset?: MultiHeadExplorerPreset
           </div>
 
           <div>
-            <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-2">
+            <div className="text-label uppercase tracking-[0.12em] text-dim font-mono mb-2">
               Per-head Q rotation (rad)
             </div>
             <div className="space-y-1.5">
               {qAngles.slice(0, h).map((a, head) => (
-                <div key={`q${head}`} className="flex items-center gap-2 font-mono text-[11px]">
+                <div key={`q${head}`} className="flex items-center gap-2 font-mono text-label">
                   <span className="text-dim w-12">head {head + 1}</span>
                   <Slider
                     value={a}
@@ -126,12 +126,12 @@ export function MultiHeadExplorer({ preset }: { preset?: MultiHeadExplorerPreset
                 </div>
               ))}
             </div>
-            <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-2 mt-3">
+            <div className="text-label uppercase tracking-[0.12em] text-dim font-mono mb-2 mt-3">
               Per-head K rotation (rad)
             </div>
             <div className="space-y-1.5">
               {kAngles.slice(0, h).map((a, head) => (
-                <div key={`k${head}`} className="flex items-center gap-2 font-mono text-[11px]">
+                <div key={`k${head}`} className="flex items-center gap-2 font-mono text-label">
                   <span className="text-dim w-12">head {head + 1}</span>
                   <Slider
                     value={a}
@@ -157,7 +157,7 @@ export function MultiHeadExplorer({ preset }: { preset?: MultiHeadExplorerPreset
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3 pt-3 border-t border-border">
           <div>
-            <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-1">Sequence length n</div>
+            <div className="text-label uppercase tracking-[0.12em] text-dim font-mono mb-1">Sequence length n</div>
             <input
               type="range"
               min={2}
@@ -169,10 +169,10 @@ export function MultiHeadExplorer({ preset }: { preset?: MultiHeadExplorerPreset
               style={{ ['--fill' as string]: `${((n - 2) / 4) * 100}%` }}
               aria-label="Sequence length n"
             />
-            <div className="text-ink tabular-nums text-right text-[11px]">{n}</div>
+            <div className="text-ink tabular-nums text-right text-label">{n}</div>
           </div>
           <div>
-            <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-1">Heads h</div>
+            <div className="text-label uppercase tracking-[0.12em] text-dim font-mono mb-1">Heads h</div>
             <input
               type="range"
               min={1}
@@ -184,7 +184,7 @@ export function MultiHeadExplorer({ preset }: { preset?: MultiHeadExplorerPreset
               style={{ ['--fill' as string]: `${((h - 1) / 3) * 100}%` }}
               aria-label="Heads h"
             />
-            <div className="text-ink tabular-nums text-right text-[11px]">{h}</div>
+            <div className="text-ink tabular-nums text-right text-label">{h}</div>
           </div>
         </div>
       </div>

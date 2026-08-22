@@ -68,7 +68,7 @@ export function GQAHeadLayout() {
       onReset={reset}
       headerAction={
         <div className="flex items-center gap-3">
-          <div className="flex border border-border rounded overflow-hidden font-mono text-[11px]">
+          <div className="flex border border-border rounded overflow-hidden font-mono text-label">
             {PRESETS.map((p) => (
               <button
                 key={p.label}
@@ -88,7 +88,7 @@ export function GQAHeadLayout() {
           <button
             type="button"
             onClick={reset}
-            className="text-[11px] uppercase tracking-[0.12em] font-mono text-muted hover:text-ink focus-ring transition-colors"
+            className="text-label uppercase tracking-[0.12em] font-mono text-muted hover:text-ink focus-ring transition-colors"
           >
             Reset
           </button>
@@ -109,7 +109,7 @@ export function GQAHeadLayout() {
         />
       </div>
 
-      <p className="mt-5 pt-4 border-t border-border text-[11px] text-dim font-mono leading-relaxed">
+      <p className="mt-5 pt-4 border-t border-border text-label text-dim font-mono leading-relaxed">
         Every query head still gets its own query projection — the model
         retains <span className="text-ink">{N_QUERY_HEADS}</span> independent
         "questions." What shrinks is the K and V pool. With{' '}
@@ -259,7 +259,7 @@ function CacheComparison({
 
   return (
     <div className="border border-border rounded p-4 bg-surface">
-      <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-3">
+      <div className="text-label uppercase tracking-[0.12em] text-dim font-mono mb-3">
         Per-request KV cache (seq={SEQ_LEN.toLocaleString()}, d
         <sub>head</sub>={D_HEAD}, L={N_LAYERS}, bf16)
       </div>
@@ -279,11 +279,11 @@ function CacheComparison({
         />
       </div>
 
-      <div className="mt-4 pt-3 border-t border-border font-mono text-[11px]">
-        <div className="text-[11px] uppercase tracking-[0.12em] text-dim mb-1">
+      <div className="mt-4 pt-3 border-t border-border font-mono text-label">
+        <div className="text-label uppercase tracking-[0.12em] text-dim mb-1">
           Cache shrinkage vs MHA
         </div>
-        <div className="text-accent text-[14px] tabular-nums">
+        <div className="text-accent text-body tabular-nums">
           {ratio === 1 ? '1× (no change)' : `${ratio.toFixed(0)}× smaller`}
         </div>
       </div>
@@ -304,7 +304,7 @@ function CacheBar({
 }) {
   return (
     <div>
-      <div className="flex items-baseline justify-between text-[11px] font-mono mb-1">
+      <div className="flex items-baseline justify-between text-label font-mono mb-1">
         <span className={variant === 'muted' ? 'text-dim' : 'text-accent'}>
           {label}
         </span>

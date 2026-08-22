@@ -90,7 +90,7 @@ export function FlashAttentionTiling() {
       title="Tile-by-tile computation, never the whole matrix"
       headerAction={
         <div className="flex items-center gap-3">
-          <div className="flex border border-border rounded overflow-hidden font-mono text-[11px]">
+          <div className="flex border border-border rounded overflow-hidden font-mono text-label">
             {BLOCK_OPTIONS.map((b) => (
               <button
                 key={b}
@@ -114,14 +114,14 @@ export function FlashAttentionTiling() {
           <button
             type="button"
             onClick={() => setPlaying((p) => !p)}
-            className="text-[11px] uppercase tracking-[0.12em] font-mono text-muted hover:text-ink focus-ring transition-colors"
+            className="text-label uppercase tracking-[0.12em] font-mono text-muted hover:text-ink focus-ring transition-colors"
           >
             {playing ? 'Pause' : 'Play'}
           </button>
           <button
             type="button"
             onClick={reset}
-            className="text-[11px] uppercase tracking-[0.12em] font-mono text-muted hover:text-ink focus-ring transition-colors"
+            className="text-label uppercase tracking-[0.12em] font-mono text-muted hover:text-ink focus-ring transition-colors"
           >
             Reset
           </button>
@@ -159,12 +159,12 @@ export function FlashAttentionTiling() {
               strokeWidth={2}
             />
           </svg>
-          <div className="text-[11px] text-dim font-mono text-center mt-2 tabular-nums">
+          <div className="text-label text-dim font-mono text-center mt-2 tabular-nums">
             tile {tileIdx + 1} / {nTiles}
           </div>
         </div>
 
-        <div className="flex-1 text-[11px] text-dim font-mono leading-relaxed space-y-3">
+        <div className="flex-1 text-label text-dim font-mono leading-relaxed space-y-3">
           <p>
             The grid represents the n×n score matrix. Flash never has the
             whole thing in memory. Instead it picks a tile (B×B), loads the

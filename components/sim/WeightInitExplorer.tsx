@@ -43,7 +43,7 @@ export function WeightInitExplorer() {
           <button
             type="button"
             onClick={() => setSeed((s) => s + 1)}
-            className="text-[11px] uppercase tracking-[0.12em] font-mono text-muted hover:text-ink focus-ring transition-colors"
+            className="text-label uppercase tracking-[0.12em] font-mono text-muted hover:text-ink focus-ring transition-colors"
           >
             Reseed
           </button>
@@ -54,7 +54,7 @@ export function WeightInitExplorer() {
               setDepth(12);
               setSeed(42);
             }}
-            className="text-[11px] uppercase tracking-[0.12em] font-mono text-muted hover:text-ink focus-ring transition-colors"
+            className="text-label uppercase tracking-[0.12em] font-mono text-muted hover:text-ink focus-ring transition-colors"
           >
             Reset
           </button>
@@ -70,15 +70,15 @@ export function WeightInitExplorer() {
             onClick={() => setScheme(s.id)}
             aria-pressed={scheme === s.id}
             className={clsx(
-              'text-[11px] uppercase tracking-[0.12em] font-mono px-3 py-1 rounded border focus-ring transition-colors',
+              'text-label uppercase tracking-[0.12em] font-mono px-3 py-1 rounded border focus-ring transition-colors',
               scheme === s.id
                 ? 'border-accent text-accent bg-accent-soft'
                 : 'border-border text-muted hover:text-ink hover:border-border-strong',
             )}
           >
             {s.label}
-            <span className="ml-1.5 text-fg-subtle">·</span>
-            <span className="ml-1.5 text-fg-muted">{s.sub}</span>
+            <span className="ml-1.5 text-dim">·</span>
+            <span className="ml-1.5 text-muted">{s.sub}</span>
           </button>
         ))}
       </div>
@@ -88,11 +88,11 @@ export function WeightInitExplorer() {
         <div className="flex items-baseline justify-between mb-2">
           <label
             htmlFor="weight-init-depth"
-            className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono"
+            className="text-label uppercase tracking-[0.12em] text-dim font-mono"
           >
             depth N
           </label>
-          <span className="font-mono text-[14px] text-accent tabular-nums">
+          <span className="font-mono text-body text-accent tabular-nums">
             {depth}
           </span>
         </div>
@@ -110,7 +110,7 @@ export function WeightInitExplorer() {
 
       {/* Status pill */}
       <div className="rounded-lg border border-border bg-bg/40 p-3 mb-4 flex items-baseline justify-between">
-        <span className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono">
+        <span className="text-label uppercase tracking-[0.12em] text-dim font-mono">
           var(activation) at layer {depth}
         </span>
         <span
@@ -125,7 +125,7 @@ export function WeightInitExplorer() {
 
       <VariancePlot variances={variances} />
 
-      <p className="mt-3 text-[11px] text-dim font-mono">
+      <p className="mt-3 text-label text-dim font-mono">
         log<sub>10</sub>(variance) per layer · width d = {d} · ReLU activation.
         Kaiming&apos;s √(2/d) is the only scheme that keeps the variance near 1 across depth.
       </p>
@@ -195,7 +195,7 @@ function VariancePlot({ variances }: { variances: readonly number[] }) {
             textAnchor="end"
             fontSize={9}
             fontFamily="var(--font-mono), ui-monospace, monospace"
-            className="fill-fg-subtle"
+            className="fill-dim"
           >
             1e{lv >= 0 ? '+' : ''}
             {lv}
@@ -246,7 +246,7 @@ function VariancePlot({ variances }: { variances: readonly number[] }) {
         fontSize={9}
         fontFamily="var(--font-mono), ui-monospace, monospace"
         textAnchor="middle"
-        className="fill-fg-subtle"
+        className="fill-dim"
       >
         layer 0
       </text>
@@ -256,7 +256,7 @@ function VariancePlot({ variances }: { variances: readonly number[] }) {
         fontSize={9}
         fontFamily="var(--font-mono), ui-monospace, monospace"
         textAnchor="middle"
-        className="fill-fg-subtle"
+        className="fill-dim"
       >
         layer {n - 1}
       </text>

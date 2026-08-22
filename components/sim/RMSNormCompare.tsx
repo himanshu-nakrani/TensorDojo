@@ -64,7 +64,7 @@ export function RMSNormCompare() {
       </div>
 
       {/* Stats row */}
-      <div className="grid grid-cols-2 gap-4 mb-4 text-[11px] font-mono">
+      <div className="grid grid-cols-2 gap-4 mb-4 text-label font-mono">
         <Stat label="μ(x)" value={inputMean.toFixed(3)} />
         <Stat label="RMS(x)" value={inputRMS.toFixed(3)} />
       </div>
@@ -88,23 +88,23 @@ export function RMSNormCompare() {
       {/* Diff row */}
       <div className="mt-4 rounded-lg border border-border bg-bg/40 p-3">
         <div className="flex items-baseline justify-between mb-2">
-          <span className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono">
+          <span className="text-label uppercase tracking-[0.12em] text-dim font-mono">
             element-wise diff (LN − RMS)
           </span>
-          <span className="text-[11px] font-mono text-accent tabular-nums">
+          <span className="text-label font-mono text-accent tabular-nums">
             max |Δ| ={' '}
             {Math.max(
               ...lnOut.map((v, i) => Math.abs(v - (rnOut[i] as number))),
             ).toFixed(3)}
           </span>
         </div>
-        <div className="grid grid-cols-8 gap-1 text-[11px] font-mono tabular-nums">
+        <div className="grid grid-cols-8 gap-1 text-label font-mono tabular-nums">
           {lnOut.map((v, i) => {
             const d = v - (rnOut[i] as number);
             return (
               <div
                 key={i}
-                className="text-center text-fg-muted"
+                className="text-center text-muted"
                 title={`Δ${i} = ${d.toFixed(3)}`}
               >
                 {d >= 0 ? '+' : ''}
@@ -140,11 +140,11 @@ function Slider({
       <div className="flex items-baseline justify-between mb-2">
         <label
           htmlFor={id}
-          className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono"
+          className="text-label uppercase tracking-[0.12em] text-dim font-mono"
         >
           {label}
         </label>
-        <span className="font-mono text-[14px] text-accent tabular-nums">
+        <span className="font-mono text-body text-accent tabular-nums">
           {value.toFixed(2)}
         </span>
       </div>
@@ -197,8 +197,8 @@ function BarPanel({
 
   return (
     <div className="rounded-lg border border-border bg-bg/40 p-3">
-      <div className="text-[13px] font-semibold text-ink mb-0.5">{label}</div>
-      <div className="text-[11px] text-dim font-mono mb-2">{formula}</div>
+      <div className="text-body-sm font-semibold text-ink mb-0.5">{label}</div>
+      <div className="text-label text-dim font-mono mb-2">{formula}</div>
       <svg viewBox={`0 0 ${W} ${H}`} width="100%" className="block h-auto">
         {/* zero axis */}
         <line
@@ -217,7 +217,7 @@ function BarPanel({
           return <rect key={i} x={x} y={y} width={w} height={h} className={fill} />;
         })}
       </svg>
-      <div className="mt-2 grid grid-cols-8 gap-1 text-[10px] font-mono tabular-nums text-fg-muted">
+      <div className="mt-2 grid grid-cols-8 gap-1 text-micro font-mono tabular-nums text-muted">
         {values.map((v, i) => (
           <div key={i} className="text-center">
             {v.toFixed(2)}

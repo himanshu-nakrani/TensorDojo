@@ -70,7 +70,7 @@ export function MoERouter() {
       title="Router: each token, top-k experts"
       headerAction={
         <div className="flex items-center gap-3">
-          <div className="flex border border-border rounded overflow-hidden font-mono text-[11px]">
+          <div className="flex border border-border rounded overflow-hidden font-mono text-label">
             {TOPK_OPTIONS.map((k) => (
               <button
                 key={k}
@@ -90,14 +90,14 @@ export function MoERouter() {
           <button
             type="button"
             onClick={() => setSeed((s) => s + 1)}
-            className="text-[11px] uppercase tracking-[0.12em] font-mono text-muted hover:text-ink focus-ring transition-colors"
+            className="text-label uppercase tracking-[0.12em] font-mono text-muted hover:text-ink focus-ring transition-colors"
           >
             Re-route
           </button>
           <button
             type="button"
             onClick={reset}
-            className="text-[11px] uppercase tracking-[0.12em] font-mono text-muted hover:text-ink focus-ring transition-colors"
+            className="text-label uppercase tracking-[0.12em] font-mono text-muted hover:text-ink focus-ring transition-colors"
           >
             Reset
           </button>
@@ -209,9 +209,9 @@ export function MoERouter() {
         </svg>
       </div>
 
-      <div className="grid grid-cols-3 gap-4 pt-3 border-t border-border font-mono text-[11px]">
+      <div className="grid grid-cols-3 gap-4 pt-3 border-t border-border font-mono text-label">
         <div>
-          <div className="text-[11px] uppercase tracking-[0.12em] text-dim mb-1">
+          <div className="text-label uppercase tracking-[0.12em] text-dim mb-1">
             Active experts per token
           </div>
           <div className="text-accent tabular-nums">
@@ -219,7 +219,7 @@ export function MoERouter() {
           </div>
         </div>
         <div>
-          <div className="text-[11px] uppercase tracking-[0.12em] text-dim mb-1">
+          <div className="text-label uppercase tracking-[0.12em] text-dim mb-1">
             Imbalance (max load / mean)
           </div>
           <div
@@ -234,7 +234,7 @@ export function MoERouter() {
           </div>
         </div>
         <div>
-          <div className="text-[11px] uppercase tracking-[0.12em] text-dim mb-1">
+          <div className="text-label uppercase tracking-[0.12em] text-dim mb-1">
             Idle experts
           </div>
           <div className="text-ink tabular-nums">
@@ -243,7 +243,7 @@ export function MoERouter() {
         </div>
       </div>
 
-      <p className="mt-4 text-[11px] text-dim font-mono leading-relaxed">
+      <p className="mt-4 text-label text-dim font-mono leading-relaxed">
         Each token's color-coded lines lead to the{' '}
         <span className="text-ink">{topK}</span> experts it activates; line
         opacity reflects the renormalized softmax weight. The expert boxes
