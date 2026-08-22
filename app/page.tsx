@@ -5,7 +5,6 @@ import { StatsStrip } from '@/components/home/StatsStrip';
 import { WhyTiles } from '@/components/home/WhyTiles';
 import { CurriculumGrid } from '@/components/home/CurriculumGrid';
 import { FaqAccordion } from '@/components/home/FaqAccordion';
-import { Footer } from '@/components/home/Footer';
 
 export default function HomePage() {
   return (
@@ -98,8 +97,6 @@ export default function HomePage() {
       <div className="mb-12">
         <FaqAccordion />
       </div>
-
-      <Footer />
     </main>
   );
 }

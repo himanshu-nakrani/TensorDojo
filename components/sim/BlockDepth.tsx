@@ -158,12 +158,12 @@ export function BlockDepth() {
   return (
     <SimFrame title="Stack N blocks · watch the residual stream drift" onReset={reset}>
       <div className="space-y-3 mb-5">
-        <label className="flex items-center gap-2 text-label uppercase tracking-[0.12em] text-dim font-mono">
+        <label className="flex min-w-0 items-center gap-2 text-label uppercase tracking-[0.12em] text-dim font-mono">
           Sentence
           <select
             value={sentenceId}
             onChange={(e) => setSentenceId(e.target.value)}
-            className="number-input font-mono text-label py-0.5 px-2 bg-bg border border-border rounded"
+            className="number-input font-mono text-label py-0.5 px-2 bg-bg border border-border rounded min-w-0 flex-1"
             aria-label="Sentence"
           >
             {SENTENCES.map((s) => (

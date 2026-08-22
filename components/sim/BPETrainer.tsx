@@ -77,7 +77,7 @@ export function BPETrainer({ preset }: { preset?: CorpusPreset }) {
         </div>
       }
     >
-      <div className="grid grid-cols-1 md:grid-cols-[1fr_320px] gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-[minmax(0,1fr)_320px] gap-6">
         {/* Left: per-word symbol state. */}
         <div>
           <div className="flex items-baseline justify-between mb-2">

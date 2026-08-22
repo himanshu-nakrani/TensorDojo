@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Space_Grotesk, JetBrains_Mono } from 'next/font/google';
 import { TopNav } from '@/components/theme/TopNav';
+import { Footer } from '@/components/theme/Footer';
 import { SearchPaletteProvider } from '@/components/search/SearchPalette';
 import './globals.css';
 
@@ -94,6 +95,7 @@ export default function RootLayout({
         <SearchPaletteProvider>
           <TopNav />
           {children}
+          <Footer />
         </SearchPaletteProvider>
       </body>
     </html>

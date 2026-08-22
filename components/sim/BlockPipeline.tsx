@@ -438,12 +438,12 @@ function Controls(props: ControlsProps) {
   return (
     <div className="space-y-3">
       <div className="flex flex-wrap items-center gap-3">
-        <label className="flex items-center gap-2 text-label uppercase tracking-[0.12em] text-dim font-mono">
+        <label className="flex min-w-0 flex-1 items-center gap-2 text-label uppercase tracking-[0.12em] text-dim font-mono">
           Sentence
           <select
             value={props.sentenceId}
             onChange={(e) => props.setSentenceId(e.target.value)}
-            className="number-input font-mono text-label py-0.5 px-2 bg-bg border border-border rounded"
+            className="number-input font-mono text-label py-0.5 px-2 bg-bg border border-border rounded min-w-0 flex-1"
             aria-label="Sentence"
           >
             {SENTENCES.map((s) => (

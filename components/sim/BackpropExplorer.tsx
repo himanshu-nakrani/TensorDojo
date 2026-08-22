@@ -243,7 +243,7 @@ export function BackpropExplorer() {
         </div>
       }
     >
-      <div className="grid grid-cols-1 md:grid-cols-[1fr_280px] gap-5">
+      <div className="grid grid-cols-1 md:grid-cols-[minmax(0,1fr)_280px] gap-5">
         {/* Activations + loss */}
         <div className="space-y-3 font-mono text-caption">
           <div>
@@ -278,7 +278,7 @@ export function BackpropExplorer() {
                 className={
                   Number.isFinite(cache.loss)
                     ? 'text-accent tabular-nums'
-                    : 'text-[rgb(var(--negative))] tabular-nums'
+                    : 'text-negative tabular-nums'
                 }
               >
                 {Number.isFinite(cache.loss) ? cache.loss.toFixed(4) : 'NaN'}

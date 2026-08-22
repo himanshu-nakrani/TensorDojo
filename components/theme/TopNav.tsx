@@ -123,11 +123,14 @@ export function TopNav() {
         <div className="mx-auto flex h-12 max-w-shell items-center justify-between gap-4 px-4 sm:px-6">
           <Link
             href="/"
-            className="focus-ring inline-flex items-center gap-2 rounded-sm text-body-sm font-mono text-ink hover:text-accent transition-colors"
+            className="focus-ring inline-flex items-center gap-2.5 rounded-sm text-body-sm font-mono text-ink transition-colors hover:text-accent"
             aria-label="Tensor Dojo — home"
           >
-            <span aria-hidden="true" className="text-accent">◆</span>
-            <span className="tracking-[0.04em] font-semibold">tensor dojo</span>
+            <span
+              aria-hidden="true"
+              className="h-2 w-2 rounded-full bg-accent shadow-[0_0_8px_rgb(var(--accent)/0.8)]"
+            />
+            <span className="font-semibold tracking-[0.04em]">tensor dojo</span>
           </Link>
 
           <nav
@@ -142,9 +145,9 @@ export function TopNav() {
                   href={link.href}
                   aria-current={active ? 'page' : undefined}
                   className={clsx(
-                    'focus-ring inline-flex h-9 items-center rounded-md px-3 text-body-sm font-mono transition-colors',
+                    'focus-ring inline-flex h-9 items-center rounded-sm px-3 font-mono text-label uppercase tracking-[0.14em] transition-colors',
                     active
-                      ? 'text-accent'
+                      ? 'text-accent shadow-[inset_0_0_0_1px_rgb(var(--accent))]'
                       : 'text-muted hover:text-ink',
                   )}
                 >
@@ -156,7 +159,7 @@ export function TopNav() {
               type="button"
               onClick={search.open}
               aria-label="Search lessons"
-              className="focus-ring inline-flex h-9 items-center gap-2 rounded-md px-3 text-body-sm font-mono text-muted hover:text-ink transition-colors"
+              className="focus-ring inline-flex h-9 items-center gap-2 rounded-sm px-3 font-mono text-label uppercase tracking-[0.14em] text-muted transition-colors hover:text-ink"
             >
               <DesktopSearchIcon />
               <span>Search</span>
@@ -216,7 +219,7 @@ export function TopNav() {
                   href={link.href}
                   aria-current={active ? 'page' : undefined}
                   className={clsx(
-                    'focus-ring inline-flex min-h-[48px] items-center rounded-md px-3 text-[15px] font-mono transition-colors',
+                    'focus-ring inline-flex min-h-[48px] items-center rounded-sm px-3 font-mono text-caption uppercase tracking-[0.14em] transition-colors',
                     active
                       ? 'text-accent bg-accent-soft'
                       : 'text-ink hover:bg-surface-hover',

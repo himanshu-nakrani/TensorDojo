@@ -81,6 +81,7 @@ export function QuantizationDistribution() {
     <SimFrame
       title="Weight distribution: before vs after quantization"
       onReset={reset}
+      headerWrap
       headerAction={
         <div className="flex items-center gap-3">
           <div className="flex border border-border rounded overflow-hidden font-mono text-label">

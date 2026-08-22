@@ -267,6 +267,37 @@ export function readingOrder(): readonly string[] {
   return TRACKS.flatMap((t) => t.slugs);
 }
 
+export interface TrackContext {
+  trackId: string;
+  trackLabel: string;
+  /** 1-based track number, e.g. 4 for the transformer-block track. */
+  trackNumber: number;
+  /** 1-based position of the lesson inside its track. */
+  lessonNumber: number;
+  trackTotal: number;
+}
+
+/**
+ * Track + position metadata for a lesson slug. Feeds the lesson
+ * header's spec plate ("T04 · 07/10") and the back-to-track link.
+ */
+export function getTrackContext(slug: string): TrackContext | undefined {
+  for (let t = 0; t < TRACKS.length; t++) {
+    const track = TRACKS[t]!;
+    const i = track.slugs.indexOf(slug);
+    if (i !== -1) {
+      return {
+        trackId: track.id,
+        trackLabel: track.label,
+        trackNumber: t + 1,
+        lessonNumber: i + 1,
+        trackTotal: track.slugs.length,
+      };
+    }
+  }
+  return undefined;
+}
+
 export function prevNext(slug: string): { prev?: string; next?: string } {
   const order = readingOrder();
   const i = order.indexOf(slug);
