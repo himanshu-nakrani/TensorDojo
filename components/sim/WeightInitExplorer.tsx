@@ -139,7 +139,7 @@ function classify(v: number): { label: string; color: string } {
   if (v > 1e6)
     return { label: 'exploded', color: 'text-[rgb(var(--negative))]' };
   if (v < 0.1 || v > 10)
-    return { label: 'drifting', color: 'text-amber-500 dark:text-amber-400' };
+    return { label: 'drifting', color: 'text-warning' };
   return { label: 'stable', color: 'text-accent' };
 }
 
@@ -194,7 +194,7 @@ function VariancePlot({ variances }: { variances: readonly number[] }) {
             y={yToPx(lv) + 3}
             textAnchor="end"
             fontSize={9}
-            fontFamily="monospace"
+            fontFamily="var(--font-mono), ui-monospace, monospace"
             className="fill-fg-subtle"
           >
             1e{lv >= 0 ? '+' : ''}
@@ -244,7 +244,7 @@ function VariancePlot({ variances }: { variances: readonly number[] }) {
         x={xToPx(0)}
         y={H - 2}
         fontSize={9}
-        fontFamily="monospace"
+        fontFamily="var(--font-mono), ui-monospace, monospace"
         textAnchor="middle"
         className="fill-fg-subtle"
       >
@@ -254,7 +254,7 @@ function VariancePlot({ variances }: { variances: readonly number[] }) {
         x={xToPx(n - 1)}
         y={H - 2}
         fontSize={9}
-        fontFamily="monospace"
+        fontFamily="var(--font-mono), ui-monospace, monospace"
         textAnchor="middle"
         className="fill-fg-subtle"
       >

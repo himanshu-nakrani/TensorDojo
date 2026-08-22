@@ -15,15 +15,16 @@ const TRUE_MAP: Record<Shape, Color> = {
   '▲': 'green',
 };
 
+// Chart tokens keep these theme-aware without hand-paired dark: classes.
 const COLOR_BAR: Record<Color, string> = {
-  red: 'fill-[rgb(220,38,38)]',
-  blue: 'fill-[rgb(37,99,235)]',
-  green: 'fill-[rgb(22,163,74)]',
+  red: 'fill-negative',
+  blue: 'fill-series-4',
+  green: 'fill-positive',
 };
 const COLOR_TEXT: Record<Color, string> = {
-  red: 'text-[rgb(220,38,38)] dark:text-[rgb(248,113,113)]',
-  blue: 'text-[rgb(37,99,235)] dark:text-[rgb(96,165,250)]',
-  green: 'text-[rgb(22,163,74)] dark:text-[rgb(74,222,128)]',
+  red: 'text-negative',
+  blue: 'text-series-4',
+  green: 'text-positive',
 };
 
 /**
@@ -242,7 +243,7 @@ function DistributionBars({ probs }: { probs: Record<Color, number> }) {
                 y={y - 4}
                 textAnchor="middle"
                 fontSize={11}
-                fontFamily="monospace"
+                fontFamily="var(--font-mono), ui-monospace, monospace"
                 className="fill-ink"
               >
                 {(probs[c] * 100).toFixed(0)}%
@@ -252,7 +253,7 @@ function DistributionBars({ probs }: { probs: Record<Color, number> }) {
                 y={H - 4}
                 textAnchor="middle"
                 fontSize={11}
-                fontFamily="monospace"
+                fontFamily="var(--font-mono), ui-monospace, monospace"
                 className="fill-fg-muted"
               >
                 {c}

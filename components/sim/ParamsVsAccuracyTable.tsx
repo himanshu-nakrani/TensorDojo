@@ -85,14 +85,14 @@ function ConfigBar({ row, maxAcc }: { row: ConfigResult; maxAcc: number }) {
       {/* Label */}
       <div
         className="w-28 shrink-0 font-mono text-[11px] truncate"
-        style={{ color: row.diverged ? 'rgb(var(--dim))' : 'rgb(var(--ink))' }}
+        style={{ color: row.diverged ? 'rgb(var(--fg-subtle))' : 'rgb(var(--fg))' }}
       >
         {row.label}
       </div>
       {/* Params updated */}
       <div
         className="w-12 shrink-0 text-right font-mono text-[11px] tabular-nums"
-        style={{ color: 'rgb(var(--dim))' }}
+        style={{ color: 'rgb(var(--fg-subtle))' }}
       >
         {row.paramsUpdated}
       </div>
@@ -101,7 +101,7 @@ function ConfigBar({ row, maxAcc }: { row: ConfigResult; maxAcc: number }) {
         {row.diverged ? (
           <div
             className="h-full w-full rounded-full"
-            style={{ background: 'rgb(var(--dim))', opacity: 0.4 }}
+            style={{ background: 'rgb(var(--fg-subtle))', opacity: 0.4 }}
           />
         ) : (
           <div
@@ -116,7 +116,7 @@ function ConfigBar({ row, maxAcc }: { row: ConfigResult; maxAcc: number }) {
       {/* Accuracy label */}
       <div
         className="w-12 shrink-0 font-mono text-[11px] tabular-nums"
-        style={{ color: row.diverged ? 'rgb(var(--dim))' : 'rgb(var(--ink))' }}
+        style={{ color: row.diverged ? 'rgb(var(--fg-subtle))' : 'rgb(var(--fg))' }}
       >
         {row.diverged ? 'diverged' : `${(row.finalAccuracy * 100).toFixed(1)}%`}
       </div>

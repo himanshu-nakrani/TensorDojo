@@ -160,7 +160,7 @@ function PaletteOverlay({
         aria-modal="true"
         aria-label="Search lessons"
         onClick={(e) => e.stopPropagation()}
-        className="w-full max-w-[640px] rounded-xl border border-border-strong bg-bg-elevated shadow-xl overflow-hidden"
+        className="w-full max-w-[640px] rounded-xl border border-border-strong bg-surface shadow-xl overflow-hidden"
       >
         <Command
           label="Search lessons"

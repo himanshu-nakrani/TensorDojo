@@ -178,10 +178,10 @@ function LossHeatmap({
     const dist = l - DPO_BASELINE_LOSS; // <0 = good, >0 = bad
     if (dist <= 0) {
       const t = Math.min(1, -dist / DPO_BASELINE_LOSS);
-      return { color: 'rgb(21, 128, 61)', alpha: 0.15 + t * 0.65 };
+      return { color: 'rgb(var(--positive))', alpha: 0.15 + t * 0.65 };
     }
     const t = Math.min(1, dist / Math.max(0.001, cells.maxL - DPO_BASELINE_LOSS));
-    return { color: 'rgb(220, 38, 38)', alpha: 0.15 + t * 0.6 };
+    return { color: 'rgb(var(--negative))', alpha: 0.15 + t * 0.6 };
   };
 
   const handlePointer = (e: React.PointerEvent<SVGSVGElement>) => {
@@ -256,7 +256,7 @@ function LossHeatmap({
         y={H - 6}
         textAnchor="middle"
         fontSize={11}
-        fontFamily="monospace"
+        fontFamily="var(--font-mono), ui-monospace, monospace"
         className="fill-fg-muted"
       >
         rejected log-ratio  r_l = log π_θ(y_l) − log π_ref(y_l)
@@ -266,7 +266,7 @@ function LossHeatmap({
         y={H / 2}
         textAnchor="middle"
         fontSize={11}
-        fontFamily="monospace"
+        fontFamily="var(--font-mono), ui-monospace, monospace"
         className="fill-fg-muted"
         transform={`rotate(-90, 10, ${H / 2})`}
       >
@@ -280,7 +280,7 @@ function LossHeatmap({
             y={H - PAD + 14}
             textAnchor="middle"
             fontSize={9}
-            fontFamily="monospace"
+            fontFamily="var(--font-mono), ui-monospace, monospace"
             className="fill-fg-subtle"
           >
             {v >= 0 ? `+${v}` : v}
@@ -290,7 +290,7 @@ function LossHeatmap({
             y={yToPx(v) + 3}
             textAnchor="end"
             fontSize={9}
-            fontFamily="monospace"
+            fontFamily="var(--font-mono), ui-monospace, monospace"
             className="fill-fg-subtle"
           >
             {v >= 0 ? `+${v}` : v}

@@ -43,9 +43,9 @@ const TOKENS: Token[] = [
 ];
 
 const CLUSTER_COLOR: Record<Token['cluster'], string> = {
-  animal: 'fill-[rgb(21,128,61)]',
-  function: 'fill-[rgb(180,83,9)]',
-  verb: 'fill-[rgb(67,56,202)]',
+  animal: 'fill-series-1',
+  function: 'fill-series-2',
+  verb: 'fill-series-3',
 };
 
 export function WeightTyingExplorer() {
@@ -339,7 +339,7 @@ function EmbeddingPlot({
                 y={p.y - 4}
                 textAnchor={t.x >= 0 ? 'start' : 'end'}
                 fontSize={10}
-                fontFamily="monospace"
+                fontFamily="var(--font-mono), ui-monospace, monospace"
                 className="fill-ink"
               >
                 {t.word}
@@ -352,7 +352,7 @@ function EmbeddingPlot({
           x={h.x + 6}
           y={h.y - 4}
           fontSize={11}
-          fontFamily="monospace"
+          fontFamily="var(--font-mono), ui-monospace, monospace"
           className="fill-accent"
         >
           h

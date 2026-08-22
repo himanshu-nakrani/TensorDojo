@@ -174,7 +174,7 @@ export function TopNav() {
               type="button"
               onClick={search.open}
               aria-label="Search lessons"
-              className="focus-ring inline-flex h-11 w-11 items-center justify-center rounded-md text-fg-muted hover:text-ink hover:bg-bg-elevated-hover transition-colors"
+              className="focus-ring inline-flex h-11 w-11 items-center justify-center rounded-md text-fg-muted hover:text-ink hover:bg-surface-hover transition-colors"
             >
               <DesktopSearchIcon />
             </button>
@@ -186,7 +186,7 @@ export function TopNav() {
               aria-expanded={open}
               aria-controls="top-nav-drawer"
               onClick={() => setOpen((o) => !o)}
-              className="focus-ring inline-flex h-11 w-11 items-center justify-center rounded-md text-fg-muted hover:text-ink hover:bg-bg-elevated-hover transition-colors"
+              className="focus-ring inline-flex h-11 w-11 items-center justify-center rounded-md text-fg-muted hover:text-ink hover:bg-surface-hover transition-colors"
             >
               {open ? <CloseIcon /> : <MenuIcon />}
             </button>
@@ -219,7 +219,7 @@ export function TopNav() {
                     'focus-ring inline-flex min-h-[48px] items-center rounded-md px-3 text-[15px] font-mono transition-colors',
                     active
                       ? 'text-accent bg-accent-soft'
-                      : 'text-ink hover:bg-bg-elevated-hover',
+                      : 'text-ink hover:bg-surface-hover',
                   )}
                 >
                   {link.label}

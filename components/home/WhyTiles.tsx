@@ -48,7 +48,7 @@ export function WhyTiles() {
         {TILES.map((tile) => (
           <li
             key={tile.eyebrow}
-            className="rounded-xl border border-border bg-bg-elevated p-6 sm:p-7 card-surface"
+            className="rounded-xl border border-border bg-surface p-6 sm:p-7 card-surface"
           >
             <div className="text-[12px] uppercase tracking-[0.12em] font-mono text-fg-muted mb-3">
               {tile.eyebrow}

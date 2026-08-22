@@ -322,7 +322,7 @@ function DistributionPanel({
             y={H - 1}
             textAnchor="middle"
             fontSize={9}
-            fontFamily="monospace"
+            fontFamily="var(--font-mono), ui-monospace, monospace"
             className="fill-fg-subtle"
           >
             {i}

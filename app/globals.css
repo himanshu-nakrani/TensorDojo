@@ -44,6 +44,7 @@
   --grid: 236 232 225;
   --positive: 21 128 61;
   --negative: 185 28 28;          /* red-700; AA on --bg */
+  --warning: 180 83 9;            /* amber-700; AA on --bg for text */
 
   /* Categorical series colors — used by sims that need to plot
      multiple lines that are NOT ordered or signed (e.g. three
@@ -111,6 +112,7 @@
   --grid: 33 38 45;
   --positive: 74 222 128;
   --negative: 248 113 113;
+  --warning: 251 191 36;           /* amber-400 — bright on the GH dark canvas */
 
   --series-1: 74 222 128;          /* green */
   --series-2: 251 191 36;          /* amber-400 */

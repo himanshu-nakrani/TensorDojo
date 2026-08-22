@@ -239,7 +239,7 @@ function MaskPanel({
           y={-3}
           textAnchor="middle"
           fontSize={9}
-          fontFamily="monospace"
+          fontFamily="var(--font-mono), ui-monospace, monospace"
           className="fill-fg-subtle"
         >
           key position j →

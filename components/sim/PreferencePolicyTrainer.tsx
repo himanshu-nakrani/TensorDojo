@@ -178,21 +178,21 @@ export function PreferencePolicyTrainer() {
         <button
           type="button"
           onClick={handleStep}
-          className="rounded border border-border bg-bg-elevated px-3 py-1.5 font-mono text-[12px] hover:border-border-strong transition-colors"
+          className="rounded border border-border bg-surface px-3 py-1.5 font-mono text-[12px] hover:border-border-strong transition-colors"
         >
           Step
         </button>
         <button
           type="button"
           onClick={handleStep6}
-          className="rounded border border-border bg-bg-elevated px-3 py-1.5 font-mono text-[12px] hover:border-border-strong transition-colors"
+          className="rounded border border-border bg-surface px-3 py-1.5 font-mono text-[12px] hover:border-border-strong transition-colors"
         >
           Step &times;6
         </button>
         <button
           type="button"
           onClick={handleReset}
-          className="rounded border border-border bg-bg-elevated px-3 py-1.5 font-mono text-[12px] hover:border-border-strong transition-colors text-muted"
+          className="rounded border border-border bg-surface px-3 py-1.5 font-mono text-[12px] hover:border-border-strong transition-colors text-muted"
         >
           Reset
         </button>

@@ -108,7 +108,7 @@ export function BPETrainer({ preset }: { preset?: CorpusPreset }) {
                             'px-1.5 py-0.5 rounded border',
                             isNew
                               ? 'border-accent text-accent bg-accent-soft'
-                              : 'border-border text-ink bg-bg-elevated',
+                              : 'border-border text-ink bg-surface',
                           )}
                         >
                           {displaySym(sym)}
@@ -160,7 +160,7 @@ export function BPETrainer({ preset }: { preset?: CorpusPreset }) {
                     'px-1.5 py-0.5 rounded border',
                     isNew
                       ? 'border-accent text-accent bg-accent-soft'
-                      : 'border-border text-ink bg-bg-elevated',
+                      : 'border-border text-ink bg-surface',
                   )}
                 >
                   {displaySym(sym)}

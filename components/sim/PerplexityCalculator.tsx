@@ -80,7 +80,7 @@ export function PerplexityCalculator() {
                 className="grid grid-cols-[80px_1fr_60px_60px] items-center gap-3"
               >
                 <span className="text-ink text-right">{tok}</span>
-                <div className="h-3 rounded border border-border bg-bg-elevated overflow-hidden">
+                <div className="h-3 rounded border border-border bg-surface overflow-hidden">
                   <div
                     className="h-full bg-accent-soft border-r border-accent/40 transition-all duration-150"
                     style={{ width: `${Math.max(0.5, p * 100)}%` }}

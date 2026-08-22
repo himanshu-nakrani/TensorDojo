@@ -302,7 +302,7 @@ function MemoryBar({
         <span className={variant === 'muted' ? 'text-dim' : 'text-accent'}>{label}</span>
         <span className="text-dim tabular-nums">{formatBytes(bytes)}</span>
       </div>
-      <div className="relative h-5 rounded border border-border bg-bg-elevated overflow-hidden">
+      <div className="relative h-5 rounded border border-border bg-surface overflow-hidden">
         <div
           className={clsx(
             'h-full transition-all duration-200',

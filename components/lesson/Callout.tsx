@@ -121,7 +121,7 @@ function InlineInteractive({
         <button
           type="button"
           onClick={onClose}
-          className="focus-ring shrink-0 inline-flex items-center gap-1 rounded-md border border-border bg-bg-elevated px-2.5 py-1 text-[11px] font-mono uppercase tracking-[0.14em] text-muted hover:text-ink hover:border-border-strong transition-colors"
+          className="focus-ring shrink-0 inline-flex items-center gap-1 rounded-md border border-border bg-surface px-2.5 py-1 text-[11px] font-mono uppercase tracking-[0.14em] text-muted hover:text-ink hover:border-border-strong transition-colors"
           aria-label="Close inline interactive"
         >
           <span aria-hidden="true">×</span>

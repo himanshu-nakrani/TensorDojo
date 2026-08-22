@@ -29,7 +29,7 @@ export function CurriculumGrid() {
             <Link
               href={`/lessons#track-${track.id}`}
               aria-label={`${track.label}: ${track.slugs.length} lessons`}
-              className="group focus-ring relative block h-full rounded-xl border border-border bg-bg-elevated p-5 transition-colors hover:border-border-strong hover:bg-bg-elevated-hover"
+              className="group focus-ring relative block h-full rounded-xl border border-border bg-surface p-5 transition-colors hover:border-border-strong hover:bg-surface-hover"
             >
               <div className="flex items-baseline justify-between gap-3 mb-2">
                 <span className="text-[11px] uppercase tracking-[0.12em] font-mono text-accent tabular-nums">

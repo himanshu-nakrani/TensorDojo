@@ -16,10 +16,20 @@ const config: Config = {
         // e.g. `bg-bg/40`. See tailwind docs on "Using CSS variables".
         bg: 'rgb(var(--bg) / <alpha-value>)',
         surface: 'rgb(var(--bg-elevated) / <alpha-value>)',
+        'surface-hover': 'rgb(var(--bg-elevated-hover) / <alpha-value>)',
         'surface-2': 'rgb(var(--bg-code) / <alpha-value>)',
         // Lines
         border: 'rgb(var(--border) / <alpha-value>)',
         'border-strong': 'rgb(var(--border-strong) / <alpha-value>)',
+        // States
+        warning: 'rgb(var(--warning) / <alpha-value>)',
+        // Charting
+        positive: 'rgb(var(--positive) / <alpha-value>)',
+        negative: 'rgb(var(--negative) / <alpha-value>)',
+        'series-1': 'rgb(var(--series-1) / <alpha-value>)',
+        'series-2': 'rgb(var(--series-2) / <alpha-value>)',
+        'series-3': 'rgb(var(--series-3) / <alpha-value>)',
+        'series-4': 'rgb(var(--series-4) / <alpha-value>)',
         // Text
         ink: 'rgb(var(--fg) / <alpha-value>)',
         muted: 'rgb(var(--fg-muted) / <alpha-value>)',

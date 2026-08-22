@@ -101,7 +101,7 @@ function LossCurve({
         <text
           x={width / 2} y={height / 2}
           textAnchor="middle" dominantBaseline="middle"
-          fill="rgb(var(--dim))" fontSize={10} fontFamily="monospace"
+          fill="rgb(var(--fg-subtle))" fontSize={10} fontFamily="var(--font-mono), ui-monospace, monospace"
         >
           press Train to start
         </text>
@@ -196,7 +196,7 @@ function GradientNormBars({
         const cy = padT + idx * rowH + rowH / 2;
         const barH = Math.min(rowH * 0.55, 14);
         const barY = cy - barH / 2;
-        const color = frozen ? 'rgb(var(--dim))' : 'rgb(var(--accent))';
+        const color = frozen ? 'rgb(var(--fg-subtle))' : 'rgb(var(--accent))';
 
         return (
           <g key={key}>
@@ -206,9 +206,9 @@ function GradientNormBars({
               y={cy}
               textAnchor="end"
               dominantBaseline="middle"
-              fill={frozen ? 'rgb(var(--dim))' : 'rgb(var(--ink))'}
+              fill={frozen ? 'rgb(var(--fg-subtle))' : 'rgb(var(--fg))'}
               fontSize={9}
-              fontFamily="monospace"
+              fontFamily="var(--font-mono), ui-monospace, monospace"
             >
               {label}
             </text>
@@ -240,9 +240,9 @@ function GradientNormBars({
                 x={padL + 6}
                 y={cy}
                 dominantBaseline="middle"
-                fill="rgb(var(--dim))"
+                fill="rgb(var(--fg-subtle))"
                 fontSize={8}
-                fontFamily="monospace"
+                fontFamily="var(--font-mono), ui-monospace, monospace"
               >
                 frozen
               </text>
@@ -253,9 +253,9 @@ function GradientNormBars({
                 x={padL + Math.max(barW, 0) + 4}
                 y={cy}
                 dominantBaseline="middle"
-                fill="rgb(var(--dim))"
+                fill="rgb(var(--fg-subtle))"
                 fontSize={8}
-                fontFamily="monospace"
+                fontFamily="var(--font-mono), ui-monospace, monospace"
                 className="tabular-nums"
               >
                 {rawNorm.toFixed(4)}
@@ -413,7 +413,7 @@ export function LayerFreezeExplorer() {
             type="button"
             onClick={handleTrain}
             disabled={running || !trainReady}
-            className="rounded border border-border bg-bg-elevated px-3 py-1.5 font-mono text-sm hover:border-border-strong disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            className="rounded border border-border bg-surface px-3 py-1.5 font-mono text-sm hover:border-border-strong disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
           >
             {running ? 'Training…' : 'Train'}
           </button>
@@ -421,7 +421,7 @@ export function LayerFreezeExplorer() {
             type="button"
             onClick={handleReset}
             disabled={running}
-            className="rounded border border-border bg-bg-elevated px-3 py-1.5 font-mono text-sm hover:border-border-strong disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            className="rounded border border-border bg-surface px-3 py-1.5 font-mono text-sm hover:border-border-strong disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
           >
             Reset
           </button>
@@ -501,7 +501,7 @@ export function LayerFreezeExplorer() {
               Final test accuracy
             </div>
             {result.diverged && (
-              <div className="inline-flex items-center gap-1.5 rounded border border-border bg-bg-elevated px-2 py-0.5 font-mono text-[11px] text-dim">
+              <div className="inline-flex items-center gap-1.5 rounded border border-border bg-surface px-2 py-0.5 font-mono text-[11px] text-dim">
                 diverged
               </div>
             )}

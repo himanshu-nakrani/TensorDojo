@@ -25,7 +25,7 @@ export function StatsStrip() {
       {stats.map((stat) => (
         <div
           key={stat.label}
-          className="bg-bg-elevated px-5 py-5 sm:px-6 sm:py-6 text-center"
+          className="bg-surface px-5 py-5 sm:px-6 sm:py-6 text-center"
         >
           <dd className="text-[1.75rem] sm:text-[2rem] font-semibold text-ink tabular-nums tracking-[-0.02em] leading-none font-mono">
             {stat.value}

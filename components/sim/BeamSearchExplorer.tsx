@@ -124,9 +124,9 @@ export function BeamSearchExplorer() {
           className={clsx(
             'focus-ring inline-flex items-center justify-center min-h-[40px] px-4 rounded-md text-[13px] font-mono font-semibold transition-colors',
             atEnd
-              ? 'bg-bg-elevated text-fg-subtle cursor-not-allowed'
+              ? 'bg-surface text-fg-subtle cursor-not-allowed'
               : playing
-                ? 'bg-bg-elevated text-ink border border-border-strong'
+                ? 'bg-surface text-ink border border-border-strong'
                 : 'bg-accent text-accent-fg hover:bg-accent-hover',
           )}
         >
@@ -192,7 +192,7 @@ export function BeamSearchExplorer() {
                           ? 'border border-accent/50 text-accent'
                           : i === beam.tokens.length - 1 && !beam.finished
                             ? 'bg-accent text-accent-fg'
-                            : 'bg-bg-elevated text-ink border border-border',
+                            : 'bg-surface text-ink border border-border',
                       )}
                     >
                       {tok}

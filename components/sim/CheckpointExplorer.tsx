@@ -201,7 +201,7 @@ function Bar({
           className={
             tone === 'good'
               ? 'fill-[rgb(var(--accent))]'
-              : 'fill-amber-500'
+              : 'fill-warning'
           }
           fillOpacity={0.75}
         />
@@ -226,7 +226,7 @@ function Stat({
     tone === 'accent'
       ? 'text-accent'
       : tone === 'amber'
-        ? 'text-amber-500 dark:text-amber-400'
+        ? 'text-warning'
         : 'text-fg-muted';
   return (
     <div className="rounded-md border border-border bg-bg/40 px-3 py-2 flex items-baseline justify-between">

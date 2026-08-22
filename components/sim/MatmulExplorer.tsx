@@ -213,7 +213,7 @@ function EditableMatrix({
               }}
               aria-label={`${ariaPrefix} row ${i + 1} column ${j + 1}`}
               className={clsx(
-                'focus-ring h-9 w-full rounded text-center font-mono text-[13px] tabular-nums bg-bg-elevated border transition-colors',
+                'focus-ring h-9 w-full rounded text-center font-mono text-[13px] tabular-nums bg-surface border transition-colors',
                 isHighlighted
                   ? 'border-accent text-accent bg-accent-soft'
                   : 'border-border text-ink hover:border-border-strong',
@@ -267,7 +267,7 @@ function ReadonlyMatrix({
                 'focus-ring h-9 w-full rounded text-center font-mono text-[13px] tabular-nums transition-colors',
                 isFocused
                   ? 'bg-accent text-accent-fg'
-                  : 'bg-bg-elevated text-ink hover:bg-accent-soft hover:text-accent',
+                  : 'bg-surface text-ink hover:bg-accent-soft hover:text-accent',
               )}
             >
               {fmt(values[i]![j]!)}

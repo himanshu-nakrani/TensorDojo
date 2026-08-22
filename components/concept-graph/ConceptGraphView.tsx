@@ -112,7 +112,7 @@ function MapList({
                   <Link
                     href={`/lessons/${lesson.slug}`}
                     className={[
-                      'block rounded-lg border bg-bg-elevated p-3 transition-colors focus-ring card-surface',
+                      'block rounded-lg border bg-surface p-3 transition-colors focus-ring card-surface',
                       // 44px+ min-height for touch comfort
                       'min-h-[64px]',
                       isResume
@@ -442,12 +442,12 @@ function LessonNode({
         data-visited={visited ? 'true' : 'false'}
         data-resume={resume ? 'true' : 'false'}
         className={[
-          'focus-ring group absolute inset-0 block rounded-lg border bg-bg-elevated p-2.5 transition-colors card-surface',
+          'focus-ring group absolute inset-0 block rounded-lg border bg-surface p-2.5 transition-colors card-surface',
           resume
-            ? 'border-accent ring-2 ring-accent/30 hover:bg-bg-elevated-hover'
+            ? 'border-accent ring-2 ring-accent/30 hover:bg-surface-hover'
             : visited
-              ? 'border-accent/40 hover:border-accent hover:bg-bg-elevated-hover'
-              : 'border-border hover:border-accent hover:bg-bg-elevated-hover',
+              ? 'border-accent/40 hover:border-accent hover:bg-surface-hover'
+              : 'border-border hover:border-accent hover:bg-surface-hover',
         ].join(' ')}
       >
         {resume && (
@@ -489,7 +489,7 @@ function LessonNode({
               e.stopPropagation();
               setPrereqOpen((o) => !o);
             }}
-            className="focus-ring inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded border border-accent/40 bg-bg-elevated text-accent text-[11px] font-mono hover:bg-accent-soft transition-colors"
+            className="focus-ring inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded border border-accent/40 bg-surface text-accent text-[11px] font-mono hover:bg-accent-soft transition-colors"
           >
             ↗{prereqCount}
           </button>
@@ -498,7 +498,7 @@ function LessonNode({
               role="dialog"
               aria-label="Cross-track prerequisites"
               onClick={(e) => e.stopPropagation()}
-              className="absolute right-0 bottom-full mb-2 w-[220px] rounded-md border border-border-strong bg-bg-elevated p-3 shadow-lg text-left"
+              className="absolute right-0 bottom-full mb-2 w-[220px] rounded-md border border-border-strong bg-surface p-3 shadow-lg text-left"
             >
               <div className="text-[11px] uppercase tracking-[0.12em] font-mono text-dim mb-2">
                 Cross-track prereqs

@@ -126,7 +126,7 @@ export function BPETokenizer() {
                   key={i}
                   className={clsx(
                     'px-1.5 py-0.5 rounded border',
-                    palette.get(tok) ?? 'border-border text-ink bg-bg-elevated',
+                    palette.get(tok) ?? 'border-border text-ink bg-surface',
                   )}
                   title={tok}
                 >
@@ -154,8 +154,8 @@ export function BPETokenizer() {
  */
 const COLORS: readonly string[] = [
   'border-accent text-accent bg-accent-soft',
-  'border-border text-ink bg-bg-elevated',
-  'border-border-strong text-muted bg-bg-elevated',
+  'border-border text-ink bg-surface',
+  'border-border-strong text-muted bg-surface',
   'border-accent/60 text-accent/90 bg-accent-soft/60',
 ];
 function buildPalette(tokens: readonly string[]): Map<string, string> {

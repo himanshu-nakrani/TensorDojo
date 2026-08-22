@@ -37,7 +37,7 @@ function Legend() {
         <span
           aria-hidden="true"
           className="inline-block w-3 h-0.5"
-          style={{ background: 'rgb(var(--dim))' }}
+          style={{ background: 'rgb(var(--fg-subtle))' }}
         />
         from scratch
       </span>
@@ -88,9 +88,9 @@ function LossCurves({
           y={height / 2}
           textAnchor="middle"
           dominantBaseline="middle"
-          fill="rgb(var(--dim))"
+          fill="rgb(var(--fg-subtle))"
           fontSize={10}
-          fontFamily="monospace"
+          fontFamily="var(--font-mono), ui-monospace, monospace"
         >
           press Train to start
         </text>
@@ -130,7 +130,7 @@ function LossCurves({
       <polyline
         points={toPoints(scratchRun.losses, displayStep)}
         fill="none"
-        stroke="rgb(var(--dim))"
+        stroke="rgb(var(--fg-subtle))"
         strokeWidth={1.5}
         opacity={0.85}
       />
@@ -165,7 +165,7 @@ function FinalAccuracyBars({
     pretrainedRun.testAcc[pretrainedRun.testAcc.length - 1] ?? 0;
 
   const rows: Array<{ label: string; acc: number; color: string }> = [
-    { label: 'from scratch', acc: scratchAcc, color: 'rgb(var(--dim))' },
+    { label: 'from scratch', acc: scratchAcc, color: 'rgb(var(--fg-subtle))' },
     { label: 'pretrained', acc: pretrainedAcc, color: 'rgb(var(--accent))' },
   ];
 
@@ -313,7 +313,7 @@ export function PretrainVsScratch() {
             type="button"
             onClick={handleTrain}
             disabled={running || !trainReady}
-            className="rounded border border-border bg-bg-elevated px-3 py-1.5 font-mono text-sm hover:border-border-strong disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            className="rounded border border-border bg-surface px-3 py-1.5 font-mono text-sm hover:border-border-strong disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
           >
             {running ? 'Training…' : 'Train'}
           </button>
@@ -321,7 +321,7 @@ export function PretrainVsScratch() {
             type="button"
             onClick={handleReset}
             disabled={running}
-            className="rounded border border-border bg-bg-elevated px-3 py-1.5 font-mono text-sm hover:border-border-strong disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            className="rounded border border-border bg-surface px-3 py-1.5 font-mono text-sm hover:border-border-strong disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
           >
             Reset
           </button>

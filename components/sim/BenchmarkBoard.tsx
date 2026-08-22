@@ -169,7 +169,7 @@ export function BenchmarkBoard() {
                 key={row.name}
                 className={clsx(
                   'flex items-center gap-3 rounded p-2 transition-colors',
-                  i === 0 ? 'bg-accent-soft' : 'bg-bg-elevated',
+                  i === 0 ? 'bg-accent-soft' : 'bg-surface',
                 )}
               >
                 <span
@@ -189,7 +189,7 @@ export function BenchmarkBoard() {
                   >
                     {row.name}
                   </div>
-                  <div className="h-2 rounded border border-border bg-bg-elevated overflow-hidden mt-1">
+                  <div className="h-2 rounded border border-border bg-surface overflow-hidden mt-1">
                     <div
                       className="h-full bg-accent-soft border-r border-accent/40"
                       style={{ width: `${row.score * 100}%` }}

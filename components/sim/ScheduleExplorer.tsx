@@ -363,7 +363,7 @@ export function ScheduleComparison() {
                   'rounded-md border p-4 ' +
                   (isBest
                     ? 'border-accent bg-accent-soft'
-                    : 'border-border bg-bg-elevated')
+                    : 'border-border bg-surface')
                 }
               >
                 <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-2">
