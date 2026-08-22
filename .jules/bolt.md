@@ -37,3 +37,6 @@
 ## 2025-02-18 - GradientDescentExplorer surface initialization optimization
 **Learning:** Found an unnecessary O(N*M) calculation `surface` inside a `useMemo` on every component mount in `GradientDescentExplorer.tsx`. The calculation relied purely on static variables (`X_RANGE`, `Y_RANGE`, `loss`), meaning it could be pre-computed once.
 **Action:** Always extract static, heavy computations out of `useMemo` hooks (which lose their cache across route navigation/remounts) and into module-level constants evaluated exactly once.
+## 2025-02-18 - OverfittingExplorer Pre-computation
+**Learning:** Found that `OverfittingExplorer.tsx` was recalculating large datasets, sweeping poly fits, and generating dense curves using `useMemo` hooks on every route remount. The dependencies of these hooks were strictly static module constants (like `syntheticRegression(20, 0)`). `useMemo` caching does not persist across route navigations, leading to duplicated mathematical operations on the main thread and slowing down page initialization.
+**Action:** Lift state computations that strictly rely on module-level constants outside of the component context (into module-level constant precalculations) so that they run exactly once at evaluation time, shifting work off the main thread during component render/mount.

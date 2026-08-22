@@ -1,6 +1,6 @@
 
 
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { Slider } from '@/components/sim/primitives/Slider';
 import { SimFrame } from '@/components/sim/primitives/SimFrame';
 import {
@@ -45,64 +45,54 @@ function toScreenY(y: number): number {
   return PLOT_H - PAD - ((y - Y_RANGE[0]) / (Y_RANGE[1] - Y_RANGE[0])) * (PLOT_H - 2 * PAD);
 }
 
+// ⚡ Bolt Optimization: Pre-compute all entirely static geometry and models
+// Build the dataset once (seed 0) — the lesson is the *fit*,
+// not the data. Train on the first 14, test on the last 6.
+const STATIC_D = syntheticRegression(20, 0);
+const STATIC_SPLIT = {
+  xsTrain: STATIC_D.xs.slice(0, 14),
+  ysTrain: STATIC_D.ys.slice(0, 14),
+  xsTest: STATIC_D.xs.slice(14),
+  ysTest: STATIC_D.ys.slice(14),
+  clean: STATIC_D.clean,
+  xsAll: STATIC_D.xs,
+  ysAll: STATIC_D.ys,
+};
+
+// Smooth curve for the fit: evaluate on a dense x grid.
+const STATIC_X_DENSE: number[] = [];
+const N_DENSE = 60;
+for (let i = 0; i < N_DENSE; i += 1) {
+  STATIC_X_DENSE.push(X_RANGE[0] + (i / (N_DENSE - 1)) * (X_RANGE[1] - X_RANGE[0]));
+}
+const STATIC_CLEAN_DENSE = STATIC_X_DENSE.map((x) => Math.sin(2 * x));
+
+// Fits cached by degree: pre-computed sweeps so we don't recompute on render
+const STATIC_SWEEP: { deg: number; train: number; test: number }[] = [];
+const STATIC_FITS: Record<number, number[]> = {};
+const STATIC_FIT_DENSE: Record<number, number[]> = {};
+
+for (let d = 1; d <= DEG_MAX; d += 1) {
+  const w = polyFit(STATIC_SPLIT.xsTrain, STATIC_SPLIT.ysTrain, d);
+  if (!w) {
+    STATIC_SWEEP.push({ deg: d, train: NaN, test: NaN });
+    STATIC_FITS[d] = [];
+    STATIC_FIT_DENSE[d] = [];
+    continue;
+  }
+  STATIC_FITS[d] = w;
+  STATIC_FIT_DENSE[d] = evalPolyVector(w, STATIC_X_DENSE);
+  const trainPred = evalPolyVector(w, STATIC_SPLIT.xsTrain);
+  const testPred = evalPolyVector(w, STATIC_SPLIT.xsTest);
+  STATIC_SWEEP.push({ deg: d, train: mse(STATIC_SPLIT.ysTrain, trainPred), test: mse(STATIC_SPLIT.ysTest, testPred) });
+}
+
 export function OverfittingExplorer() {
   const [degree, setDegree] = useState<number>(12);
 
-  // Build the dataset once (seed 0) — the lesson is the *fit*,
-  // not the data. Train on the first 14, test on the last 6.
-  const split = useMemo(() => {
-    const d = syntheticRegression(20, 0);
-    return {
-      xsTrain: d.xs.slice(0, 14),
-      ysTrain: d.ys.slice(0, 14),
-      xsTest: d.xs.slice(14),
-      ysTest: d.ys.slice(14),
-      clean: d.clean,
-      xsAll: d.xs,
-      ysAll: d.ys,
-    };
-  }, []);
-
-  // Fits cached by degree: re-computed on degree slider change.
-  // We pre-compute the sweep so the bottom "loss vs degree" panel
-  // doesn't recompute on every render.
-  const sweep = useMemo(() => {
-    const out: { deg: number; train: number; test: number }[] = [];
-    for (let d = 1; d <= DEG_MAX; d += 1) {
-      const w = polyFit(split.xsTrain, split.ysTrain, d);
-      if (!w) {
-        out.push({ deg: d, train: NaN, test: NaN });
-        continue;
-      }
-      const trainPred = evalPolyVector(w, split.xsTrain);
-      const testPred = evalPolyVector(w, split.xsTest);
-      out.push({ deg: d, train: mse(split.ysTrain, trainPred), test: mse(split.ysTest, testPred) });
-    }
-    return out;
-  }, [split]);
-
-  // Current fit at the selected degree.
-  const currentFit: number[] = useMemo(
-    () => polyFit(split.xsTrain, split.ysTrain, degree) ?? [],
-    [split, degree],
-  );
-
-  // Smooth curve for the fit: evaluate on a dense x grid.
-  const xDense = useMemo(() => {
-    const N = 60;
-    const out: number[] = [];
-    for (let i = 0; i < N; i += 1) out.push(X_RANGE[0] + (i / (N - 1)) * (X_RANGE[1] - X_RANGE[0]));
-    return out;
-  }, []);
-
-  const fitDense = useMemo(
-    () => (currentFit.length > 0 ? evalPolyVector(currentFit, xDense) : []),
-    [currentFit, xDense],
-  );
-  const cleanDense = useMemo(() => xDense.map((x) => Math.sin(2 * x)), [xDense]);
-
-  const currentTrain = sweep[degree - 1]?.train ?? NaN;
-  const currentTest = sweep[degree - 1]?.test ?? NaN;
+  const fitDense = STATIC_FIT_DENSE[degree] ?? [];
+  const currentTrain = STATIC_SWEEP[degree - 1]?.train ?? NaN;
+  const currentTest = STATIC_SWEEP[degree - 1]?.test ?? NaN;
 
   const reset = () => {
     setDegree(12);
@@ -114,8 +104,8 @@ export function OverfittingExplorer() {
       headerAction={
         <div className="flex items-center gap-3">
           <div className="text-[11px] text-dim font-mono">
-            fit on {split.xsTrain.length} of {split.xsAll.length} points · test set size{' '}
-            {split.xsTest.length}
+            fit on {STATIC_SPLIT.xsTrain.length} of {STATIC_SPLIT.xsAll.length} points · test set size{' '}
+            {STATIC_SPLIT.xsTest.length}
           </div>
           <button
             type="button"
@@ -132,20 +122,20 @@ export function OverfittingExplorer() {
       <div className="sim-split__grid">
         <div>
           <FitPlot
-            xDense={xDense}
-            cleanDense={cleanDense}
+            xDense={STATIC_X_DENSE}
+            cleanDense={STATIC_CLEAN_DENSE}
             fitDense={fitDense}
-            xsTrain={split.xsTrain}
-            ysTrain={split.ysTrain}
-            xsTest={split.xsTest}
-            ysTest={split.ysTest}
+            xsTrain={STATIC_SPLIT.xsTrain}
+            ysTrain={STATIC_SPLIT.ysTrain}
+            xsTest={STATIC_SPLIT.xsTest}
+            ysTest={STATIC_SPLIT.ysTest}
           />
           <div className="mt-3">
             <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-1">
               Train + test loss vs degree
             </div>
             <LossSweep
-              sweep={sweep}
+              sweep={STATIC_SWEEP}
               currentDegree={degree}
             />
           </div>
