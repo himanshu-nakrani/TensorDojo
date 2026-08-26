@@ -37,3 +37,6 @@
 ## 2025-02-18 - GradientDescentExplorer surface initialization optimization
 **Learning:** Found an unnecessary O(N*M) calculation `surface` inside a `useMemo` on every component mount in `GradientDescentExplorer.tsx`. The calculation relied purely on static variables (`X_RANGE`, `Y_RANGE`, `loss`), meaning it could be pre-computed once.
 **Action:** Always extract static, heavy computations out of `useMemo` hooks (which lose their cache across route navigation/remounts) and into module-level constants evaluated exactly once.
+## 2025-02-18 - LossLandscape heatmap precomputation
+**Learning:** Found that `LossLandscape.tsx` computed the visual heatmap matrices (GRIDxGRID iterations over scalar math functions) inside a `useMemo` that lost its cache upon route transitions. Because the underlying loss functions and grids are purely derived from static constants, this was redundant work blocking the main thread.
+**Action:** Extract heavy matrix precomputations out of the component body to module scope constants (e.g. `STATIC_HEATMAPS`) to prevent frame drops on route remounts.

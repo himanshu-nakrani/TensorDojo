@@ -1,0 +1,9 @@
+
+> @workspace/tensor-dojo@0.0.0 dev /app/artifacts/tensor-dojo
+> vite --config vite.config.ts --host 0.0.0.0
+
+
+  VITE v7.3.6  ready in 948 ms
+
+  ➜  Local:   http://localhost:5173/
+  ➜  Network: http://192.168.0.2:5173/
