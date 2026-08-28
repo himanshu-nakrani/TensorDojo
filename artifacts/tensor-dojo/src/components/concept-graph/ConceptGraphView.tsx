@@ -582,13 +582,6 @@ function GraphNodeCard({
         }}
         onFocus={onFocusNode}
         onBlur={onDeactivate}
-        aria-label={`Open lesson: ${node.title}${visited ? ' (visited)' : ''}${
-          resume ? ' — resume here' : ''
-        }. Track: ${node.trackLabel}.${
-          prereqCount > 0
-            ? ` ${prereqCount} cross-track prerequisite${prereqCount === 1 ? '' : 's'}.`
-            : ''
-        }`}
         data-visited={visited ? 'true' : 'false'}
         data-resume={resume ? 'true' : 'false'}
         className={[
@@ -627,6 +620,14 @@ function GraphNodeCard({
             }}
           >
             {node.title}
+            <span className="sr-only">
+              {visited ? ' (visited)' : ''}
+              {resume ? ' — resume here' : ''}
+              . Track: {node.trackLabel}.
+              {prereqCount > 0
+                ? ` ${prereqCount} cross-track prerequisite${prereqCount === 1 ? '' : 's'}.`
+                : ''}
+            </span>
           </h3>
         </div>
         <div className="flex items-center justify-between text-[11px] font-mono text-fg-muted">
