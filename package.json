@@ -18,7 +18,7 @@
     "@replit/connectors-sdk": "^0.4.1"
   },
   "devDependencies": {
-    "@playwright/test": "1.55.0",
+    "@playwright/test": "1.62.1",
     "prettier": "^3.9.5",
     "typescript": "~5.9.3"
   }
