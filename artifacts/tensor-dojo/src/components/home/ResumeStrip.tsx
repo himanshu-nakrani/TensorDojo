@@ -37,7 +37,6 @@ export function ResumeStrip() {
     <Link
       href={`/lessons/${entry.meta.slug}`}
       className="group focus-ring flex items-center justify-between gap-4 rounded border border-accent bg-accent-faint px-5 py-4 transition-colors hover:bg-accent-soft"
-      aria-label={`Resume: ${entry.meta.title}`}
     >
       <div className="flex items-center gap-4 min-w-0">
         <span className="hidden sm:inline-block text-[11px] uppercase tracking-[0.12em] font-mono text-accent shrink-0">
@@ -48,6 +47,7 @@ export function ResumeStrip() {
         </span>
         <span className="text-[15px] sm:text-[16px] font-semibold text-ink truncate">
           {entry.meta.title}
+          <span className="sr-only"> (Resume)</span>
         </span>
       </div>
       <div className="flex items-center gap-3 shrink-0">
