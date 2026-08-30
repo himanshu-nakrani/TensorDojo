@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from 'react';
 import { SimFrame } from '@/components/sim/primitives/SimFrame';
-import { sinusoidalPE1D } from '@/lib/math/positional';
+
 
 export interface PositionalSineWavePreset {
   maxPos?: number;
@@ -19,10 +19,20 @@ export function PositionalSineWave({ preset }: { preset?: PositionalSineWavePres
   const [d, setD] = useState(preset?.d ?? 16);
   const [dim, setDim] = useState(0);
 
+  // ⚡ Bolt Optimization: Calculate the specific dimension directly instead of calling
+  // sinusoidalPE1D(pos, d) which allocates and computes the entire d-dimensional vector
+  // just to discard all but one element. This reduces the time and memory complexity
+  // of this loop from O(maxPos * d) to O(maxPos).
   const series = useMemo(() => {
     const arr: number[] = [];
+    const halfD = d / 2;
+    const pair = Math.floor(dim / 2);
+    const denom = Math.pow(10000, pair / halfD);
+    const isEven = dim % 2 === 0;
+
     for (let pos = 0; pos < maxPos; pos += 1) {
-      arr.push(sinusoidalPE1D(pos, d)[dim] ?? 0);
+      const angle = pos / denom;
+      arr.push(isEven ? Math.sin(angle) : Math.cos(angle));
     }
     return arr;
   }, [maxPos, d, dim]);
