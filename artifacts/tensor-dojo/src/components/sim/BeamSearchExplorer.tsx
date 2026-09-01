@@ -121,6 +121,7 @@ export function BeamSearchExplorer() {
           type="button"
           onClick={() => setPlaying((p) => !p)}
           disabled={atEnd}
+          aria-pressed={playing}
           className={clsx(
             'focus-ring inline-flex items-center justify-center min-h-[40px] px-4 rounded-md text-[13px] font-mono font-semibold transition-colors',
             atEnd
