@@ -56,3 +56,7 @@
 **Vulnerability:** Playwright had a high severity vulnerability (CVE/GHSA-7mvr-c777-76hp) where it downloads and installs browsers without verifying the authenticity of the SSL certificate.
 **Learning:** Developer tools like Playwright that execute shell operations or downloads can introduce severe vulnerabilities into CI pipelines or local dev environments. Running `pnpm audit` helps catch these quickly.
 **Prevention:** Ensure `pnpm audit` is part of regular maintenance and CI to catch vulnerabilities in both prod and dev dependencies.
+## 2025-03-09 - Missing Frontend Security Headers
+**Vulnerability:** The Vercel deployment configuration (`vercel.json`) did not specify security headers, exposing the frontend to MIME sniffing, clickjacking, and XSS risks without strict transport security.
+**Learning:** For statically deployed Vite/React apps on Vercel, Express middleware headers do not apply. Set nosniff, X-Frame-Options (or CSP frame-ancestors), and HSTS at the edge. Do not ship X-XSS-Protection (removed from Chromium) or HSTS preload unless the domain is submitted to hstspreload.org.
+**Prevention:** Always verify that security headers are configured at the edge or hosting layer for static frontends.
