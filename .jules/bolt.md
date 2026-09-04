@@ -43,3 +43,6 @@
 ## 2025-02-18 - DecisionBoundary pre-computation
 **Learning:** `TrainingEndToEnd.tsx` computed a 6400-element `cellColors` array for `DecisionBoundary` in a `useMemo` based on static `GRID_H` and `GRID_W` constants on component mount. The calculation used `Math.atan2` repeatedly, slowing down rendering during route navigation.
 **Action:** Extract heavy iterative layout grids (especially those over static limits like `GRID_W`) from `useMemo` into static module-level `STATIC_*` variables evaluated once on bundle load to prevent UI jank.
+## 2025-02-18 - Pre-compute static FlashAttentionTraffic grid
+**Learning:** `FlashAttentionTraffic.tsx` was recalculating memory usage (via `attentionMemoryNaive` and `attentionMemoryFlash`) inside a `useMemo` every time the sequence length slider was moved or the component remounted. Since the options (`SEQ_STEPS`) and parameters are static module constants, this was redundant main-thread work.
+**Action:** Move static computations mapping constant arrays through pure functions into module-level object maps (like `STATIC_TRAFFIC`) to shift work from render time to module load time, making interactive sweeps O(1).
