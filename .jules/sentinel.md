@@ -52,3 +52,7 @@
 **Vulnerability:** Missing request body size limits (`express.json()` and `express.urlencoded()`) and the `Permissions-Policy` header in the Express API server.
 **Learning:** Default limits in middleware can sometimes be too large or not explicit enough. Setting an explicit reasonable limit (e.g., 10mb) helps mitigate memory exhaustion DoS attacks. Also, modern security headers like `Permissions-Policy` should be explicitly set to reduce the application's attack surface.
 **Prevention:** Always set an explicit `limit` on body parsing middleware and include comprehensive security headers in Express applications.
+## 2026-08-29 - Upgrade Playwright to fix high severity CVE
+**Vulnerability:** Playwright had a high severity vulnerability (CVE/GHSA-7mvr-c777-76hp) where it downloads and installs browsers without verifying the authenticity of the SSL certificate.
+**Learning:** Developer tools like Playwright that execute shell operations or downloads can introduce severe vulnerabilities into CI pipelines or local dev environments. Running `pnpm audit` helps catch these quickly.
+**Prevention:** Ensure `pnpm audit` is part of regular maintenance and CI to catch vulnerabilities in both prod and dev dependencies.
