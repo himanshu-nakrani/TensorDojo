@@ -40,3 +40,6 @@
 ## 2025-02-18 - OverfittingExplorer Pre-computation
 **Learning:** Found that `OverfittingExplorer.tsx` was recalculating large datasets, sweeping poly fits, and generating dense curves using `useMemo` hooks on every route remount. The dependencies of these hooks were strictly static module constants (like `syntheticRegression(20, 0)`). `useMemo` caching does not persist across route navigations, leading to duplicated mathematical operations on the main thread and slowing down page initialization.
 **Action:** Lift state computations that strictly rely on module-level constants outside of the component context (into module-level constant precalculations) so that they run exactly once at evaluation time, shifting work off the main thread during component render/mount.
+## 2025-02-18 - DecisionBoundary pre-computation
+**Learning:** `TrainingEndToEnd.tsx` computed a 6400-element `cellColors` array for `DecisionBoundary` in a `useMemo` based on static `GRID_H` and `GRID_W` constants on component mount. The calculation used `Math.atan2` repeatedly, slowing down rendering during route navigation.
+**Action:** Extract heavy iterative layout grids (especially those over static limits like `GRID_W`) from `useMemo` into static module-level `STATIC_*` variables evaluated once on bundle load to prevent UI jank.

@@ -31,6 +31,23 @@ interface RunState {
   finished: boolean;
 }
 
+// ⚡ Bolt Optimization: Pre-compute static decision boundary cell colors
+// Moving this nested loop out of the component scope into a module-level constant
+// avoids recalculating a 6400-element array (80x80) on every component mount.
+const STATIC_CELL_COLORS = (() => {
+  const out: string[] = [];
+  for (let i = 0; i < GRID_H; i += 1) {
+    const y = Y_RANGE[0] + (i / (GRID_H - 1)) * (Y_RANGE[1] - Y_RANGE[0]);
+    for (let j = 0; j < GRID_W; j += 1) {
+      const x = X_RANGE[0] + (j / (GRID_W - 1)) * (X_RANGE[1] - X_RANGE[0]);
+      const c = (Math.atan2(y, x) + Math.PI) / (2 * Math.PI);
+      const cls = Math.min(2, Math.floor(c * 3));
+      out.push(COLORS[cls]!);
+    }
+  }
+  return out;
+})();
+
 export function TrainingEndToEnd() {
   const [optimizer, setOptimizer] = useState<'sgd' | 'momentum' | 'adam'>('adam');
   const [batchSize, setBatchSize] = useState<number>(16);
@@ -389,24 +406,6 @@ function DecisionBoundary({
   // centerpiece used. To keep the centerpiece simple we
   // fall back to a uniform-decision rendering when no run
   // is available.
-  const cellColors = useMemo(() => {
-    const out: string[] = [];
-    for (let i = 0; i < GRID_H; i += 1) {
-      const y = Y_RANGE[0] + (i / (GRID_H - 1)) * (Y_RANGE[1] - Y_RANGE[0]);
-      for (let j = 0; j < GRID_W; j += 1) {
-        const x = X_RANGE[0] + (j / (GRID_W - 1)) * (X_RANGE[1] - X_RANGE[0]);
-        // Without finalParams we don't know the model's
-        // decision. Render a coarse class-0 default; the
-        // real boundary updates once the train has run.
-        // This is replaced by the trained boundary below.
-        const c = (Math.atan2(y, x) + Math.PI) / (2 * Math.PI);
-        const cls = Math.min(2, Math.floor(c * 3));
-        out.push(COLORS[cls]!);
-      }
-    }
-    return out;
-  }, []);
-
   if (!progress || !progress.finished) {
     return (
       <div>
@@ -417,7 +416,7 @@ function DecisionBoundary({
           className="rounded border border-border overflow-hidden"
           style={{ width: '100%', height, display: 'grid', gridTemplateColumns: `repeat(${GRID_W}, 1fr)` }}
         >
-          {cellColors.map((c: string, i: number) => (
+          {STATIC_CELL_COLORS.map((c: string, i: number) => (
             <div
               key={i}
               style={{ background: c, opacity: 0.18 }}
