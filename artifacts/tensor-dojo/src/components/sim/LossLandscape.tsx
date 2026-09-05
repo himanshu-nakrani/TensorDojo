@@ -21,19 +21,10 @@ const H = 320;
  * overshoot tradeoff.
  */
 
-// ⚡ Bolt Optimization: Pre-compute static grids for all loss surfaces
-// Since the surface functions and extents are static, we can calculate the
-// GRID x GRID heatmap cells once per surface at module load time rather than
-// inside a useMemo on every mount, preventing main-thread blocking during navigation.
-const STATIC_GRIDS = (() => {
-  const grids: Record<
-    SurfaceId,
-    { cells: number[][]; fMin: number; fMax: number }
-  > = {} as any;
-  for (const [id, surface] of Object.entries(SURFACES) as [
-    SurfaceId,
-    (typeof SURFACES)[SurfaceId],
-  ][]) {
+type Heatmap = { cells: number[][]; fMin: number; fMax: number };
+
+const STATIC_GRIDS = Object.fromEntries(
+  listSurfaces().map((surface) => {
     const cells: number[][] = [];
     let fMin = Infinity;
     let fMax = -Infinity;
@@ -50,10 +41,9 @@ const STATIC_GRIDS = (() => {
       }
       cells.push(row);
     }
-    grids[id] = { cells, fMin, fMax };
-  }
-  return grids;
-})();
+    return [surface.id, { cells, fMin, fMax } satisfies Heatmap];
+  }),
+) as Record<SurfaceId, Heatmap>;
 
 export function LossLandscape() {
   const [surfaceId, setSurfaceId] = useState<SurfaceId>("bowl");
