@@ -41,10 +41,12 @@ export function CurriculumGrid() {
                 </span>
               </div>
               <h3 className="text-[15px] font-semibold text-ink tracking-[-0.005em] leading-snug mb-2">
-                <span className="sr-only">Track {i + 1}: </span>
                 {track.label}
-                <span className="sr-only">. {track.slugs.length} lesson{track.slugs.length === 1 ? '' : 's'}</span>
               </h3>
+              <span className="sr-only">
+                {track.slugs.length} lesson
+                {track.slugs.length === 1 ? '' : 's'}
+              </span>
               <p className="text-[13px] text-muted leading-relaxed">
                 {track.description}
               </p>

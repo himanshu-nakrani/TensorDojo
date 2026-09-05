@@ -619,13 +619,14 @@ function GraphNodeCard({
               overflow: 'hidden',
             }}
           >
-            <span className="sr-only">Open lesson: </span>
             {node.title}
-            {visited && <span className="sr-only"> (visited)</span>}
-            {resume && <span className="sr-only"> — resume here</span>}
-            <span className="sr-only">. Track: {node.trackLabel}.</span>
           </h3>
         </div>
+        <span className="sr-only">
+          {visited ? 'Visited. ' : ''}
+          {resume ? 'Resume here. ' : ''}
+          Track: {node.trackLabel}.
+        </span>
         <div className="flex items-center justify-between text-[11px] font-mono text-fg-muted">
           <span className="inline-flex items-center gap-1.5">
             <span
