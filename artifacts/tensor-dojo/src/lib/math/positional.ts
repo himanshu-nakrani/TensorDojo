@@ -60,3 +60,15 @@ export function sinusoidalPE1D(pos: number, d: number): number[] {
   }
   return row;
 }
+
+/** One PE component: PE(pos, dim) without allocating the full d-vector. */
+export function sinusoidalPEComponent(pos: number, dim: number, d: number): number {
+  if (d <= 0 || d % 2 !== 0) {
+    throw new Error(`sinusoidalPE: d must be a positive even integer (got ${d})`);
+  }
+  if (dim < 0 || dim >= d) return 0;
+  const i = Math.floor(dim / 2);
+  const denom = Math.pow(PE_BASE, i / (d / 2));
+  const angle = pos / denom;
+  return dim % 2 === 0 ? Math.sin(angle) : Math.cos(angle);
+}

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { sinusoidalPE, sinusoidalPE1D } from './positional';
+import { sinusoidalPE, sinusoidalPE1D, sinusoidalPEComponent } from './positional';
 
 describe('sinusoidalPE', () => {
   it('throws on odd d', () => {
@@ -37,6 +37,16 @@ describe('sinusoidalPE', () => {
     const pe = sinusoidalPE(5, 4);
     for (let pos = 0; pos < 5; pos += 1) {
       expect(sinusoidalPE1D(pos, 4)).toEqual(pe[pos]);
+    }
+  });
+
+  it('sinusoidalPEComponent matches PE[pos][dim] and throws on odd d', () => {
+    expect(() => sinusoidalPEComponent(0, 0, 3)).toThrow();
+    const pe = sinusoidalPE(5, 8);
+    for (let pos = 0; pos < 5; pos += 1) {
+      for (let dim = 0; dim < 8; dim += 1) {
+        expect(sinusoidalPEComponent(pos, dim, 8)).toBeCloseTo(pe[pos]![dim]!, 12);
+      }
     }
   });
 });

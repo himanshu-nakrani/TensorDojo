@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from 'react';
 import { SimFrame } from '@/components/sim/primitives/SimFrame';
+import { sinusoidalPEComponent } from '@/lib/math/positional';
 
 
 export interface PositionalSineWavePreset {
@@ -19,23 +20,14 @@ export function PositionalSineWave({ preset }: { preset?: PositionalSineWavePres
   const [d, setD] = useState(preset?.d ?? 16);
   const [dim, setDim] = useState(0);
 
-  // ⚡ Bolt Optimization: Calculate the specific dimension directly instead of calling
-  // sinusoidalPE1D(pos, d) which allocates and computes the entire d-dimensional vector
-  // just to discard all but one element. This reduces the time and memory complexity
-  // of this loop from O(maxPos * d) to O(maxPos).
+  const dEven = d % 2 === 0 ? d : d + 1;
   const series = useMemo(() => {
     const arr: number[] = [];
-    const halfD = d / 2;
-    const pair = Math.floor(dim / 2);
-    const denom = Math.pow(10000, pair / halfD);
-    const isEven = dim % 2 === 0;
-
     for (let pos = 0; pos < maxPos; pos += 1) {
-      const angle = pos / denom;
-      arr.push(isEven ? Math.sin(angle) : Math.cos(angle));
+      arr.push(sinusoidalPEComponent(pos, dim, dEven));
     }
     return arr;
-  }, [maxPos, d, dim]);
+  }, [maxPos, dEven, dim]);
 
   const W = 600;
   const H = 180;
@@ -75,7 +67,7 @@ export function PositionalSineWave({ preset }: { preset?: PositionalSineWavePres
               vectorEffect="non-scaling-stroke"
             />
             <text x={W - PAD} y={PAD + 12} textAnchor="end" className="fill-dim font-mono" fontSize={10} style={{ fontSize: 10 }}>
-              dim {dim} · pair {Math.floor(dim / 2)} · wavelength ≈ {Math.round(2 * Math.PI * Math.pow(10000, Math.floor(dim / 2) / (d / 2)))}
+              dim {dim} · pair {Math.floor(dim / 2)} · wavelength ≈ {Math.round(2 * Math.PI * Math.pow(10000, Math.floor(dim / 2) / (dEven / 2)))}
             </text>
             <text x={W - PAD} y={H - PAD - 6} textAnchor="end" className="fill-dim font-mono" fontSize={10} style={{ fontSize: 10 }}>
               pos {maxPos - 1}
