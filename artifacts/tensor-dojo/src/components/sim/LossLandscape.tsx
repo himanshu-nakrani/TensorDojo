@@ -1,15 +1,13 @@
-
-
-import { useEffect, useMemo, useRef, useState } from 'react';
-import clsx from 'clsx';
-import { SimFrame } from '@/components/sim/primitives/SimFrame';
-import { Slider } from '@/components/sim/primitives/Slider';
+import { useEffect, useMemo, useRef, useState } from "react";
+import clsx from "clsx";
+import { SimFrame } from "@/components/sim/primitives/SimFrame";
+import { Slider } from "@/components/sim/primitives/Slider";
 import {
   SURFACES,
   listSurfaces,
   sgdTrajectory,
   type SurfaceId,
-} from '@/lib/math/loss-landscape';
+} from "@/lib/math/loss-landscape";
 
 const GRID = 48; // heatmap resolution: GRID × GRID cells.
 const W = 320; // svg width in viewBox units.
@@ -22,20 +20,11 @@ const H = 320;
  * point. A learning-rate slider exposes the convergence vs.
  * overshoot tradeoff.
  */
-export function LossLandscape() {
-  const [surfaceId, setSurfaceId] = useState<SurfaceId>('bowl');
-  const surface = SURFACES[surfaceId];
-  const [lr, setLR] = useState(surface.defaultLR);
-  const [start, setStart] = useState<[number, number] | null>(null);
 
-  // Reset LR + path when the surface changes.
-  useEffect(() => {
-    setLR(SURFACES[surfaceId].defaultLR);
-    setStart(null);
-  }, [surfaceId]);
+type Heatmap = { cells: number[][]; fMin: number; fMax: number };
 
-  // Precompute the heatmap values and a min/max for shading.
-  const { cells, fMin, fMax } = useMemo(() => {
+const STATIC_GRIDS = Object.fromEntries(
+  listSurfaces().map((surface) => {
     const cells: number[][] = [];
     let fMin = Infinity;
     let fMax = -Infinity;
@@ -52,8 +41,24 @@ export function LossLandscape() {
       }
       cells.push(row);
     }
-    return { cells, fMin, fMax };
-  }, [surface]);
+    return [surface.id, { cells, fMin, fMax } satisfies Heatmap];
+  }),
+) as Record<SurfaceId, Heatmap>;
+
+export function LossLandscape() {
+  const [surfaceId, setSurfaceId] = useState<SurfaceId>("bowl");
+  const surface = SURFACES[surfaceId];
+  const [lr, setLR] = useState(surface.defaultLR);
+  const [start, setStart] = useState<[number, number] | null>(null);
+
+  // Reset LR + path when the surface changes.
+  useEffect(() => {
+    setLR(SURFACES[surfaceId].defaultLR);
+    setStart(null);
+  }, [surfaceId]);
+
+  // Heatmap values and min/max for shading are precomputed statically.
+  const { cells, fMin, fMax } = STATIC_GRIDS[surfaceId];
 
   // Full SGD path from the chosen start point.
   const path = useMemo(() => {
@@ -89,10 +94,8 @@ export function LossLandscape() {
   const yToPx = (y: number) =>
     // SVG y increases downward; flip so positive y is up.
     H - ((y + surface.extent) / (2 * surface.extent)) * H;
-  const pxToX = (px: number) =>
-    (px / W) * 2 * surface.extent - surface.extent;
-  const pxToY = (py: number) =>
-    surface.extent - (py / H) * 2 * surface.extent;
+  const pxToX = (px: number) => (px / W) * 2 * surface.extent - surface.extent;
+  const pxToY = (py: number) => surface.extent - (py / H) * 2 * surface.extent;
 
   const handleClick = (e: React.MouseEvent<SVGSVGElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
@@ -133,10 +136,10 @@ export function LossLandscape() {
               aria-checked={active}
               onClick={() => setSurfaceId(s.id)}
               className={clsx(
-                'focus-ring text-[11px] uppercase tracking-[0.12em] font-mono px-2.5 py-1 rounded border transition-colors',
+                "focus-ring text-[11px] uppercase tracking-[0.12em] font-mono px-2.5 py-1 rounded border transition-colors",
                 active
-                  ? 'border-accent text-accent bg-accent-soft'
-                  : 'border-border text-muted hover:text-ink hover:border-border-strong',
+                  ? "border-accent text-accent bg-accent-soft"
+                  : "border-border text-muted hover:text-ink hover:border-border-strong",
               )}
             >
               {s.label}
@@ -164,10 +167,7 @@ export function LossLandscape() {
             {cells.flatMap((row, i) =>
               row.map((v, j) => {
                 // Normalize loss into [0, 1] for shading; clamp.
-                const t = Math.max(
-                  0,
-                  Math.min(1, (v - fMin) / range),
-                );
+                const t = Math.max(0, Math.min(1, (v - fMin) / range));
                 // Light → dark teal gradient. Low loss = dark, high
                 // loss = light. Using inline rgba on the accent
                 // channel so it themes with the rest of the page.
@@ -208,7 +208,7 @@ export function LossLandscape() {
                 points={path
                   .slice(0, shown)
                   .map(([x, y]) => `${xToPx(x)},${yToPx(y)}`)
-                  .join(' ')}
+                  .join(" ")}
                 fill="none"
                 stroke="rgb(var(--accent))"
                 strokeWidth={2}
@@ -219,27 +219,27 @@ export function LossLandscape() {
             )}
             {/* Path dots */}
             {path &&
-              path.slice(0, shown).map(([x, y], i) => (
-                <circle
-                  key={i}
-                  cx={xToPx(x)}
-                  cy={yToPx(y)}
-                  r={i === 0 || i === shown - 1 ? 4 : 1.8}
-                  fill={
-                    i === 0
-                      ? 'rgb(var(--accent))'
-                      : i === shown - 1
-                        ? 'rgb(var(--accent))'
-                        : 'rgba(var(--accent) / 0.7)'
-                  }
-                  stroke={
-                    i === 0 || i === shown - 1
-                      ? 'rgb(var(--bg))'
-                      : 'none'
-                  }
-                  strokeWidth={1}
-                />
-              ))}
+              path
+                .slice(0, shown)
+                .map(([x, y], i) => (
+                  <circle
+                    key={i}
+                    cx={xToPx(x)}
+                    cy={yToPx(y)}
+                    r={i === 0 || i === shown - 1 ? 4 : 1.8}
+                    fill={
+                      i === 0
+                        ? "rgb(var(--accent))"
+                        : i === shown - 1
+                          ? "rgb(var(--accent))"
+                          : "rgba(var(--accent) / 0.7)"
+                    }
+                    stroke={
+                      i === 0 || i === shown - 1 ? "rgb(var(--bg))" : "none"
+                    }
+                    strokeWidth={1}
+                  />
+                ))}
           </svg>
         </div>
 
@@ -312,35 +312,29 @@ export function LossLandscape() {
               <span className="tabular-nums">
                 {start
                   ? `(${start[0].toFixed(2)}, ${start[1].toFixed(2)})`
-                  : '—'}
+                  : "—"}
               </span>
             </div>
             <div className="flex justify-between text-fg-muted">
               <span>steps</span>
-              <span className="tabular-nums">
-                {path ? path.length - 1 : 0}
-              </span>
+              <span className="tabular-nums">{path ? path.length - 1 : 0}</span>
             </div>
             <div className="flex justify-between text-fg-muted">
               <span>final loss</span>
               <span className="text-accent tabular-nums">
                 {path
                   ? surface
-                      .f(
-                        path[path.length - 1]![0],
-                        path[path.length - 1]![1],
-                      )
+                      .f(path[path.length - 1]![0], path[path.length - 1]![1])
                       .toFixed(3)
-                  : '—'}
+                  : "—"}
               </span>
             </div>
           </div>
 
           {!start && (
             <p className="mt-3 text-[11px] text-fg-muted font-mono leading-relaxed">
-              Click the heatmap — or use the start x / y sliders — to
-              drop a starting point. SGD walks to a stationary point
-              from there.
+              Click the heatmap — or use the start x / y sliders — to drop a
+              starting point. SGD walks to a stationary point from there.
             </p>
           )}
         </div>
