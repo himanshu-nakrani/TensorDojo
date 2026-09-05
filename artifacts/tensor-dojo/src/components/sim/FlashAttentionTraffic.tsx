@@ -1,6 +1,6 @@
 
 
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import clsx from 'clsx';
 import { SimFrame } from '@/components/sim/primitives/SimFrame';
 import {
@@ -23,16 +23,27 @@ const D_HEAD = 128;
 const BLOCK_SIZE = 64;
 const DEFAULT_INDEX = 4; // 4096
 
+// ⚡ Bolt Optimization: Pre-compute static traffic data for all sequence lengths
+// Since SEQ_STEPS, D_HEAD, and BLOCK_SIZE are static constants, we can avoid
+// recalculating memory usage and speedup on every slider change or component mount.
+// This converts main-thread math operations into O(1) object lookups.
+const STATIC_TRAFFIC = (() => {
+  const data: Record<number, { naive: ReturnType<typeof attentionMemoryNaive>; flash: ReturnType<typeof attentionMemoryFlash>; speedup: number }> = {};
+  for (const seq of SEQ_STEPS) {
+    data[seq] = {
+      naive: attentionMemoryNaive(seq, D_HEAD),
+      flash: attentionMemoryFlash(seq, D_HEAD, BLOCK_SIZE),
+      speedup: speedupRatio(seq, D_HEAD, BLOCK_SIZE),
+    };
+  }
+  return data;
+})();
+
 export function FlashAttentionTraffic() {
   const [seqIndex, setSeqIndex] = useState<number>(DEFAULT_INDEX);
   const seqLen = SEQ_STEPS[seqIndex]!;
 
-  const { naive, flash, speedup } = useMemo(() => {
-    const n = attentionMemoryNaive(seqLen, D_HEAD);
-    const f = attentionMemoryFlash(seqLen, D_HEAD, BLOCK_SIZE);
-    const s = speedupRatio(seqLen, D_HEAD, BLOCK_SIZE);
-    return { naive: n, flash: f, speedup: s };
-  }, [seqLen]);
+  const { naive, flash, speedup } = STATIC_TRAFFIC[seqLen]!;
 
   // Bar normalization: log-scaled, so the n=8192 bar fits on screen.
   const logNaive = Math.log10(naive.hbmTotal);
