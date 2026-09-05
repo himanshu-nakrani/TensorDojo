@@ -3,8 +3,17 @@ import { expect, test } from '@playwright/test';
 test('home route renders the curriculum shell', async ({ page }) => {
   await page.goto('/');
   await expect(page.getByRole('heading', { name: /Learn AI the way scientists learn/i })).toBeVisible();
-  await expect(page.getByText('58', { exact: true }).first()).toBeVisible();
+  await expect(page.getByText(/80 interactive lessons/i)).toBeVisible();
   await expect(page.getByRole('link', { name: /Browse the curriculum/i })).toBeVisible();
+});
+
+test('new systems lesson route renders its assessment and workbench', async ({ page }) => {
+  await page.goto('/lessons/data-pipeline');
+  await expect(page.getByRole('heading', { name: /Data pipelines: the model only learns what arrives/i })).toBeVisible();
+  await expect(page.getByRole('heading', { name: /The input to training is a stream/i })).toBeVisible();
+  await expect(page.getByRole('button', { name: /Data Budget Lab/i })).toBeVisible();
+  await expect(page.getByRole('button', { name: /Check answer/i })).toBeVisible();
+  await expect(page.getByText(/The central idea is data pipelines/i)).toBeVisible();
 });
 
 test('unknown lesson routes render the not-found page', async ({ page }) => {
@@ -29,6 +38,12 @@ test('shareable interactive state reopens the requested workbench panel', async 
   const panel = page.getByRole('button', { name: /SwiGLU: silu\(a\) gates b/i });
   await expect(panel).toHaveAttribute('aria-expanded', 'true');
   await expect(page.getByRole('button', { name: /Copy lesson link/i })).toBeVisible();
+});
+
+test('continuous-batching lesson exposes occupancy control', async ({ page }) => {
+  await page.goto('/lessons/continuous-batching');
+  await expect(page.getByRole('heading', { name: /Continuous batching/i })).toBeVisible();
+  await expect(page.getByRole('slider', { name: /occupancy/i })).toBeVisible();
 });
 
 test('activation lesson loads the assessment and feedback loop', async ({ page }) => {

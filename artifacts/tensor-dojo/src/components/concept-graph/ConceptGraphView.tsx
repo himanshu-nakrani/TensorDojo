@@ -22,7 +22,7 @@ import type { CrossTrackEdge, TrackSection } from '@/lib/content/map-data';
  *       · cross-track prerequisite edges (colored by the source
  *         track, dashed) — the thing the previous static grid
  *         could only hint at with a "↗N" badge.
- *   - The readability problem at 58 nodes is solved with
+ *   - The readability problem at 80 nodes is solved with
  *     focus + context: hovering or focusing a node lights up its
  *     own edges and immediate neighbours and dims everything else,
  *     so the local dependency structure is always legible even
@@ -47,6 +47,8 @@ const TRACK_COLORS = [
   '#ea580c', // orange
   '#e11d48', // rose
   '#9333ea', // purple
+  '#06b6d4', // cyan
+  '#c026d3', // fuchsia
 ];
 
 function trackColor(idx: number): string {
@@ -328,7 +330,7 @@ function MapGraph({
   }, [size.w, size.h, graph.width, graph.height]);
 
   // Open on the reading-order entry lesson at a readable zoom (the
-  // whole 58-node graph fit to the viewport is too small to read).
+  // whole 80-node graph fit to the viewport is too small to read).
   // The ⤢ control drops back to the full overview.
   const initialView = useCallback(() => {
     if (!size.w || !size.h || !graph.nodes.length) return;

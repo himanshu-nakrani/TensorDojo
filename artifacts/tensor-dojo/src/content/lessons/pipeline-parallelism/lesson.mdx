@@ -1,0 +1,34 @@
+import { Callout } from '@/components/lesson/Callout';
+import { Check } from '@/components/lesson/Check';
+
+## Split depth instead of width
+
+Tensor parallelism divides one operation; pipeline parallelism divides the stack of layers. Stage one runs the first layers, stage two runs the next range, and so on. A microbatch moves from one stage to the next while earlier stages begin work on later microbatches.
+
+## The pipeline has bubbles
+
+With p stages and m microbatches, the first and last stages cannot both be busy during warmup and cooldown. Those idle slots are pipeline bubbles. More microbatches can improve utilization, but they also increase scheduling complexity and the amount of activation state that must be held for backpropagation.
+
+## Read the schedule, not just the layer count
+
+The workbench shows that equal numbers of layers do not guarantee equal stage times. A stage with a wider embedding, a mixture-of-experts block, or slower communication can become the bottleneck. Good partitioning balances time and memory, not merely layer indices.
+
+$$
+T_{\text{ideal}} \approx (m + p - 1) \tau
+$$
+
+<Callout title="Work the idea" targetInteractive="pipeline-schedule">
+Toggle **Residual 1** / **LN 1**, then drag **block depth**. Sequential stages of one transformer block are standing in for pipeline-parallel stages: work moves through a chain, and skipping a stage changes what later stages see.
+</Callout>
+
+<Check
+  id="pipeline-parallelism.core-idea"
+  question={"Why are microbatches used in pipeline parallelism?"}
+  options={["They allow different pipeline stages to work concurrently.", "They remove the need for backpropagation.", "They make every stage use the same weights independently.", "They turn attention into convolution."]}
+  answer={0}
+  explanation={"Microbatches keep multiple pipeline stages occupied at once, reducing idle bubbles compared with processing one full batch end to end."}
+/>
+
+## Recap
+
+The central idea is **Pipeline parallelism**. The implementation detail matters because it changes what the model can learn, how much memory or compute the system needs, or how confidently we can interpret its behavior. Keep the equation visible, name the controlled variables, and treat every benchmark or safeguard as part of the model’s operating definition.

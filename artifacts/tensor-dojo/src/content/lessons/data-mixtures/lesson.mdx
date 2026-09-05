@@ -1,0 +1,34 @@
+import { Callout } from '@/components/lesson/Callout';
+import { Check } from '@/components/lesson/Check';
+
+## A corpus is a probability distribution
+
+Suppose the corpus contains web pages, code, books, and conversations. The model does not automatically learn each domain in proportion to its raw disk size. A sampler can assign mixture weights, so a small but valuable domain appears more often than its byte count would suggest. The resulting training distribution is a weighted mixture of domain distributions.
+
+## More data is not the same as better data
+
+A large noisy domain can overwhelm a smaller high-quality domain. Upweighting code may improve programming evaluations while changing general prose behavior; upweighting books may improve long-form structure while reducing exposure to short factual patterns. Mixture design is therefore a measurable tradeoff, not a cosmetic preprocessing choice.
+
+## Read the histogram as a policy
+
+Use the workbench to compare raw proportions with the sampled proportions. Ask which domain would be under-trained if the sampler followed storage size exactly, and which domain would be overrepresented after reweighting. The important habit is to separate corpus composition from sampling policy.
+
+$$
+p(x) = \sum_{d \in \text{domains}} \pi_d \, p_d(x)
+$$
+
+<Callout title="Work the idea" targetInteractive="mixture-sampler">
+Step **d_k** with the buttons, then toggle **1/√d_k scaling**. The spreading Q·K histogram is standing in for a data mixture: one knob changes how much mass a source contributes, the same way a domain weight does.
+</Callout>
+
+<Check
+  id="data-mixtures.core-idea"
+  question={"What does a mixture weight \\pi_d control in a sampled training corpus?"}
+  options={["The probability that the next example comes from domain d.", "The hidden size of every attention head.", "The number of vocabulary tokens in domain d.", "The learning rate used only for domain d."]}
+  answer={0}
+  explanation={"The mixture weight is the sampling probability assigned to domain d. It changes how often that domain contributes training examples."}
+/>
+
+## Recap
+
+The central idea is **Data mixtures**. The implementation detail matters because it changes what the model can learn, how much memory or compute the system needs, or how confidently we can interpret its behavior. Keep the equation visible, name the controlled variables, and treat every benchmark or safeguard as part of the model’s operating definition.

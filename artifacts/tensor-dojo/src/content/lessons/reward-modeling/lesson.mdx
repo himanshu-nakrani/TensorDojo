@@ -1,0 +1,34 @@
+import { Callout } from '@/components/lesson/Callout';
+import { Check } from '@/components/lesson/Check';
+
+## Preferences are comparative data
+
+A labeler may find response A better than response B without assigning either one an absolute numeric score. A reward model learns a scalar function r(x, y) whose ordering should match those comparisons. The score is not truth; it is a learned proxy for the preference data supplied to training.
+
+## The margin carries the signal
+
+The pairwise loss rewards a positive gap between the preferred and rejected responses. If the model already ranks them correctly, the loss is small; if the ranking is reversed, the loss is large. This creates a smooth objective from discrete preference pairs.
+
+## Proxy objectives can be gamed
+
+Once a policy is optimized against the reward model, it may find high-scoring patterns that humans would not endorse. That is reward hacking: the proxy is optimized more successfully than the underlying goal. A good lesson keeps the proxy and the target visibly separate.
+
+$$
+\mathcal{L} = -\log \sigma\bigl(r(x,y^+) - r(x,y^-)\bigr)
+$$
+
+<Callout title="Work the idea" targetInteractive="reward-scoring">
+Press **Step** and watch the reward-model pane separate preferred from dispreferred. Those scores are standing in for a Bradley-Terry reward model trained on human preference pairs.
+</Callout>
+
+<Check
+  id="reward-modeling.core-idea"
+  question={"In pairwise reward-model training, what should happen to r(x,y+) - r(x,y-)?"}
+  options={["It should become positive for the preferred response.", "It should always equal zero.", "It should depend only on sequence length.", "It should be replaced by a random number."]}
+  answer={0}
+  explanation={"The pairwise objective trains the reward model to score the preferred response above the rejected response, creating a positive margin."}
+/>
+
+## Recap
+
+The central idea is **Reward models**. The implementation detail matters because it changes what the model can learn, how much memory or compute the system needs, or how confidently we can interpret its behavior. Keep the equation visible, name the controlled variables, and treat every benchmark or safeguard as part of the model’s operating definition.

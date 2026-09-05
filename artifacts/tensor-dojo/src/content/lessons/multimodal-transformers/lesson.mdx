@@ -1,0 +1,34 @@
+import { Callout } from '@/components/lesson/Callout';
+import { Check } from '@/components/lesson/Check';
+
+## Tokens do not have to start as words
+
+A transformer only receives vectors with positions and a compatible hidden dimension. An image encoder can turn patches into vectors; an audio encoder can turn frames into vectors; a projection layer can map those vectors into the language model’s representation space. The transformer then processes a mixed sequence.
+
+## Alignment is learned
+
+Putting vectors in the same dimension does not guarantee that “cat” and a cat image are nearby or that a visual patch can answer a textual question. Contrastive objectives, paired data, instruction tuning, and cross-modal adapters teach the model how the modalities relate.
+
+## Sequence design is an architectural choice
+
+A multimodal system may concatenate all tokens, use cross-attention, or route modalities through separate towers before fusion. Each choice changes memory, position handling, and where information can flow. Use the embedding plane to distinguish shared coordinates from shared meaning.
+
+$$
+\text{sequence} = [\text{image patches};\text{text tokens};\text{special markers}]
+$$
+
+<Callout title="Work the idea" targetInteractive="shared-embedding-space">
+Type a token in **Find nearest to**, then toggle **Show analogy**. Word tokens on this 2D plane are standing in for mixed-modality embeddings: the same nearest-neighbor geometry, whether the point came from text or another encoder.
+</Callout>
+
+<Check
+  id="multimodal-transformers.core-idea"
+  question={"What is the purpose of a projection layer in a multimodal transformer?"}
+  options={["To map another modality\u2019s vectors into the language model\u2019s hidden dimension.", "To remove all positional information.", "To turn every image into one vocabulary token.", "To replace attention with a lookup table."]}
+  answer={0}
+  explanation={"A projection layer aligns the dimensionality and often the representation geometry of non-text features with the transformer\u2019s hidden space."}
+/>
+
+## Recap
+
+The central idea is **Multimodal transformers**. The implementation detail matters because it changes what the model can learn, how much memory or compute the system needs, or how confidently we can interpret its behavior. Keep the equation visible, name the controlled variables, and treat every benchmark or safeguard as part of the model’s operating definition.

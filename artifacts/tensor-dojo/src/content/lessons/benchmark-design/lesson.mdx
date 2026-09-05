@@ -1,0 +1,34 @@
+import { Callout } from '@/components/lesson/Callout';
+import { Check } from '@/components/lesson/Check';
+
+## A number has a protocol behind it
+
+Accuracy, exact match, pass@k, and perplexity answer different questions. A benchmark must define the examples, the allowed context, the prompt template, the decoding settings, and the aggregation rule. Without those details, two scores can look comparable while measuring different experiments.
+
+## Avoid leakage and selection effects
+
+If evaluation examples appear in pretraining data, a score can reflect memorization rather than generalization. If a benchmark is tuned repeatedly, the test set becomes part of the development loop. Held-out data, contamination checks, and transparent reporting protect the meaning of the result.
+
+## Slice the score
+
+A single average can hide failures by language, task type, difficulty, or response length. Use the board to compare the headline score with slices and baselines. Evaluation is an instrument panel, not a single speedometer.
+
+$$
+\text{score} = f(\text{task},\text{data},\text{prompt},\text{metric},\text{baseline})
+$$
+
+<Callout title="Work the idea" targetInteractive="benchmark-design">
+Drag the per-benchmark **weight sliders**, then zero a saturated task and raise HumanEval or GSM8K. The weights are standing in for eval-suite design: which model is “best” depends on which slice you count.
+</Callout>
+
+<Check
+  id="benchmark-design.core-idea"
+  question={"Why must a benchmark specify its prompt and decoding protocol?"}
+  options={["Different prompts and decoding settings can change the measured behavior.", "The prompt determines the GPU brand.", "Decoding settings change the training vocabulary permanently.", "The protocol is irrelevant once the model is large."]}
+  answer={0}
+  explanation={"Prompt wording and decoding choices affect outputs, so an evaluation score is not reproducible without those protocol details."}
+/>
+
+## Recap
+
+The central idea is **Benchmark design**. The implementation detail matters because it changes what the model can learn, how much memory or compute the system needs, or how confidently we can interpret its behavior. Keep the equation visible, name the controlled variables, and treat every benchmark or safeguard as part of the model’s operating definition.

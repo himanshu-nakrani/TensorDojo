@@ -1,0 +1,34 @@
+import { Callout } from '@/components/lesson/Callout';
+import { Check } from '@/components/lesson/Check';
+
+## A model can be the labeler
+
+RLAIF replaces or supplements human preference labels with feedback from an evaluator model. The evaluator receives a prompt, candidate responses, and a rubric, then produces a comparison or score. This can increase throughput and make a rubric more consistent across a large dataset.
+
+## Scale does not equal objectivity
+
+An evaluator model can prefer verbosity, mimic the style of its own training data, or miss subtle factual and safety failures. Prompt formatting and candidate order can influence judgments. Agreement between two model judges is not the same as agreement with people affected by the system.
+
+## Use human checks strategically
+
+The strongest workflow mixes scalable AI feedback with targeted human audits, adversarial examples, and disagreement sampling. The goal is not to choose humans or models in the abstract; it is to spend human attention where the automated judge is least trustworthy.
+
+$$
+\hat{r}(x,y) = \text{Judge}(x,y; \text{rubric})
+$$
+
+<Callout title="Work the idea" targetInteractive="ai-feedback">
+Press **Step** and watch the reward head separate the pairs. The reward-model pane is standing in for RLAIF: an AI rater writing the preference labels a human would have written.
+</Callout>
+
+<Check
+  id="rlaif.core-idea"
+  question={"What is the central risk of relying on AI feedback alone?"}
+  options={["The evaluator can reproduce its own biases and blind spots.", "The evaluator cannot output any scores.", "The evaluator always has access to ground truth.", "The evaluator makes tokenization impossible."]}
+  answer={0}
+  explanation={"AI feedback scales labeling but inherits the evaluator\u2019s biases, blind spots, and sensitivity to rubric and prompt design."}
+/>
+
+## Recap
+
+The central idea is **RLAIF**. The implementation detail matters because it changes what the model can learn, how much memory or compute the system needs, or how confidently we can interpret its behavior. Keep the equation visible, name the controlled variables, and treat every benchmark or safeguard as part of the model’s operating definition.
