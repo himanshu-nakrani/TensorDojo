@@ -27,10 +27,9 @@ import {
  */
 
 const DEG_MIN = 1;
-// Cap at 13: the training set has 14 points, so degree-14+ designs
-// are square or underdetermined and the closed-form fit is no longer
-// the canonical overfitting demo.
-const DEG_MAX = 13;
+// Cap at 12: 14 training points, so degree 13 is a square (ill-conditioned)
+// design and polyFit returns null. Degree 12 still overfits visibly.
+const DEG_MAX = 12;
 const X_RANGE: [number, number] = [-1, 1];
 const Y_RANGE: [number, number] = [-1.6, 1.6];
 
@@ -69,18 +68,15 @@ const STATIC_CLEAN_DENSE = STATIC_X_DENSE.map((x) => Math.sin(2 * x));
 
 // Fits cached by degree: pre-computed sweeps so we don't recompute on render
 const STATIC_SWEEP: { deg: number; train: number; test: number }[] = [];
-const STATIC_FITS: Record<number, number[]> = {};
 const STATIC_FIT_DENSE: Record<number, number[]> = {};
 
 for (let d = 1; d <= DEG_MAX; d += 1) {
   const w = polyFit(STATIC_SPLIT.xsTrain, STATIC_SPLIT.ysTrain, d);
   if (!w) {
     STATIC_SWEEP.push({ deg: d, train: NaN, test: NaN });
-    STATIC_FITS[d] = [];
     STATIC_FIT_DENSE[d] = [];
     continue;
   }
-  STATIC_FITS[d] = w;
   STATIC_FIT_DENSE[d] = evalPolyVector(w, STATIC_X_DENSE);
   const trainPred = evalPolyVector(w, STATIC_SPLIT.xsTrain);
   const testPred = evalPolyVector(w, STATIC_SPLIT.xsTest);
