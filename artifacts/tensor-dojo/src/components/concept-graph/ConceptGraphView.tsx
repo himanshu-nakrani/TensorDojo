@@ -582,13 +582,6 @@ function GraphNodeCard({
         }}
         onFocus={onFocusNode}
         onBlur={onDeactivate}
-        aria-label={`Open lesson: ${node.title}${visited ? ' (visited)' : ''}${
-          resume ? ' — resume here' : ''
-        }. Track: ${node.trackLabel}.${
-          prereqCount > 0
-            ? ` ${prereqCount} cross-track prerequisite${prereqCount === 1 ? '' : 's'}.`
-            : ''
-        }`}
         data-visited={visited ? 'true' : 'false'}
         data-resume={resume ? 'true' : 'false'}
         className={[
@@ -629,6 +622,11 @@ function GraphNodeCard({
             {node.title}
           </h3>
         </div>
+        <span className="sr-only">
+          {visited ? 'Visited. ' : ''}
+          {resume ? 'Resume here. ' : ''}
+          Track: {node.trackLabel}.
+        </span>
         <div className="flex items-center justify-between text-[11px] font-mono text-fg-muted">
           <span className="inline-flex items-center gap-1.5">
             <span
@@ -639,7 +637,8 @@ function GraphNodeCard({
                   : 'inline-block h-1.5 w-1.5 rounded-full border border-border-strong'
               }
             />
-            {node.minutes} min
+            <span aria-hidden="true">{node.minutes} min</span>
+            <span className="sr-only">{node.minutes} minutes</span>
           </span>
           {prereqCount > 0 && (
             <span
@@ -647,7 +646,10 @@ function GraphNodeCard({
               style={{ color }}
               title={`${prereqCount} cross-track prerequisite${prereqCount === 1 ? '' : 's'}`}
             >
-              ↗ {prereqCount}
+              <span aria-hidden="true">↗ {prereqCount}</span>
+              <span className="sr-only">
+                {prereqCount} cross-track prerequisite{prereqCount === 1 ? '' : 's'}.
+              </span>
             </span>
           )}
         </div>

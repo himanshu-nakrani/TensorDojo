@@ -18,4 +18,4 @@
 **Action:** Use `aria-pressed` on toggle buttons primarily when their textual label remains the same but their visual state changes (like selecting a block size).
 ## 2026-08-21 - Don't use aria-label on complex links
 **Learning:** Adding an aria-label to a link or button that contains rich HTML children (like headings, multiple paragraphs, durations) causes screen readers to completely skip reading those semantics and instead only read the provided text string. This means screen reader users miss out on native heading structures (e.g. h3 for navigation) and sub-content like summaries.
-**Action:** Instead of aria-label on the parent, append visually hidden text (e.g. <span className="sr-only">...</span>) next to the primary semantic element inside the card (such as appending (Visited) inside the h3 label). This preserves the native heading and allows all child content to be read sequentially.
+**Action:** Instead of aria-label on the parent, append visually hidden text (e.g. <span className="sr-only">...</span>) inside the link but outside the heading so heading navigation stays a concise title.

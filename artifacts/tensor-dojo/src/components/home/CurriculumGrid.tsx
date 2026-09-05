@@ -29,14 +29,13 @@ export function CurriculumGrid() {
           <li key={track.id}>
             <Link
               href={`/lessons#track-${track.id}`}
-              aria-label={`${track.label}: ${track.slugs.length} lessons`}
               className="group focus-ring relative block h-full lab-card p-5 transition-colors hover:border-border-strong hover:bg-bg-elevated-hover"
             >
               <div className="flex items-baseline justify-between gap-3 mb-2">
-                <span className="text-[11px] uppercase tracking-[0.12em] font-mono text-accent tabular-nums">
+                <span aria-hidden="true" className="text-[11px] uppercase tracking-[0.12em] font-mono text-accent tabular-nums">
                   {String(i + 1).padStart(2, '0')}
                 </span>
-                <span className="text-[11px] uppercase tracking-[0.12em] font-mono text-fg-muted tabular-nums">
+                <span aria-hidden="true" className="text-[11px] uppercase tracking-[0.12em] font-mono text-fg-muted tabular-nums">
                   {track.slugs.length} lesson
                   {track.slugs.length === 1 ? '' : 's'}
                 </span>
@@ -44,6 +43,10 @@ export function CurriculumGrid() {
               <h3 className="text-[15px] font-semibold text-ink tracking-[-0.005em] leading-snug mb-2">
                 {track.label}
               </h3>
+              <span className="sr-only">
+                {track.slugs.length} lesson
+                {track.slugs.length === 1 ? '' : 's'}
+              </span>
               <p className="text-[13px] text-muted leading-relaxed">
                 {track.description}
               </p>
