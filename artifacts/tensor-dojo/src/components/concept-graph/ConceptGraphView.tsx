@@ -47,6 +47,8 @@ const TRACK_COLORS = [
   '#ea580c', // orange
   '#e11d48', // rose
   '#9333ea', // purple
+  '#06b6d4', // cyan
+  '#c026d3', // fuchsia
 ];
 
 function trackColor(idx: number): string {

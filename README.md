@@ -61,7 +61,7 @@ Ten tracks, in reading order:
 | 9 | Scaling model systems | 11 | Data budgets, distributed replicas, pipeline stages, cache blocks |
 | 10 | Alignment, evaluation, and safety | 11 | Reward margins, policy updates, benchmark slices, grounding and safeguards |
 
-Total: **80 lessons, 116 lesson-specific sims, ~14 hours of reading**.
+Total: **80 lessons / 10 tracks**. 98 unique sim composers. ~14 hours of reading.
 
 <details>
 <summary><strong>Full lesson list (80, in reading order)</strong></summary>
@@ -318,7 +318,7 @@ artifacts/tensor-dojo/
     ├── pages/                           # HomePage, LessonsPage, LessonPage, MapPage
     ├── components/
     │   ├── lesson/                      # LessonShell, Workbench, Callout, MathCode, PrevNext, …
-    │   ├── sim/                         # 94 lesson-specific composers
+    │   ├── sim/                         # 98 unique sim composers
     │   │   └── primitives/              # VectorCanvas, Heatmap, BarChart, Slider, NumberInput, SimFrame, LossLandscape
     │   ├── search/SearchPalette.tsx     # Cmd-K palette (cmdk)
     │   ├── concept-graph/               # ConceptGraphView (SVG 2D map)

@@ -11,14 +11,14 @@ The critique itself may be produced by a model, so it is not automatically neutr
 
 ## Separate policy from proof
 
-Use the mitigation toggles to compare an unreviewed response with a critique-and-revision path. Ask which failure modes the principle addresses and which remain outside its wording. A constitution is a steering instrument, not a formal guarantee of safety.
+Use the draft/revised columns and the principle-strength slider to compare an unreviewed response with a critique-and-revision path. Ask which failure modes the principle addresses and which remain outside its wording. A constitution is a steering instrument, not a formal guarantee of safety.
 
 $$
 \text{response} \rightarrow \text{critique} \rightarrow \text{revision}
 $$
 
 <Callout title="Work the idea" targetInteractive="principle-critique">
-Use the **Principle Critique Lab** workbench to vary one quantity at a time. Before moving the control, write down what you expect to change and what should remain fixed. Then compare the result with the equation above.
+Open **Principle-strength critique and revision**. Switch between **draft** and **revised**, then drag **principle strength**. On the revised path, the violation score should fall as the principle gets stronger; helpfulness dips in the middle and recovers. The draft path barely moves — critique without revision does not change the answer.
 </Callout>
 
 <Check
@@ -31,4 +31,4 @@ Use the **Principle Critique Lab** workbench to vary one quantity at a time. Bef
 
 ## Recap
 
-The central idea is **Constitutional AI**. The implementation detail matters because it changes what the model can learn, how much memory or compute the system needs, or how confidently we can interpret its behavior. Keep the equation visible, name the controlled variables, and treat every benchmark or safeguard as part of the model’s operating definition.
+The central idea is **Constitutional AI**: a written principle is used to critique a draft and produce a revision, turning a vague “be good” target into an inspectable loop. Principle strength is the control — too weak and the violation remains; too blunt and helpfulness dips before the revision recovers.

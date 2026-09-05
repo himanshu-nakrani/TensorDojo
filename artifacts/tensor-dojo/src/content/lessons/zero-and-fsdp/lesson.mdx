@@ -18,7 +18,7 @@ M_{\text{replicated}} \approx R(P + G + O) \quad \text{vs.} \quad M_{\text{shard
 $$
 
 <Callout title="Work the idea" targetInteractive="memory-sharding">
-Use the **Memory Sharding Lab** workbench to vary one quantity at a time. Before moving the control, write down what you expect to change and what should remain fixed. Then compare the result with the equation above.
+Turn **checkpointing** on, then drag **stack depth N**. Activation checkpointing is standing in for ZeRO/FSDP: you trade a recompute (or a gather) for not keeping a full replica of state in every rank’s memory.
 </Callout>
 
 <Check

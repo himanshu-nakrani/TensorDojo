@@ -2,17 +2,19 @@ import dynamic from '@/lib/dynamic';
 import { InteractiveSkeleton } from '@/components/lesson/InteractiveSkeleton';
 import type { InteractiveEntry } from '@/components/lesson/Workbench';
 
-const KVCacheCostChartInteractive = dynamic(
-  () => import('@/components/sim/KVCacheCostChart').then((m) => m.KVCacheCostChart),
+const ContinuousBatchingLab = dynamic(
+  () => import('@/components/sim/ContinuousBatchingLab').then((m) => m.ContinuousBatchingLab),
   { loading: () => <InteractiveSkeleton />, ssr: false },
 );
 
 export const interactives: readonly InteractiveEntry[] = [
   {
-    id: "continuous-batching",
-    title: "Batching Throughput Lab",
-    description: "Compare fixed batches with changing request lengths.",
-    caption: 'Change one variable at a time, then compare the observed tradeoff with the lesson equation.',
-    Component: KVCacheCostChartInteractive,
+    id: 'continuous-batching',
+    title: 'Batch occupancy vs latency',
+    description:
+      'Sliders for occupancy (active slots 1–8), mean remaining tokens, and arrival rate. Readouts: throughput, p50, p99.',
+    caption:
+      'Raise occupancy and watch throughput climb while p50 falls; then raise arrival rate past 1.0 and see utilization cap while p99 stretches.',
+    Component: ContinuousBatchingLab,
   },
 ];

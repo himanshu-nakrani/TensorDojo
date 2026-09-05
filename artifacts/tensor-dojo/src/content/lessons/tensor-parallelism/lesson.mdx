@@ -18,7 +18,7 @@ Y = XW = [XW_1 \; XW_2 \; \cdots \; XW_p]
 $$
 
 <Callout title="Work the idea" targetInteractive="sharded-matmul">
-Use the **Sharded Matmul** workbench to vary one quantity at a time. Before moving the control, write down what you expect to change and what should remain fixed. Then compare the result with the equation above.
+Drag the two **k** sliders apart until the product is undefined, then match them. Inner-dim agreement is standing in for a tensor-parallel shard: each rank’s slice only multiplies if the split dimension lines up.
 </Callout>
 
 <Check

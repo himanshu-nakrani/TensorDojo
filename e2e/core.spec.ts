@@ -40,6 +40,12 @@ test('shareable interactive state reopens the requested workbench panel', async 
   await expect(page.getByRole('button', { name: /Copy lesson link/i })).toBeVisible();
 });
 
+test('continuous-batching lesson exposes occupancy control', async ({ page }) => {
+  await page.goto('/lessons/continuous-batching');
+  await expect(page.getByRole('heading', { name: /Continuous batching/i })).toBeVisible();
+  await expect(page.getByRole('slider', { name: /occupancy/i })).toBeVisible();
+});
+
 test('activation lesson loads the assessment and feedback loop', async ({ page }) => {
   await page.goto('/lessons/activations');
   await expect(page.getByRole('heading', { name: /Activations: the bend/i })).toBeVisible();

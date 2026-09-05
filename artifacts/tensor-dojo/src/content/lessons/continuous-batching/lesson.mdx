@@ -11,14 +11,14 @@ Continuous batching treats active sequences as a changing set. When one request 
 
 ## Latency and throughput are different objectives
 
-A scheduler that maximizes tokens per second may delay a short request; a scheduler that minimizes tail latency may leave compute unused. Use the cost chart to identify which quantity improves when batch occupancy rises, and which quantity can get worse.
+A scheduler that maximizes tokens per second may delay a short request; a scheduler that minimizes tail latency may leave compute unused. Use occupancy, remaining tokens, and arrival rate to identify which quantity improves when batch occupancy rises, and which quantity can get worse.
 
 $$
 \text{throughput} = \frac{\text{generated tokens}}{\text{wall-clock time}}
 $$
 
 <Callout title="Work the idea" targetInteractive="continuous-batching">
-Use the **Batching Throughput Lab** workbench to vary one quantity at a time. Before moving the control, write down what you expect to change and what should remain fixed. Then compare the result with the equation above.
+Drag **occupancy** (active slots) first, then **mean remaining tokens** and **arrival rate**. Throughput is occupancy × utilization; p50 falls as more slots share the work, while p99 stretches with occupancy. Write down which quantity you expect to move before you touch each slider.
 </Callout>
 
 <Check
@@ -31,4 +31,4 @@ Use the **Batching Throughput Lab** workbench to vary one quantity at a time. Be
 
 ## Recap
 
-The central idea is **Continuous batching**. The implementation detail matters because it changes what the model can learn, how much memory or compute the system needs, or how confidently we can interpret its behavior. Keep the equation visible, name the controlled variables, and treat every benchmark or safeguard as part of the model’s operating definition.
+The central idea is **continuous batching**: when a short request finishes, its slot can admit a new one instead of sitting idle until the longest request in a static batch completes. Occupancy, remaining tokens, and arrival rate are different knobs — throughput tracks occupied slots, while p50/p99 tell you whether packing the batch is costing tail latency.

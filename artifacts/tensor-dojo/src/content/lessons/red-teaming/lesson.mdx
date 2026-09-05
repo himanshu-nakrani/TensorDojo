@@ -18,7 +18,7 @@ $$
 $$
 
 <Callout title="Work the idea" targetInteractive="red-team-probes">
-Use the **Red-Team Probe Lab** workbench to vary one quantity at a time. Before moving the control, write down what you expect to change and what should remain fixed. Then compare the result with the equation above.
+Pick an **attack type** (jailbreak, encoding, or roleplay) and drag **defense layers** from 0 to 3. Jailbreak starts with the highest attack success rate; each extra layer cuts ASR for every attack. Name the attack and the layer count before you read the number.
 </Callout>
 
 <Check
@@ -31,4 +31,4 @@ Use the **Red-Team Probe Lab** workbench to vary one quantity at a time. Before 
 
 ## Recap
 
-The central idea is **Red teaming**. The implementation detail matters because it changes what the model can learn, how much memory or compute the system needs, or how confidently we can interpret its behavior. Keep the equation visible, name the controlled variables, and treat every benchmark or safeguard as part of the model’s operating definition.
+The central idea is **red teaming**: attack success is measured against a named probe (jailbreak, encoding, roleplay) and a known number of defense layers, then turned into a regression test. A single “safe on average” score hides the attack that still gets through at layer 0.

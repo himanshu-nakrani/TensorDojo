@@ -11,14 +11,14 @@ Prompt delimiters and explicit labels help, but robust systems also constrain to
 
 ## Test the boundary adversarially
 
-Use the toggles to compare a plain prompt with isolation and tool-validation layers. Ask which layer catches an injection and which layer merely makes it less likely. Security claims should be tied to an explicit threat model and an observable control.
+Use the isolate-system-channel toggle and the injection-strength slider to compare a mixed context with an isolated system channel. Ask which control catches an injection and which merely makes it less likely. Security claims should be tied to an explicit threat model and an observable control.
 
 $$
 \text{trusted instruction} \ne \text{untrusted content}
 $$
 
 <Callout title="Work the idea" targetInteractive="instruction-boundary">
-Use the **Instruction Boundary Lab** workbench to vary one quantity at a time. Before moving the control, write down what you expect to change and what should remain fixed. Then compare the result with the equation above.
+Use the **isolate system channel** toggle and the **injection strength** slider. With isolation off, a strong injected payload can win the instruction. With isolation on, the system policy holds even at strength 1.0. The two channels — system policy vs user payload — are the controls.
 </Callout>
 
 <Check
@@ -31,4 +31,4 @@ Use the **Instruction Boundary Lab** workbench to vary one quantity at a time. B
 
 ## Recap
 
-The central idea is **Prompt injection**. The implementation detail matters because it changes what the model can learn, how much memory or compute the system needs, or how confidently we can interpret its behavior. Keep the equation visible, name the controlled variables, and treat every benchmark or safeguard as part of the model’s operating definition.
+The central idea is **prompt injection**: untrusted user text sits in the same token sequence as trusted instructions, and a strong payload can hijack the model unless the system channel is isolated. Isolation is a systems control, not a wording trick; when it is off, injection strength decides who wins.
