@@ -60,3 +60,7 @@
 **Vulnerability:** The Vercel deployment configuration (`vercel.json`) did not specify security headers, exposing the frontend to MIME sniffing, clickjacking, and XSS risks without strict transport security.
 **Learning:** For statically deployed Vite/React apps on Vercel, Express middleware headers do not apply. Set nosniff, X-Frame-Options (or CSP frame-ancestors), and HSTS at the edge. Do not ship X-XSS-Protection (removed from Chromium) or HSTS preload unless the domain is submitted to hstspreload.org.
 **Prevention:** Always verify that security headers are configured at the edge or hosting layer for static frontends.
+## 2026-09-06 - Resolve Dependency Vulnerabilities with pnpm overrides
+**Vulnerability:** Found multiple high and moderate severity vulnerabilities in dependencies (`fast-uri`, `qs`, `browserslist`, etc.) during routine `pnpm audit`.
+**Learning:** Using `pnpm audit` effectively identifies vulnerable packages across the workspace. Since it's a monorepo, many of these vulnerabilities are inherited via transitive dependencies from deeply nested toolchains (e.g. `orval`, `@vitejs/plugin-react`).
+**Prevention:** Rather than directly updating the deeply nested workspace package dependencies (which could break compatibility), leverage the `pnpm-workspace.yaml` `overrides` field by running `pnpm audit --fix`. This correctly applies patched versions recursively to fix CVEs. Ensure to follow up with `pnpm i` to apply the lockfile changes.
