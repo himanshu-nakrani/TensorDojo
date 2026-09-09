@@ -1,6 +1,7 @@
 import { Route, Switch, Router as WouterRouter } from 'wouter';
 import { TopNav } from '@/components/theme/TopNav';
 import { SearchPaletteProvider } from '@/components/search/SearchPalette';
+import { Spinner } from '@/components/ui/spinner';
 import { Component, lazy, Suspense, type ErrorInfo, type ReactNode } from 'react';
 
 const HomePage = lazy(() => import('@/pages/HomePage'));
@@ -10,8 +11,11 @@ const LessonPage = lazy(() => import('@/pages/LessonPage'));
 const NotFoundPage = lazy(() => import('@/pages/NotFoundPage'));
 
 const PageLoader = () => (
-  <div className="min-h-screen flex items-center justify-center bg-bg">
-    <div className="text-muted text-sm font-mono">Loading…</div>
+  <div className="min-h-screen flex items-center justify-center bg-bg" role="status">
+    <div className="text-muted text-sm font-mono flex items-center gap-2">
+      <Spinner className="text-accent" aria-hidden="true" />
+      <span>Loading…</span>
+    </div>
   </div>
 );
 

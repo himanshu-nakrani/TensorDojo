@@ -19,3 +19,7 @@
 ## 2026-08-21 - Don't use aria-label on complex links
 **Learning:** Adding an aria-label to a link or button that contains rich HTML children (like headings, multiple paragraphs, durations) causes screen readers to completely skip reading those semantics and instead only read the provided text string. This means screen reader users miss out on native heading structures (e.g. h3 for navigation) and sub-content like summaries.
 **Action:** Instead of aria-label on the parent, append visually hidden text (e.g. <span className="sr-only">...</span>) inside the link but outside the heading so heading navigation stays a concise title.
+
+## 2024-03-09 - Accessible Loading States
+**Learning:** Initial full-page loading indicators (like `PageLoader`) missed a visual spinner and a single status region. This repo's `Spinner` already has `role="status"` and `aria-label="Loading"`, so wrapping it in another live region next to visible "Loading…" text double-announces.
+**Action:** One live region per loading state. If there is visible "Loading…" text, put `role="status"` on the wrapper and mark the spinner `aria-hidden`. If the spinner is the only indicator, rely on `Spinner`'s built-in name and do not wrap it in another status/live region.
