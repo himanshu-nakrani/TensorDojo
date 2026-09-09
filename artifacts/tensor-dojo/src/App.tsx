@@ -11,9 +11,9 @@ const LessonPage = lazy(() => import('@/pages/LessonPage'));
 const NotFoundPage = lazy(() => import('@/pages/NotFoundPage'));
 
 const PageLoader = () => (
-  <div className="min-h-screen flex items-center justify-center bg-bg" role="status" aria-live="polite">
+  <div className="min-h-screen flex items-center justify-center bg-bg" role="status">
     <div className="text-muted text-sm font-mono flex items-center gap-2">
-      <Spinner className="text-accent" />
+      <Spinner className="text-accent" aria-hidden="true" />
       <span>Loading…</span>
     </div>
   </div>

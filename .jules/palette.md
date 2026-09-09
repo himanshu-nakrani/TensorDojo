@@ -21,5 +21,5 @@
 **Action:** Instead of aria-label on the parent, append visually hidden text (e.g. <span className="sr-only">...</span>) inside the link but outside the heading so heading navigation stays a concise title.
 
 ## 2024-03-09 - Accessible Loading States
-**Learning:** Initial full-page loading indicators (like `PageLoader`) missed standard ARIA markup, meaning screen readers would announce "Loading..." but without contextualizing it as a dynamic status update. Additionally, visual indicators were missing.
-**Action:** When implementing asynchronous loading states (like route transitions or async module fetching), always combine a visual indicator (such as a Spinner component) with `role="status"` and `aria-live="polite"` on the parent wrapper to ensure an accessible and intuitive user experience for screen readers.
+**Learning:** Initial full-page loading indicators (like `PageLoader`) missed a visual spinner and a single status region. This repo's `Spinner` already has `role="status"` and `aria-label="Loading"`, so wrapping it in another live region next to visible "Loading…" text double-announces.
+**Action:** One live region per loading state. If there is visible "Loading…" text, put `role="status"` on the wrapper and mark the spinner `aria-hidden`. If the spinner is the only indicator, rely on `Spinner`'s built-in name and do not wrap it in another status/live region.
