@@ -20,10 +20,7 @@ function toScreenY(y: number): number {
   return PLOT_H - PAD - ((y - Y_RANGE[0]) / (Y_RANGE[1] - Y_RANGE[0])) * (PLOT_H - 2 * PAD);
 }
 
-// ⚡ Bolt Optimization: Pre-compute static dense grid
-// xDense and cleanDense rely entirely on the static X_RANGE constant.
-// Lifting these out of useMemo avoids reallocating and remapping 60-element
-// arrays on every route navigation (since useMemo loses its cache on remount).
+// Dense x-grid and sin(2x) samples; depends only on X_RANGE.
 const STATIC_X_DENSE = (() => {
   const N = 60;
   const out: number[] = [];
