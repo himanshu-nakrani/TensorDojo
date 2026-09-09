@@ -20,6 +20,18 @@ function toScreenY(y: number): number {
   return PLOT_H - PAD - ((y - Y_RANGE[0]) / (Y_RANGE[1] - Y_RANGE[0])) * (PLOT_H - 2 * PAD);
 }
 
+// Dense x-grid and sin(2x) samples; depends only on X_RANGE.
+const STATIC_X_DENSE = (() => {
+  const N = 60;
+  const out: number[] = [];
+  for (let i = 0; i < N; i += 1) {
+    out.push(X_RANGE[0] + (i / (N - 1)) * (X_RANGE[1] - X_RANGE[0]));
+  }
+  return out;
+})();
+
+const STATIC_CLEAN_DENSE = STATIC_X_DENSE.map((x) => Math.sin(2 * x));
+
 /**
  * Centerpiece for the weight-decay lesson. The same polynomial
  * regression toy from the overfitting lesson, but now with a
@@ -85,19 +97,10 @@ export function WeightDecayExplorer() {
     });
   }, [mod, xsTrain, ysTrain, xsTest, ysTest, lambda]);
 
-  // Dense grid for the fitted curve and the true curve.
-  const xDense = useMemo(() => {
-    const N = 60;
-    const out: number[] = [];
-    for (let i = 0; i < N; i += 1) out.push(X_RANGE[0] + (i / (N - 1)) * (X_RANGE[1] - X_RANGE[0]));
-    return out;
-  }, []);
-
   const fitDense = useMemo(
-    () => (fit ? xDense.map((x) => evalPolyCoef(fit.w, x)) : []),
-    [fit, xDense],
+    () => (fit ? STATIC_X_DENSE.map((x) => evalPolyCoef(fit.w, x)) : []),
+    [fit],
   );
-  const cleanDense = useMemo(() => xDense.map((x) => Math.sin(2 * x)), [xDense]);
 
   const coefMax = fit
     ? Math.max(0.01, ...fit.w.map((c) => Math.abs(c)))
@@ -152,8 +155,8 @@ export function WeightDecayExplorer() {
               strokeWidth={1}
             />
             <polyline
-              points={xDense
-                .map((x, i) => `${toScreenX(x).toFixed(1)},${toScreenY(cleanDense[i] ?? 0).toFixed(1)}`)
+              points={STATIC_X_DENSE
+                .map((x, i) => `${toScreenX(x).toFixed(1)},${toScreenY(STATIC_CLEAN_DENSE[i] ?? 0).toFixed(1)}`)
                 .join(' ')}
               fill="none"
               stroke="rgb(var(--fg-muted))"
@@ -163,7 +166,7 @@ export function WeightDecayExplorer() {
             />
             {fit && (
               <polyline
-                points={xDense
+                points={STATIC_X_DENSE
                   .map((x, i) => `${toScreenX(x).toFixed(1)},${toScreenY(fitDense[i] ?? 0).toFixed(1)}`)
                   .join(' ')}
                 fill="none"
