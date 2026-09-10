@@ -1,20 +1,18 @@
-
-
-import { useMemo, useState } from 'react';
-import { SimFrame } from '@/components/sim/primitives/SimFrame';
-import { nearestNeighbors } from '@/lib/math/linalg';
+import { useMemo, useState } from "react";
+import { SimFrame } from "@/components/sim/primitives/SimFrame";
+import { nearestNeighbors } from "@/lib/math/linalg";
 
 export interface EmbeddingDimensionSliderPreset {
   d?: number;
 }
 
 const VOCAB: Array<{ id: string; cluster: string; words: string[] }> = [
-  { id: 'a1', cluster: 'animal', words: ['cat', 'dog', 'fox', 'wolf'] },
-  { id: 'a2', cluster: 'animal', words: ['cat', 'dog', 'lion', 'tiger'] },
-  { id: 'b1', cluster: 'vehicle', words: ['car', 'bus', 'van', 'truck'] },
-  { id: 'b2', cluster: 'vehicle', words: ['car', 'truck', 'bike', 'scooter'] },
-  { id: 'c1', cluster: 'food', words: ['apple', 'pear', 'peach', 'plum'] },
-  { id: 'c2', cluster: 'food', words: ['carrot', 'celery', 'onion', 'garlic'] },
+  { id: "a1", cluster: "animal", words: ["cat", "dog", "fox", "wolf"] },
+  { id: "a2", cluster: "animal", words: ["cat", "dog", "lion", "tiger"] },
+  { id: "b1", cluster: "vehicle", words: ["car", "bus", "van", "truck"] },
+  { id: "b2", cluster: "vehicle", words: ["car", "truck", "bike", "scooter"] },
+  { id: "c1", cluster: "food", words: ["apple", "pear", "peach", "plum"] },
+  { id: "c2", cluster: "food", words: ["carrot", "celery", "onion", "garlic"] },
 ];
 
 /**
@@ -36,7 +34,7 @@ function synthesizeEmbeddings(d: number, seed: number): number[][] {
     let s = v_seed;
     for (let i = 0; i < d; i += 1) {
       s = (s * 1103515245 + 12345) >>> 0;
-      vec[i] = ((s / 0xffffffff) * 2 - 1);
+      vec[i] = (s / 0xffffffff) * 2 - 1;
     }
     // Pull the vector toward the cluster's "topic axis"
     const topicAxis = v.cluster.charCodeAt(0) % 8;
@@ -74,16 +72,31 @@ function project2D(vectors: number[][]): number[][] {
   });
 }
 
+// ⚡ Bolt Optimization: Pre-compute static embeddings for all possible values of d
+// Since d strictly ranges from 2 to 64, we can avoid O(N) calculation in synthesizeEmbeddings
+// inside a useMemo on every mount. This converts slide updates and route
+// navigation into simple O(1) object lookups.
+const STATIC_PROJECTED = (() => {
+  const projectedMap: Record<number, number[][]> = {};
+  for (let d = 2; d <= 64; d++) {
+    projectedMap[d] = project2D(synthesizeEmbeddings(d, 42));
+  }
+  return projectedMap;
+})();
+
 /**
  * Show 6 clusters of 4 words each in a 2D plane. The dimension
  * slider controls how well-separated the clusters are.
  */
-export function EmbeddingDimensionSlider({ preset }: { preset?: EmbeddingDimensionSliderPreset }) {
+export function EmbeddingDimensionSlider({
+  preset,
+}: {
+  preset?: EmbeddingDimensionSliderPreset;
+}) {
   const [d, setD] = useState(preset?.d ?? 2);
-  const [query, setQuery] = useState('cat');
+  const [query, setQuery] = useState("cat");
 
-  const allVectors = useMemo(() => synthesizeEmbeddings(d, 42), [d]);
-  const projected = useMemo(() => project2D(allVectors), [allVectors]);
+  const projected = STATIC_PROJECTED[d]!;
 
   // The first occurrence of `query` (if present) is the target
   const target = useMemo(() => {
@@ -99,88 +112,98 @@ export function EmbeddingDimensionSlider({ preset }: { preset?: EmbeddingDimensi
 
   const reset = () => {
     setD(preset?.d ?? 2);
-    setQuery('cat');
+    setQuery("cat");
   };
 
   return (
     <SimFrame title="Crank d · watch clusters tighten" onReset={reset}>
-      <div className="sim-split" style={{ ['--sim-aside-w' as string]: '180px' }}>
-      <div className="sim-split__grid">
-        <div>
-          <svg
-            viewBox="-3 -3 6 6"
-            preserveAspectRatio="xMidYMid meet"
-            className="w-full h-auto bg-bg/40 rounded"
-            role="img"
-            aria-label="2D scatter of synthetic token embeddings"
-          >
-            {projected.map((p, i) => {
-              const px = p[0] ?? 0;
-              const py = p[1] ?? 0;
-              const v = VOCAB[Math.floor(i / 4)]!;
-              const word = v.words[i % 4] ?? '';
-              const isQuery = i === VOCAB.findIndex((vv) => vv.words.includes(query.toLowerCase())) * 4;
-              const isNN = nn.includes(i);
-              const hi = isQuery || isNN;
-              return (
-                <g key={i} className="transition-all duration-200">
-                  <circle
-                    cx={px}
-                    cy={-py}
-                    r={hi ? 0.18 : 0.1}
-                    fill={hi ? 'rgb(var(--accent))' : 'rgb(var(--fg-muted))'}
-                    opacity={hi ? 0.9 : 0.5}
-                  />
-                  <text
-                    x={px + 0.18}
-                    y={-py + 0.04}
-                    fill={hi ? 'rgb(var(--accent))' : 'rgb(var(--fg-muted))'}
-                    opacity={hi ? 1 : 0.7}
-                    style={{ fontSize: 9 }}
-                    className="font-mono pointer-events-none"
-                  >
-                    {word}
-                  </text>
-                </g>
-              );
-            })}
-          </svg>
-        </div>
-        <div className="sim-split__aside space-y-2 font-mono text-[12px]">
+      <div
+        className="sim-split"
+        style={{ ["--sim-aside-w" as string]: "180px" }}
+      >
+        <div className="sim-split__grid">
           <div>
-            <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-1">
-              Dimension d
-            </div>
-            <input
-              type="range"
-              min={2}
-              max={64}
-              step={1}
-              value={d}
-              onChange={(e) => setD(parseInt(e.target.value, 10))}
-              className="slider w-full"
-              style={{ ['--fill' as string]: `${((d - 2) / 62) * 100}%` }}
-              aria-label="Dimension d"
-            />
-            <div className="text-ink tabular-nums text-right">{d}</div>
+            <svg
+              viewBox="-3 -3 6 6"
+              preserveAspectRatio="xMidYMid meet"
+              className="w-full h-auto bg-bg/40 rounded"
+              role="img"
+              aria-label="2D scatter of synthetic token embeddings"
+            >
+              {projected.map((p, i) => {
+                const px = p[0] ?? 0;
+                const py = p[1] ?? 0;
+                const v = VOCAB[Math.floor(i / 4)]!;
+                const word = v.words[i % 4] ?? "";
+                const isQuery =
+                  i ===
+                  VOCAB.findIndex((vv) =>
+                    vv.words.includes(query.toLowerCase()),
+                  ) *
+                    4;
+                const isNN = nn.includes(i);
+                const hi = isQuery || isNN;
+                return (
+                  <g key={i} className="transition-all duration-200">
+                    <circle
+                      cx={px}
+                      cy={-py}
+                      r={hi ? 0.18 : 0.1}
+                      fill={hi ? "rgb(var(--accent))" : "rgb(var(--fg-muted))"}
+                      opacity={hi ? 0.9 : 0.5}
+                    />
+                    <text
+                      x={px + 0.18}
+                      y={-py + 0.04}
+                      fill={hi ? "rgb(var(--accent))" : "rgb(var(--fg-muted))"}
+                      opacity={hi ? 1 : 0.7}
+                      style={{ fontSize: 9 }}
+                      className="font-mono pointer-events-none"
+                    >
+                      {word}
+                    </text>
+                  </g>
+                );
+              })}
+            </svg>
           </div>
-          <div>
-            <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-1">
-              Query
+          <div className="sim-split__aside space-y-2 font-mono text-[12px]">
+            <div>
+              <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-1">
+                Dimension d
+              </div>
+              <input
+                type="range"
+                min={2}
+                max={64}
+                step={1}
+                value={d}
+                onChange={(e) => setD(parseInt(e.target.value, 10))}
+                className="slider w-full"
+                style={{ ["--fill" as string]: `${((d - 2) / 62) * 100}%` }}
+                aria-label="Dimension d"
+              />
+              <div className="text-ink tabular-nums text-right">{d}</div>
             </div>
-            <input
-              type="text"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              aria-label="Query token"
-              className="number-input font-mono w-full"
-            />
+            <div>
+              <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-1">
+                Query
+              </div>
+              <input
+                type="text"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                aria-label="Query token"
+                className="number-input font-mono w-full"
+              />
+            </div>
+            <p className="text-[11px] text-dim leading-relaxed">
+              As d grows, same-cluster tokens cluster more tightly and different
+              clusters separate. The 2D plot is a projection; the real embedding
+              is d-dimensional.
+            </p>
           </div>
-          <p className="text-[11px] text-dim leading-relaxed">
-            As d grows, same-cluster tokens cluster more tightly and different clusters separate. The 2D plot is a projection; the real embedding is d-dimensional.
-          </p>
         </div>
-      </div>
       </div>
     </SimFrame>
   );
