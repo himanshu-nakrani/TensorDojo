@@ -74,6 +74,19 @@ function project2D(vectors: number[][]): number[][] {
   });
 }
 
+// ⚡ Bolt Optimization: Pre-compute static embeddings for slider values
+// By hoisting the calculation for d=2..64 outside the component, we avoid
+// allocating arrays and performing O(N*d) math during slider drags or
+// route navigation (since useMemo cache doesn't persist across unmounts).
+const STATIC_EMBEDDINGS: Record<number, { allVectors: number[][], projected: number[][] }> = {};
+for (let d = 2; d <= 64; d++) {
+  const allVectors = synthesizeEmbeddings(d, 42);
+  STATIC_EMBEDDINGS[d] = {
+    allVectors,
+    projected: project2D(allVectors),
+  };
+}
+
 /**
  * Show 6 clusters of 4 words each in a 2D plane. The dimension
  * slider controls how well-separated the clusters are.
@@ -82,8 +95,11 @@ export function EmbeddingDimensionSlider({ preset }: { preset?: EmbeddingDimensi
   const [d, setD] = useState(preset?.d ?? 2);
   const [query, setQuery] = useState('cat');
 
-  const allVectors = useMemo(() => synthesizeEmbeddings(d, 42), [d]);
-  const projected = useMemo(() => project2D(allVectors), [allVectors]);
+  const { allVectors, projected } = useMemo(() => {
+    if (STATIC_EMBEDDINGS[d]) return STATIC_EMBEDDINGS[d];
+    const v = synthesizeEmbeddings(d, 42);
+    return { allVectors: v, projected: project2D(v) };
+  }, [d]);
 
   // The first occurrence of `query` (if present) is the target
   const target = useMemo(() => {
