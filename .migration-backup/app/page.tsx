@@ -1,11 +1,10 @@
-import Link from 'next/link';
 import { HeroInteractive } from '@/components/home/HeroInteractive';
-import { ResumeStrip } from '@/components/home/ResumeStrip';
+import { ResumeCta } from '@/components/ui/ResumeCta';
+import { Button } from '@/components/ui/Button';
 import { StatsStrip } from '@/components/home/StatsStrip';
 import { WhyTiles } from '@/components/home/WhyTiles';
 import { CurriculumGrid } from '@/components/home/CurriculumGrid';
 import { FaqAccordion } from '@/components/home/FaqAccordion';
-import { Footer } from '@/components/home/Footer';
 
 export default function HomePage() {
   return (
@@ -31,7 +30,7 @@ export default function HomePage() {
             headline. Desktop puts the interactive on the right. */}
         <div className="relative order-2 lg:order-1 max-w-[560px]">
           <div
-            className="animate-fade-up text-[12px] uppercase tracking-[0.18em] text-fg-muted font-mono mb-5"
+            className="animate-fade-up text-caption uppercase tracking-[0.18em] text-muted font-mono mb-5"
             style={{ '--delay': '0ms' } as React.CSSProperties}
           >
             Tensor Dojo
@@ -56,19 +55,13 @@ export default function HomePage() {
             className="animate-fade-up flex flex-wrap items-center gap-3"
             style={{ '--delay': '240ms' } as React.CSSProperties}
           >
-            <Link
-              href="/lessons/dot-product"
-              className="focus-ring inline-flex items-center gap-2 min-h-[48px] px-5 py-3 rounded-md text-[14px] font-mono font-semibold bg-accent text-accent-fg hover:bg-accent-hover transition-colors"
-            >
+            <Button href="/lessons/dot-product" size="lg">
               Start with vectors
               <span aria-hidden="true">→</span>
-            </Link>
-            <Link
-              href="/lessons"
-              className="focus-ring inline-flex items-center gap-2 min-h-[48px] px-5 py-3 rounded-md text-[14px] font-mono text-ink border border-border-strong hover:border-accent hover:text-accent transition-colors"
-            >
+            </Button>
+            <Button href="/lessons" variant="secondary" size="lg">
               Browse all lessons
-            </Link>
+            </Button>
           </div>
         </div>
 
@@ -87,7 +80,7 @@ export default function HomePage() {
 
       {/* RESUME (hidden when no progress) ------------------------- */}
       <div className="mb-16 sm:mb-24">
-        <ResumeStrip />
+        <ResumeCta layout="strip" />
       </div>
 
       {/* WHY THIS WORKS ------------------------------------------- */}
@@ -104,8 +97,6 @@ export default function HomePage() {
       <div className="mb-12">
         <FaqAccordion />
       </div>
-
-      <Footer />
     </main>
   );
 }

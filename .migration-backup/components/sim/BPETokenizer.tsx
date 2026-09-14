@@ -73,10 +73,10 @@ export function BPETokenizer() {
 
   return (
     <SimFrame title="Type a word · see what tokens this vocab makes" onReset={reset}>
-      <div className="space-y-4 font-mono text-[12px]">
-        <div className="grid grid-cols-1 md:grid-cols-[1fr_240px] gap-3">
+      <div className="space-y-4 font-mono text-caption">
+        <div className="grid grid-cols-1 gap-3">
           <div>
-            <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-1">
+            <div className="text-label uppercase tracking-[0.12em] text-dim font-mono mb-1">
               Input string
             </div>
             <input
@@ -88,7 +88,7 @@ export function BPETokenizer() {
             />
           </div>
           <div>
-            <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-1">
+            <div className="text-label uppercase tracking-[0.12em] text-dim font-mono mb-1">
               Vocabulary
             </div>
             <select
@@ -108,10 +108,10 @@ export function BPETokenizer() {
 
         <div className="pt-3 border-t border-border">
           <div className="flex items-baseline justify-between mb-2">
-            <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono">
+            <div className="text-label uppercase tracking-[0.12em] text-dim font-mono">
               Tokens
             </div>
-            <div className="text-[11px] text-dim font-mono tabular-nums">
+            <div className="text-label text-dim font-mono tabular-nums">
               <span className="text-ink">{tokens.length}</span> tokens
               {' · '}
               <span className="text-ink">{vocabDef.numMerges}</span> merges in this vocab
@@ -119,14 +119,14 @@ export function BPETokenizer() {
           </div>
           <div className="flex flex-wrap gap-1.5">
             {tokens.length === 0 ? (
-              <span className="text-dim text-[11px]">— empty —</span>
+              <span className="text-dim text-label">— empty —</span>
             ) : (
               tokens.map((tok, i) => (
                 <span
                   key={i}
                   className={clsx(
                     'px-1.5 py-0.5 rounded border',
-                    palette.get(tok) ?? 'border-border text-ink bg-bg-elevated',
+                    palette.get(tok) ?? 'border-border text-ink bg-surface',
                   )}
                   title={tok}
                 >
@@ -137,7 +137,7 @@ export function BPETokenizer() {
           </div>
         </div>
 
-        <p className="text-[11px] text-dim font-mono leading-relaxed pt-2">
+        <p className="text-label text-dim font-mono leading-relaxed pt-2">
           Type any word. With fewer merges, every word breaks into more,
           smaller pieces. With more merges trained on the right corpus,
           common subwords collapse to single tokens. <span className="text-ink">{EOW}</span> marks
@@ -154,8 +154,8 @@ export function BPETokenizer() {
  */
 const COLORS: readonly string[] = [
   'border-accent text-accent bg-accent-soft',
-  'border-border text-ink bg-bg-elevated',
-  'border-border-strong text-muted bg-bg-elevated',
+  'border-border text-ink bg-surface',
+  'border-border-strong text-muted bg-surface',
   'border-accent/60 text-accent/90 bg-accent-soft/60',
 ];
 function buildPalette(tokens: readonly string[]): Map<string, string> {

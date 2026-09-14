@@ -9,6 +9,7 @@ import {
   loadLessonInteractives,
 } from '@/lib/lesson-manifest';
 import { listSlugs, mdxLessonLoaders } from '@/lib/lessons';
+import { getTrackContext } from '@/lib/lessons-meta';
 
 export function generateStaticParams() {
   return listSlugs().map((slug) => ({ slug }));
@@ -66,6 +67,7 @@ export default async function LessonPage({ params }: PageProps) {
       title={meta.title}
       minutes={meta.minutes}
       summary={meta.summary}
+      track={getTrackContext(slug)}
     >
       <VisitTracker slug={slug} />
       <Workbench

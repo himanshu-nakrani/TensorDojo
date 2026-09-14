@@ -21,118 +21,115 @@
    =========================================================================== */
 
 :root {
-  /* Surfaces */
-  --bg: 251 250 248;              /* warm off-white page background */
-  --bg-elevated: 255 255 255;     /* card / workbench surface */
-  --bg-code: 244 241 236;         /* code block fill (slightly warmer) */
+  /* Surfaces — "lab bench" light variant. Cool steel greys with
+     cyan undertones; white panels sit on the bench. */
+  --bg: 232 238 242;              /* bench #E8EEF2 */
+  --bg-elevated: 255 255 255;     /* panel */
+  --bg-code: 242 246 248;         /* panel-2 — code + control wells */
 
   /* Text */
-  --fg: 26 24 21;
-  --fg-muted: 74 71 66;
-  --fg-subtle: 111 108 104;       /* eyebrows, hints — AA on --bg */
+  --fg: 21 32 42;                 /* #15202A */
+  --fg-muted: 74 98 112;          /* #4A6270 — 5.5:1 on --bg */
+  --fg-subtle: 79 104 118;        /* #4F6876 — AA on --bg and panels */
 
   /* Lines */
-  --border: 230 226 219;
-  --border-strong: 207 201 191;
+  --border: 208 220 228;          /* #D0DCE4 */
+  --border-strong: 181 197 208;   /* #B5C5D0 */
 
-  /* The single accent (design-spec §8) — manipulated things only. */
-  --accent: 21 128 61;            /* green-700; ~5.4:1 on --bg */
-  --accent-hover: 22 101 52;      /* green-800 */
-  --accent-fg: 255 255 255;       /* text/icon on accent surfaces */
+  /* The single signal (design-spec §8) — live/manipulable only.
+     Scope cyan: #0C6478 in light; #5EC4D4 in dark. */
+  --accent: 12 100 120;
+  --accent-hover: 10 83 100;
+  --accent-fg: 255 255 255;
 
   /* Charting tokens */
-  --grid: 236 232 225;
-  --positive: 21 128 61;
+  --grid: 208 220 228;
+  --positive: 12 100 120;
   --negative: 185 28 28;          /* red-700; AA on --bg */
+  --warning: 180 83 9;            /* amber-700; AA on --bg for text */
 
   /* Categorical series colors — used by sims that need to plot
      multiple lines that are NOT ordered or signed (e.g. three
      optimizer traces, four batch-size traces). Distinct from
      --accent/--positive/--negative; chosen to be perceptually
      distinguishable and theme-aware. */
-  --series-1: 21 128 61;          /* green — same hue as accent in light */
+  --series-1: 12 100 120;         /* signal cyan — same hue as accent */
   --series-2: 217 119 6;          /* amber-600 */
   --series-3: 124 58 237;         /* violet-600 */
-  --series-4: 14 116 144;         /* cyan-700 */
+  --series-4: 14 156 109;         /* leftover green — not the signal */
 
   /* Pre-baked translucent variants — kept as full rgba because they
      describe a specific visual, not a "themed color at 30%". */
-  --accent-soft: rgba(21, 128, 61, 0.10);
-  --accent-faint: rgba(21, 128, 61, 0.06);
-  --accent-dim: rgba(21, 128, 61, 0.32);
+  --accent-soft: rgba(12, 100, 120, 0.10);
+  --accent-faint: rgba(12, 100, 120, 0.06);
+  --accent-dim: rgba(12, 100, 120, 0.32);
 
   /* Hover state for the elevated surface. */
-  --bg-elevated-hover: 244 241 236;
+  --bg-elevated-hover: 220 230 236;
 
   /* Glow color for the focus ring on inputs. */
-  --accent-shadow: rgba(21, 128, 61, 0.18);
+  --accent-shadow: rgba(12, 100, 120, 0.18);
 
   /* Pre-baked negative bar bg (the "wrong answer" red with built-in alpha). */
   --negative-bg: rgba(185, 28, 28, 0.7);
 
-  /* Subtle top-edge highlight on elevated cards. The dark theme
-     uses a faint white inset to suggest light from above; light
-     theme uses a faint black inset for the same suggestion. */
-  --shadow-inset: inset 0 1px 0 rgba(31, 26, 22, 0.04);
+  /* Subtle top-edge highlight on elevated cards. */
+  --shadow-inset: inset 0 1px 0 rgba(21, 32, 42, 0.03);
 
   /* Heatmap cell-number halo — matches --bg so text reads on any
      cell tint. Inline-styled as `rgb(var(--cell-halo))`. */
-  --cell-halo: 251 250 248;
+  --cell-halo: 232 238 242;
 
-  /* Graph-paper background lines. Two perpendicular families of
-     thin lines at very low opacity — minor at 24px, major every 5
-     (120px). The pattern reinforces the "this is a math notebook"
-     metaphor without making the page busy. */
-  --paper-minor: rgba(31, 26, 22, 0.018);
-  --paper-major: rgba(31, 26, 22, 0.035);
+  /* Graticule — faint cyan-steel, same hue as the signal.
+     Minor at 32px, major every 5 cells (160px). */
+  --paper-minor: rgba(12, 100, 120, 0.03);
+  --paper-major: rgba(12, 100, 120, 0.055);
 }
 
 :root.dark {
-  /* GitHub-inspired dark grey palette. The previous #0B0D10
-     read as near-black and gave the page a heavier feel than
-     intended; #0d1117 / #161b22 are GitHub's canvas + surface
-     pair and provide enough warmth that the page reads as a
-     deliberately dark grey rather than an OLED-black void. */
-  --bg: 13 17 23;
-  --bg-elevated: 22 27 34;
-  --bg-code: 22 27 34;
+  /* Instrument Panel dark — the primary theme. Deep blue-black
+     canvas, raised panels one step lighter, control wells darker
+     than panels (recessed), hairline bezels throughout. */
+  --bg: 7 11 16;                  /* #070B10 canvas */
+  --bg-elevated: 16 22 28;        /* #10161C panel */
+  --bg-code: 21 28 36;            /* #151C24 panel-2 */
 
-  --fg: 230 233 239;              /* slightly warmer/brighter than slate-200 */
-  --fg-muted: 184 191 204;         /* was 156 163 175 — bumped for readability on the lighter bg */
-  --fg-subtle: 168 178 196;        /* was 148 163 184 — same reason */
+  --fg: 220 231 238;              /* #DCE7EE */
+  --fg-muted: 140 163 176;        /* #8CA3B0 */
+  --fg-subtle: 110 132 146;       /* #6E8492 — AA on canvas and panels */
 
-  --border: 41 48 56;              /* was 33 38 45 — visible against #161b22 */
-  --border-strong: 62 70 80;       /* was 48 54 61 */
+  --border: 32 44 54;             /* #202C36 */
+  --border-strong: 48 64 78;      /* #30404E */
 
-  --accent: 74 222 128;            /* green-400 — bright on the GH dark canvas */
-  --accent-hover: 134 239 172;     /* green-300 */
-  --accent-fg: 13 17 23;
+  --accent: 94 196 212;           /* #5EC4D4 — scope cyan on the dark canvas */
+  --accent-hover: 126 214 226;    /* #7ED6E2 */
+  --accent-fg: 6 32 38;           /* #062026 */
 
-  --grid: 33 38 45;
-  --positive: 74 222 128;
+  --grid: 32 44 54;
+  --positive: 94 196 212;
   --negative: 248 113 113;
+  --warning: 255 178 36;           /* #FFB224 — amber caution readout */
 
-  --series-1: 74 222 128;          /* green */
-  --series-2: 251 191 36;          /* amber-400 */
+  --series-1: 94 196 212;          /* signal cyan */
+  --series-2: 255 178 36;          /* amber */
   --series-3: 167 139 250;         /* violet-400 */
-  --series-4: 56 189 248;          /* sky-400 */
+  --series-4: 61 214 140;          /* leftover green — not the signal */
 
-  --accent-soft: rgba(74, 222, 128, 0.16);
-  --accent-faint: rgba(74, 222, 128, 0.10);
-  --accent-dim: rgba(74, 222, 128, 0.28);
+  --accent-soft: rgba(94, 196, 212, 0.14);
+  --accent-faint: rgba(94, 196, 212, 0.08);
+  --accent-dim: rgba(94, 196, 212, 0.30);
 
-  --bg-elevated-hover: 29 36 46;
-  --accent-shadow: rgba(74, 222, 128, 0.15);
+  --bg-elevated-hover: 22 30 38;
+  --accent-shadow: rgba(94, 196, 212, 0.16);
 
   --negative-bg: rgba(248, 113, 113, 0.7);
-  --shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.02);
+  --shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.03);
 
-  --cell-halo: 13 17 23;
+  --cell-halo: 7 11 16;
 
-  /* On the GH dark canvas the grid lines need to be lighter than
-     the background, not darker. Same minor/major split. */
-  --paper-minor: rgba(255, 255, 255, 0.012);
-  --paper-major: rgba(255, 255, 255, 0.024);
+  /* Cyan-tinted graticule — same hue as the live trace. */
+  --paper-minor: rgba(94, 196, 212, 0.018);
+  --paper-major: rgba(94, 196, 212, 0.045);
 }
 
 /* ===========================================================================
@@ -169,36 +166,22 @@
 }
 
 /* ===========================================================================
-   Graph-paper background.
-
-   Drawn on the body with four stacked linear gradients: a major and
-   a minor grid line in each axis. The minor grid is at 24px; the
-   major lands every 5 cells (120px). Opacities are token-driven
-   (--paper-minor, --paper-major) and theme-aware: dark lines on the
-   warm off-white in light mode, faint white lines on the GH dark
-   canvas in dark mode.
-
-   background-attachment: fixed so the grid stays anchored to the
-   viewport, not the document — scrolling a long lesson doesn't
-   sweep the grid along, which would be distracting at our pattern
-   density.
-
-   The body's Tailwind `bg-bg` class still sets the solid color
-   underneath; this rule only adds the lines on top.
+   Graticule — only on instrument surfaces (workbench, sim wells,
+   hero figure). Prose sits on a solid canvas so the page reads as
+   a publication, not a wireframe.
    =========================================================================== */
-body {
+.graticule {
   background-image:
     linear-gradient(to right, var(--paper-major), var(--paper-major) 1px, transparent 1px, transparent),
     linear-gradient(to bottom, var(--paper-major), var(--paper-major) 1px, transparent 1px, transparent),
     linear-gradient(to right, var(--paper-minor), var(--paper-minor) 1px, transparent 1px, transparent),
     linear-gradient(to bottom, var(--paper-minor), var(--paper-minor) 1px, transparent 1px, transparent);
   background-size:
-    120px 120px,
-    120px 120px,
-    24px 24px,
-    24px 24px;
+    160px 160px,
+    160px 160px,
+    32px 32px,
+    32px 32px;
   background-position: 0 0;
-  background-attachment: fixed;
 }
 
 /* Selection — same accent on both themes. */
@@ -208,10 +191,14 @@ body {
 }
 
 /* ===========================================================================
-   Slider (themed via tokens). The .slider element is rendered by the
-   Slider primitive with a CSS custom property --fill set inline.
+   Slider (themed via tokens). Styled on the element type so every
+   range input is themed — sims that render raw <input type="range">
+   can never regress to the browser's default blue. The .slider
+   class is still honored; the Slider primitive adds it and sets a
+   --fill custom property inline to drive the filled-track gradient.
    =========================================================================== */
-.slider {
+.slider,
+input[type='range'] {
   -webkit-appearance: none;
   appearance: none;
   background: transparent;
@@ -220,17 +207,20 @@ body {
   padding: 0;
   margin: 0;
 }
-.slider:focus {
+.slider:focus,
+input[type='range']:focus {
   outline: none;
 }
-.slider:focus-visible {
+.slider:focus-visible,
+input[type='range']:focus-visible {
   outline: 2px solid rgb(var(--accent));
   outline-offset: 4px;
   border-radius: 2px;
 }
 
 /* WebKit / Blink — fill to var(--fill), unfilled in --border-strong. */
-.slider::-webkit-slider-runnable-track {
+.slider::-webkit-slider-runnable-track,
+input[type='range']::-webkit-slider-runnable-track {
   height: 4px;
   border-radius: 2px;
   background: linear-gradient(
@@ -241,7 +231,8 @@ body {
     rgb(var(--border-strong)) 100%
   );
 }
-.slider::-webkit-slider-thumb {
+.slider::-webkit-slider-thumb,
+input[type='range']::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
   height: 16px;
@@ -253,10 +244,12 @@ body {
   box-shadow: 0 0 0 1px rgb(var(--accent));
   transition: transform 120ms ease-out, box-shadow 120ms ease-out;
 }
-.slider:hover::-webkit-slider-thumb {
+.slider:hover::-webkit-slider-thumb,
+input[type='range']:hover::-webkit-slider-thumb {
   transform: scale(1.12);
 }
-.slider:focus-visible::-webkit-slider-thumb {
+.slider:focus-visible::-webkit-slider-thumb,
+input[type='range']:focus-visible::-webkit-slider-thumb {
   box-shadow:
     0 0 0 1px rgb(var(--bg)),
     0 0 0 4px rgb(var(--accent));
@@ -264,17 +257,20 @@ body {
 }
 
 /* Firefox */
-.slider::-moz-range-track {
+.slider::-moz-range-track,
+input[type='range']::-moz-range-track {
   height: 4px;
   border-radius: 2px;
   background: rgb(var(--border-strong));
 }
-.slider::-moz-range-progress {
+.slider::-moz-range-progress,
+input[type='range']::-moz-range-progress {
   height: 4px;
   border-radius: 2px;
   background: rgb(var(--accent));
 }
-.slider::-moz-range-thumb {
+.slider::-moz-range-thumb,
+input[type='range']::-moz-range-thumb {
   height: 16px;
   width: 16px;
   border-radius: 50%;
@@ -284,10 +280,12 @@ body {
   cursor: pointer;
   transition: transform 120ms ease-out, box-shadow 120ms ease-out;
 }
-.slider:hover::-moz-range-thumb {
+.slider:hover::-moz-range-thumb,
+input[type='range']:hover::-moz-range-thumb {
   transform: scale(1.12);
 }
-.slider:focus-visible::-moz-range-thumb {
+.slider:focus-visible::-moz-range-thumb,
+input[type='range']:focus-visible::-moz-range-thumb {
   box-shadow:
     0 0 0 1px rgb(var(--bg)),
     0 0 0 4px rgb(var(--accent));
@@ -296,13 +294,19 @@ body {
 
 @media (prefers-reduced-motion: reduce) {
   .slider::-webkit-slider-thumb,
-  .slider::-moz-range-thumb {
+  input[type='range']::-webkit-slider-thumb,
+  .slider::-moz-range-thumb,
+  input[type='range']::-moz-range-thumb {
     transition: none;
   }
   .slider:hover::-webkit-slider-thumb,
   .slider:focus-visible::-webkit-slider-thumb,
+  input[type='range']:hover::-webkit-slider-thumb,
+  input[type='range']:focus-visible::-webkit-slider-thumb,
   .slider:hover::-moz-range-thumb,
-  .slider:focus-visible::-moz-range-thumb {
+  .slider:focus-visible::-moz-range-thumb,
+  input[type='range']:hover::-moz-range-thumb,
+  input[type='range']:focus-visible::-moz-range-thumb {
     transform: none;
   }
 }
@@ -379,38 +383,62 @@ body {
    Lesson body (prose)
    =========================================================================== */
 .lesson-body {
-  color: rgb(var(--fg-muted));
+  color: rgb(var(--fg));
   font-size: 1.0625rem;
-  line-height: 1.75;
+  line-height: 1.68;
 }
 .lesson-body > * + * {
   margin-top: 1.25rem;
 }
 .lesson-body h2 {
-  font-size: 1.625rem;
+  font-size: 1.8125rem;
   font-weight: 600;
   color: rgb(var(--fg));
-  letter-spacing: -0.01em;
-  line-height: 1.25;
-  margin-top: 3rem;
-  margin-bottom: 0.5rem;
-  padding-top: 1.5rem;
-  border-top: 1px solid rgb(var(--border));
+  letter-spacing: -0.022em;
+  line-height: 1.2;
+  margin-top: 3.25rem;
+  margin-bottom: 0.65rem;
+  scroll-margin-top: 5rem;
+}
+.lesson-body h2::before {
+  content: '';
+  display: block;
+  width: 1.75rem;
+  height: 1px;
+  background: rgb(var(--border-strong));
+  margin-bottom: 1.1rem;
 }
 .lesson-body h2:first-child {
   margin-top: 0;
-  padding-top: 0;
-  border-top: 0;
+}
+.lesson-body h2:first-child::before {
+  display: none;
 }
 .lesson-body h3 {
-  font-size: 1.125rem;
+  font-size: 1.2rem;
   font-weight: 600;
   color: rgb(var(--fg));
-  margin-top: 1.5rem;
-  margin-bottom: 0.25rem;
+  letter-spacing: -0.015em;
+  margin-top: 1.75rem;
+  margin-bottom: 0.35rem;
+}
+.lesson-body p,
+.lesson-body li {
+  color: rgb(var(--fg));
 }
 .lesson-body p {
   margin: 0;
+}
+.lesson-body p:has(+ .katex-display),
+.lesson-body p:has(+ .math-display) {
+  margin-bottom: 0;
+}
+.lesson-body p + .katex-display,
+.lesson-body p + .math-display {
+  margin-top: 0.5rem !important;
+}
+.lesson-body p + .math-display .katex-display {
+  margin-top: 0.5rem !important;
 }
 .lesson-body strong {
   color: rgb(var(--fg));
@@ -456,6 +484,25 @@ body {
   font-size: inherit;
   color: inherit;
 }
+.tok-comment {
+  color: rgb(var(--fg-subtle));
+  font-style: italic;
+}
+.tok-keyword {
+  color: rgb(var(--accent) / 0.82);
+}
+.tok-number {
+  color: rgb(var(--series-2));
+}
+.tok-fn,
+.tok-builtin {
+  color: rgb(var(--fg));
+  font-weight: 600;
+}
+.tok-ident,
+.tok-string {
+  color: rgb(var(--fg-muted));
+}
 .lesson-body kbd {
   font-family: var(--font-mono), ui-monospace, monospace;
   font-size: 0.75rem;
@@ -476,7 +523,7 @@ body {
   margin-top: 0.75rem;
 }
 .lesson-body ol > li::marker {
-  color: rgb(var(--fg-subtle));
+  color: rgb(var(--fg-muted));
   font-family: var(--font-mono), ui-monospace, monospace;
   font-size: 0.85em;
 }

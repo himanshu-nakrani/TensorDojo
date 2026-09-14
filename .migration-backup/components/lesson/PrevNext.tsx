@@ -85,17 +85,17 @@ export function PrevNext({ slug }: PrevNextProps) {
               ←
             </span>
             <span className="min-w-0">
-              <span className="block text-[12px] uppercase tracking-[0.12em] text-fg-muted font-mono mb-0.5">
+              <span className="block text-caption uppercase tracking-[0.12em] text-muted font-mono mb-0.5">
                 {prevIsNewTrack ? (
                   <>
                     <span className="text-accent">New track</span>
-                    <span className="text-fg-muted"> · previous</span>
+                    <span className="text-muted"> · previous</span>
                   </>
                 ) : (
                   'Previous lesson'
                 )}
               </span>
-              <span className="block text-[14px] font-medium text-ink leading-snug group-hover:text-accent transition-colors">
+              <span className="block text-body font-medium text-ink leading-snug group-hover:text-accent transition-colors">
                 {prevLesson.meta.title}
               </span>
             </span>
@@ -109,17 +109,17 @@ export function PrevNext({ slug }: PrevNextProps) {
             className="group flex items-start gap-3 text-muted hover:text-ink transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg focus-visible:text-ink min-w-0 rounded-sm text-right ml-auto max-w-[48%]"
           >
             <span className="min-w-0">
-              <span className="block text-[12px] uppercase tracking-[0.12em] text-fg-muted font-mono mb-0.5">
+              <span className="block text-caption uppercase tracking-[0.12em] text-muted font-mono mb-0.5">
                 {nextIsNewTrack ? (
                   <>
                     <span className="text-accent">New track</span>
-                    <span className="text-fg-muted"> · next</span>
+                    <span className="text-muted"> · next</span>
                   </>
                 ) : (
                   'Next lesson'
                 )}
               </span>
-              <span className="block text-[14px] font-medium text-ink leading-snug group-hover:text-accent transition-colors">
+              <span className="block text-body font-medium text-ink leading-snug group-hover:text-accent transition-colors">
                 {nextLesson.meta.title}
               </span>
             </span>

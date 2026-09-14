@@ -1,4 +1,5 @@
 import { ImageResponse } from 'next/og';
+import { OG, loadGoogleFont } from '@/lib/og';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-static';
@@ -7,44 +8,15 @@ export const alt = 'TensorDojo — learn how LLMs work by manipulating them';
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 
-const BG = 'rgb(251, 250, 248)';
-const INK = 'rgb(26, 24, 21)';
-const MUTED = 'rgb(74, 71, 66)';
-const SUBTLE = 'rgb(111, 108, 104)';
-const ACCENT = 'rgb(21, 128, 61)';
-
-async function loadInter(weight: 400 | 600 | 700): Promise<ArrayBuffer> {
-  const url = `https://fonts.googleapis.com/css2?family=Inter:wght@${weight}&display=swap`;
-  const css = await fetch(url, {
-    headers: {
-      'User-Agent':
-        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36',
-    },
-  }).then((r) => r.text());
-  const match = css.match(/url\(([^)]+\.woff2?)\)/);
-  if (!match) throw new Error('Inter font URL not found in CSS');
-  const fontRes = await fetch(match[1]!);
-  return fontRes.arrayBuffer();
-}
-
 export default async function Image() {
-  const [regular, semibold, bold] = await Promise.all([
-    loadInter(400),
-    loadInter(600),
-    loadInter(700),
+  const [groteskRegular, groteskBold, monoSemibold] = await Promise.all([
+    loadGoogleFont('Space+Grotesk', 400),
+    loadGoogleFont('Space+Grotesk', 700),
+    loadGoogleFont('JetBrains+Mono', 600),
   ]);
 
   const PAD = 56;
-  const TICK = 28;
-  const SW = 2;
-  const inset = PAD / 2;
-  const corner = {
-    position: 'absolute' as const,
-    width: TICK,
-    height: TICK,
-    display: 'flex',
-    opacity: 0.55,
-  };
+  const FRAME = 32;
 
   return new ImageResponse(
     (
@@ -54,88 +26,84 @@ export default async function Image() {
           height: '100%',
           display: 'flex',
           flexDirection: 'column',
-          backgroundColor: BG,
-          fontFamily: 'Inter',
-          color: INK,
+          backgroundColor: OG.BG,
+          fontFamily: 'Space Grotesk',
+          color: OG.INK,
           padding: PAD,
           position: 'relative',
         }}
       >
-        {/* Corner ticks — wrapped in an absolute container Satori can size. */}
+        {/* Hairline instrument frame */}
         <div
           style={{
             position: 'absolute',
-            top: 0,
-            left: 0,
-            width: 1200,
-            height: 630,
+            top: FRAME,
+            left: FRAME,
+            right: FRAME,
+            bottom: FRAME,
+            width: 1200 - FRAME * 2,
+            height: 630 - FRAME * 2,
             display: 'flex',
+            border: `1px solid ${OG.BORDER}`,
+            borderRadius: 8,
           }}
-        >
-          <div
-            style={{
-              ...corner,
-              top: inset,
-              left: inset,
-              borderTop: `${SW}px solid ${ACCENT}`,
-              borderLeft: `${SW}px solid ${ACCENT}`,
-            }}
-          />
-          <div
-            style={{
-              ...corner,
-              top: inset,
-              right: inset,
-              borderTop: `${SW}px solid ${ACCENT}`,
-              borderRight: `${SW}px solid ${ACCENT}`,
-            }}
-          />
-          <div
-            style={{
-              ...corner,
-              bottom: inset,
-              left: inset,
-              borderBottom: `${SW}px solid ${ACCENT}`,
-              borderLeft: `${SW}px solid ${ACCENT}`,
-            }}
-          />
-          <div
-            style={{
-              ...corner,
-              bottom: inset,
-              right: inset,
-              borderBottom: `${SW}px solid ${ACCENT}`,
-              borderRight: `${SW}px solid ${ACCENT}`,
-            }}
-          />
-        </div>
+        />
 
-        {/* Eyebrow */}
+        {/* Spec row: LED + label, unit id on the right */}
         <div
           style={{
             display: 'flex',
             alignItems: 'center',
-            color: ACCENT,
-            fontSize: 22,
-            fontWeight: 600,
-            letterSpacing: 2,
-            marginBottom: 36,
+            justifyContent: 'space-between',
+            marginTop: 18,
+            marginBottom: 40,
           }}
         >
-          <span style={{ marginRight: 14 }}>◆</span>
-          <span>INTERACTIVE LLM CURRICULUM</span>
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              fontFamily: 'JetBrains Mono',
+              color: OG.ACCENT,
+              fontSize: 21,
+              fontWeight: 600,
+              letterSpacing: 3,
+            }}
+          >
+            <span
+              style={{
+                width: 14,
+                height: 14,
+                borderRadius: '50%',
+                background: OG.ACCENT,
+                marginRight: 16,
+              }}
+            />
+            <span>INTERACTIVE LLM CURRICULUM</span>
+          </div>
+          <div
+            style={{
+              display: 'flex',
+              fontFamily: 'JetBrains Mono',
+              color: OG.SUBTLE,
+              fontSize: 19,
+              letterSpacing: 2,
+            }}
+          >
+            58 LESSONS / 8 TRACKS
+          </div>
         </div>
 
         {/* Headline */}
         <div
           style={{
             display: 'flex',
-            fontSize: 86,
+            fontSize: 84,
             fontWeight: 700,
-            lineHeight: 1.04,
+            lineHeight: 1.05,
             letterSpacing: -2,
-            marginBottom: 32,
-            maxWidth: 1000,
+            marginBottom: 30,
+            maxWidth: 1020,
           }}
         >
           Learn how LLMs work by manipulating them.
@@ -148,44 +116,54 @@ export default async function Image() {
             fontSize: 26,
             fontWeight: 400,
             lineHeight: 1.45,
-            color: MUTED,
-            maxWidth: 1000,
+            color: OG.MUTED,
+            maxWidth: 980,
           }}
         >
-          58 lessons across 8 tracks. Every concept is a sim you can drag, with the math underneath you can read.
+          Every concept is a sim you can drag, with the math underneath
+          you can read.
         </div>
 
-        {/* Footer */}
+        {/* Status bar */}
         <div
           style={{
             display: 'flex',
             alignItems: 'center',
             position: 'absolute',
-            bottom: PAD,
-            left: PAD,
-            right: PAD,
+            bottom: PAD + 14,
+            left: PAD + 14,
+            right: PAD + 14,
             justifyContent: 'space-between',
           }}
         >
           <div
             style={{
               display: 'flex',
-              alignItems: 'baseline',
-              fontWeight: 700,
-              fontSize: 22,
+              alignItems: 'center',
+              fontFamily: 'JetBrains Mono',
+              fontWeight: 600,
+              fontSize: 21,
               letterSpacing: 3,
-              color: INK,
+              color: OG.INK,
             }}
           >
-            <span style={{ color: ACCENT, marginRight: 10 }}>◆</span>
-            <span>TENSORDOJO</span>
+            <span
+              style={{
+                width: 12,
+                height: 12,
+                borderRadius: '50%',
+                background: OG.ACCENT,
+                marginRight: 12,
+              }}
+            />
+            <span>TENSOR DOJO</span>
           </div>
           <div
             style={{
               display: 'flex',
-              fontSize: 18,
-              color: SUBTLE,
-              fontWeight: 400,
+              fontFamily: 'JetBrains Mono',
+              fontSize: 17,
+              color: OG.SUBTLE,
             }}
           >
             tensordojo.vercel.app
@@ -196,9 +174,9 @@ export default async function Image() {
     {
       ...size,
       fonts: [
-        { name: 'Inter', data: regular, weight: 400, style: 'normal' },
-        { name: 'Inter', data: semibold, weight: 600, style: 'normal' },
-        { name: 'Inter', data: bold, weight: 700, style: 'normal' },
+        { name: 'Space Grotesk', data: groteskRegular, weight: 400, style: 'normal' },
+        { name: 'Space Grotesk', data: groteskBold, weight: 700, style: 'normal' },
+        { name: 'JetBrains Mono', data: monoSemibold, weight: 600, style: 'normal' },
       ],
     },
   );

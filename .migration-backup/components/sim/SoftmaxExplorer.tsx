@@ -65,7 +65,7 @@ export function SoftmaxExplorer({ preset }: { preset?: SoftmaxPreset }) {
     <SimFrame title="Edit scores · drag T · watch the distribution" onReset={reset}>
       {/* Scores */}
       <section aria-label="Scores" className="mb-7">
-        <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-3">
+        <div className="text-label uppercase tracking-[0.12em] text-dim font-mono mb-3">
           Scores
         </div>
         <div className="grid grid-cols-3 sm:grid-cols-5 gap-2 sm:gap-3">
@@ -78,7 +78,7 @@ export function SoftmaxExplorer({ preset }: { preset?: SoftmaxPreset }) {
                 ariaLabel={`Score ${i + 1}`}
                 className="w-full text-center"
               />
-              <span className="text-[11px] text-dim font-mono">
+              <span className="text-label text-dim font-mono">
                 {SCORE_LABELS[i]}
               </span>
             </div>
@@ -88,7 +88,7 @@ export function SoftmaxExplorer({ preset }: { preset?: SoftmaxPreset }) {
 
       {/* Temperature */}
       <section aria-label="Temperature" className="mb-8">
-        <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-3">
+        <div className="text-label uppercase tracking-[0.12em] text-dim font-mono mb-3">
           Temperature
         </div>
         <Slider
@@ -100,7 +100,7 @@ export function SoftmaxExplorer({ preset }: { preset?: SoftmaxPreset }) {
           formatValue={(v) => v.toFixed(1)}
           ariaLabel="Temperature"
         />
-        <div className="flex justify-between mt-2 text-[11px] text-dim font-mono tabular-nums">
+        <div className="flex justify-between mt-2 text-label text-dim font-mono tabular-nums">
           <span>{TEMP_MIN.toFixed(1)} sharp</span>
           <span>{TEMP_MAX.toFixed(1)} flat</span>
         </div>
@@ -109,10 +109,10 @@ export function SoftmaxExplorer({ preset }: { preset?: SoftmaxPreset }) {
       {/* Distribution */}
       <section aria-label="Distribution" className="mb-4">
         <div className="flex items-baseline justify-between mb-3">
-          <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono">
+          <div className="text-label uppercase tracking-[0.12em] text-dim font-mono">
             Distribution
           </div>
-          <div className="text-[11px] text-dim font-mono tabular-nums">
+          <div className="text-label text-dim font-mono tabular-nums">
             p({SCORE_LABELS[dominant]}) ={' '}
             <span className="text-accent">
               {(distribution[dominant] ?? 0).toFixed(3)}
@@ -130,7 +130,7 @@ export function SoftmaxExplorer({ preset }: { preset?: SoftmaxPreset }) {
         />
       </section>
 
-      <div className="flex items-center justify-end gap-3 pt-4 border-t border-border text-[11px] font-mono text-muted">
+      <div className="flex items-center justify-end gap-3 pt-4 border-t border-border text-label font-mono text-muted">
         <span>Σ pᵢ</span>
         <span className="text-ink tabular-nums">= {sumLabel}</span>
       </div>

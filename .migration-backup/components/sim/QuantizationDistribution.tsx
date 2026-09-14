@@ -81,9 +81,10 @@ export function QuantizationDistribution() {
     <SimFrame
       title="Weight distribution: before vs after quantization"
       onReset={reset}
+      headerWrap
       headerAction={
         <div className="flex items-center gap-3">
-          <div className="flex border border-border rounded overflow-hidden font-mono text-[11px]">
+          <div className="flex border border-border rounded overflow-hidden font-mono text-label">
             {BIT_OPTIONS.map((b) => (
               <button
                 key={b}
@@ -103,7 +104,7 @@ export function QuantizationDistribution() {
           <button
             type="button"
             onClick={reset}
-            className="text-[11px] uppercase tracking-[0.12em] font-mono text-muted hover:text-ink focus-ring transition-colors"
+            className="text-label uppercase tracking-[0.12em] font-mono text-muted hover:text-ink focus-ring transition-colors"
           >
             Reset
           </button>
@@ -123,7 +124,7 @@ export function QuantizationDistribution() {
             values={reconstructed}
             variant="quantized"
           />
-          <p className="mt-3 text-[11px] text-dim font-mono leading-relaxed">
+          <p className="mt-3 text-label text-dim font-mono leading-relaxed">
             Every dot in the lower strip is one of {1 << bits} quantization
             levels. Multiple original weights now share the same code; the
             distance from each dot's original position to its quantized
@@ -135,10 +136,10 @@ export function QuantizationDistribution() {
         <div className="border border-border rounded p-4 bg-surface space-y-4">
           <div>
             <div className="flex items-baseline justify-between mb-2">
-              <span className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono">
+              <span className="text-label uppercase tracking-[0.12em] text-dim font-mono">
                 Model size
               </span>
-              <div className="flex border border-border rounded overflow-hidden font-mono text-[11px]">
+              <div className="flex border border-border rounded overflow-hidden font-mono text-label">
                 {MODEL_OPTIONS.map((m) => (
                   <button
                     key={m.label}
@@ -173,17 +174,17 @@ export function QuantizationDistribution() {
             </div>
           </div>
 
-          <div className="pt-3 border-t border-border space-y-2 font-mono text-[11px]">
+          <div className="pt-3 border-t border-border space-y-2 font-mono text-label">
             <div>
-              <div className="text-[11px] uppercase tracking-[0.12em] text-dim mb-0.5">
+              <div className="text-label uppercase tracking-[0.12em] text-dim mb-0.5">
                 Memory ratio
               </div>
-              <div className="text-accent tabular-nums text-[14px]">
+              <div className="text-accent tabular-nums text-body">
                 {ratio.toFixed(ratio < 10 ? 1 : 0)}× smaller
               </div>
             </div>
             <div>
-              <div className="text-[11px] uppercase tracking-[0.12em] text-dim mb-0.5">
+              <div className="text-label uppercase tracking-[0.12em] text-dim mb-0.5">
                 RMS quantization error
               </div>
               <div className="text-ink tabular-nums">{rms.toFixed(4)}</div>
@@ -192,7 +193,7 @@ export function QuantizationDistribution() {
         </div>
       </div>
 
-      <p className="mt-5 pt-4 border-t border-border text-[11px] text-dim font-mono leading-relaxed">
+      <p className="mt-5 pt-4 border-t border-border text-label text-dim font-mono leading-relaxed">
         At <span className="text-ink">8-bit</span> the comb is dense enough
         that the eye can't tell it apart from the original. At{' '}
         <span className="text-ink">4-bit</span> only{' '}
@@ -232,7 +233,7 @@ function DistributionStrip({
 
   return (
     <div>
-      <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-1">
+      <div className="text-label uppercase tracking-[0.12em] text-dim font-mono mb-1">
         {label}
       </div>
       <div className="border border-border rounded bg-surface">
@@ -298,11 +299,11 @@ function MemoryBar({
   const pct = Math.max(0.5, (bytes / refBytes) * 100);
   return (
     <div>
-      <div className="flex items-baseline justify-between text-[11px] font-mono mb-1">
+      <div className="flex items-baseline justify-between text-label font-mono mb-1">
         <span className={variant === 'muted' ? 'text-dim' : 'text-accent'}>{label}</span>
         <span className="text-dim tabular-nums">{formatBytes(bytes)}</span>
       </div>
-      <div className="relative h-5 rounded border border-border bg-bg-elevated overflow-hidden">
+      <div className="relative h-5 rounded border border-border bg-surface overflow-hidden">
         <div
           className={clsx(
             'h-full transition-all duration-200',

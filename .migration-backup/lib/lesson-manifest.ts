@@ -1,7 +1,7 @@
 /**
  * Client-safe lesson manifest. Only the per-lesson manifest for
  * the currently-rendered slug is imported into the page chunk.
- * The previous design statically imported all 21 lessons'
+ * The previous design statically imported every lesson's
  * interactives into a single bundle, which made the lesson
  * route 60 kB / 166 kB at the heaviest — the brief's < 160 kB
  * target was missed because the heavy centerpieces

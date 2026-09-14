@@ -1,8 +1,9 @@
 'use client';
 
-import { useEffect, useState, type ReactNode } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react';
 import clsx from 'clsx';
 import { useWorkbench } from './Workbench';
+import { Button } from '@/components/ui/Button';
 
 interface CalloutProps {
   /** Small label rendered in the top-left, in monospace caps. */
@@ -41,11 +42,40 @@ export function Callout({
   const workbench = useWorkbench();
   const isNarrow = useNarrowViewport();
   const [inlineOpen, setInlineOpen] = useState(false);
+  const [experiment, setExperiment] = useState<{
+    index: number;
+    total: number;
+  } | null>(null);
+  const rootRef = useRef<HTMLElement>(null);
 
   const inlineEntry =
     isNarrow && targetInteractive
       ? workbench.getInteractive(targetInteractive)
       : undefined;
+
+  useLayoutEffect(() => {
+    if (variant !== 'try') return;
+    const el = rootRef.current;
+    if (!el) return;
+    let start: Element = el;
+    while (start.previousElementSibling?.matches('aside[data-callout="try"]')) {
+      start = start.previousElementSibling;
+    }
+    const group: Element[] = [];
+    let n: Element | null = start;
+    while (n?.matches('aside[data-callout="try"]')) {
+      group.push(n);
+      n = n.nextElementSibling;
+    }
+    if (group.length < 2) {
+      setExperiment(null);
+      return;
+    }
+    setExperiment({
+      index: group.indexOf(el) + 1,
+      total: group.length,
+    });
+  }, [variant]);
 
   const handleOpen = () => {
     if (!targetInteractive) return;
@@ -56,34 +86,58 @@ export function Callout({
     workbench.focusInteractive(targetInteractive);
   };
 
+  const inSequence = experiment !== null;
+  const label = inSequence
+    ? title === 'Try this'
+      ? `Experiment ${experiment.index}`
+      : `${experiment.index} · ${title}`
+    : title;
+
+  const chip = targetInteractive && inSequence && !(isNarrow && inlineOpen);
+
   return (
     <aside
+      ref={rootRef}
+      data-callout={variant}
       className={clsx(
-        'my-6 rounded-md border-l-2 pl-6 pr-5 py-4',
-        variant === 'try'
-          ? 'border-accent bg-accent-faint'
-          : 'border-border-strong bg-surface',
+        'rounded-md border-l-2 pl-6 pr-5 py-4',
+        inSequence ? 'my-2 bg-transparent' : 'my-6',
+        variant === 'try' && !inSequence && 'border-accent bg-accent-faint',
+        variant === 'try' && inSequence && 'border-accent',
+        variant === 'note' && 'border-border-strong bg-surface',
         className,
       )}
     >
-      <div
-        className={clsx(
-          'text-[11px] uppercase tracking-[0.12em] font-mono mb-2',
-          variant === 'try' ? 'text-accent' : 'text-muted',
-        )}
-      >
-        {title}
-      </div>
-      <div className="text-ink text-[0.95rem] leading-relaxed [&>p]:m-0">
-        {children}
-      </div>
-      {targetInteractive && !(isNarrow && inlineOpen) && (
+      {chip ? (
         <button
           type="button"
           onClick={handleOpen}
-          className="focus-ring mt-3 inline-flex items-center min-h-[44px] px-3 py-2 text-[12px] uppercase tracking-[0.12em] font-mono text-accent hover:text-accent-hover hover:bg-accent-soft rounded-md transition-colors -mx-3"
+          className="focus-ring mb-2 inline-flex items-center rounded-sm border border-accent/40 px-2 py-0.5 font-mono text-micro uppercase tracking-[0.12em] text-accent hover:bg-accent-faint transition-colors"
         >
-          {isNarrow && inlineEntry ? 'Try it here →' : 'Open in workbench →'}
+          {label}
+        </button>
+      ) : (
+        <div
+          className={clsx(
+            'text-label font-mono mb-2',
+            variant === 'try'
+              ? 'uppercase tracking-[0.12em] text-accent'
+              : 'text-muted',
+          )}
+        >
+          {label}
+        </div>
+      )}
+      <div className="text-ink text-[0.95rem] leading-relaxed [&>p]:m-0">
+        {children}
+      </div>
+      {targetInteractive && !inSequence && !(isNarrow && inlineOpen) && (
+        <button
+          type="button"
+          onClick={handleOpen}
+          className="focus-ring mt-3 font-mono text-label text-accent hover:text-accent-hover transition-colors"
+        >
+          {isNarrow && inlineEntry ? 'Try it here' : 'Try it in the workbench'}
         </button>
       )}
       {inlineOpen && inlineEntry && (
@@ -111,22 +165,22 @@ function InlineInteractive({
     <div className="mt-4 -mx-2 sm:mx-0 rounded-lg border border-border bg-bg p-3 sm:p-4">
       <div className="flex items-center justify-between mb-3 gap-3">
         <div className="min-w-0">
-          <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono">
+          <div className="text-label uppercase tracking-[0.12em] text-dim font-mono">
             Interactive
           </div>
           <div className="text-sm font-semibold text-ink tracking-[-0.005em] truncate">
             {title}
           </div>
         </div>
-        <button
-          type="button"
+        <Button
+          variant="secondary"
           onClick={onClose}
-          className="focus-ring shrink-0 inline-flex items-center gap-1 rounded-md border border-border bg-bg-elevated px-2.5 py-1 text-[11px] font-mono uppercase tracking-[0.14em] text-muted hover:text-ink hover:border-border-strong transition-colors"
+          className="min-h-[36px] shrink-0 px-2.5 py-1 text-label"
           aria-label="Close inline interactive"
         >
           <span aria-hidden="true">×</span>
           Close
-        </button>
+        </Button>
       </div>
       {children}
     </div>

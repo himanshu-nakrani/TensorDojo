@@ -92,7 +92,7 @@ export function DistillationExplorer() {
             }}
             aria-pressed={running}
             className={clsx(
-              'text-[11px] uppercase tracking-[0.12em] font-mono px-2 py-0.5 rounded border focus-ring transition-colors',
+              'text-label uppercase tracking-[0.12em] font-mono px-2 py-0.5 rounded border focus-ring transition-colors',
               running
                 ? 'border-accent text-accent bg-accent-soft'
                 : 'border-border text-muted hover:text-ink hover:border-border-strong',
@@ -103,7 +103,7 @@ export function DistillationExplorer() {
           <button
             type="button"
             onClick={reset}
-            className="text-[11px] uppercase tracking-[0.12em] font-mono text-muted hover:text-ink focus-ring transition-colors"
+            className="text-label uppercase tracking-[0.12em] font-mono text-muted hover:text-ink focus-ring transition-colors"
           >
             Reset
           </button>
@@ -139,7 +139,7 @@ export function DistillationExplorer() {
       </div>
 
       {/* Loss readouts */}
-      <div className="grid grid-cols-3 gap-3 mb-4 text-[11px] font-mono">
+      <div className="grid grid-cols-3 gap-3 mb-4 text-label font-mono">
         <Stat label="soft loss" value={losses.soft.toFixed(3)} />
         <Stat label="hard loss" value={losses.hard.toFixed(3)} />
         <Stat
@@ -196,11 +196,11 @@ function Slider({
       <div className="flex items-baseline justify-between mb-2">
         <label
           htmlFor={id}
-          className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono"
+          className="text-label uppercase tracking-[0.12em] text-dim font-mono"
         >
           {label}
         </label>
-        <span className="font-mono text-[14px] text-accent tabular-nums">
+        <span className="font-mono text-body text-accent tabular-nums">
           {format(value)}
         </span>
       </div>
@@ -270,8 +270,8 @@ function DistributionPanel({
   return (
     <div className="rounded-lg border border-border bg-bg/40 p-3">
       <div className="flex items-baseline justify-between mb-0.5">
-        <div className="text-[13px] font-semibold text-ink">{title}</div>
-        <div className="text-[11px] font-mono text-dim">{subtitle}</div>
+        <div className="text-body-sm font-semibold text-ink">{title}</div>
+        <div className="text-label font-mono text-dim">{subtitle}</div>
       </div>
       <svg viewBox={`0 0 ${W} ${H}`} width="100%" className="block h-auto">
         {/* zero axis */}
@@ -297,7 +297,7 @@ function DistributionPanel({
                 y={y}
                 width={w}
                 height={h}
-                className="fill-fg-subtle"
+                className="fill-dim"
                 fillOpacity={0.25}
               />
             );
@@ -322,14 +322,14 @@ function DistributionPanel({
             y={H - 1}
             textAnchor="middle"
             fontSize={9}
-            fontFamily="monospace"
-            className="fill-fg-subtle"
+            fontFamily="var(--font-mono), ui-monospace, monospace"
+            className="fill-dim"
           >
             {i}
           </text>
         ))}
       </svg>
-      <div className="mt-1 grid grid-cols-5 gap-1 text-[10px] font-mono tabular-nums text-fg-muted">
+      <div className="mt-1 grid grid-cols-5 gap-1 text-micro font-mono tabular-nums text-muted">
         {probs.map((p, i) => (
           <div
             key={i}
@@ -343,7 +343,7 @@ function DistributionPanel({
         ))}
       </div>
       {ghostLabel && (
-        <div className="mt-2 text-[10px] text-dim font-mono flex items-center gap-2">
+        <div className="mt-2 text-micro text-dim font-mono flex items-center gap-2">
           <span className="inline-block w-3 h-2 bg-[rgb(var(--fg-subtle))] opacity-30" />
           <span>{ghostLabel}</span>
         </div>

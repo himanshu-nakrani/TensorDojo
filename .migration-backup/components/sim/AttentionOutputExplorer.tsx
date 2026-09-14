@@ -127,7 +127,7 @@ export function AttentionOutputExplorer() {
       headerWrap
     >
       <div className="mb-4 flex flex-wrap items-center gap-2">
-        <span className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mr-1">
+        <span className="text-label uppercase tracking-[0.12em] text-dim font-mono mr-1">
           W =
         </span>
         {([
@@ -140,7 +140,7 @@ export function AttentionOutputExplorer() {
             type="button"
             onClick={() => setWMode(s.id)}
             className={
-              'text-[11px] uppercase tracking-[0.12em] font-mono px-2 py-0.5 rounded border focus-ring transition-colors ' +
+              'text-label uppercase tracking-[0.12em] font-mono px-2 py-0.5 rounded border focus-ring transition-colors ' +
               (wMode === s.id
                 ? 'border-accent text-accent'
                 : 'border-border text-muted hover:text-ink')
@@ -155,10 +155,10 @@ export function AttentionOutputExplorer() {
       {wMode === 'softmax' && (
         <div className="mb-4">
           <div className="flex items-baseline justify-between mb-1">
-            <span className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono">
+            <span className="text-label uppercase tracking-[0.12em] text-dim font-mono">
               Temperature
             </span>
-            <span className="text-ink font-mono tabular-nums text-[12px]">
+            <span className="text-ink font-mono tabular-nums text-caption">
               T = {temperature.toFixed(2)}
             </span>
           </div>
@@ -176,7 +176,7 @@ export function AttentionOutputExplorer() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
-          <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-2">
+          <div className="text-label uppercase tracking-[0.12em] text-dim font-mono mb-2">
             Vectors
           </div>
           <VectorCanvas
@@ -186,22 +186,22 @@ export function AttentionOutputExplorer() {
             range={{ x: [-2, 2], y: [-2, 2] }}
             ariaLabel="V vectors (draggable) and output vectors (read-only)."
           />
-          <p className="mt-2 text-[11px] text-muted font-mono">
+          <p className="mt-2 text-label text-muted font-mono">
             <span className="text-accent">V0..V3</span> are draggable.
             <span className="ml-2 text-ink">out0..out3</span> are read-only.
           </p>
         </div>
 
-        <div className="font-mono text-[12px]">
-          <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-2">
+        <div className="font-mono text-caption">
+          <div className="text-label uppercase tracking-[0.12em] text-dim font-mono mb-2">
             Weight matrix W
           </div>
           <table className="w-full text-center tabular-nums mb-4">
             <thead>
               <tr>
-                <th className="text-dim text-[11px] font-normal"></th>
+                <th className="text-dim text-label font-normal"></th>
                 {TOKEN_LABELS.map((t, j) => (
-                  <th key={j} className="text-dim text-[11px] font-normal pb-1">
+                  <th key={j} className="text-dim text-label font-normal pb-1">
                     {t}
                   </th>
                 ))}
@@ -212,7 +212,7 @@ export function AttentionOutputExplorer() {
                 const maxW = Math.max(...row);
                 return (
                   <tr key={i}>
-                    <td className="text-dim text-[11px] pr-2 text-right">
+                    <td className="text-dim text-label pr-2 text-right">
                       {TOKEN_LABELS[i]}
                     </td>
                     {row.map((w, j) => {
@@ -234,14 +234,14 @@ export function AttentionOutputExplorer() {
             </tbody>
           </table>
 
-          <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-2">
+          <div className="text-label uppercase tracking-[0.12em] text-dim font-mono mb-2">
             Output vectors (one per query)
           </div>
           <table className="w-full text-center tabular-nums">
             <tbody>
               {output.map((p, i) => (
                 <tr key={i}>
-                  <td className="text-dim text-[11px] pr-2 text-right">
+                  <td className="text-dim text-label pr-2 text-right">
                     out{TOKEN_LABELS[i]}
                   </td>
                   <td className="text-ink">

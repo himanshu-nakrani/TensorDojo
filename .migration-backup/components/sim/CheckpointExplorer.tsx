@@ -36,7 +36,7 @@ export function CheckpointExplorer() {
           onClick={() => setOn((s) => !s)}
           aria-pressed={on}
           className={clsx(
-            'text-[11px] uppercase tracking-[0.12em] font-mono px-2 py-0.5 rounded border focus-ring transition-colors',
+            'text-label uppercase tracking-[0.12em] font-mono px-2 py-0.5 rounded border focus-ring transition-colors',
             on
               ? 'border-accent text-accent bg-accent-soft'
               : 'border-border text-muted hover:text-ink hover:border-border-strong',
@@ -51,11 +51,11 @@ export function CheckpointExplorer() {
         <div className="flex items-baseline justify-between mb-2">
           <label
             htmlFor="ckpt-N"
-            className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono"
+            className="text-label uppercase tracking-[0.12em] text-dim font-mono"
           >
             stack depth N
           </label>
-          <span className="font-mono text-[14px] text-accent tabular-nums">
+          <span className="font-mono text-body text-accent tabular-nums">
             {N} layers · {K} anchor{K === 1 ? '' : 's'}
           </span>
         </div>
@@ -91,7 +91,7 @@ export function CheckpointExplorer() {
       </div>
 
       {/* Headline numbers */}
-      <div className="mt-4 grid grid-cols-2 gap-3 text-[11px] font-mono">
+      <div className="mt-4 grid grid-cols-2 gap-3 text-label font-mono">
         <Stat
           label="memory vs baseline"
           value={`${(memRatio * 100).toFixed(0)}%`}
@@ -108,7 +108,7 @@ export function CheckpointExplorer() {
         />
       </div>
 
-      <p className="mt-3 text-[11px] text-dim font-mono leading-relaxed">
+      <p className="mt-3 text-label text-dim font-mono leading-relaxed">
         With checkpointing on, anchors live for the full step; non-anchor activations are recomputed on demand during backward.
         Memory scales like √N; compute pays roughly +33% overhead.
       </p>
@@ -142,7 +142,7 @@ function LayerStrip({ N, K, on }: { N: number; K: number; on: boolean }) {
             className={
               anchor
                 ? 'fill-[rgb(var(--accent))]'
-                : 'fill-fg-subtle'
+                : 'fill-dim'
             }
             fillOpacity={anchor ? 0.85 : 0.25}
           />
@@ -174,10 +174,10 @@ function Bar({
   return (
     <div className="rounded-md border border-border bg-bg/40 px-3 py-2">
       <div className="flex items-baseline justify-between mb-2">
-        <span className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono">
+        <span className="text-label uppercase tracking-[0.12em] text-dim font-mono">
           {label}
         </span>
-        <span className="text-[11px] font-mono text-accent tabular-nums">
+        <span className="text-label font-mono text-accent tabular-nums">
           {value.toFixed(0)} units
         </span>
       </div>
@@ -201,12 +201,12 @@ function Bar({
           className={
             tone === 'good'
               ? 'fill-[rgb(var(--accent))]'
-              : 'fill-amber-500'
+              : 'fill-warning'
           }
           fillOpacity={0.75}
         />
       </svg>
-      <div className="mt-1 text-[10px] font-mono text-fg-subtle">
+      <div className="mt-1 text-micro font-mono text-dim">
         baseline (dashed): {baseline.toFixed(0)} units
       </div>
     </div>
@@ -226,8 +226,8 @@ function Stat({
     tone === 'accent'
       ? 'text-accent'
       : tone === 'amber'
-        ? 'text-amber-500 dark:text-amber-400'
-        : 'text-fg-muted';
+        ? 'text-warning'
+        : 'text-muted';
   return (
     <div className="rounded-md border border-border bg-bg/40 px-3 py-2 flex items-baseline justify-between">
       <span className="text-dim">{label}</span>

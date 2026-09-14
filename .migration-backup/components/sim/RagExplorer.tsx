@@ -38,7 +38,7 @@ export function RagExplorer() {
     >
       {/* Query picker */}
       <div className="mb-4">
-        <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-2">
+        <div className="text-label uppercase tracking-[0.12em] text-dim font-mono mb-2">
           query
         </div>
         <div className="flex flex-wrap gap-2">
@@ -49,7 +49,7 @@ export function RagExplorer() {
               onClick={() => setQueryId(q.id)}
               aria-pressed={queryId === q.id}
               className={clsx(
-                'text-[12px] font-mono px-2.5 py-1 rounded border focus-ring transition-colors text-left',
+                'text-caption font-mono px-2.5 py-1 rounded border focus-ring transition-colors text-left',
                 queryId === q.id
                   ? 'border-accent text-accent bg-accent-soft'
                   : 'border-border text-muted hover:text-ink hover:border-border-strong',
@@ -67,11 +67,11 @@ export function RagExplorer() {
           <div className="flex items-baseline justify-between mb-2">
             <label
               htmlFor="rag-k"
-              className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono"
+              className="text-label uppercase tracking-[0.12em] text-dim font-mono"
             >
               top-k retrieved
             </label>
-            <span className="font-mono text-[14px] text-accent tabular-nums">
+            <span className="font-mono text-body text-accent tabular-nums">
               {k}
             </span>
           </div>
@@ -87,12 +87,12 @@ export function RagExplorer() {
           />
         </div>
         <div className="rounded-md border border-border bg-bg/40 px-3 py-2 flex items-baseline justify-between">
-          <span className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono">
+          <span className="text-label uppercase tracking-[0.12em] text-dim font-mono">
             top match score
           </span>
           <span
             className={clsx(
-              'text-[14px] font-mono tabular-nums',
+              'text-body font-mono tabular-nums',
               lowConfidence
                 ? 'text-[rgb(var(--negative))]'
                 : 'text-accent',
@@ -100,7 +100,7 @@ export function RagExplorer() {
           >
             {topScore.toFixed(3)}
             {lowConfidence && (
-              <span className="ml-2 text-[10px] uppercase tracking-[0.12em]">
+              <span className="ml-2 text-micro uppercase tracking-[0.12em]">
                 low confidence
               </span>
             )}
@@ -128,7 +128,7 @@ function RankedList({
   const maxScore = Math.max(...ranked.map((r) => r.score), 0.01);
   return (
     <div className="rounded-lg border border-border bg-bg/40 p-3">
-      <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-3">
+      <div className="text-label uppercase tracking-[0.12em] text-dim font-mono mb-3">
         cosine similarity · all {ranked.length} documents
       </div>
       <div className="space-y-1.5">
@@ -142,8 +142,8 @@ function RankedList({
             >
               <span
                 className={clsx(
-                  'text-[11px] font-mono truncate',
-                  inTopK ? 'text-accent font-semibold' : 'text-fg-muted',
+                  'text-label font-mono truncate',
+                  inTopK ? 'text-accent font-semibold' : 'text-muted',
                 )}
               >
                 {r.doc.title}
@@ -154,7 +154,7 @@ function RankedList({
                     'h-full',
                     inTopK
                       ? 'bg-[rgb(var(--accent))]'
-                      : 'bg-fg-subtle',
+                      : 'bg-dim',
                   )}
                   style={{
                     width: `${widthPct}%`,
@@ -164,8 +164,8 @@ function RankedList({
               </div>
               <span
                 className={clsx(
-                  'text-[10px] font-mono tabular-nums text-right',
-                  inTopK ? 'text-accent' : 'text-fg-muted',
+                  'text-micro font-mono tabular-nums text-right',
+                  inTopK ? 'text-accent' : 'text-muted',
                 )}
               >
                 {r.score.toFixed(3)}
@@ -189,15 +189,15 @@ function PromptPreview({
 }) {
   return (
     <div className="rounded-lg border border-border bg-bg/40 p-3">
-      <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-3">
+      <div className="text-label uppercase tracking-[0.12em] text-dim font-mono mb-3">
         prompt sent to the LLM
       </div>
-      <div className="text-[11px] font-mono leading-relaxed text-ink space-y-2">
-        <div className="text-fg-muted">
+      <div className="text-label font-mono leading-relaxed text-ink space-y-2">
+        <div className="text-muted">
           Answer the question using only the context below.
         </div>
         <div>
-          <div className="text-fg-subtle uppercase tracking-[0.12em] text-[10px] mb-1">
+          <div className="text-dim uppercase tracking-[0.12em] text-micro mb-1">
             Context
           </div>
           {top.map((r) => (
@@ -205,7 +205,7 @@ function PromptPreview({
               key={r.doc.id}
               className="border-l-2 border-accent/40 pl-2 mb-2"
             >
-              <div className="text-accent text-[10px] mb-0.5">
+              <div className="text-accent text-micro mb-0.5">
                 [{r.doc.title}]
               </div>
               <div className="text-ink">{r.doc.text}</div>
@@ -213,15 +213,15 @@ function PromptPreview({
           ))}
         </div>
         <div>
-          <span className="text-fg-subtle uppercase tracking-[0.12em] text-[10px]">
+          <span className="text-dim uppercase tracking-[0.12em] text-micro">
             Question
           </span>{' '}
           <span>{query}</span>
         </div>
-        <div className="text-fg-subtle">Answer:</div>
+        <div className="text-dim">Answer:</div>
       </div>
       {lowConfidence && (
-        <div className="mt-3 text-[11px] text-[rgb(var(--negative))] font-mono">
+        <div className="mt-3 text-label text-[rgb(var(--negative))] font-mono">
           → A production system would likely refuse to answer at this confidence.
         </div>
       )}

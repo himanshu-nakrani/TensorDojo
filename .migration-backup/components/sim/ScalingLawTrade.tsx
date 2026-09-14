@@ -246,7 +246,7 @@ export function ScalingLawTrade() {
         </svg>
       </div>
 
-      <p className="text-[11px] text-dim font-mono leading-relaxed">
+      <p className="text-label text-dim font-mono leading-relaxed">
         Each cell is a (N, D) pair; color is Chinchilla loss. Lower loss is
         always down-right (more of both). The dashed line is the
         compute-optimal frontier: for every budget C, the (N, D) pair that

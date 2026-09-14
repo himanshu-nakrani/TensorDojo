@@ -1,7 +1,7 @@
 'use client';
 
 import type { ReactNode } from 'react';
-import clsx from 'clsx';
+import { cn } from '@/lib/cn';
 
 interface SimFrameProps {
   title: string;
@@ -26,7 +26,7 @@ export function SimFrame({
   onReset,
   resetLabel = 'Reset',
   headerAction,
-  headerWrap,
+  headerWrap = true,
   className,
   children,
 }: SimFrameProps) {
@@ -36,7 +36,7 @@ export function SimFrame({
       <button
         type="button"
         onClick={onReset}
-        className="text-[11px] uppercase tracking-[0.12em] font-mono text-muted hover:text-ink focus-ring transition-colors"
+        className="text-label uppercase tracking-[0.12em] font-mono text-muted hover:text-ink focus-ring transition-colors"
       >
         {resetLabel}
       </button>
@@ -44,18 +44,18 @@ export function SimFrame({
 
   return (
     <div
-      className={clsx(
-        'rounded-xl border border-border bg-surface p-6 sm:p-8 card-surface',
+      className={cn(
+        'graticule min-w-0 rounded-md border border-border bg-surface-2 p-4 card-surface',
         className,
       )}
     >
       <div
-        className={clsx(
-          'flex items-baseline justify-between mb-5',
-          headerWrap && 'flex-wrap gap-3',
+        className={cn(
+          'mb-4 flex items-baseline justify-between gap-3',
+          headerWrap && 'flex-wrap',
         )}
       >
-        <h3 className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono">
+        <h3 className="text-label uppercase tracking-[0.12em] text-dim font-mono">
           {title}
         </h3>
         {action}

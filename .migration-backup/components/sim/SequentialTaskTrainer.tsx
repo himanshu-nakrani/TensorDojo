@@ -4,7 +4,7 @@
  * SequentialTaskTrainer — centerpiece sim for lesson 29 (catastrophic forgetting).
  *
  * Renders a two-line accuracy plot:
- *   - Task A (rgb(var(--dim))): the descending line — knowledge being lost.
+ *   - Task A (rgb(var(--fg-subtle))): the descending line — knowledge being lost.
  *   - Task B (rgb(var(--accent))): the ascending line — new task being learned.
  *
  * NOTE on accent assignment: task A uses --dim (fading) and task B uses
@@ -105,7 +105,7 @@ function AccuracyPlot({
         <text
           x={padL + plotW / 2} y={padT + plotH / 2}
           textAnchor="middle" dominantBaseline="middle"
-          fill="rgb(var(--dim))" fontSize={10} fontFamily="monospace"
+          fill="rgb(var(--fg-subtle))" fontSize={10} fontFamily="var(--font-mono), ui-monospace, monospace"
         >
           press Train to start
         </text>
@@ -157,7 +157,7 @@ function AccuracyPlot({
             <text
               x={padL - 5} y={y}
               textAnchor="end" dominantBaseline="middle"
-              fill="rgb(var(--dim))" fontSize={8} fontFamily="monospace"
+              fill="rgb(var(--fg-subtle))" fontSize={8} fontFamily="var(--font-mono), ui-monospace, monospace"
               className="tabular-nums"
             >
               {`${Math.round(tick * 100)}%`}
@@ -178,7 +178,7 @@ function AccuracyPlot({
       <text
         x={parseFloat(markerX) + 4} y={padT + 4}
         dominantBaseline="hanging"
-        fill="rgb(var(--dim))" fontSize={8} fontFamily="monospace"
+        fill="rgb(var(--fg-subtle))" fontSize={8} fontFamily="var(--font-mono), ui-monospace, monospace"
       >
         B starts here
       </text>
@@ -188,7 +188,7 @@ function AccuracyPlot({
         <polyline
           points={buildPoints(accAOverTime, displayStep)}
           fill="none"
-          stroke="rgb(var(--dim))"
+          stroke="rgb(var(--fg-subtle))"
           strokeWidth={1.5}
           opacity={0.85}
         />
@@ -207,12 +207,12 @@ function AccuracyPlot({
 
       {/* Diverged badges */}
       {divergedA && (
-        <text x={padL + 8} y={padT + 12} fill="rgb(var(--dim))" fontSize={9} fontFamily="monospace">
+        <text x={padL + 8} y={padT + 12} fill="rgb(var(--fg-subtle))" fontSize={9} fontFamily="var(--font-mono), ui-monospace, monospace">
           task A diverged
         </text>
       )}
       {divergedB && (
-        <text x={padL + 8} y={padT + 24} fill="rgb(var(--accent))" fontSize={9} fontFamily="monospace">
+        <text x={padL + 8} y={padT + 24} fill="rgb(var(--accent))" fontSize={9} fontFamily="var(--font-mono), ui-monospace, monospace">
           task B diverged
         </text>
       )}
@@ -228,7 +228,7 @@ function AccuracyPlot({
       <text
         x={padL} y={svgH - 4}
         textAnchor="start"
-        fill="rgb(var(--dim))" fontSize={8} fontFamily="monospace"
+        fill="rgb(var(--fg-subtle))" fontSize={8} fontFamily="var(--font-mono), ui-monospace, monospace"
         className="tabular-nums"
       >
         0
@@ -236,7 +236,7 @@ function AccuracyPlot({
       <text
         x={padL + plotW} y={svgH - 4}
         textAnchor="end"
-        fill="rgb(var(--dim))" fontSize={8} fontFamily="monospace"
+        fill="rgb(var(--fg-subtle))" fontSize={8} fontFamily="var(--font-mono), ui-monospace, monospace"
         className="tabular-nums"
       >
         {TOTAL_STEPS}
@@ -249,12 +249,12 @@ function AccuracyPlot({
 
 function Legend() {
   return (
-    <div className="flex flex-wrap items-center gap-4 font-mono text-[11px]">
+    <div className="flex flex-wrap items-center gap-4 font-mono text-label">
       <span className="inline-flex items-center gap-1.5">
         <span
           aria-hidden="true"
           className="inline-block w-3 h-0.5"
-          style={{ background: 'rgb(var(--dim))' }}
+          style={{ background: 'rgb(var(--fg-subtle))' }}
         />
         task A (knowledge lost)
       </span>
@@ -377,7 +377,7 @@ export function SequentialTaskTrainer() {
             type="button"
             onClick={handleTrain}
             disabled={running || !trainReady}
-            className="rounded border border-border bg-bg-elevated px-3 py-1.5 font-mono text-sm hover:border-border-strong disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            className="rounded border border-border bg-surface px-3 py-1.5 font-mono text-sm hover:border-border-strong disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
           >
             {running ? 'Training…' : 'Train'}
           </button>
@@ -385,7 +385,7 @@ export function SequentialTaskTrainer() {
             type="button"
             onClick={handleReset}
             disabled={running}
-            className="rounded border border-border bg-bg-elevated px-3 py-1.5 font-mono text-sm hover:border-border-strong disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            className="rounded border border-border bg-surface px-3 py-1.5 font-mono text-sm hover:border-border-strong disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
           >
             Reset
           </button>
@@ -395,7 +395,7 @@ export function SequentialTaskTrainer() {
       <div className="space-y-4">
         {/* Accuracy plot */}
         <div>
-          <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-2">
+          <div className="text-label uppercase tracking-[0.12em] text-dim font-mono mb-2">
             Accuracy vs step
           </div>
           <AccuracyPlot result={result} displayStep={displayStep} />
@@ -406,7 +406,7 @@ export function SequentialTaskTrainer() {
 
         {/* Step counter */}
         {(running || result !== null) && (
-          <div className="font-mono text-[11px] text-fg-subtle tabular-nums">
+          <div className="font-mono text-label text-dim tabular-nums">
             step {displayStep} / {TOTAL_STEPS}
             {result && !running && (
               <span className="ml-3 text-dim">

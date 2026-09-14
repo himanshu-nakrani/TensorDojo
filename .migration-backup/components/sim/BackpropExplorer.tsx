@@ -224,7 +224,7 @@ export function BackpropExplorer() {
             type="button"
             onClick={() => setShowBackward((b) => !b)}
             className={
-              'text-[11px] uppercase tracking-[0.12em] font-mono px-2 py-0.5 rounded border focus-ring transition-colors ' +
+              'text-label uppercase tracking-[0.12em] font-mono px-2 py-0.5 rounded border focus-ring transition-colors ' +
               (showBackward
                 ? 'border-accent text-accent'
                 : 'border-border text-muted hover:text-ink')
@@ -236,18 +236,18 @@ export function BackpropExplorer() {
           <button
             type="button"
             onClick={onRandomize}
-            className="text-[11px] uppercase tracking-[0.12em] font-mono text-muted hover:text-ink focus-ring transition-colors"
+            className="text-label uppercase tracking-[0.12em] font-mono text-muted hover:text-ink focus-ring transition-colors"
           >
             Re-init
           </button>
         </div>
       }
     >
-      <div className="grid grid-cols-1 md:grid-cols-[1fr_280px] gap-5">
+      <div className="grid grid-cols-1 md:grid-cols-[minmax(0,1fr)_280px] gap-5">
         {/* Activations + loss */}
-        <div className="space-y-3 font-mono text-[12px]">
+        <div className="space-y-3 font-mono text-caption">
           <div>
-            <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-1">
+            <div className="text-label uppercase tracking-[0.12em] text-dim font-mono mb-1">
               Activations
             </div>
             <div className="space-y-1">
@@ -278,7 +278,7 @@ export function BackpropExplorer() {
                 className={
                   Number.isFinite(cache.loss)
                     ? 'text-accent tabular-nums'
-                    : 'text-[rgb(var(--negative))] tabular-nums'
+                    : 'text-negative tabular-nums'
                 }
               >
                 {Number.isFinite(cache.loss) ? cache.loss.toFixed(4) : 'NaN'}
@@ -287,7 +287,7 @@ export function BackpropExplorer() {
           </div>
 
           <div className="pt-3 border-t border-border">
-            <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-1">
+            <div className="text-label uppercase tracking-[0.12em] text-dim font-mono mb-1">
               Input
             </div>
             <div className="grid grid-cols-2 gap-2">
@@ -335,7 +335,7 @@ export function BackpropExplorer() {
         <div className="space-y-3 max-h-[480px] overflow-y-auto pr-1">
           {(['W1', 'b1', 'W2', 'b2', 'W3', 'b3'] as const).map((layer) => (
             <div key={layer}>
-              <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-1">
+              <div className="text-label uppercase tracking-[0.12em] text-dim font-mono mb-1">
                 {layer}
               </div>
               <div className="space-y-1.5">
@@ -363,13 +363,13 @@ export function BackpropExplorer() {
                         <span
                           className={
                             isSelected
-                              ? 'text-accent text-[11px]'
-                              : 'text-ink text-[11px]'
+                              ? 'text-accent text-label'
+                              : 'text-ink text-label'
                           }
                         >
                           {s.label}
                         </span>
-                        <span className="text-[11px] text-fg-subtle tabular-nums">
+                        <span className="text-label text-dim tabular-nums">
                           ∂L/∂ = {g.toFixed(3)}
                         </span>
                       </div>
@@ -404,7 +404,7 @@ function Row({
   highlight?: (i: number) => boolean;
 }) {
   return (
-    <div className="flex items-baseline gap-2 text-[11px]">
+    <div className="flex items-baseline gap-2 text-label">
       <span className="text-dim w-32 shrink-0">{label}</span>
       <div className="flex flex-wrap gap-x-2">
         {values.map((v, i) => (

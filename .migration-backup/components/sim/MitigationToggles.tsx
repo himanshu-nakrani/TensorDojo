@@ -13,7 +13,7 @@
  * NOTE on accent assignment (INTENTIONAL INVERSION vs SequentialTaskTrainer):
  *   - Task A uses rgb(var(--accent)) — the "retained knowledge" line. This is
  *     the hero of the mitigation story: task A accuracy stays high.
- *   - Task B uses rgb(var(--dim)) — the "newly learned" task.
+ *   - Task B uses rgb(var(--fg-subtle)) — the "newly learned" task.
  *   In SequentialTaskTrainer, task A uses --dim (fading) and task B uses
  *   --accent (the new task being learned). The inversion here is deliberate:
  *   in the mitigation view the lesson is "task A's line no longer collapses."
@@ -108,7 +108,7 @@ function AccuracyPlot({
         <text
           x={padL + plotW / 2} y={padT + plotH / 2}
           textAnchor="middle" dominantBaseline="middle"
-          fill="rgb(var(--dim))" fontSize={10} fontFamily="monospace"
+          fill="rgb(var(--fg-subtle))" fontSize={10} fontFamily="var(--font-mono), ui-monospace, monospace"
         >
           {pending ? 'training…' : 'loading…'}
         </text>
@@ -159,7 +159,7 @@ function AccuracyPlot({
             <text
               x={padL - 5} y={y}
               textAnchor="end" dominantBaseline="middle"
-              fill="rgb(var(--dim))" fontSize={8} fontFamily="monospace"
+              fill="rgb(var(--fg-subtle))" fontSize={8} fontFamily="var(--font-mono), ui-monospace, monospace"
               className="tabular-nums"
             >
               {`${Math.round(tick * 100)}%`}
@@ -180,7 +180,7 @@ function AccuracyPlot({
       <text
         x={parseFloat(markerX) + 4} y={padT + 4}
         dominantBaseline="hanging"
-        fill="rgb(var(--dim))" fontSize={8} fontFamily="monospace"
+        fill="rgb(var(--fg-subtle))" fontSize={8} fontFamily="var(--font-mono), ui-monospace, monospace"
       >
         B starts here
       </text>
@@ -202,7 +202,7 @@ function AccuracyPlot({
         <polyline
           points={buildPoints(accBOverTime, displayStep)}
           fill="none"
-          stroke="rgb(var(--dim))"
+          stroke="rgb(var(--fg-subtle))"
           strokeWidth={1.5}
           opacity={0.85}
         />
@@ -210,12 +210,12 @@ function AccuracyPlot({
 
       {/* Diverged badges */}
       {divergedA && (
-        <text x={padL + 8} y={padT + 12} fill="rgb(var(--accent))" fontSize={9} fontFamily="monospace">
+        <text x={padL + 8} y={padT + 12} fill="rgb(var(--accent))" fontSize={9} fontFamily="var(--font-mono), ui-monospace, monospace">
           task A diverged
         </text>
       )}
       {divergedB && (
-        <text x={padL + 8} y={padT + 24} fill="rgb(var(--dim))" fontSize={9} fontFamily="monospace">
+        <text x={padL + 8} y={padT + 24} fill="rgb(var(--fg-subtle))" fontSize={9} fontFamily="var(--font-mono), ui-monospace, monospace">
           task B diverged
         </text>
       )}
@@ -231,7 +231,7 @@ function AccuracyPlot({
       <text
         x={padL} y={svgH - 4}
         textAnchor="start"
-        fill="rgb(var(--dim))" fontSize={8} fontFamily="monospace"
+        fill="rgb(var(--fg-subtle))" fontSize={8} fontFamily="var(--font-mono), ui-monospace, monospace"
         className="tabular-nums"
       >
         0
@@ -239,7 +239,7 @@ function AccuracyPlot({
       <text
         x={padL + plotW} y={svgH - 4}
         textAnchor="end"
-        fill="rgb(var(--dim))" fontSize={8} fontFamily="monospace"
+        fill="rgb(var(--fg-subtle))" fontSize={8} fontFamily="var(--font-mono), ui-monospace, monospace"
         className="tabular-nums"
       >
         {TOTAL_STEPS}
@@ -252,7 +252,7 @@ function AccuracyPlot({
 
 function Legend() {
   return (
-    <div className="flex flex-wrap items-center gap-4 font-mono text-[11px]">
+    <div className="flex flex-wrap items-center gap-4 font-mono text-label">
       {/* accent = task A here (retention is the story) */}
       <span className="inline-flex items-center gap-1.5">
         <span
@@ -266,7 +266,7 @@ function Legend() {
         <span
           aria-hidden="true"
           className="inline-block w-3 h-0.5"
-          style={{ background: 'rgb(var(--dim))' }}
+          style={{ background: 'rgb(var(--fg-subtle))' }}
         />
         task B (new task)
       </span>
@@ -394,7 +394,7 @@ export function MitigationToggles() {
       <div className="space-y-5">
         {/* Toggle switches */}
         <div>
-          <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-2">
+          <div className="text-label uppercase tracking-[0.12em] text-dim font-mono mb-2">
             Mitigations
           </div>
           <div className="flex flex-col gap-3">
@@ -409,7 +409,7 @@ export function MitigationToggles() {
               <span className={lowLrB ? 'text-ink' : 'text-dim'}>
                 Lower learning rate in phase B
               </span>
-              <span className="text-[11px] text-dim tabular-nums">
+              <span className="text-label text-dim tabular-nums">
                 (lr={lowLrB ? LR_B_LOW : LR_B_HIGH})
               </span>
             </label>
@@ -429,13 +429,13 @@ export function MitigationToggles() {
         </div>
 
         {/* Status line */}
-        <div className="font-mono text-[11px] text-fg-subtle">
+        <div className="font-mono text-label text-dim">
           {statusLabel}
         </div>
 
         {/* Accuracy plot */}
         <div>
-          <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-2">
+          <div className="text-label uppercase tracking-[0.12em] text-dim font-mono mb-2">
             Accuracy vs step
           </div>
           <AccuracyPlot
@@ -450,7 +450,7 @@ export function MitigationToggles() {
 
         {/* Step counter */}
         {currentResult !== null && (
-          <div className="font-mono text-[11px] text-fg-subtle tabular-nums">
+          <div className="font-mono text-label text-dim tabular-nums">
             step {displayStep} / {TOTAL_STEPS}
             {!animating && (
               <span className="ml-3 text-dim">

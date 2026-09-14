@@ -11,6 +11,7 @@ const SETTLE_MS = 1500;
 
 const SLUGS = [
   'dot-product',
+  'matrix-multiplication',
   'vector-projection',
   'softmax',
   'attention-scores',
@@ -18,25 +19,38 @@ const SLUGS = [
   'scaled-attention',
   'tokenization',
   'token-embeddings',
+  'weight-tying',
   'positional-encoding',
   'rope',
   'causal-mask',
   'multi-head-attention',
   'grouped-query-attention',
   'flash-attention',
+  'sliding-window-attention',
   'residuals-layernorm',
+  'rms-norm',
+  'activations',
   'feed-forward',
   'mixture-of-experts',
   'transformer-block',
   'sampling-decoding',
+  'beam-search',
+  'in-context-learning',
+  'chain-of-thought',
+  'rag',
   'kv-cache',
   'speculative-decoding',
   'cross-entropy',
   'gradient-descent',
+  'loss-landscapes',
+  'vanishing-exploding-gradients',
+  'weight-initialization',
   'backpropagation',
   'sgd',
   'optimizers',
   'lr-schedules',
+  'mixed-precision',
+  'gradient-checkpointing',
   'training-end-to-end',
   'scaling-laws',
   'overfitting',
@@ -49,8 +63,11 @@ const SLUGS = [
   'catastrophic-forgetting',
   'quantization',
   'lora',
+  'qlora',
   'evaluation',
   'instruction-tuning-rlhf',
+  'dpo',
+  'distillation',
 ];
 
 // React dev-mode warnings that aren't actionable for our purposes.
@@ -98,10 +115,14 @@ for (const slug of SLUGS) {
   });
 
   try {
-    const resp = await page.goto(url, { waitUntil: 'networkidle0', timeout: 30000 });
+    const resp = await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 });
     if (!resp || !resp.ok()) {
       errors.push(`HTTP ${resp?.status() ?? 'no-response'}`);
     }
+    // Expand all workbench interactives to mount every interactive
+    await page.evaluate(() => {
+      document.querySelectorAll('[data-interactive-id] button[aria-expanded="false"]').forEach((b) => b.click());
+    });
     // Let dynamic interactives mount.
     await new Promise((r) => setTimeout(r, SETTLE_MS));
   } catch (err) {

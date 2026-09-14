@@ -85,10 +85,10 @@ function PolicyBars({ probs }: { probs: number[] }) {
         const pct = probs[i]! * 100;
         return (
           <div key={i} className="flex items-center gap-2 min-w-0">
-            <span className="font-mono text-[11px] text-muted w-4 shrink-0 tabular-nums">
+            <span className="font-mono text-label text-muted w-4 shrink-0 tabular-nums">
               {i}
             </span>
-            <span className="font-mono text-[11px] text-ink flex-1 truncate min-w-0">
+            <span className="font-mono text-label text-ink flex-1 truncate min-w-0">
               {resp}
             </span>
             <div className="w-28 bg-bg/60 rounded-sm overflow-hidden h-3 shrink-0">
@@ -101,7 +101,7 @@ function PolicyBars({ probs }: { probs: number[] }) {
                 }}
               />
             </div>
-            <span className="font-mono text-[11px] text-ink tabular-nums w-10 text-right shrink-0">
+            <span className="font-mono text-label text-ink tabular-nums w-10 text-right shrink-0">
               {pct.toFixed(1)}%
             </span>
           </div>
@@ -124,10 +124,10 @@ function RewardBars({ scores }: { scores: number[] }) {
         const pct = Math.min(100, (Math.abs(score) / absMax) * 100);
         return (
           <div key={i} className="flex items-center gap-2 min-w-0">
-            <span className="font-mono text-[11px] text-muted w-4 shrink-0 tabular-nums">
+            <span className="font-mono text-label text-muted w-4 shrink-0 tabular-nums">
               {i}
             </span>
-            <span className="font-mono text-[11px] text-ink flex-1 truncate min-w-0">
+            <span className="font-mono text-label text-ink flex-1 truncate min-w-0">
               {resp}
             </span>
             <div className="w-28 bg-bg/60 rounded-sm overflow-hidden h-3 shrink-0">
@@ -143,7 +143,7 @@ function RewardBars({ scores }: { scores: number[] }) {
                 }}
               />
             </div>
-            <span className="font-mono text-[11px] text-ink tabular-nums w-12 text-right shrink-0">
+            <span className="font-mono text-label text-ink tabular-nums w-12 text-right shrink-0">
               {score >= 0 ? '+' : ''}{score.toFixed(2)}
             </span>
           </div>
@@ -234,7 +234,7 @@ export function RewardModelView() {
     <SimFrame
       title="Two heads, same preferences: policy + reward model"
       headerAction={
-        <span className="text-[11px] font-mono text-muted tabular-nums">
+        <span className="text-label font-mono text-muted tabular-nums">
           step {totalSteps % N_PREFS} of {N_PREFS} &middot; epoch {epoch}
         </span>
       }
@@ -242,17 +242,17 @@ export function RewardModelView() {
       <div className="space-y-5">
       {/* Prompt */}
       <div className="rounded border border-border bg-bg/50 px-3 py-2">
-        <span className="text-[11px] uppercase tracking-[0.14em] text-dim font-mono mr-2">
+        <span className="text-label uppercase tracking-[0.14em] text-dim font-mono mr-2">
           Prompt
         </span>
-        <span className="font-mono text-[12px] text-ink">{PROMPT}</span>
+        <span className="font-mono text-caption text-ink">{PROMPT}</span>
       </div>
 
       {/* Two-pane bar charts */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
         {/* Left: policy */}
         <section aria-label="Policy probabilities">
-          <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-3">
+          <div className="text-label uppercase tracking-[0.12em] text-dim font-mono mb-3">
             Policy &pi;(y|x)
           </div>
           <PolicyBars probs={probs} />
@@ -260,7 +260,7 @@ export function RewardModelView() {
 
         {/* Right: reward model */}
         <section aria-label="Reward model scores">
-          <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-3">
+          <div className="text-label uppercase tracking-[0.12em] text-dim font-mono mb-3">
             Reward model r(y|x)
           </div>
           <RewardBars scores={rewardScores} />
@@ -268,8 +268,8 @@ export function RewardModelView() {
       </div>
 
       {/* Next preference preview */}
-      <div className="rounded border border-border bg-bg/40 px-3 py-2 font-mono text-[11px] text-muted">
-        <span className="text-dim uppercase tracking-[0.14em] text-[11px] mr-2">
+      <div className="rounded border border-border bg-bg/40 px-3 py-2 font-mono text-label text-muted">
+        <span className="text-dim uppercase tracking-[0.14em] text-label mr-2">
           Next preference
         </span>
         response {nextPref.preferred} preferred over response{' '}
@@ -281,28 +281,28 @@ export function RewardModelView() {
         <button
           type="button"
           onClick={handleStep}
-          className="rounded border border-border bg-bg-elevated px-3 py-1.5 font-mono text-[12px] hover:border-border-strong transition-colors"
+          className="rounded border border-border bg-surface px-3 py-1.5 font-mono text-caption hover:border-border-strong transition-colors"
         >
           Step
         </button>
         <button
           type="button"
           onClick={handleStep6}
-          className="rounded border border-border bg-bg-elevated px-3 py-1.5 font-mono text-[12px] hover:border-border-strong transition-colors"
+          className="rounded border border-border bg-surface px-3 py-1.5 font-mono text-caption hover:border-border-strong transition-colors"
         >
           Step &times;6
         </button>
         <button
           type="button"
           onClick={handleReset}
-          className="rounded border border-border bg-bg-elevated px-3 py-1.5 font-mono text-[12px] hover:border-border-strong transition-colors text-muted"
+          className="rounded border border-border bg-surface px-3 py-1.5 font-mono text-caption hover:border-border-strong transition-colors text-muted"
         >
           Reset
         </button>
       </div>
 
       {/* Caption */}
-      <p className="font-mono text-[11px] text-muted leading-relaxed border-t border-border pt-4">
+      <p className="font-mono text-label text-muted leading-relaxed border-t border-border pt-4">
         Both models see the same preference data. The reward model assigns
         scores to responses; the policy makes them probabilities. In DPO,
         these are mathematically the same training signal &mdash; the same

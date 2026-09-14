@@ -2,6 +2,7 @@ import katex from 'katex';
 import 'katex/dist/katex.min.css';
 import { ReactNode } from 'react';
 import clsx from 'clsx';
+import { PythonCode } from './PythonCode';
 
 interface MathCodeProps {
   /** LaTeX expression. Display mode — no need to wrap in $$ or \[ \]. */
@@ -41,7 +42,7 @@ export function MathCode({ math, code, caption, className }: MathCodeProps) {
     >
       <div className="divide-y divide-border">
         <div className="p-6 flex flex-col">
-          <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-4">
+          <div className="text-label uppercase tracking-[0.12em] text-dim font-mono mb-4">
             Math
           </div>
           {/* Math may still need horizontal scroll for wide matrices /
@@ -52,20 +53,22 @@ export function MathCode({ math, code, caption, className }: MathCodeProps) {
           />
         </div>
         <div className="p-6 flex flex-col bg-surface-2/40">
-          <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-4">
+          <div className="text-label uppercase tracking-[0.12em] text-dim font-mono mb-4">
             Code
           </div>
           {/* Code stays in a <pre> (no soft wrap — breaking Python
               lines mid-statement hurts readability more than the rare
               scroll). At full prose width an 80-char line fits without
               scroll on every viewport above ~640px. */}
-          <pre className="m-0 font-mono text-[13px] leading-relaxed text-ink overflow-x-auto">
-            <code>{code}</code>
+          <pre className="m-0 font-mono text-body-sm leading-relaxed text-ink overflow-x-auto">
+            <code>
+              <PythonCode source={code} />
+            </code>
           </pre>
         </div>
       </div>
       {caption && (
-        <figcaption className="px-5 py-2 border-t border-border bg-bg/40 text-[11px] text-muted font-mono tracking-wide">
+        <figcaption className="px-5 py-2 border-t border-border bg-bg/40 text-label text-muted font-mono tracking-wide">
           {caption}
         </figcaption>
       )}

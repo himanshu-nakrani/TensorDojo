@@ -72,7 +72,7 @@ export function KVCacheBuilder() {
             type="button"
             onClick={() => setGenStep((s) => Math.max(0, s - 1))}
             disabled={genStep === 0}
-            className="text-[11px] uppercase tracking-[0.12em] font-mono px-2 py-0.5 rounded border border-border text-muted hover:text-ink focus-ring transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+            className="text-label uppercase tracking-[0.12em] font-mono px-2 py-0.5 rounded border border-border text-muted hover:text-ink focus-ring transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
           >
             Back
           </button>
@@ -80,14 +80,14 @@ export function KVCacheBuilder() {
             type="button"
             onClick={() => setGenStep((s) => Math.min(MAX_GEN, s + 1))}
             disabled={genStep >= MAX_GEN}
-            className="text-[11px] uppercase tracking-[0.12em] font-mono px-2 py-0.5 rounded border border-accent text-accent hover:text-accent-hover focus-ring transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+            className="text-label uppercase tracking-[0.12em] font-mono px-2 py-0.5 rounded border border-accent text-accent hover:text-accent-hover focus-ring transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
           >
             Generate next
           </button>
           <button
             type="button"
             onClick={reset}
-            className="text-[11px] uppercase tracking-[0.12em] font-mono text-muted hover:text-ink focus-ring transition-colors"
+            className="text-label uppercase tracking-[0.12em] font-mono text-muted hover:text-ink focus-ring transition-colors"
           >
             Reset
           </button>
@@ -96,10 +96,10 @@ export function KVCacheBuilder() {
     >
       {/* Mode toggle. */}
       <div className="mb-5 flex items-center gap-3">
-        <span className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono">
+        <span className="text-label uppercase tracking-[0.12em] text-dim font-mono">
           Mode
         </span>
-        <div className="flex border border-border rounded overflow-hidden font-mono text-[11px]">
+        <div className="flex border border-border rounded overflow-hidden font-mono text-label">
           {(['cache', 'naive'] as const).map((m) => (
             <button
               key={m}
@@ -116,7 +116,7 @@ export function KVCacheBuilder() {
             </button>
           ))}
         </div>
-        <span className="text-[11px] font-mono text-dim tabular-nums ml-auto">
+        <span className="text-label font-mono text-dim tabular-nums ml-auto">
           step <span className="text-ink">{genStep}</span>
           {' / '}
           <span className="text-ink">{MAX_GEN}</span>
@@ -142,9 +142,9 @@ export function KVCacheBuilder() {
         />
       </div>
 
-      <div className="mt-5 pt-4 border-t border-border grid grid-cols-2 gap-4 font-mono text-[11px]">
+      <div className="mt-5 pt-4 border-t border-border grid grid-cols-2 gap-4 font-mono text-label">
         <div>
-          <div className="text-[11px] uppercase tracking-[0.12em] text-dim mb-1">
+          <div className="text-label uppercase tracking-[0.12em] text-dim mb-1">
             Computed this step
           </div>
           <div className="text-accent tabular-nums">
@@ -153,7 +153,7 @@ export function KVCacheBuilder() {
           </div>
         </div>
         <div>
-          <div className="text-[11px] uppercase tracking-[0.12em] text-dim mb-1">
+          <div className="text-label uppercase tracking-[0.12em] text-dim mb-1">
             Reused from cache
           </div>
           <div className={clsx('tabular-nums', cellsReused > 0 ? 'text-ink' : 'text-dim')}>
@@ -164,14 +164,14 @@ export function KVCacheBuilder() {
       </div>
 
       {genStep === 0 && (
-        <p className="mt-4 text-[11px] text-dim font-mono leading-relaxed">
+        <p className="mt-4 text-label text-dim font-mono leading-relaxed">
           Prompt has been encoded. Press{' '}
           <span className="text-accent">Generate next</span> to produce one new
           token. Watch what changes in each mode.
         </p>
       )}
       {genStep > 0 && mode === 'cache' && (
-        <p className="mt-4 text-[11px] text-dim font-mono leading-relaxed">
+        <p className="mt-4 text-label text-dim font-mono leading-relaxed">
           Only the newest row was computed; every earlier row was looked up
           from the cache. Per-step work is{' '}
           <span className="text-ink">constant in sequence length</span> (the
@@ -180,7 +180,7 @@ export function KVCacheBuilder() {
         </p>
       )}
       {genStep > 0 && mode === 'naive' && (
-        <p className="mt-4 text-[11px] text-dim font-mono leading-relaxed">
+        <p className="mt-4 text-label text-dim font-mono leading-relaxed">
           The whole matrix was rebuilt from scratch. Per-step work grows{' '}
           <span className="text-ink">linearly</span> with sequence length, and
           total generation cost is one polynomial degree higher than the
@@ -207,14 +207,14 @@ function MatrixPanel({
   return (
     <div>
       <div className="flex items-baseline justify-between mb-2">
-        <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono">
+        <div className="text-label uppercase tracking-[0.12em] text-dim font-mono">
           {label}
         </div>
-        <div className="text-[11px] text-dim font-mono tabular-nums">
+        <div className="text-label text-dim font-mono tabular-nums">
           {tokens.length} × {D_MODEL}
         </div>
       </div>
-      <div className="space-y-1 font-mono text-[11px]">
+      <div className="space-y-1 font-mono text-label">
         {tokens.map((tok, ti) => {
           const isComputed = computedThisStep.has(ti);
           const isReused = reusedFromCache.has(ti);

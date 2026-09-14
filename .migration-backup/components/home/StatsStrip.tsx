@@ -5,9 +5,9 @@ import { listLessonMeta, TRACKS } from '@/lib/lessons-meta';
  * curriculum grid. Four metrics, separated by hairline dividers.
  *
  * Lesson and track counts are computed from the manifest so the
- * strip never drifts when lessons are added. The test count and
+ * strip never drifts when lessons are added. The sim count and
  * "no backend" claim are static — they change rarely and a stale
- * test count is less misleading than a wrong lesson count.
+ * sim count is less misleading than a wrong lesson count.
  */
 export function StatsStrip() {
   const lessonCount = listLessonMeta().length;
@@ -16,7 +16,7 @@ export function StatsStrip() {
   const stats: readonly { value: string; label: string }[] = [
     { value: String(lessonCount), label: 'Lessons' },
     { value: String(trackCount), label: 'Tracks' },
-    { value: '513', label: 'Tests' },
+    { value: '84', label: 'Sims' },
     { value: '0', label: 'Backend deps' },
   ];
 
@@ -25,12 +25,12 @@ export function StatsStrip() {
       {stats.map((stat) => (
         <div
           key={stat.label}
-          className="bg-bg-elevated px-5 py-5 sm:px-6 sm:py-6 text-center"
+          className="bg-surface px-5 py-5 sm:px-6 sm:py-6 text-center"
         >
           <dd className="text-[1.75rem] sm:text-[2rem] font-semibold text-ink tabular-nums tracking-[-0.02em] leading-none font-mono">
             {stat.value}
           </dd>
-          <dt className="mt-2 text-[11px] uppercase tracking-[0.16em] font-mono text-fg-muted">
+          <dt className="mt-2 text-label uppercase tracking-[0.16em] font-mono text-muted">
             {stat.label}
           </dt>
         </div>

@@ -81,7 +81,7 @@ export function BarChart({
       </svg>
       {labels && (
         <div
-          className="flex mt-2 font-mono text-[11px] text-dim select-none"
+          className="flex mt-2 font-mono text-label text-dim select-none"
           aria-hidden="true"
         >
           {labels.map((l, i) => (

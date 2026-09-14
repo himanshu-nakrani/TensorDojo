@@ -72,9 +72,10 @@ export function QuantizationLevels() {
     <SimFrame
       title="Quantization levels on a number line"
       onReset={reset}
+      headerWrap
       headerAction={
         <div className="flex items-center gap-3">
-          <div className="flex border border-border rounded overflow-hidden font-mono text-[11px]">
+          <div className="flex border border-border rounded overflow-hidden font-mono text-label">
             {BIT_OPTIONS.map((b) => (
               <button
                 key={b}
@@ -91,7 +92,7 @@ export function QuantizationLevels() {
               </button>
             ))}
           </div>
-          <div className="flex border border-border rounded overflow-hidden font-mono text-[11px]">
+          <div className="flex border border-border rounded overflow-hidden font-mono text-label">
             {(['symmetric', 'affine'] as const).map((m) => (
               <button
                 key={m}
@@ -111,7 +112,7 @@ export function QuantizationLevels() {
           <button
             type="button"
             onClick={reset}
-            className="text-[11px] uppercase tracking-[0.12em] font-mono text-muted hover:text-ink focus-ring transition-colors"
+            className="text-label uppercase tracking-[0.12em] font-mono text-muted hover:text-ink focus-ring transition-colors"
           >
             Reset
           </button>
@@ -120,10 +121,10 @@ export function QuantizationLevels() {
     >
       {/* Distribution chooser */}
       <div className="mb-4">
-        <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-2">
+        <div className="text-label uppercase tracking-[0.12em] text-dim font-mono mb-2">
           Source distribution
         </div>
-        <div className="flex gap-2 font-mono text-[11px]">
+        <div className="flex gap-2 font-mono text-label">
           {(Object.keys(DISTRIBUTIONS) as DistName[]).map((d) => (
             <button
               key={d}
@@ -153,10 +154,10 @@ export function QuantizationLevels() {
 
       <label className="block mt-4">
         <div className="flex items-baseline justify-between mb-1">
-          <span className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono">
+          <span className="text-label uppercase tracking-[0.12em] text-dim font-mono">
             Pick an input value
           </span>
-          <span className="text-[11px] font-mono tabular-nums">
+          <span className="text-label font-mono tabular-nums">
             <span className="text-ink">{input.toFixed(3)}</span>
             <span className="text-dim"> rounds to </span>
             <span className="text-accent">{snappedValue.toFixed(3)}</span>
@@ -174,7 +175,7 @@ export function QuantizationLevels() {
         />
       </label>
 
-      <p className="mt-5 pt-4 border-t border-border text-[11px] text-dim font-mono leading-relaxed">
+      <p className="mt-5 pt-4 border-t border-border text-label text-dim font-mono leading-relaxed">
         Symmetric quantization places its <span className="text-ink">{1 << bits}</span> levels
         evenly around zero — clean and cheap, but wastes range on a skewed
         distribution (try the skewed one in symmetric mode). Affine fits the

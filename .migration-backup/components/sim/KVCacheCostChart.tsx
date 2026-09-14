@@ -61,7 +61,7 @@ export function KVCacheCostChart() {
       title="Naive vs cached: total generation cost"
       headerAction={
         <div className="flex items-center gap-3">
-          <div className="flex border border-border rounded overflow-hidden font-mono text-[11px]">
+          <div className="flex border border-border rounded overflow-hidden font-mono text-label">
             {(['log', 'linear'] as const).map((s) => (
               <button
                 key={s}
@@ -81,7 +81,7 @@ export function KVCacheCostChart() {
           <button
             type="button"
             onClick={reset}
-            className="text-[11px] uppercase tracking-[0.12em] font-mono text-muted hover:text-ink focus-ring transition-colors"
+            className="text-label uppercase tracking-[0.12em] font-mono text-muted hover:text-ink focus-ring transition-colors"
           >
             Reset
           </button>
@@ -91,10 +91,10 @@ export function KVCacheCostChart() {
       {/* Slider. */}
       <label className="block mb-5">
         <div className="flex items-baseline justify-between mb-1">
-          <span className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono">
+          <span className="text-label uppercase tracking-[0.12em] text-dim font-mono">
             Sequence length
           </span>
-          <span className="text-[11px] font-mono tabular-nums">
+          <span className="text-label font-mono tabular-nums">
             <span className="text-ink">{seqLen.toLocaleString()}</span>
             <span className="text-dim"> tokens</span>
           </span>
@@ -109,7 +109,7 @@ export function KVCacheCostChart() {
           className="w-full focus-ring"
           aria-label="Sequence length"
         />
-        <div className="flex justify-between text-[11px] text-dim font-mono mt-1 tabular-nums">
+        <div className="flex justify-between text-label text-dim font-mono mt-1 tabular-nums">
           {SEQ_STEPS.map((n) => (
             <span key={n}>{n}</span>
           ))}
@@ -133,20 +133,20 @@ export function KVCacheCostChart() {
       </div>
 
       {/* Headline readouts. */}
-      <div className="grid grid-cols-2 gap-4 pt-4 border-t border-border font-mono text-[11px]">
+      <div className="grid grid-cols-2 gap-4 pt-4 border-t border-border font-mono text-label">
         <div>
-          <div className="text-[11px] uppercase tracking-[0.12em] text-dim mb-1">
+          <div className="text-label uppercase tracking-[0.12em] text-dim mb-1">
             Speedup from cache
           </div>
-          <div className="text-accent text-[14px] tabular-nums">
+          <div className="text-accent text-body tabular-nums">
             {ratio.toFixed(ratio < 10 ? 1 : 0)}× faster
           </div>
         </div>
         <div>
-          <div className="text-[11px] uppercase tracking-[0.12em] text-dim mb-1">
+          <div className="text-label uppercase tracking-[0.12em] text-dim mb-1">
             Cache memory (d={D_MODEL}, L={N_LAYERS}, bf16)
           </div>
-          <div className="text-ink text-[14px] tabular-nums">
+          <div className="text-ink text-body tabular-nums">
             {cacheGB < 1
               ? `${(cacheGB * 1024).toFixed(1)} MB`
               : `${cacheGB.toFixed(2)} GB`}
@@ -154,7 +154,7 @@ export function KVCacheCostChart() {
         </div>
       </div>
 
-      <p className="mt-4 text-[11px] text-dim font-mono leading-relaxed">
+      <p className="mt-4 text-label text-dim font-mono leading-relaxed">
         The speedup grows with sequence length — naive scales as{' '}
         <span className="text-ink">O(n³·d)</span> total, cached as{' '}
         <span className="text-ink">O(n²·d)</span>. The cost paid is memory: a
@@ -179,13 +179,13 @@ function Bar({
 }) {
   return (
     <div>
-      <div className="flex items-baseline justify-between text-[11px] font-mono mb-1">
+      <div className="flex items-baseline justify-between text-label font-mono mb-1">
         <span className={variant === 'naive' ? 'text-ink' : 'text-accent'}>
           {label}
         </span>
         <span className="text-dim tabular-nums">{value} FLOPs</span>
       </div>
-      <div className="relative h-5 rounded border border-border bg-bg-elevated overflow-hidden">
+      <div className="relative h-5 rounded border border-border bg-surface overflow-hidden">
         <div
           className={clsx(
             'h-full transition-all duration-200',

@@ -192,7 +192,7 @@ function HeatmapWithLabel({
 }) {
   return (
     <div className="flex flex-col items-center gap-2">
-      <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono text-center">
+      <div className="text-label uppercase tracking-[0.12em] text-dim font-mono text-center">
         {label}
       </div>
       <Heatmap
@@ -249,7 +249,7 @@ export function LoRAFinetuneLoss() {
       {/* Rank slider */}
       <div>
         <div className="flex items-baseline justify-between mb-1">
-          <span className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono">
+          <span className="text-label uppercase tracking-[0.12em] text-dim font-mono">
             rank r
           </span>
           <span className="text-ink font-mono text-sm tabular-nums">{r}</span>
@@ -276,7 +276,7 @@ export function LoRAFinetuneLoss() {
       </div>
 
       {/* Stats */}
-      <div className="flex flex-wrap gap-x-6 gap-y-1 text-[11px] font-mono text-muted border-t border-border pt-2">
+      <div className="flex flex-wrap gap-x-6 gap-y-1 text-label font-mono text-muted border-t border-border pt-2">
         <span>
           params used{' '}
           <span className="text-ink tabular-nums">{paramsUsed}</span>
@@ -291,7 +291,7 @@ export function LoRAFinetuneLoss() {
       {/* Loss curve */}
       {fitResult && fitResult.losses.length > 1 && (
         <div className="pt-2">
-          <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-2">
+          <div className="text-label uppercase tracking-[0.12em] text-dim font-mono mb-2">
             MSE vs gradient step
           </div>
           <LossCurve losses={fitResult.losses} />
@@ -299,7 +299,7 @@ export function LoRAFinetuneLoss() {
       )}
 
       {/* Caption */}
-      <p className="text-[11px] text-muted font-mono leading-relaxed">
+      <p className="text-label text-muted font-mono leading-relaxed">
         Unlike the SVD approach, gradient descent starts from random A and B and
         minimises ‖A·B − ΔW‖²_F iteratively. At {FIT_STEPS} steps with learning
         rate {FIT_LR}, the loss visibly drops — though GD may not converge to the

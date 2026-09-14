@@ -340,7 +340,7 @@ export function BlockPipeline() {
       title="One block, four rows: LN → attn → +res → LN → FFN → +res"
       headerAction={
         <div className="flex items-center gap-3 flex-wrap">
-          <div className="flex items-center gap-2 flex-wrap font-mono text-[11px] uppercase tracking-[0.12em]">
+          <div className="flex items-center gap-2 flex-wrap font-mono text-label uppercase tracking-[0.12em]">
             <span className="text-dim">d_model={D}</span>
             <span className="text-border-strong">·</span>
             <span className="text-dim">h={H}</span>
@@ -350,7 +350,7 @@ export function BlockPipeline() {
           <button
             type="button"
             onClick={reset}
-            className="text-[11px] uppercase tracking-[0.12em] font-mono text-muted hover:text-ink focus-ring transition-colors"
+            className="text-label uppercase tracking-[0.12em] font-mono text-muted hover:text-ink focus-ring transition-colors"
           >
             Reset
           </button>
@@ -438,12 +438,12 @@ function Controls(props: ControlsProps) {
   return (
     <div className="space-y-3">
       <div className="flex flex-wrap items-center gap-3">
-        <label className="flex items-center gap-2 text-[11px] uppercase tracking-[0.12em] text-dim font-mono">
+        <label className="flex min-w-0 flex-1 items-center gap-2 text-label uppercase tracking-[0.12em] text-dim font-mono">
           Sentence
           <select
             value={props.sentenceId}
             onChange={(e) => props.setSentenceId(e.target.value)}
-            className="number-input font-mono text-[11px] py-0.5 px-2 bg-bg border border-border rounded"
+            className="number-input font-mono text-label py-0.5 px-2 bg-bg border border-border rounded min-w-0 flex-1"
             aria-label="Sentence"
           >
             {SENTENCES.map((s) => (
@@ -456,7 +456,7 @@ function Controls(props: ControlsProps) {
       </div>
 
       <div className="flex flex-wrap items-center gap-2">
-        <span className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mr-1">
+        <span className="text-label uppercase tracking-[0.12em] text-dim font-mono mr-1">
           Head
         </span>
         {HEAD_LABELS.map((label, h) => (
@@ -465,7 +465,7 @@ function Controls(props: ControlsProps) {
             type="button"
             onClick={() => props.setHeadIdx(h)}
             className={clsx(
-              'text-[11px] uppercase tracking-[0.12em] font-mono px-2 py-0.5 rounded border focus-ring transition-colors',
+              'text-label uppercase tracking-[0.12em] font-mono px-2 py-0.5 rounded border focus-ring transition-colors',
               props.headIdx === h
                 ? 'border-accent text-accent'
                 : 'border-border text-muted hover:text-ink',
@@ -479,7 +479,7 @@ function Controls(props: ControlsProps) {
           type="button"
           onClick={() => props.setShowAllHeads(!props.showAllHeads)}
           className={clsx(
-            'text-[11px] uppercase tracking-[0.12em] font-mono px-2 py-0.5 rounded border focus-ring transition-colors',
+            'text-label uppercase tracking-[0.12em] font-mono px-2 py-0.5 rounded border focus-ring transition-colors',
             props.showAllHeads
               ? 'border-accent text-accent'
               : 'border-border text-muted hover:text-ink',
@@ -491,7 +491,7 @@ function Controls(props: ControlsProps) {
       </div>
 
       <div className="flex flex-wrap items-center gap-2">
-        <span className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mr-1">
+        <span className="text-label uppercase tracking-[0.12em] text-dim font-mono mr-1">
           Toggles
         </span>
         <Toggle
@@ -516,8 +516,8 @@ function Controls(props: ControlsProps) {
         />
       </div>
 
-      <div className="flex items-center gap-3 font-mono text-[12px]">
-        <span className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono shrink-0">
+      <div className="flex items-center gap-3 font-mono text-caption">
+        <span className="text-label uppercase tracking-[0.12em] text-dim font-mono shrink-0">
           Block depth
         </span>
         <div className="flex-1 min-w-0 max-w-[260px]">
@@ -550,7 +550,7 @@ function Toggle({
       type="button"
       onClick={() => onChange(!on)}
       className={clsx(
-        'text-[11px] uppercase tracking-[0.12em] font-mono px-2 py-0.5 rounded border focus-ring transition-colors',
+        'text-label uppercase tracking-[0.12em] font-mono px-2 py-0.5 rounded border focus-ring transition-colors',
         on
           ? 'border-accent text-accent'
           : 'border-border text-muted hover:text-ink',
@@ -603,7 +603,7 @@ function DataFlow({
   return (
     <div className="space-y-5 overflow-x-auto">
       {/* Token labels */}
-      <div className="grid grid-cols-4 gap-3 text-center text-[11px] uppercase tracking-[0.12em] text-dim font-mono">
+      <div className="grid grid-cols-4 gap-3 text-center text-label uppercase tracking-[0.12em] text-dim font-mono">
         {sentence.tokens.map((t, i) => (
           <div key={i}>{t}</div>
         ))}
@@ -765,13 +765,13 @@ function DataFlow({
 
       {showAllHeads && (
         <div className="rounded-lg border border-border bg-bg/40 p-4">
-          <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-3">
+          <div className="text-label uppercase tracking-[0.12em] text-dim font-mono mb-3">
             All heads: attention weights
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {headData.allHeadWeights.map((w, h) => (
               <div key={h} className="flex flex-col items-center">
-                <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-1">
+                <div className="text-label uppercase tracking-[0.12em] text-dim font-mono mb-1">
                   h{h + 1} ({HEAD_LABELS[h]})
                 </div>
                 <Heatmap
@@ -803,7 +803,7 @@ interface RowCell {
 function Row({ title, cells }: { title: string; cells: RowCell[] }) {
   return (
     <div className="rounded-lg border border-border bg-bg/30 p-3">
-      <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-2">
+      <div className="text-label uppercase tracking-[0.12em] text-dim font-mono mb-2">
         {title}
       </div>
       <div className="flex items-center gap-2 overflow-x-auto pb-1">
@@ -832,7 +832,7 @@ function RowCellView({ cell }: { cell: RowCell }) {
       )}
       title={cell.tooltip}
     >
-      <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-1">
+      <div className="text-label uppercase tracking-[0.12em] text-dim font-mono mb-1">
         {cell.label}
       </div>
       <Heatmap
@@ -891,7 +891,7 @@ function DepthView({
 
   return (
     <div className="space-y-4 overflow-x-auto">
-      <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono">
+      <div className="text-label uppercase tracking-[0.12em] text-dim font-mono">
         Block depth view ({blockDepth} blocks stacked; toggles apply to every block)
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-[1fr_auto] gap-3">
@@ -902,7 +902,7 @@ function DepthView({
               className="rounded-lg border border-border bg-bg/30 p-2 flex items-center gap-3"
               title={`output of block ${b + 1}, shape (4, 8)`}
             >
-              <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono shrink-0 w-16">
+              <div className="text-label uppercase tracking-[0.12em] text-dim font-mono shrink-0 w-16">
                 block {b + 1}
               </div>
               <Heatmap
@@ -918,10 +918,10 @@ function DepthView({
           ))}
         </div>
         <div className="rounded-lg border border-border bg-bg/30 p-3 min-w-[180px]">
-          <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-2">
+          <div className="text-label uppercase tracking-[0.12em] text-dim font-mono mb-2">
             Drift from input
           </div>
-          <div className="space-y-1 font-mono text-[11px]">
+          <div className="space-y-1 font-mono text-label">
             {drift.map((c, b) => (
               <div key={b} className="flex items-center justify-between gap-2">
                 <span className="text-dim">block {b + 1}</span>
@@ -931,13 +931,13 @@ function DepthView({
               </div>
             ))}
           </div>
-          <div className="mt-3 text-[11px] text-dim font-mono leading-relaxed">
+          <div className="mt-3 text-label text-dim font-mono leading-relaxed">
             Cosine similarity of each block's output to the original input.
             With residual + LN, the stream stays close to 1. Without,
             it drifts toward 0 (or negative).
           </div>
           {(!toggles.useRes1 || !toggles.useRes2) && (
-            <div className="mt-2 text-[11px] text-[rgb(var(--negative))] font-mono leading-relaxed">
+            <div className="mt-2 text-label text-[rgb(var(--negative))] font-mono leading-relaxed">
               ⚠ a residual is off — drift accelerates with depth.
             </div>
           )}

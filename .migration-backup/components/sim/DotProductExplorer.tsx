@@ -76,7 +76,7 @@ export function DotProductExplorer({ preset }: { preset?: DotProductPreset }) {
         ariaLabel="2D plane with two draggable vectors a and b."
       />
 
-      <dl className="grid grid-cols-2 sm:grid-cols-4 gap-x-4 gap-y-3 mt-5 font-mono text-[13px]">
+      <dl className="grid grid-cols-2 sm:grid-cols-4 gap-x-4 gap-y-3 mt-5 font-mono text-body-sm">
         <Readout label="|a|" value={fmt(ma, 2)} />
         <Readout label="|b|" value={fmt(mb, 2)} />
         <Readout label="cos θ" value={fmt(c, 3)} />
@@ -89,7 +89,7 @@ export function DotProductExplorer({ preset }: { preset?: DotProductPreset }) {
 
       {/* Signed bar */}
       <div className="mt-5">
-        <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-2">
+        <div className="text-label uppercase tracking-[0.12em] text-dim font-mono mb-2">
           a · b (signed)
         </div>
         <div className="relative h-6 rounded-sm bg-bg/40 overflow-hidden">
@@ -111,7 +111,7 @@ export function DotProductExplorer({ preset }: { preset?: DotProductPreset }) {
             }
           />
         </div>
-        <div className="flex justify-between mt-1 text-[11px] text-dim font-mono tabular-nums">
+        <div className="flex justify-between mt-1 text-label text-dim font-mono tabular-nums">
           <span>−{SCALE}</span>
           <span>0</span>
           <span>+{SCALE}</span>
@@ -132,7 +132,7 @@ function Readout({
 }) {
   return (
     <div>
-      <dt className="text-[11px] uppercase tracking-[0.12em] text-dim">
+      <dt className="text-label uppercase tracking-[0.12em] text-dim">
         {label}
       </dt>
       <dd

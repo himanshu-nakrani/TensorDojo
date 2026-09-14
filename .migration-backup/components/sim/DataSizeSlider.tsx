@@ -103,9 +103,9 @@ function GapChart({
               y={y}
               textAnchor="end"
               dominantBaseline="middle"
-              fill="rgb(var(--dim))"
+              fill="rgb(var(--fg-subtle))"
               fontSize={8}
-              fontFamily="monospace"
+              fontFamily="var(--font-mono), ui-monospace, monospace"
               className="tabular-nums"
             >
               {v.toFixed(2)}
@@ -131,9 +131,9 @@ function GapChart({
           x={xPos(i)}
           y={padT + plotH + 12}
           textAnchor="middle"
-          fill={n === activeN ? 'rgb(var(--ink))' : 'rgb(var(--dim))'}
+          fill={n === activeN ? 'rgb(var(--fg))' : 'rgb(var(--fg-subtle))'}
           fontSize={8}
-          fontFamily="monospace"
+          fontFamily="var(--font-mono), ui-monospace, monospace"
           className="tabular-nums"
         >
           {n}
@@ -146,9 +146,9 @@ function GapChart({
         y={padT + plotH / 2}
         textAnchor="middle"
         dominantBaseline="middle"
-        fill="rgb(var(--dim))"
+        fill="rgb(var(--fg-subtle))"
         fontSize={7}
-        fontFamily="monospace"
+        fontFamily="var(--font-mono), ui-monospace, monospace"
         transform={`rotate(-90, 8, ${padT + plotH / 2})`}
       >
         final loss
@@ -159,7 +159,7 @@ function GapChart({
         <polyline
           points={toPolyline(scratchPts)}
           fill="none"
-          stroke="rgb(var(--dim))"
+          stroke="rgb(var(--fg-subtle))"
           strokeWidth={1.5}
           opacity={0.85}
         />
@@ -183,7 +183,7 @@ function GapChart({
           cx={p.x}
           cy={p.y}
           r={3}
-          fill="rgb(var(--dim))"
+          fill="rgb(var(--fg-subtle))"
           opacity={0.85}
         />
       ))}
@@ -207,12 +207,12 @@ function GapChart({
 
 function Legend() {
   return (
-    <div className="flex flex-wrap items-center gap-4 font-mono text-[11px]">
+    <div className="flex flex-wrap items-center gap-4 font-mono text-label">
       <span className="inline-flex items-center gap-1.5">
         <span
           aria-hidden="true"
           className="inline-block w-3 h-0.5"
-          style={{ background: 'rgb(var(--dim))' }}
+          style={{ background: 'rgb(var(--fg-subtle))' }}
         />
         from scratch
       </span>
@@ -319,7 +319,7 @@ export function DataSizeSlider() {
       <div className="space-y-4">
         {/* Slider */}
         <div>
-          <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-2">
+          <div className="text-label uppercase tracking-[0.12em] text-dim font-mono mb-2">
             Fine-tune dataset size
           </div>
           <Slider
@@ -336,7 +336,7 @@ export function DataSizeSlider() {
 
         {/* Gap chart */}
         <div>
-          <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-2">
+          <div className="text-label uppercase tracking-[0.12em] text-dim font-mono mb-2">
             Final loss vs N
           </div>
           <GapChart cache={cache} activeN={activeN} />
@@ -346,7 +346,7 @@ export function DataSizeSlider() {
         <Legend />
 
         {/* Status line */}
-        <div className="font-mono text-[11px] text-fg-subtle tabular-nums h-4">
+        <div className="font-mono text-label text-dim tabular-nums h-4">
           {pending
             ? `training at N=${activeN}…`
             : divergedAt !== null && divergedAt === activeN

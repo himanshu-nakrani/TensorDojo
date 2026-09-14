@@ -14,19 +14,18 @@ export function HeroInteractive() {
   return (
     <div className="relative">
       <CornerTicks />
-      <div className="rounded-xl border border-border-strong bg-bg-elevated p-5 sm:p-6 card-surface relative">
+      <div className="graticule rounded-xl border border-border-strong bg-surface p-5 sm:p-6 card-surface relative">
         <div className="flex items-baseline justify-between gap-3 mb-4">
-          <span className="text-[11px] uppercase tracking-[0.12em] font-mono text-accent">
-            <span aria-hidden="true">◆ </span>
+          <span className="text-label uppercase tracking-[0.12em] font-mono text-accent">
             <span className="hidden sm:inline">Live · drag a vector tip</span>
             <span className="sm:hidden">Live · drag a tip</span>
           </span>
-          <span className="text-[11px] uppercase tracking-[0.12em] font-mono text-fg-muted shrink-0">
+          <span className="text-label uppercase tracking-[0.12em] font-mono text-muted shrink-0">
             Lesson 01
           </span>
         </div>
         <DotProductExplorer preset={{ a: [1.4, 0.6], b: [-0.4, 1.3] }} />
-        <p className="mt-4 pt-4 border-t border-border text-[12px] text-fg-muted font-mono leading-relaxed">
+        <p className="mt-4 pt-4 border-t border-border text-caption text-muted font-mono leading-relaxed">
           From the first lesson: vectors and the dot product.
         </p>
       </div>

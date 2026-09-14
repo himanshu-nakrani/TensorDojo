@@ -50,10 +50,10 @@ export function FlashAttentionTraffic() {
     >
       <label className="block mb-5">
         <div className="flex items-baseline justify-between mb-1">
-          <span className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono">
+          <span className="text-label uppercase tracking-[0.12em] text-dim font-mono">
             Sequence length
           </span>
-          <span className="text-[11px] font-mono tabular-nums">
+          <span className="text-label font-mono tabular-nums">
             <span className="text-ink">{seqLen.toLocaleString()}</span>
             <span className="text-dim"> tokens</span>
           </span>
@@ -68,7 +68,7 @@ export function FlashAttentionTraffic() {
           className="w-full focus-ring"
           aria-label="Sequence length"
         />
-        <div className="flex justify-between text-[11px] text-dim font-mono mt-1 tabular-nums">
+        <div className="flex justify-between text-label text-dim font-mono mt-1 tabular-nums">
           {SEQ_STEPS.map((n) => (
             <span key={n}>{n}</span>
           ))}
@@ -94,27 +94,27 @@ export function FlashAttentionTraffic() {
         />
       </div>
 
-      <div className="grid grid-cols-2 gap-4 pt-4 border-t border-border font-mono text-[11px]">
+      <div className="grid grid-cols-2 gap-4 pt-4 border-t border-border font-mono text-label">
         <div>
-          <div className="text-[11px] uppercase tracking-[0.12em] text-dim mb-1">
+          <div className="text-label uppercase tracking-[0.12em] text-dim mb-1">
             HBM traffic ratio
           </div>
-          <div className="text-accent text-[14px] tabular-nums">
+          <div className="text-accent text-body tabular-nums">
             {speedup.toFixed(speedup < 10 ? 1 : 0)}× less
           </div>
         </div>
         <div>
-          <div className="text-[11px] uppercase tracking-[0.12em] text-dim mb-1">
+          <div className="text-label uppercase tracking-[0.12em] text-dim mb-1">
             Naive peak SRAM (n² scores)
           </div>
-          <div className={clsx('text-[14px] tabular-nums', naive.fitsInSram ? 'text-ink' : 'text-[rgb(var(--negative))]')}>
+          <div className={clsx('text-body tabular-nums', naive.fitsInSram ? 'text-ink' : 'text-[rgb(var(--negative))]')}>
             {formatBytes(naive.sramPeak)}
             {!naive.fitsInSram && ' (overflows)'}
           </div>
         </div>
       </div>
 
-      <p className="mt-4 text-[11px] text-dim font-mono leading-relaxed">
+      <p className="mt-4 text-label text-dim font-mono leading-relaxed">
         Same attention math, different memory pattern. Naive writes the n×n
         score matrix to HBM (slow, far off-chip) and reads it back; flash
         keeps the same scores inside SRAM (fast, on-chip) by computing
@@ -143,11 +143,11 @@ function TrafficBar({
 }) {
   return (
     <div>
-      <div className="flex items-baseline justify-between text-[11px] font-mono mb-1">
+      <div className="flex items-baseline justify-between text-label font-mono mb-1">
         <span className={variant === 'naive' ? 'text-ink' : 'text-accent'}>{label}</span>
         <span className="text-dim tabular-nums">{value}</span>
       </div>
-      <div className="relative h-5 rounded border border-border bg-bg-elevated overflow-hidden">
+      <div className="relative h-5 rounded border border-border bg-surface overflow-hidden">
         <div
           className={clsx(
             'h-full transition-all duration-200',
@@ -159,7 +159,7 @@ function TrafficBar({
         />
       </div>
       {warn && (
-        <div className="mt-1 text-[11px] text-[rgb(var(--negative))] font-mono">
+        <div className="mt-1 text-label text-[rgb(var(--negative))] font-mono">
           {warnText}
         </div>
       )}

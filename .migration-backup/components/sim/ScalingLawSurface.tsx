@@ -105,7 +105,7 @@ export function ScalingLawSurface() {
         <button
           type="button"
           onClick={reset}
-          className="text-[11px] uppercase tracking-[0.12em] font-mono text-muted hover:text-ink focus-ring transition-colors"
+          className="text-label uppercase tracking-[0.12em] font-mono text-muted hover:text-ink focus-ring transition-colors"
         >
           Reset
         </button>
@@ -113,10 +113,10 @@ export function ScalingLawSurface() {
     >
       <label className="block mb-4">
         <div className="flex items-baseline justify-between mb-1">
-          <span className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono">
+          <span className="text-label uppercase tracking-[0.12em] text-dim font-mono">
             Compute budget C (FLOPs)
           </span>
-          <span className="text-[11px] font-mono tabular-nums text-ink">
+          <span className="text-label font-mono tabular-nums text-ink">
             {budget.label}
           </span>
         </div>
@@ -137,7 +137,7 @@ export function ScalingLawSurface() {
           className="w-full focus-ring"
           aria-label="Compute budget"
         />
-        <div className="flex justify-between text-[11px] text-dim font-mono mt-1">
+        <div className="flex justify-between text-label text-dim font-mono mt-1">
           {BUDGET_STEPS.map((b) => (
             <span key={b.label}>{b.label.split(' ')[0]}</span>
           ))}
@@ -268,10 +268,10 @@ export function ScalingLawSurface() {
       {/* User N slider */}
       <label className="block mb-4">
         <div className="flex items-baseline justify-between mb-1">
-          <span className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono">
+          <span className="text-label uppercase tracking-[0.12em] text-dim font-mono">
             Your N (the model size you'd pick)
           </span>
-          <span className="text-[11px] font-mono tabular-nums text-ink">
+          <span className="text-label font-mono tabular-nums text-ink">
             {formatBig(userN)} params · {formatBig(userD)} tokens · {(userD / userN).toFixed(1)} tok/param
           </span>
         </div>
@@ -287,21 +287,21 @@ export function ScalingLawSurface() {
         />
       </label>
 
-      <div className="grid grid-cols-3 gap-4 pt-3 border-t border-border font-mono text-[11px]">
+      <div className="grid grid-cols-3 gap-4 pt-3 border-t border-border font-mono text-label">
         <div>
-          <div className="text-[11px] uppercase tracking-[0.12em] text-dim mb-1">
+          <div className="text-label uppercase tracking-[0.12em] text-dim mb-1">
             Loss at your choice
           </div>
           <div className="text-ink tabular-nums">{userLoss.toFixed(3)}</div>
         </div>
         <div>
-          <div className="text-[11px] uppercase tracking-[0.12em] text-dim mb-1">
+          <div className="text-label uppercase tracking-[0.12em] text-dim mb-1">
             Loss at optimum
           </div>
           <div className="text-accent tabular-nums">{optimal.loss.toFixed(3)}</div>
         </div>
         <div>
-          <div className="text-[11px] uppercase tracking-[0.12em] text-dim mb-1">
+          <div className="text-label uppercase tracking-[0.12em] text-dim mb-1">
             Loss gap
           </div>
           <div
@@ -317,7 +317,7 @@ export function ScalingLawSurface() {
         </div>
       </div>
 
-      <p className="mt-4 text-[11px] text-dim font-mono leading-relaxed">
+      <p className="mt-4 text-label text-dim font-mono leading-relaxed">
         The curve shows loss along the constraint D = C / (6·N) — every
         point is a different way to spend the same compute budget. The
         bottom of the curve is the Chinchilla-optimal split. Drag the slider

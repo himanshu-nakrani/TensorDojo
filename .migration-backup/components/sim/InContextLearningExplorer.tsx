@@ -15,15 +15,16 @@ const TRUE_MAP: Record<Shape, Color> = {
   '▲': 'green',
 };
 
+// Chart tokens keep these theme-aware without hand-paired dark: classes.
 const COLOR_BAR: Record<Color, string> = {
-  red: 'fill-[rgb(220,38,38)]',
-  blue: 'fill-[rgb(37,99,235)]',
-  green: 'fill-[rgb(22,163,74)]',
+  red: 'fill-negative',
+  blue: 'fill-series-4',
+  green: 'fill-positive',
 };
 const COLOR_TEXT: Record<Color, string> = {
-  red: 'text-[rgb(220,38,38)] dark:text-[rgb(248,113,113)]',
-  blue: 'text-[rgb(37,99,235)] dark:text-[rgb(96,165,250)]',
-  green: 'text-[rgb(22,163,74)] dark:text-[rgb(74,222,128)]',
+  red: 'text-negative',
+  blue: 'text-series-4',
+  green: 'text-positive',
 };
 
 /**
@@ -66,7 +67,7 @@ export function InContextLearningExplorer() {
           onClick={() => setNoisy((n) => !n)}
           aria-pressed={noisy}
           className={clsx(
-            'text-[11px] uppercase tracking-[0.12em] font-mono px-2 py-0.5 rounded border focus-ring transition-colors',
+            'text-label uppercase tracking-[0.12em] font-mono px-2 py-0.5 rounded border focus-ring transition-colors',
             noisy
               ? 'border-[rgb(var(--negative))] text-[rgb(var(--negative))]'
               : 'border-border text-muted hover:text-ink hover:border-border-strong',
@@ -78,7 +79,7 @@ export function InContextLearningExplorer() {
     >
       {/* Shots selector */}
       <div className="mb-5">
-        <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-2">
+        <div className="text-label uppercase tracking-[0.12em] text-dim font-mono mb-2">
           number of in-context examples
         </div>
         <div className="flex gap-2">
@@ -89,7 +90,7 @@ export function InContextLearningExplorer() {
               onClick={() => setShots(k)}
               aria-pressed={shots === k}
               className={clsx(
-                'text-[12px] font-mono px-3 py-1.5 rounded border focus-ring transition-colors',
+                'text-caption font-mono px-3 py-1.5 rounded border focus-ring transition-colors',
                 shots === k
                   ? 'border-accent text-accent bg-accent-soft'
                   : 'border-border text-muted hover:text-ink hover:border-border-strong',
@@ -102,9 +103,9 @@ export function InContextLearningExplorer() {
       </div>
 
       {/* Prompt rendering */}
-      <div className="rounded-lg border border-border bg-bg/40 p-4 mb-4 text-[13px] font-mono leading-relaxed">
+      <div className="rounded-lg border border-border bg-bg/40 p-4 mb-4 text-body-sm font-mono leading-relaxed">
         {examples.length === 0 && (
-          <span className="text-fg-subtle italic">
+          <span className="text-dim italic">
             (no in-context examples)
           </span>
         )}
@@ -116,7 +117,7 @@ export function InContextLearningExplorer() {
                 {ex.shape} → <span className={COLOR_TEXT[ex.color]}>{ex.color}</span>
               </span>
               {isMislabeled && (
-                <span className="text-[10px] uppercase tracking-[0.12em] text-[rgb(var(--negative))]">
+                <span className="text-micro uppercase tracking-[0.12em] text-[rgb(var(--negative))]">
                   mislabeled
                 </span>
               )}
@@ -126,14 +127,14 @@ export function InContextLearningExplorer() {
         <div className="mt-2 pt-2 border-t border-border flex items-baseline gap-2">
           <span className="text-ink">
             {query} →{' '}
-            <span className="text-fg-subtle italic">?</span>
+            <span className="text-dim italic">?</span>
           </span>
         </div>
       </div>
 
       {/* Query shape selector */}
       <div className="mb-4">
-        <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-2">
+        <div className="text-label uppercase tracking-[0.12em] text-dim font-mono mb-2">
           query shape
         </div>
         <div className="flex gap-2">
@@ -158,7 +159,7 @@ export function InContextLearningExplorer() {
 
       {/* Predicted distribution */}
       <div className="rounded-lg border border-border bg-bg/40 p-4">
-        <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-3">
+        <div className="text-label uppercase tracking-[0.12em] text-dim font-mono mb-3">
           predicted distribution P(color | prompt, {query})
         </div>
         <DistributionBars probs={probs} />
@@ -242,7 +243,7 @@ function DistributionBars({ probs }: { probs: Record<Color, number> }) {
                 y={y - 4}
                 textAnchor="middle"
                 fontSize={11}
-                fontFamily="monospace"
+                fontFamily="var(--font-mono), ui-monospace, monospace"
                 className="fill-ink"
               >
                 {(probs[c] * 100).toFixed(0)}%
@@ -252,8 +253,8 @@ function DistributionBars({ probs }: { probs: Record<Color, number> }) {
                 y={H - 4}
                 textAnchor="middle"
                 fontSize={11}
-                fontFamily="monospace"
-                className="fill-fg-muted"
+                fontFamily="var(--font-mono), ui-monospace, monospace"
+                className="fill-muted"
               >
                 {c}
               </text>

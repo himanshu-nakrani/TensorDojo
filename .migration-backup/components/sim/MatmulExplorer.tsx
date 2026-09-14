@@ -73,7 +73,7 @@ export function MatmulExplorer() {
 
   return (
     <SimFrame title="A · B = AB · hover AB to see the dot product" onReset={reset}>
-      <div className="grid grid-cols-[auto_auto_auto_auto_auto] items-start justify-center gap-x-4 gap-y-2 mb-5 font-mono text-[13px]">
+      <div className="grid grid-cols-[auto_auto_auto_auto_auto] items-start justify-center gap-x-4 gap-y-2 mb-5 font-mono text-body-sm">
         <GridLabel label="A" sub="2×3" />
         <span aria-hidden="true" />
         <GridLabel label="B" sub="3×2" />
@@ -114,19 +114,19 @@ export function MatmulExplorer() {
 
       {/* Expansion line */}
       <div className="rounded-md border border-border bg-bg/40 px-4 py-3">
-        <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-1.5">
+        <div className="text-label uppercase tracking-[0.12em] text-dim font-mono mb-1.5">
           c
           <sub>{focused.i + 1},{focused.j + 1}</sub>{' '}
           = row {focused.i + 1} of A · col {focused.j + 1} of B
         </div>
-        <div className="font-mono text-[14px] text-ink tabular-nums leading-relaxed flex flex-wrap items-baseline gap-x-1 gap-y-1">
+        <div className="font-mono text-body text-ink tabular-nums leading-relaxed flex flex-wrap items-baseline gap-x-1 gap-y-1">
           {focusedTerms.map((t, idx) => (
             <span key={idx} className="contents">
-              {idx > 0 && <span className="text-fg-muted">+</span>}
+              {idx > 0 && <span className="text-muted">+</span>}
               <span>{t}</span>
             </span>
           ))}
-          <span className="text-fg-muted">=</span>
+          <span className="text-muted">=</span>
           <span className="text-accent">{fmt(focusedValue)}</span>
         </div>
       </div>
@@ -147,13 +147,13 @@ function GridLabel({
     <div className="text-center">
       <div
         className={clsx(
-          'text-[13px] font-semibold tracking-[-0.005em]',
+          'text-body-sm font-semibold tracking-[-0.005em]',
           highlight ? 'text-accent' : 'text-ink',
         )}
       >
         {label}
       </div>
-      <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono">
+      <div className="text-label uppercase tracking-[0.12em] text-dim font-mono">
         {sub}
       </div>
     </div>
@@ -162,7 +162,7 @@ function GridLabel({
 
 function Operator({ children }: { children: React.ReactNode }) {
   return (
-    <span className="self-center px-1 text-[18px] font-mono text-fg-muted">
+    <span className="self-center px-1 text-[18px] font-mono text-muted">
       {children}
     </span>
   );
@@ -213,7 +213,7 @@ function EditableMatrix({
               }}
               aria-label={`${ariaPrefix} row ${i + 1} column ${j + 1}`}
               className={clsx(
-                'focus-ring h-9 w-full rounded text-center font-mono text-[13px] tabular-nums bg-bg-elevated border transition-colors',
+                'focus-ring h-9 w-full rounded text-center font-mono text-body-sm tabular-nums bg-surface border transition-colors',
                 isHighlighted
                   ? 'border-accent text-accent bg-accent-soft'
                   : 'border-border text-ink hover:border-border-strong',
@@ -264,10 +264,10 @@ function ReadonlyMatrix({
                 values[i]![j]!,
               )}`}
               className={clsx(
-                'focus-ring h-9 w-full rounded text-center font-mono text-[13px] tabular-nums transition-colors',
+                'focus-ring h-9 w-full rounded text-center font-mono text-body-sm tabular-nums transition-colors',
                 isFocused
                   ? 'bg-accent text-accent-fg'
-                  : 'bg-bg-elevated text-ink hover:bg-accent-soft hover:text-accent',
+                  : 'bg-surface text-ink hover:bg-accent-soft hover:text-accent',
               )}
             >
               {fmt(values[i]![j]!)}

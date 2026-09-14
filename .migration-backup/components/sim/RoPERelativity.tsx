@@ -126,7 +126,7 @@ export function RoPERelativity() {
       onReset={reset}
       headerAction={
         <div className="flex items-center gap-3">
-          <div className="flex border border-border rounded overflow-hidden font-mono text-[11px]">
+          <div className="flex border border-border rounded overflow-hidden font-mono text-label">
             {(['single-pair', 'all-pairs'] as const).map((m) => (
               <button
                 key={m}
@@ -146,7 +146,7 @@ export function RoPERelativity() {
           <button
             type="button"
             onClick={reset}
-            className="text-[11px] uppercase tracking-[0.12em] font-mono text-muted hover:text-ink focus-ring transition-colors"
+            className="text-label uppercase tracking-[0.12em] font-mono text-muted hover:text-ink focus-ring transition-colors"
           >
             Reset
           </button>
@@ -222,7 +222,7 @@ export function RoPERelativity() {
         })}
       </svg>
 
-      <div className="mt-2 flex flex-wrap gap-3 font-mono text-[11px]">
+      <div className="mt-2 flex flex-wrap gap-3 font-mono text-label">
         {visible.map(({ k }) => (
           <div key={k} className="flex items-center gap-1.5">
             <span
@@ -235,7 +235,7 @@ export function RoPERelativity() {
         ))}
       </div>
 
-      <p className="mt-4 text-[11px] text-dim font-mono leading-relaxed">
+      <p className="mt-4 text-label text-dim font-mono leading-relaxed">
         Each curve is the rotated dot product averaged over{' '}
         <span className="text-ink">{N_SAMPLES}</span> random unit (q, k)
         pairs, plotted against the offset m − n. Pair 0 oscillates fast — one

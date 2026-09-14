@@ -77,7 +77,7 @@ export function CrossEntropyExplorer() {
     <SimFrame title="Drag logits · click the true token · watch −log p" onReset={reset}>
       {/* Logits — one slider per token */}
       <section aria-label="Logits" className="mb-6">
-        <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-3">
+        <div className="text-label uppercase tracking-[0.12em] text-dim font-mono mb-3">
           Model logits (drag to change)
         </div>
         <div className="space-y-2">
@@ -89,7 +89,7 @@ export function CrossEntropyExplorer() {
                   type="button"
                   onClick={() => setTrueIndex(i)}
                   className={
-                    'w-16 text-left text-[12px] font-mono py-1 px-2 rounded border focus-ring transition-colors ' +
+                    'w-16 text-left text-caption font-mono py-1 px-2 rounded border focus-ring transition-colors ' +
                     (isTrue
                       ? 'border-accent text-accent bg-accent-faint'
                       : 'border-border text-muted hover:text-ink hover:border-border-strong')
@@ -117,10 +117,10 @@ export function CrossEntropyExplorer() {
       {/* Distribution */}
       <section aria-label="Distribution" className="mb-5">
         <div className="flex items-baseline justify-between mb-3">
-          <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono">
+          <div className="text-label uppercase tracking-[0.12em] text-dim font-mono">
             Predicted distribution (after softmax)
           </div>
-          <div className="text-[11px] text-dim font-mono tabular-nums">
+          <div className="text-label text-dim font-mono tabular-nums">
             p(true) ={' '}
             <span className="text-ink">{fmt(pTrue, 3)}</span>
           </div>
@@ -142,17 +142,17 @@ export function CrossEntropyExplorer() {
         className="rounded-md border border-border bg-bg/40 p-4"
       >
         <div className="flex items-baseline justify-between mb-1">
-          <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono">
+          <div className="text-label uppercase tracking-[0.12em] text-dim font-mono">
             Cross-entropy loss (this example)
           </div>
-          <div className="text-[11px] text-dim font-mono tabular-nums">
+          <div className="text-label text-dim font-mono tabular-nums">
             −log p(true)
           </div>
         </div>
         <div className="font-mono text-[1.5rem] tabular-nums text-accent">
           {fmt(loss, 3)}
         </div>
-        <p className="mt-2 text-[11px] text-dim leading-relaxed">
+        <p className="mt-2 text-label text-dim leading-relaxed">
           {pTrue >= 0.99
             ? 'Model put essentially all mass on the true token — loss ≈ 0.'
             : pTrue <= 0.001

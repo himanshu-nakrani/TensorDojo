@@ -18,16 +18,16 @@ export const interactives: readonly InteractiveEntry[] = [
     id: 'bpe-trainer',
     title: 'BPE trainer',
     description:
-      'Train a BPE vocabulary on a tiny corpus, one merge at a time. Each step finds the most frequent adjacent symbol pair across the corpus and merges it into a new vocabulary entry. Watch how single characters get absorbed into common subwords (and how some words collapse to a single token after enough merges).',
+      'One merge at a time. Step through the corpus and watch characters become subwords.',
     caption:
-      'Press Step to advance one merge; the just-merged pair is highlighted in both the per-word state on the left and the vocabulary on the right. The end-of-word marker ▁ is what lets BPE tell "low▁" (the whole word) apart from "low" (a prefix).',
+      'Press Step to advance one merge; the just-merged pair is highlighted in the corpus and the vocabulary. The end-of-word marker ▁ is what lets BPE tell "low▁" (the whole word) apart from "low" (a prefix).',
     Component: BPETrainer,
   },
   {
     id: 'bpe-tokenizer',
     title: 'BPE tokenizer',
     description:
-      'Type any string; pick a pre-trained vocabulary; see how it splits. Three vocabularies are pre-trained on different corpora and with different merge budgets. The same input "lowest" tokenizes wildly differently depending on which vocabulary you use — BPE\'s output is a function of the training corpus.',
+      'Type a string and pick a vocabulary. The same word splits differently depending on what the vocab was trained on.',
     caption:
       'Try swapping the vocabulary while leaving the input the same. Type a word that has nothing to do with the training corpus (e.g. "elephant") and watch it shatter into single characters — that\'s OOV behavior, and it\'s why real tokenizers train on billions of bytes of text.',
     Component: BPETokenizer,

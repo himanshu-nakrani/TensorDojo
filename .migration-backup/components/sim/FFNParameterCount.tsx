@@ -53,7 +53,7 @@ export function FFNParameterCount() {
 
   return (
     <SimFrame title="Where the parameters live" onReset={reset}>
-      <p className="text-[12px] text-muted font-mono leading-relaxed mb-5">
+      <p className="text-caption text-muted font-mono leading-relaxed mb-5">
         Most of a transformer's parameters are in the FFN, not the
         attention. The FFN has 2 × d_model × d_hidden weights (W₁ and W₂);
         the attention block has 4 × d_model² (the four Q/K/V/out
@@ -61,10 +61,10 @@ export function FFNParameterCount() {
         grows.
       </p>
 
-      <div className="space-y-4 font-mono text-[12px] mb-4">
+      <div className="space-y-4 font-mono text-caption mb-4">
         <div>
           <div className="flex items-baseline justify-between mb-1">
-            <span className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono">
+            <span className="text-label uppercase tracking-[0.12em] text-dim font-mono">
               d_model
             </span>
             <span className="text-ink tabular-nums">{dModel}</span>
@@ -81,7 +81,7 @@ export function FFNParameterCount() {
         </div>
         <div>
           <div className="flex items-baseline justify-between mb-1">
-            <span className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono">
+            <span className="text-label uppercase tracking-[0.12em] text-dim font-mono">
               expansion factor
             </span>
             <span className="text-ink tabular-nums">
@@ -95,7 +95,7 @@ export function FFNParameterCount() {
                 type="button"
                 onClick={() => setExpansion(e)}
                 className={
-                  'text-[11px] uppercase tracking-[0.12em] font-mono px-2 py-0.5 rounded border focus-ring transition-colors ' +
+                  'text-label uppercase tracking-[0.12em] font-mono px-2 py-0.5 rounded border focus-ring transition-colors ' +
                   (expansion === e
                     ? 'border-accent text-accent'
                     : 'border-border text-muted hover:text-ink')
@@ -109,7 +109,7 @@ export function FFNParameterCount() {
         </div>
       </div>
 
-      <dl className="space-y-1.5 font-mono text-[12px]">
+      <dl className="space-y-1.5 font-mono text-caption">
         <div className="flex items-baseline justify-between">
           <dt className="text-dim">FFN params (W₁ + b₁ + W₂ + b₂)</dt>
           <dd className="text-accent tabular-nums">{counts.ffn.toLocaleString()}</dd>
@@ -128,7 +128,7 @@ export function FFNParameterCount() {
         </div>
       </dl>
 
-      <p className="mt-4 text-[11px] text-dim font-mono leading-relaxed">
+      <p className="mt-4 text-label text-dim font-mono leading-relaxed">
         At d_model = {dModel} and {expansion}× expansion (d_hidden = {dHidden}), the FFN
         is {(counts.ffnFraction * 100).toFixed(0)}% of the block's parameters. In
         real transformers (d_model = 512, 1024, 4096), the FFN at the conventional

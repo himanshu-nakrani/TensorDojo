@@ -5,7 +5,9 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import clsx from 'clsx';
 import { ThemeToggle } from './ThemeToggle';
+import { ProgressReadout } from './ProgressReadout';
 import { useSearchPalette } from '@/components/search/SearchPalette';
+import { ReadingProgress } from '@/components/lesson/ReadingProgress';
 
 interface NavLink {
   href: string;
@@ -119,15 +121,19 @@ export function TopNav() {
 
   return (
     <>
-      <header className="sticky top-0 z-40 border-b border-border/60 bg-bg/80 backdrop-blur-sm supports-[backdrop-filter]:bg-bg/60">
-        <div className="mx-auto flex h-12 max-w-[1500px] items-center justify-between gap-4 px-4 sm:px-6">
+      <header className="sticky top-0 z-40 border-b border-border bg-bg relative">
+        <ReadingProgress />
+        <div className="mx-auto flex h-12 max-w-shell items-center justify-between gap-4 px-4 sm:px-6">
           <Link
             href="/"
-            className="focus-ring inline-flex items-center gap-2 rounded-sm text-[13px] font-mono text-ink hover:text-accent transition-colors"
+            className="focus-ring inline-flex items-center gap-2.5 rounded-sm text-body-sm font-mono text-ink transition-colors hover:text-accent"
             aria-label="Tensor Dojo — home"
           >
-            <span aria-hidden="true" className="text-accent">◆</span>
-            <span className="tracking-[0.04em] font-semibold">tensor dojo</span>
+            <span
+              aria-hidden="true"
+              className="h-2 w-2 rounded-full bg-accent shadow-[0_0_8px_rgb(var(--accent)/0.8)]"
+            />
+            <span className="font-semibold tracking-[0.04em]">tensor dojo</span>
           </Link>
 
           <nav
@@ -142,25 +148,26 @@ export function TopNav() {
                   href={link.href}
                   aria-current={active ? 'page' : undefined}
                   className={clsx(
-                    'focus-ring inline-flex h-9 items-center rounded-md px-3 text-[13px] font-mono transition-colors',
+                    'focus-ring inline-flex h-9 items-center rounded-sm px-3 font-mono text-label uppercase tracking-[0.14em] transition-colors',
                     active
-                      ? 'text-accent'
-                      : 'text-fg-muted hover:text-ink',
+                      ? 'text-accent shadow-[inset_0_0_0_1px_rgb(var(--accent))]'
+                      : 'text-muted hover:text-ink',
                   )}
                 >
                   {link.label}
                 </Link>
               );
             })}
+            <ProgressReadout />
             <button
               type="button"
               onClick={search.open}
               aria-label="Search lessons"
-              className="focus-ring inline-flex h-9 items-center gap-2 rounded-md px-3 text-[13px] font-mono text-fg-muted hover:text-ink transition-colors"
+              className="focus-ring inline-flex h-9 items-center gap-2 rounded-sm px-3 font-mono text-label uppercase tracking-[0.14em] text-muted transition-colors hover:text-ink"
             >
               <DesktopSearchIcon />
               <span>Search</span>
-              <kbd className="rounded border border-border px-1 py-0.5 text-[10px] text-fg-subtle tabular-nums">
+              <kbd className="rounded border border-border px-1 py-0.5 text-micro text-dim tabular-nums">
                 {modKey}K
               </kbd>
             </button>
@@ -174,7 +181,7 @@ export function TopNav() {
               type="button"
               onClick={search.open}
               aria-label="Search lessons"
-              className="focus-ring inline-flex h-11 w-11 items-center justify-center rounded-md text-fg-muted hover:text-ink hover:bg-bg-elevated-hover transition-colors"
+              className="focus-ring inline-flex h-11 w-11 items-center justify-center rounded-md text-muted hover:text-ink hover:bg-surface-hover transition-colors"
             >
               <DesktopSearchIcon />
             </button>
@@ -186,7 +193,7 @@ export function TopNav() {
               aria-expanded={open}
               aria-controls="top-nav-drawer"
               onClick={() => setOpen((o) => !o)}
-              className="focus-ring inline-flex h-11 w-11 items-center justify-center rounded-md text-fg-muted hover:text-ink hover:bg-bg-elevated-hover transition-colors"
+              className="focus-ring inline-flex h-11 w-11 items-center justify-center rounded-md text-muted hover:text-ink hover:bg-surface-hover transition-colors"
             >
               {open ? <CloseIcon /> : <MenuIcon />}
             </button>
@@ -206,7 +213,7 @@ export function TopNav() {
         >
           <nav
             aria-label="Primary"
-            className="mx-auto flex max-w-[1500px] flex-col gap-1 px-4 py-4 sm:px-6"
+            className="mx-auto flex max-w-shell flex-col gap-1 px-4 py-4 sm:px-6"
           >
             {LINKS.map((link) => {
               const active = link.match(pathname);
@@ -216,10 +223,10 @@ export function TopNav() {
                   href={link.href}
                   aria-current={active ? 'page' : undefined}
                   className={clsx(
-                    'focus-ring inline-flex min-h-[48px] items-center rounded-md px-3 text-[15px] font-mono transition-colors',
+                    'focus-ring inline-flex min-h-[48px] items-center rounded-sm px-3 font-mono text-caption uppercase tracking-[0.14em] transition-colors',
                     active
                       ? 'text-accent bg-accent-soft'
-                      : 'text-ink hover:bg-bg-elevated-hover',
+                      : 'text-ink hover:bg-surface-hover',
                   )}
                 >
                   {link.label}

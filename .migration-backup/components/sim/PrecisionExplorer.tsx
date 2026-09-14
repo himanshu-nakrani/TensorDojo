@@ -33,7 +33,7 @@ const STATUS_LABEL: Record<Status, string> = {
 
 const STATUS_COLOR: Record<Status, string> = {
   ok: 'text-accent',
-  rounded: 'text-amber-500 dark:text-amber-400',
+  rounded: 'text-warning',
   underflow: 'text-[rgb(var(--negative))]',
   overflow: 'text-[rgb(var(--negative))]',
 };
@@ -66,7 +66,7 @@ export function PrecisionExplorer() {
           onClick={() => setShowUlp((u) => !u)}
           aria-pressed={showUlp}
           className={clsx(
-            'text-[11px] uppercase tracking-[0.12em] font-mono px-2 py-0.5 rounded border focus-ring transition-colors',
+            'text-label uppercase tracking-[0.12em] font-mono px-2 py-0.5 rounded border focus-ring transition-colors',
             showUlp
               ? 'border-accent text-accent bg-accent-soft'
               : 'border-border text-muted hover:text-ink hover:border-border-strong',
@@ -80,11 +80,11 @@ export function PrecisionExplorer() {
         <div className="flex items-baseline justify-between mb-2">
           <label
             htmlFor="precision-value"
-            className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono"
+            className="text-label uppercase tracking-[0.12em] text-dim font-mono"
           >
             input value (log10)
           </label>
-          <span className="font-mono text-[14px] text-accent tabular-nums">
+          <span className="font-mono text-body text-accent tabular-nums">
             {formatScientific(value)}
           </span>
         </div>
@@ -98,7 +98,7 @@ export function PrecisionExplorer() {
           onChange={(e) => setLogV(parseFloat(e.target.value))}
           className="w-full accent-[rgb(var(--accent))]"
         />
-        <div className="flex justify-between mt-1 text-[10px] font-mono text-fg-subtle">
+        <div className="flex justify-between mt-1 text-micro font-mono text-dim">
           <span>1e{LOG_MIN}</span>
           <span>1</span>
           <span>1e+{LOG_MAX}</span>
@@ -113,7 +113,7 @@ export function PrecisionExplorer() {
 
       <RangeBar value={value} />
 
-      <p className="mt-3 text-[11px] text-dim font-mono leading-relaxed">
+      <p className="mt-3 text-label text-dim font-mono leading-relaxed">
         fp16's narrow exponent (5 bits) is what underflows / overflows. bf16 keeps fp32's exponent (8 bits) but truncates the mantissa to 7 bits — fewer digits, same range.
       </p>
     </SimFrame>
@@ -142,10 +142,10 @@ function Row({
   return (
     <div className="grid grid-cols-[80px_1fr_auto] items-center gap-3 rounded-md border border-border bg-bg/40 px-3 py-2">
       <div className="flex flex-col">
-        <span className="text-[13px] font-semibold text-ink">{label}</span>
-        <span className="text-[10px] font-mono text-fg-muted">{sub}</span>
+        <span className="text-body-sm font-semibold text-ink">{label}</span>
+        <span className="text-micro font-mono text-muted">{sub}</span>
       </div>
-      <div className="flex flex-col text-[12px] font-mono tabular-nums">
+      <div className="flex flex-col text-caption font-mono tabular-nums">
         <span className={STATUS_COLOR[status]}>
           {!isFinite(cast)
             ? '∞'
@@ -154,17 +154,17 @@ function Row({
               : formatScientific(cast)}
         </span>
         {showUlp && (
-          <span className="text-[10px] text-fg-muted">
+          <span className="text-micro text-muted">
             ULP ≈ {isFinite(ulp) ? formatScientific(ulp) : '—'}
           </span>
         )}
       </div>
       <div className="flex flex-col items-end">
-        <span className={clsx('text-[11px] font-mono', STATUS_COLOR[status])}>
+        <span className={clsx('text-label font-mono', STATUS_COLOR[status])}>
           {STATUS_LABEL[status]}
         </span>
         {status === 'rounded' && (
-          <span className="text-[10px] text-fg-muted font-mono">
+          <span className="text-micro text-muted font-mono">
             rel err {(err * 100).toFixed(2)}%
           </span>
         )}
@@ -198,16 +198,16 @@ function RangeBar({ value }: { value: number }) {
   };
 
   const labels: { id: Format; y: number; color: string }[] = [
-    { id: 'fp32', y: 14, color: 'rgb(21,128,61)' },
-    { id: 'bf16', y: 28, color: 'rgb(67,56,202)' },
-    { id: 'fp16', y: 42, color: 'rgb(180,83,9)' },
+    { id: 'fp32', y: 14, color: 'rgb(var(--positive))' },
+    { id: 'bf16', y: 28, color: 'rgb(var(--series-3))' },
+    { id: 'fp16', y: 42, color: 'rgb(var(--series-2))' },
   ];
 
   const valX = toX(Math.log10(Math.max(value, Math.pow(10, LOG_MIN))));
 
   return (
     <div className="mt-5">
-      <div className="text-[10px] uppercase tracking-[0.12em] text-dim font-mono mb-1">
+      <div className="text-micro uppercase tracking-[0.12em] text-dim font-mono mb-1">
         representable ranges (normal numbers)
       </div>
       <svg viewBox={`0 0 ${W} ${H}`} width="100%" className="block h-auto">
@@ -229,8 +229,8 @@ function RangeBar({ value }: { value: number }) {
                 y={l.y + 3}
                 textAnchor="end"
                 fontSize={10}
-                fontFamily="monospace"
-                className="fill-fg-muted"
+                fontFamily="var(--font-mono), ui-monospace, monospace"
+                className="fill-muted"
               >
                 {l.id}
               </text>

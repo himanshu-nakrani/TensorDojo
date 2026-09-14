@@ -32,12 +32,12 @@ const STEPS = 200;
 
 function Legend() {
   return (
-    <div className="flex flex-wrap items-center gap-4 font-mono text-[11px]">
+    <div className="flex flex-wrap items-center gap-4 font-mono text-label">
       <span className="inline-flex items-center gap-1.5">
         <span
           aria-hidden="true"
           className="inline-block w-3 h-0.5"
-          style={{ background: 'rgb(var(--dim))' }}
+          style={{ background: 'rgb(var(--fg-subtle))' }}
         />
         from scratch
       </span>
@@ -88,9 +88,9 @@ function LossCurves({
           y={height / 2}
           textAnchor="middle"
           dominantBaseline="middle"
-          fill="rgb(var(--dim))"
+          fill="rgb(var(--fg-subtle))"
           fontSize={10}
-          fontFamily="monospace"
+          fontFamily="var(--font-mono), ui-monospace, monospace"
         >
           press Train to start
         </text>
@@ -130,7 +130,7 @@ function LossCurves({
       <polyline
         points={toPoints(scratchRun.losses, displayStep)}
         fill="none"
-        stroke="rgb(var(--dim))"
+        stroke="rgb(var(--fg-subtle))"
         strokeWidth={1.5}
         opacity={0.85}
       />
@@ -165,19 +165,19 @@ function FinalAccuracyBars({
     pretrainedRun.testAcc[pretrainedRun.testAcc.length - 1] ?? 0;
 
   const rows: Array<{ label: string; acc: number; color: string }> = [
-    { label: 'from scratch', acc: scratchAcc, color: 'rgb(var(--dim))' },
+    { label: 'from scratch', acc: scratchAcc, color: 'rgb(var(--fg-subtle))' },
     { label: 'pretrained', acc: pretrainedAcc, color: 'rgb(var(--accent))' },
   ];
 
   return (
     <div className="space-y-2">
-      <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono">
+      <div className="text-label uppercase tracking-[0.12em] text-dim font-mono">
         Final test accuracy
       </div>
       {rows.map(({ label, acc, color }) => (
         <div key={label} className="space-y-0.5">
-          <div className="flex items-baseline justify-between font-mono text-[11px]">
-            <span className="text-fg-subtle">{label}</span>
+          <div className="flex items-baseline justify-between font-mono text-label">
+            <span className="text-dim">{label}</span>
             <span className="text-ink tabular-nums">
               {(acc * 100).toFixed(1)}%
             </span>
@@ -313,7 +313,7 @@ export function PretrainVsScratch() {
             type="button"
             onClick={handleTrain}
             disabled={running || !trainReady}
-            className="rounded border border-border bg-bg-elevated px-3 py-1.5 font-mono text-sm hover:border-border-strong disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            className="rounded border border-border bg-surface px-3 py-1.5 font-mono text-sm hover:border-border-strong disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
           >
             {running ? 'Training…' : 'Train'}
           </button>
@@ -321,7 +321,7 @@ export function PretrainVsScratch() {
             type="button"
             onClick={handleReset}
             disabled={running}
-            className="rounded border border-border bg-bg-elevated px-3 py-1.5 font-mono text-sm hover:border-border-strong disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            className="rounded border border-border bg-surface px-3 py-1.5 font-mono text-sm hover:border-border-strong disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
           >
             Reset
           </button>
@@ -331,7 +331,7 @@ export function PretrainVsScratch() {
       <div className="space-y-4">
         {/* Loss curves */}
         <div>
-          <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-2">
+          <div className="text-label uppercase tracking-[0.12em] text-dim font-mono mb-2">
             Training loss vs step
           </div>
           <LossCurves
@@ -354,7 +354,7 @@ export function PretrainVsScratch() {
 
         {/* Step counter */}
         {(running || showBars) && (
-          <div className="font-mono text-[11px] text-fg-subtle tabular-nums">
+          <div className="font-mono text-label text-dim tabular-nums">
             step {displayStep} / {STEPS}
           </div>
         )}

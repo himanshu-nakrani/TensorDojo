@@ -1,10 +1,13 @@
 import type { Metadata } from 'next';
-import { Inter, JetBrains_Mono } from 'next/font/google';
+import { Space_Grotesk, JetBrains_Mono } from 'next/font/google';
 import { TopNav } from '@/components/theme/TopNav';
+import { Footer } from '@/components/theme/Footer';
 import { SearchPaletteProvider } from '@/components/search/SearchPalette';
 import './globals.css';
 
-const inter = Inter({
+// Instrument Panel direction: Space Grotesk carries display + prose,
+// JetBrains Mono carries every number, label, and readout.
+const spaceGrotesk = Space_Grotesk({
   subsets: ['latin'],
   variable: '--font-sans',
   display: 'swap',
@@ -71,7 +74,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${jetbrainsMono.variable}`}
+      className={`${spaceGrotesk.variable} ${jetbrainsMono.variable}`}
       // The inline no-flash script above mutates the html className
       // before React hydrates. The DOM may end up with `dark` that
       // the server-rendered tree didn't carry. Suppress the
@@ -85,13 +88,14 @@ export default function RootLayout({
       <body className="min-h-screen bg-bg text-ink antialiased font-sans">
         <a
           href="#main"
-          className="focus-ring sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:rounded-md focus:border focus:border-border focus:bg-bg-elevated focus:px-3 focus:py-1.5 focus:text-sm focus:text-ink"
+          className="focus-ring sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:rounded-md focus:border focus:border-border focus:bg-surface focus:px-3 focus:py-1.5 focus:text-sm focus:text-ink"
         >
           Skip to content
         </a>
         <SearchPaletteProvider>
           <TopNav />
           {children}
+          <Footer />
         </SearchPaletteProvider>
       </body>
     </html>
