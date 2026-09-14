@@ -223,13 +223,14 @@ function DefaultLayout({
   toggleInteractive,
 }: LayoutProps) {
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,720px)_minmax(0,440px)] gap-x-10 gap-y-10">
+    <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,2fr)_minmax(22rem,1fr)] gap-x-10 gap-y-10">
       {/* Left: prose */}
       <div className="min-w-0 lesson-body">{prose}</div>
 
-      {/* Right: workbench — sticky on desktop. No interior scroll;
-          we want the page scroll, not a nested one. */}
-      <aside className="min-w-0 space-y-4 lg:sticky lg:top-16 lg:self-start">
+      {/* Right: workbench — sticky on desktop. Capped to the
+          viewport so a tall sim scrolls inside the rail instead
+          of clipping. */}
+      <aside className="min-w-0 space-y-4 lg:sticky lg:top-16 lg:self-start lg:max-h-[calc(100vh-5rem)] lg:overflow-y-auto">
         {interactives.map((entry) => (
           <Item
             key={entry.id}
@@ -249,7 +250,7 @@ function DefaultLayout({
 /**
  * Wide-capable layout: renders prose on top, wide interactives
  * full-width below, and any remaining narrow interactives in a
- * 720/440 sub-grid beneath that. The layout collapses to a single
+ * sub-grid beneath that. The layout collapses to a single
  * column below `lg`.
  */
 function WideLayout({

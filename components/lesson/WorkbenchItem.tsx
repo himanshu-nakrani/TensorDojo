@@ -56,7 +56,7 @@ export const WorkbenchItem = forwardRef<HTMLDivElement, WorkbenchItemProps>(
         ref={ref}
         data-interactive-id={id}
         className={clsx(
-          'rounded-xl border bg-surface transition-shadow',
+          'graticule rounded-md border bg-surface transition-shadow',
           isActive
             ? 'border-accent/60 ring-1 ring-accent/20 shadow-[0_8px_24px_-12px_rgb(var(--accent)/0.25)]'
             : 'border-border',
@@ -68,12 +68,12 @@ export const WorkbenchItem = forwardRef<HTMLDivElement, WorkbenchItemProps>(
           onClick={onToggle}
           aria-expanded={isActive}
           aria-controls={panelId}
-          className="focus-ring w-full px-5 py-4 flex items-center gap-4 text-left rounded-xl"
+          className="focus-ring w-full px-5 py-4 flex items-center gap-4 text-left rounded-md"
         >
           <Chevron open={isActive} />
           <span className="flex-1 min-w-0">
-            <span className="block text-caption uppercase tracking-[0.12em] text-dim font-mono">
-              {isActive ? 'Active · Interactive' : 'Interactive'}
+            <span className="block text-caption font-mono text-dim">
+              {isActive ? 'Live' : 'Interactive'}
             </span>
             <span className="block text-sm font-semibold text-ink tracking-[-0.005em]">
               {title}

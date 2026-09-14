@@ -15,18 +15,19 @@ site already defaults to dark when the OS has no preference.
 
 | Token | Dark (primary) | Light (lab bench) | Role |
 |---|---|---|---|
-| `--bg` | `#0B0E13` | `#EEF1F5` | canvas |
-| `--bg-elevated` | `#12161D` | `#FFFFFF` | panel — cards, nav, popovers |
-| `--bg-elevated-hover` | `#1A2029` | `#E4E9EF` | panel hover |
-| `--bg-code` | `#171C25` | `#F6F8FA` | panel-2 — code blocks, control wells |
+| `--bg` | `#070B10` | `#E8EEF2` | canvas |
+| `--bg-elevated` | `#10161C` | `#FFFFFF` | panel — cards, nav, popovers |
+| `--bg-elevated-hover` | `#161E26` | `#DCE6EC` | panel hover |
+| `--bg-code` | `#151C24` | `#F2F6F8` | panel-2 — code blocks, control wells |
 
-Depth is communicated with 1px hairlines (`--border` `#232A35` /
-`--border-strong` `#39434F` dark; `#D5DBE3` / `#B9C2CD` light), not
+Depth is communicated with 1px hairlines (`--border` `#202C36` /
+`--border-strong` `#30404E` dark; `#D0DCE4` / `#B5C5D0` light), not
 shadows. Recessed areas (control wells) are **darker** than their panel
 in dark mode; in light mode wells are the bench grey.
 
-The body carries a fixed **graticule** grid (minor 32px / major 160px,
-`--paper-minor/major`) — blue-tinted in dark, blue-grey in light.
+The **graticule** (minor 32px / major 160px, `--paper-minor/major`)
+lives on instrument surfaces only — workbench panels, sim wells, the
+hero figure — not the full page. Prose sits on a solid canvas.
 
 ## Type
 
@@ -40,7 +41,7 @@ The mono label recipe: `10–12px · 600 · uppercase · letter-spacing
 
 ## The signal
 
-One accent, `#3DD68C` dark / `#0E9C6D` light. It marks exactly three
+One accent, `#5EC4D4` dark / `#0C6478` light. It marks exactly three
 things:
 
 1. **Live** indicators (LED dots, LIVE badges, pulsing rings)

@@ -21,30 +21,30 @@
    =========================================================================== */
 
 :root {
-  /* Surfaces — "lab bench" light variant. Cool neutral greys with
-     blue undertones; white panels sit on the bench grey. */
-  --bg: 238 241 245;              /* bench grey #EEF1F5 */
+  /* Surfaces — "lab bench" light variant. Cool steel greys with
+     cyan undertones; white panels sit on the bench. */
+  --bg: 232 238 242;              /* bench #E8EEF2 */
   --bg-elevated: 255 255 255;     /* panel */
-  --bg-code: 246 248 250;         /* panel-2 — code + control wells */
+  --bg-code: 242 246 248;         /* panel-2 — code + control wells */
 
   /* Text */
-  --fg: 23 32 43;                 /* #17202B */
-  --fg-muted: 85 97 111;          /* #55616F — 5.6:1 on --bg */
-  --fg-subtle: 95 107 120;        /* #5F6B78 — AA on --bg and panels */
+  --fg: 21 32 42;                 /* #15202A */
+  --fg-muted: 74 98 112;          /* #4A6270 — 5.5:1 on --bg */
+  --fg-subtle: 79 104 118;        /* #4F6876 — AA on --bg and panels */
 
   /* Lines */
-  --border: 213 219 227;          /* #D5DBE3 */
-  --border-strong: 185 194 205;   /* #B9C2CD */
+  --border: 208 220 228;          /* #D0DCE4 */
+  --border-strong: 181 197 208;   /* #B5C5D0 */
 
   /* The single signal (design-spec §8) — live/manipulable only.
-     #0E9C6D in light; #3DD68C in dark. */
-  --accent: 14 156 109;
-  --accent-hover: 11 122 85;
+     Scope cyan: #0C6478 in light; #5EC4D4 in dark. */
+  --accent: 12 100 120;
+  --accent-hover: 10 83 100;
   --accent-fg: 255 255 255;
 
   /* Charting tokens */
-  --grid: 213 219 227;
-  --positive: 14 156 109;
+  --grid: 208 220 228;
+  --positive: 12 100 120;
   --negative: 185 28 28;          /* red-700; AA on --bg */
   --warning: 180 83 9;            /* amber-700; AA on --bg for text */
 
@@ -53,85 +53,83 @@
      optimizer traces, four batch-size traces). Distinct from
      --accent/--positive/--negative; chosen to be perceptually
      distinguishable and theme-aware. */
-  --series-1: 14 156 109;         /* signal green — same hue as accent */
+  --series-1: 12 100 120;         /* signal cyan — same hue as accent */
   --series-2: 217 119 6;          /* amber-600 */
   --series-3: 124 58 237;         /* violet-600 */
-  --series-4: 14 116 144;         /* cyan-700 */
+  --series-4: 14 156 109;         /* leftover green — not the signal */
 
   /* Pre-baked translucent variants — kept as full rgba because they
      describe a specific visual, not a "themed color at 30%". */
-  --accent-soft: rgba(14, 156, 109, 0.10);
-  --accent-faint: rgba(14, 156, 109, 0.06);
-  --accent-dim: rgba(14, 156, 109, 0.32);
+  --accent-soft: rgba(12, 100, 120, 0.10);
+  --accent-faint: rgba(12, 100, 120, 0.06);
+  --accent-dim: rgba(12, 100, 120, 0.32);
 
   /* Hover state for the elevated surface. */
-  --bg-elevated-hover: 228 233 239;
+  --bg-elevated-hover: 220 230 236;
 
   /* Glow color for the focus ring on inputs. */
-  --accent-shadow: rgba(14, 156, 109, 0.18);
+  --accent-shadow: rgba(12, 100, 120, 0.18);
 
   /* Pre-baked negative bar bg (the "wrong answer" red with built-in alpha). */
   --negative-bg: rgba(185, 28, 28, 0.7);
 
   /* Subtle top-edge highlight on elevated cards. */
-  --shadow-inset: inset 0 1px 0 rgba(23, 32, 43, 0.03);
+  --shadow-inset: inset 0 1px 0 rgba(21, 32, 42, 0.03);
 
   /* Heatmap cell-number halo — matches --bg so text reads on any
      cell tint. Inline-styled as `rgb(var(--cell-halo))`. */
-  --cell-halo: 238 241 245;
+  --cell-halo: 232 238 242;
 
-  /* Graticule background lines — a cool blue-tinted instrument
-     grid instead of the old warm paper. Minor at 32px, major every
-     5 cells (160px). */
-  --paper-minor: rgba(23, 32, 43, 0.022);
-  --paper-major: rgba(23, 32, 43, 0.045);
+  /* Graticule — faint cyan-steel, same hue as the signal.
+     Minor at 32px, major every 5 cells (160px). */
+  --paper-minor: rgba(12, 100, 120, 0.03);
+  --paper-major: rgba(12, 100, 120, 0.055);
 }
 
 :root.dark {
   /* Instrument Panel dark — the primary theme. Deep blue-black
      canvas, raised panels one step lighter, control wells darker
      than panels (recessed), hairline bezels throughout. */
-  --bg: 11 14 19;                 /* #0B0E13 canvas */
-  --bg-elevated: 18 22 29;        /* #12161D panel */
-  --bg-code: 23 28 37;            /* #171C25 panel-2 */
+  --bg: 7 11 16;                  /* #070B10 canvas */
+  --bg-elevated: 16 22 28;        /* #10161C panel */
+  --bg-code: 21 28 36;            /* #151C24 panel-2 */
 
-  --fg: 223 230 239;              /* #DFE6EF */
-  --fg-muted: 151 163 178;        /* #97A3B2 */
-  --fg-subtle: 116 128 143;       /* #74808F — AA on canvas and panels */
+  --fg: 220 231 238;              /* #DCE7EE */
+  --fg-muted: 140 163 176;        /* #8CA3B0 */
+  --fg-subtle: 110 132 146;       /* #6E8492 — AA on canvas and panels */
 
-  --border: 35 42 53;             /* #232A35 */
-  --border-strong: 57 67 79;      /* #39434F */
+  --border: 32 44 54;             /* #202C36 */
+  --border-strong: 48 64 78;      /* #30404E */
 
-  --accent: 61 214 140;           /* #3DD68C — signal green on the dark canvas */
-  --accent-hover: 110 231 168;    /* #6EE7A8 */
-  --accent-fg: 6 19 12;
+  --accent: 94 196 212;           /* #5EC4D4 — scope cyan on the dark canvas */
+  --accent-hover: 126 214 226;    /* #7ED6E2 */
+  --accent-fg: 6 32 38;           /* #062026 */
 
-  --grid: 35 42 53;
-  --positive: 61 214 140;
+  --grid: 32 44 54;
+  --positive: 94 196 212;
   --negative: 248 113 113;
-  --warning: 255 178 36;           /* #FFB224 — amber readout */
+  --warning: 255 178 36;           /* #FFB224 — amber caution readout */
 
-  --series-1: 61 214 140;          /* signal green */
+  --series-1: 94 196 212;          /* signal cyan */
   --series-2: 255 178 36;          /* amber */
   --series-3: 167 139 250;         /* violet-400 */
-  --series-4: 56 189 248;          /* sky-400 */
+  --series-4: 61 214 140;          /* leftover green — not the signal */
 
-  --accent-soft: rgba(61, 214, 140, 0.14);
-  --accent-faint: rgba(61, 214, 140, 0.08);
-  --accent-dim: rgba(61, 214, 140, 0.30);
+  --accent-soft: rgba(94, 196, 212, 0.14);
+  --accent-faint: rgba(94, 196, 212, 0.08);
+  --accent-dim: rgba(94, 196, 212, 0.30);
 
-  --bg-elevated-hover: 26 32 41;
-  --accent-shadow: rgba(61, 214, 140, 0.16);
+  --bg-elevated-hover: 22 30 38;
+  --accent-shadow: rgba(94, 196, 212, 0.16);
 
   --negative-bg: rgba(248, 113, 113, 0.7);
   --shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.03);
 
-  --cell-halo: 11 14 19;
+  --cell-halo: 7 11 16;
 
-  /* Cool graticule lines — blue-tinted so the grid reads as an
-     instrument graticule rather than paper. */
-  --paper-minor: rgba(160, 190, 230, 0.016);
-  --paper-major: rgba(160, 190, 230, 0.034);
+  /* Cyan-tinted graticule — same hue as the live trace. */
+  --paper-minor: rgba(94, 196, 212, 0.018);
+  --paper-major: rgba(94, 196, 212, 0.045);
 }
 
 /* ===========================================================================
@@ -168,25 +166,11 @@
 }
 
 /* ===========================================================================
-   Graticule background.
-
-   Drawn on the body with four stacked linear gradients: a major and
-   a minor grid line in each axis, like the graticule on an
-   instrument display. The minor grid is at 32px; the major lands
-   every 5 cells (160px). Opacities are token-driven
-   (--paper-minor, --paper-major) and theme-aware: dark blue-grey
-   lines on the bench-grey canvas in light mode, faint cool lines on
-   the deep instrument canvas in dark mode.
-
-   background-attachment: fixed so the grid stays anchored to the
-   viewport, not the document — scrolling a long lesson doesn't
-   sweep the grid along, which would be distracting at our pattern
-   density.
-
-   The body's Tailwind `bg-bg` class still sets the solid color
-   underneath; this rule only adds the lines on top.
+   Graticule — only on instrument surfaces (workbench, sim wells,
+   hero figure). Prose sits on a solid canvas so the page reads as
+   a publication, not a wireframe.
    =========================================================================== */
-body {
+.graticule {
   background-image:
     linear-gradient(to right, var(--paper-major), var(--paper-major) 1px, transparent 1px, transparent),
     linear-gradient(to bottom, var(--paper-major), var(--paper-major) 1px, transparent 1px, transparent),
@@ -198,7 +182,6 @@ body {
     32px 32px,
     32px 32px;
   background-position: 0 0;
-  background-attachment: fixed;
 }
 
 /* Selection — same accent on both themes. */
@@ -400,38 +383,62 @@ input[type='range']:focus-visible::-moz-range-thumb {
    Lesson body (prose)
    =========================================================================== */
 .lesson-body {
-  color: rgb(var(--fg-muted));
+  color: rgb(var(--fg));
   font-size: 1.0625rem;
-  line-height: 1.75;
+  line-height: 1.68;
 }
 .lesson-body > * + * {
   margin-top: 1.25rem;
 }
 .lesson-body h2 {
-  font-size: 1.625rem;
+  font-size: 1.8125rem;
   font-weight: 600;
   color: rgb(var(--fg));
-  letter-spacing: -0.01em;
-  line-height: 1.25;
-  margin-top: 3rem;
-  margin-bottom: 0.5rem;
-  padding-top: 1.5rem;
-  border-top: 1px solid rgb(var(--border));
+  letter-spacing: -0.022em;
+  line-height: 1.2;
+  margin-top: 3.25rem;
+  margin-bottom: 0.65rem;
+  scroll-margin-top: 5rem;
+}
+.lesson-body h2::before {
+  content: '';
+  display: block;
+  width: 1.75rem;
+  height: 1px;
+  background: rgb(var(--border-strong));
+  margin-bottom: 1.1rem;
 }
 .lesson-body h2:first-child {
   margin-top: 0;
-  padding-top: 0;
-  border-top: 0;
+}
+.lesson-body h2:first-child::before {
+  display: none;
 }
 .lesson-body h3 {
-  font-size: 1.125rem;
+  font-size: 1.2rem;
   font-weight: 600;
   color: rgb(var(--fg));
-  margin-top: 1.5rem;
-  margin-bottom: 0.25rem;
+  letter-spacing: -0.015em;
+  margin-top: 1.75rem;
+  margin-bottom: 0.35rem;
+}
+.lesson-body p,
+.lesson-body li {
+  color: rgb(var(--fg));
 }
 .lesson-body p {
   margin: 0;
+}
+.lesson-body p:has(+ .katex-display),
+.lesson-body p:has(+ .math-display) {
+  margin-bottom: 0;
+}
+.lesson-body p + .katex-display,
+.lesson-body p + .math-display {
+  margin-top: 0.5rem !important;
+}
+.lesson-body p + .math-display .katex-display {
+  margin-top: 0.5rem !important;
 }
 .lesson-body strong {
   color: rgb(var(--fg));
@@ -477,6 +484,25 @@ input[type='range']:focus-visible::-moz-range-thumb {
   font-size: inherit;
   color: inherit;
 }
+.tok-comment {
+  color: rgb(var(--fg-subtle));
+  font-style: italic;
+}
+.tok-keyword {
+  color: rgb(var(--accent) / 0.82);
+}
+.tok-number {
+  color: rgb(var(--series-2));
+}
+.tok-fn,
+.tok-builtin {
+  color: rgb(var(--fg));
+  font-weight: 600;
+}
+.tok-ident,
+.tok-string {
+  color: rgb(var(--fg-muted));
+}
 .lesson-body kbd {
   font-family: var(--font-mono), ui-monospace, monospace;
   font-size: 0.75rem;
@@ -497,7 +523,7 @@ input[type='range']:focus-visible::-moz-range-thumb {
   margin-top: 0.75rem;
 }
 .lesson-body ol > li::marker {
-  color: rgb(var(--fg-subtle));
+  color: rgb(var(--fg-muted));
   font-family: var(--font-mono), ui-monospace, monospace;
   font-size: 0.85em;
 }

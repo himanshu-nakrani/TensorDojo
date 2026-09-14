@@ -7,6 +7,7 @@ import clsx from 'clsx';
 import { ThemeToggle } from './ThemeToggle';
 import { ProgressReadout } from './ProgressReadout';
 import { useSearchPalette } from '@/components/search/SearchPalette';
+import { ReadingProgress } from '@/components/lesson/ReadingProgress';
 
 interface NavLink {
   href: string;
@@ -120,7 +121,8 @@ export function TopNav() {
 
   return (
     <>
-      <header className="sticky top-0 z-40 border-b border-border/60 bg-bg/80 backdrop-blur-sm supports-[backdrop-filter]:bg-bg/60">
+      <header className="sticky top-0 z-40 border-b border-border bg-bg relative">
+        <ReadingProgress />
         <div className="mx-auto flex h-12 max-w-shell items-center justify-between gap-4 px-4 sm:px-6">
           <Link
             href="/"

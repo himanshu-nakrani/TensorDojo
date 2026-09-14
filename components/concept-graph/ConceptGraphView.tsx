@@ -259,7 +259,7 @@ function MapCanvas({
   return (
     <div className="overflow-x-auto">
       <div
-        className="relative mx-auto"
+        className="graticule relative mx-auto rounded-md"
         style={{ width: `${width}px`, maxWidth: '100%' }}
       >
         {/* SVG layer: track-column backdrops, in-track arrows,

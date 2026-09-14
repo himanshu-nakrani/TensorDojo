@@ -14,10 +14,9 @@ export function HeroInteractive() {
   return (
     <div className="relative">
       <CornerTicks />
-      <div className="rounded-xl border border-border-strong bg-surface p-5 sm:p-6 card-surface relative">
+      <div className="graticule rounded-xl border border-border-strong bg-surface p-5 sm:p-6 card-surface relative">
         <div className="flex items-baseline justify-between gap-3 mb-4">
           <span className="text-label uppercase tracking-[0.12em] font-mono text-accent">
-            <span aria-hidden="true">◆ </span>
             <span className="hidden sm:inline">Live · drag a vector tip</span>
             <span className="sm:hidden">Live · drag a tip</span>
           </span>

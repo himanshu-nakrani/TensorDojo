@@ -146,6 +146,18 @@ function PaletteOverlay({
     };
   }, []);
 
+  // Dismiss on Escape key.
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onClose]);
+
   return (
     <div
       // Backdrop. Click anywhere outside the panel to close.

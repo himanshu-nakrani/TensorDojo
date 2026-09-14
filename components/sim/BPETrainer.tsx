@@ -48,7 +48,7 @@ export function BPETrainer({ preset }: { preset?: CorpusPreset }) {
 
   return (
     <SimFrame
-      title="Step BPE merges · watch the vocabulary grow"
+      title="Step BPE merges"
       headerAction={
         <div className="flex items-center gap-3">
           <button
@@ -77,14 +77,15 @@ export function BPETrainer({ preset }: { preset?: CorpusPreset }) {
         </div>
       }
     >
-      <div className="grid grid-cols-1 md:grid-cols-[minmax(0,1fr)_320px] gap-6">
-        {/* Left: per-word symbol state. */}
-        <div>
-          <div className="flex items-baseline justify-between mb-2">
-            <div className="text-label uppercase tracking-[0.12em] text-dim font-mono">
-              Corpus (split into symbols)
+      <div className="grid grid-cols-1 gap-5">
+        {/* Per-word symbol state. Stacked: the workbench is ~440px,
+            so a 320px vocab rail cannot sit beside the corpus. */}
+        <div className="min-w-0">
+          <div className="flex items-baseline justify-between gap-2 mb-2">
+            <div className="text-micro uppercase tracking-[0.14em] text-dim font-mono">
+              Corpus
             </div>
-            <div className="text-label text-dim font-mono tabular-nums">
+            <div className="text-micro text-dim font-mono tabular-nums">
               step <span className="text-ink">{step}</span>
               {' / '}
               <span className="text-ink">{totalSteps}</span>
@@ -140,10 +141,9 @@ export function BPETrainer({ preset }: { preset?: CorpusPreset }) {
           )}
         </div>
 
-        {/* Right: vocabulary list. */}
-        <div>
-          <div className="flex items-baseline justify-between mb-2">
-            <div className="text-label uppercase tracking-[0.12em] text-dim font-mono">
+        <div className="min-w-0">
+          <div className="flex items-baseline justify-between gap-2 mb-2">
+            <div className="text-micro uppercase tracking-[0.14em] text-dim font-mono">
               Vocabulary
             </div>
             <div className="text-label text-dim font-mono tabular-nums">

@@ -4,13 +4,13 @@
  * can't read CSS variables, so literals it is).
  */
 export const OG = {
-  BG: 'rgb(11, 14, 19)', // #0B0E13 canvas
-  PANEL: 'rgb(18, 22, 29)', // #12161D panel
-  INK: 'rgb(223, 230, 239)', // #DFE6EF
-  MUTED: 'rgb(151, 163, 178)', // #97A3B2
-  SUBTLE: 'rgb(116, 128, 143)', // #74808F
-  ACCENT: 'rgb(61, 214, 140)', // #3DD68C signal green
-  BORDER: 'rgb(57, 67, 79)', // #39434F hairline
+  BG: 'rgb(7, 11, 16)', // #070B10 canvas
+  PANEL: 'rgb(16, 22, 28)', // #10161C panel
+  INK: 'rgb(220, 231, 238)', // #DCE7EE
+  MUTED: 'rgb(140, 163, 176)', // #8CA3B0
+  SUBTLE: 'rgb(110, 132, 146)', // #6E8492
+  ACCENT: 'rgb(94, 196, 212)', // #5EC4D4 scope cyan
+  BORDER: 'rgb(48, 64, 78)', // #30404E hairline
 } as const;
 
 /**

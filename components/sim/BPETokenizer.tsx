@@ -74,7 +74,7 @@ export function BPETokenizer() {
   return (
     <SimFrame title="Type a word · see what tokens this vocab makes" onReset={reset}>
       <div className="space-y-4 font-mono text-caption">
-        <div className="grid grid-cols-1 md:grid-cols-[1fr_240px] gap-3">
+        <div className="grid grid-cols-1 gap-3">
           <div>
             <div className="text-label uppercase tracking-[0.12em] text-dim font-mono mb-1">
               Input string

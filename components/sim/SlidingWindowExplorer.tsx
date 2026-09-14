@@ -1,8 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import clsx from 'clsx';
-import { SimFrame } from '@/components/sim/primitives/SimFrame';
+import { Readout } from '@/components/ui/Readout';
 import {
   attendedCount,
   effectiveReceptiveField,
@@ -31,114 +30,133 @@ export function SlidingWindowExplorer() {
   const ratio = fullCount / Math.max(1, slidingCount);
 
   return (
-    <SimFrame
-      title="Causal vs sliding-window attention mask"
-      onReset={() => {
-        setN(48);
-        setW(8);
-        setL(8);
-      }}
-    >
-      {/* Controls */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-5">
+    <div>
+      <div className="flex items-baseline justify-between gap-3 mb-4">
+        <span className="font-mono text-micro uppercase tracking-[0.14em] text-dim">
+          Causal vs sliding-window mask
+        </span>
+        <button
+          type="button"
+          onClick={() => {
+            setN(48);
+            setW(8);
+            setL(8);
+          }}
+          className="text-label uppercase tracking-[0.12em] font-mono text-muted hover:text-ink focus-ring transition-colors"
+        >
+          Reset
+        </button>
+      </div>
+
+      <div className="grid grid-cols-3 gap-3 mb-5">
         <Slider
           id="sw-n"
-          label="context length n"
+          label="n"
+          ariaLabel="Context length n"
           value={n}
           min={8}
           max={128}
           step={1}
-          format={(v) => String(v)}
           onChange={setN}
         />
         <Slider
           id="sw-w"
-          label="window size w"
+          label="w"
+          ariaLabel="Window size w"
           value={w}
           min={1}
           max={64}
           step={1}
-          format={(v) => String(v)}
           onChange={setW}
         />
         <Slider
           id="sw-L"
-          label="layers L (for receptive field)"
+          label="L"
+          ariaLabel="Layers L for receptive field"
           value={L}
           min={1}
           max={32}
           step={1}
-          format={(v) => String(v)}
           onChange={setL}
         />
       </div>
 
-      {/* Two masks side by side */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+      <div className="grid grid-cols-2 gap-3">
         <MaskPanel
           title="Full causal"
-          subtitle={`${fullCount.toLocaleString()} attended pairs`}
+          subtitle={`${fullCount.toLocaleString()} pairs`}
           n={n}
           w={w}
           kind="full"
         />
         <MaskPanel
-          title={`Sliding window (w = ${w})`}
-          subtitle={`${slidingCount.toLocaleString()} pairs · ${ratio.toFixed(1)}× cheaper`}
+          title={`Window w=${w}`}
+          subtitle={`${slidingCount.toLocaleString()} · ${ratio.toFixed(1)}×`}
           n={n}
           w={w}
           kind="sliding"
         />
       </div>
 
-      {/* Receptive field readout */}
-      <div className="mt-5 grid grid-cols-1 sm:grid-cols-3 gap-3">
-        <Stat label="per-layer cost" value={`O(n × w) = ${(n * (w + 1)).toLocaleString()}`} />
-        <Stat label="effective receptive field" value={`${erf.toLocaleString()} tokens`} />
-        <Stat
-          label="full-attn cost"
-          value={`O(n²) = ${(n * n).toLocaleString()}`}
-        />
+      <div className="mt-4 grid grid-cols-3 gap-px bg-border border border-border rounded-md overflow-hidden">
+        <div className="bg-surface-2 px-3 py-2.5 min-w-0">
+          <Readout
+            label="per-layer"
+            value={(n * (w + 1)).toLocaleString()}
+            unit="n·w"
+            tone="accent"
+          />
+        </div>
+        <div className="bg-surface-2 px-3 py-2.5 min-w-0">
+          <Readout
+            label="receptive"
+            value={erf.toLocaleString()}
+            unit="tok"
+            tone="accent"
+          />
+        </div>
+        <div className="bg-surface-2 px-3 py-2.5 min-w-0">
+          <Readout
+            label="full attn"
+            value={(n * n).toLocaleString()}
+            unit="n²"
+          />
+        </div>
       </div>
-
-      <p className="mt-3 text-label text-dim font-mono leading-relaxed">
-        At fixed w, doubling n doubles sliding-window cost but quadruples full-attention cost.
-        The receptive field of L · w grows with depth, so distant tokens still influence the output indirectly.
-      </p>
-    </SimFrame>
+    </div>
   );
 }
 
 function Slider({
   id,
   label,
+  ariaLabel,
   value,
   min,
   max,
   step,
-  format,
   onChange,
 }: {
   id: string;
   label: string;
+  ariaLabel: string;
   value: number;
   min: number;
   max: number;
   step: number;
-  format: (v: number) => string;
   onChange: (v: number) => void;
 }) {
   return (
-    <div>
-      <div className="flex items-baseline justify-between mb-2">
+    <div className="min-w-0">
+      <div className="flex items-baseline justify-between mb-1.5 gap-1">
         <label
           htmlFor={id}
-          className="text-label uppercase tracking-[0.12em] text-dim font-mono"
+          className="text-micro uppercase tracking-[0.14em] text-dim font-mono"
         >
           {label}
         </label>
-        <span className="font-mono text-body text-accent tabular-nums">
-          {format(value)}
+        <span className="font-mono text-body-sm text-accent tabular-nums">
+          {value}
         </span>
       </div>
       <input
@@ -148,22 +166,10 @@ function Slider({
         max={max}
         step={step}
         value={value}
+        aria-label={ariaLabel}
         onChange={(e) => onChange(parseInt(e.target.value, 10))}
         className="w-full accent-[rgb(var(--accent))]"
       />
-    </div>
-  );
-}
-
-function Stat({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="rounded-md border border-border bg-bg/40 px-3 py-2 flex items-baseline justify-between">
-      <span className="text-label uppercase tracking-[0.12em] text-dim font-mono">
-        {label}
-      </span>
-      <span className="text-caption font-mono text-accent tabular-nums">
-        {value}
-      </span>
     </div>
   );
 }
@@ -209,9 +215,9 @@ function MaskPanel({
 
   return (
     <div className="rounded-lg border border-border bg-bg/40 p-3">
-      <div className="flex items-baseline justify-between mb-2">
-        <span className="text-body-sm font-semibold text-ink">{title}</span>
-        <span className="text-label font-mono text-muted">{subtitle}</span>
+      <div className="mb-2 min-w-0">
+        <div className="text-body-sm font-semibold text-ink truncate">{title}</div>
+        <div className="text-micro font-mono text-muted tabular-nums">{subtitle}</div>
       </div>
       <svg
         viewBox={`0 0 ${size} ${size}`}

@@ -2,6 +2,7 @@ import katex from 'katex';
 import 'katex/dist/katex.min.css';
 import { ReactNode } from 'react';
 import clsx from 'clsx';
+import { PythonCode } from './PythonCode';
 
 interface MathCodeProps {
   /** LaTeX expression. Display mode — no need to wrap in $$ or \[ \]. */
@@ -60,7 +61,9 @@ export function MathCode({ math, code, caption, className }: MathCodeProps) {
               scroll). At full prose width an 80-char line fits without
               scroll on every viewport above ~640px. */}
           <pre className="m-0 font-mono text-body-sm leading-relaxed text-ink overflow-x-auto">
-            <code>{code}</code>
+            <code>
+              <PythonCode source={code} />
+            </code>
           </pre>
         </div>
       </div>
