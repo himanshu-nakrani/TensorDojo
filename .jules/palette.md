@@ -23,3 +23,7 @@
 ## 2024-03-09 - Accessible Loading States
 **Learning:** Initial full-page loading indicators (like `PageLoader`) missed a visual spinner and a single status region. This repo's `Spinner` already has `role="status"` and `aria-label="Loading"`, so wrapping it in another live region next to visible "Loading…" text double-announces.
 **Action:** One live region per loading state. If there is visible "Loading…" text, put `role="status"` on the wrapper and mark the spinner `aria-hidden`. If the spinner is the only indicator, rely on `Spinner`'s built-in name and do not wrap it in another status/live region.
+
+## 2024-03-09 - Accessible names for Radix UI primitives Close buttons
+**Learning:** Radix UI primitives like `ToastPrimitives.Close`, `DialogPrimitives.Close`, and `SheetPrimitive.Close` do not automatically provide accessible names for their internal icon-only buttons. The library relies on developers explicitly adding `aria-label` attributes or visually hidden text (like `<span className="sr-only">Close</span>`) to these elements.
+**Action:** When implementing or auditing Radix UI close buttons, always verify they contain either an `aria-label` or visually hidden text to ensure they are accessible to screen reader users.
