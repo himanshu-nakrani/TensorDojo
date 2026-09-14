@@ -17,6 +17,16 @@ app.set("trust proxy", 1);
 // Disable x-powered-by header to prevent fingerprinting
 app.disable("x-powered-by");
 
+// SECURITY: Prevent Cross-Site Tracing (XST) and unexpected behavior by enforcing an HTTP method allowlist
+app.use((req: Request, res: Response, next: NextFunction) => {
+  const allowedMethods = ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS', 'HEAD'];
+  if (!allowedMethods.includes(req.method)) {
+    res.status(405).json({ error: "Method Not Allowed" });
+    return;
+  }
+  next();
+});
+
 // Add basic security headers
 app.use((_req: Request, res: Response, next: NextFunction) => {
   res.setHeader("X-Content-Type-Options", "nosniff");
