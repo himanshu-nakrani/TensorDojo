@@ -74,6 +74,20 @@ function project2D(vectors: number[][]): number[][] {
   });
 }
 
+// ⚡ Bolt Optimization: Lazy cache for projected embeddings.
+// We cache the O(V*d) calculation on demand so that slider drags and route
+// navigations immediately become O(1) lookups for previously visited dimensions.
+// A Map ensures we support any dimension safely (even if the preset is > 64).
+const projectedCache = new Map<number, number[][]>();
+function getProjected(d: number): number[][] {
+  let p = projectedCache.get(d);
+  if (!p) {
+    p = project2D(synthesizeEmbeddings(d, 42));
+    projectedCache.set(d, p);
+  }
+  return p;
+}
+
 /**
  * Show 6 clusters of 4 words each in a 2D plane. The dimension
  * slider controls how well-separated the clusters are.
@@ -82,8 +96,7 @@ export function EmbeddingDimensionSlider({ preset }: { preset?: EmbeddingDimensi
   const [d, setD] = useState(preset?.d ?? 2);
   const [query, setQuery] = useState('cat');
 
-  const allVectors = useMemo(() => synthesizeEmbeddings(d, 42), [d]);
-  const projected = useMemo(() => project2D(allVectors), [allVectors]);
+  const projected = useMemo(() => getProjected(d), [d]);
 
   // The first occurrence of `query` (if present) is the target
   const target = useMemo(() => {
