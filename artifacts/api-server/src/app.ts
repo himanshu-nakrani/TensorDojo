@@ -96,6 +96,25 @@ app.use(
   }),
 );
 
+// Reject TRACE and other non-API methods
+const allowedMethods = [
+  "GET",
+  "POST",
+  "PUT",
+  "DELETE",
+  "PATCH",
+  "OPTIONS",
+  "HEAD",
+];
+app.use((req: Request, res: Response, next: NextFunction) => {
+  if (!allowedMethods.includes(req.method)) {
+    res.setHeader("Allow", allowedMethods.join(", "));
+    res.status(405).json({ error: "Method Not Allowed" });
+    return;
+  }
+  next();
+});
+
 const isProduction = process.env.NODE_ENV === "production";
 const corsOrigin = process.env.CORS_ORIGIN || (isProduction ? "" : "*");
 

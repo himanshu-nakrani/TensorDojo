@@ -68,3 +68,8 @@
 **Vulnerability:** The Vercel deployment configuration (`vercel.json`) did not specify the `Permissions-Policy` header, leaving the frontend with a potentially larger attack surface by allowing access to sensitive APIs (geolocation, microphone, camera) if compromised via XSS.
 **Learning:** For statically deployed Vite/React apps on Vercel, Express middleware headers do not apply. All security headers must be explicitly configured in the deployment configuration (e.g., `vercel.json`). It's easy to overlook `Permissions-Policy` when setting up static hosting.
 **Prevention:** Always verify that a comprehensive set of security headers, including `Permissions-Policy`, is configured at the edge or hosting layer for static frontends.
+
+## 2024-05-18 - [Prevent Cross-Site Tracing (XST) via HTTP Method Allowlist]
+**Vulnerability:** The Express API server did not explicitly restrict HTTP methods, potentially allowing unusual methods like `TRACE` or `TRACK` which can be exploited for Cross-Site Tracing (XST) to bypass HttpOnly cookies, or cause unexpected behavior in downstream proxies.
+**Learning:** By default, Express will handle any method if a middleware or route matches (e.g. `app.use()`). It's a fundamental security practice (Defense in Depth) to explicitly reject methods that the application does not intend to support before they reach any further processing.
+**Prevention:** Always implement an early middleware that checks `req.method` against a strict allowlist (e.g., GET, POST, PUT, DELETE, PATCH, OPTIONS, HEAD) and returns a 405 Method Not Allowed response for anything else.
