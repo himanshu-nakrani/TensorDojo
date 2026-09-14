@@ -74,10 +74,7 @@ function project2D(vectors: number[][]): number[][] {
   });
 }
 
-// ⚡ Bolt Optimization: Lazy cache for projected embeddings.
-// We cache the O(V*d) calculation on demand so that slider drags and route
-// navigations immediately become O(1) lookups for previously visited dimensions.
-// A Map ensures we support any dimension safely (even if the preset is > 64).
+// Process-lifetime cache so remounts reuse a previously visited d.
 const projectedCache = new Map<number, number[][]>();
 function getProjected(d: number): number[][] {
   let p = projectedCache.get(d);
