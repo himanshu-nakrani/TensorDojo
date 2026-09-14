@@ -1,0 +1,268 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="360" viewBox="0 0 1200 360" role="img" aria-labelledby="title desc">
+  <title id="title">TensorDojo</title>
+  <desc id="desc">Learn how LLMs work by manipulating them — interactive vectors, attention weights, and live math.</desc>
+  <defs>
+    <!-- Backgrounds -->
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0a0e14"/>
+      <stop offset="45%" stop-color="#0d1117"/>
+      <stop offset="100%" stop-color="#0f1419"/>
+    </linearGradient>
+    <radialGradient id="glowL" cx="18%" cy="50%" r="42%">
+      <stop offset="0%" stop-color="#4ade80" stop-opacity="0.18"/>
+      <stop offset="55%" stop-color="#22c55e" stop-opacity="0.05"/>
+      <stop offset="100%" stop-color="#0d1117" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glowR" cx="84%" cy="48%" r="38%">
+      <stop offset="0%" stop-color="#34d399" stop-opacity="0.14"/>
+      <stop offset="60%" stop-color="#15803d" stop-opacity="0.04"/>
+      <stop offset="100%" stop-color="#0d1117" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glowC" cx="50%" cy="42%" r="35%">
+      <stop offset="0%" stop-color="#4ade80" stop-opacity="0.07"/>
+      <stop offset="100%" stop-color="#0d1117" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Accent fills -->
+    <linearGradient id="vecA" x1="0" y1="1" x2="1" y2="0">
+      <stop offset="0%" stop-color="#15803d"/>
+      <stop offset="100%" stop-color="#4ade80"/>
+    </linearGradient>
+    <linearGradient id="vecB" x1="0" y1="1" x2="1" y2="0">
+      <stop offset="0%" stop-color="#1d4ed8"/>
+      <stop offset="100%" stop-color="#60a5fa"/>
+    </linearGradient>
+    <linearGradient id="heatHi" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#86efac"/>
+      <stop offset="100%" stop-color="#22c55e"/>
+    </linearGradient>
+    <linearGradient id="titleGrad" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#f0fdf4"/>
+      <stop offset="55%" stop-color="#e6edf3"/>
+      <stop offset="100%" stop-color="#bbf7d0"/>
+    </linearGradient>
+    <linearGradient id="barGrad" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#15803d" stop-opacity="0"/>
+      <stop offset="20%" stop-color="#4ade80"/>
+      <stop offset="80%" stop-color="#4ade80"/>
+      <stop offset="100%" stop-color="#15803d" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="cardEdge" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#30363d"/>
+      <stop offset="100%" stop-color="#21262d"/>
+    </linearGradient>
+    <linearGradient id="panelFill" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#161b22" stop-opacity="0.92"/>
+      <stop offset="100%" stop-color="#0d1117" stop-opacity="0.88"/>
+    </linearGradient>
+
+    <!-- Soft glow filter -->
+    <filter id="softGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="4" result="b"/>
+      <feMerge>
+        <feMergeNode in="b"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="softGlowSm" x="-80%" y="-80%" width="260%" height="260%">
+      <feGaussianBlur stdDeviation="2.5" result="b"/>
+      <feMerge>
+        <feMergeNode in="b"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="textShadow" x="-10%" y="-10%" width="120%" height="140%">
+      <feDropShadow dx="0" dy="2" stdDeviation="6" flood-color="#000" flood-opacity="0.45"/>
+    </filter>
+
+    <!-- Grid pattern -->
+    <pattern id="grid" width="24" height="24" patternUnits="userSpaceOnUse">
+      <path d="M24 0H0V24" fill="none" stroke="#21262d" stroke-width="0.75"/>
+    </pattern>
+    <pattern id="dotGrid" width="16" height="16" patternUnits="userSpaceOnUse">
+      <circle cx="1" cy="1" r="0.7" fill="#30363d"/>
+    </pattern>
+
+    <!-- Clip for left canvas -->
+    <clipPath id="planeClip">
+      <rect x="48" y="56" width="268" height="248" rx="14"/>
+    </clipPath>
+    <clipPath id="heatClip">
+      <rect x="884" y="72" width="268" height="216" rx="12"/>
+    </clipPath>
+
+    <!-- Arrow markers -->
+    <marker id="arrowA" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0 0L10 5L0 10z" fill="#4ade80"/>
+    </marker>
+    <marker id="arrowB" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0 0L10 5L0 10z" fill="#60a5fa"/>
+    </marker>
+  </defs>
+
+  <!-- ===== Canvas ===== -->
+  <rect width="1200" height="360" fill="url(#bg)"/>
+  <rect width="1200" height="360" fill="url(#glowL)"/>
+  <rect width="1200" height="360" fill="url(#glowR)"/>
+  <rect width="1200" height="360" fill="url(#glowC)"/>
+  <rect width="1200" height="360" fill="url(#dotGrid)" opacity="0.55"/>
+
+  <!-- Outer frame ticks (brand motif from OG image) -->
+  <g stroke="#4ade80" stroke-width="2" stroke-linecap="square" opacity="0.55" fill="none">
+    <path d="M28 48V28H48"/>
+    <path d="M1172 48V28H1152"/>
+    <path d="M28 312V332H48"/>
+    <path d="M1172 312V332H1152"/>
+  </g>
+
+  <!-- ===== LEFT: Vector plane (dot-product dojo) ===== -->
+  <g>
+    <rect x="48" y="56" width="268" height="248" rx="14" fill="url(#panelFill)" stroke="url(#cardEdge)" stroke-width="1"/>
+    <g clip-path="url(#planeClip)">
+      <rect x="48" y="56" width="268" height="248" fill="url(#grid)" opacity="0.55"/>
+      <!-- origin crosshair -->
+      <g stroke="#30363d" stroke-width="1" opacity="0.9">
+        <line x1="48" y1="180" x2="316" y2="180"/>
+        <line x1="182" y1="56" x2="182" y2="304"/>
+      </g>
+      <!-- projection ghost of A onto B -->
+      <line x1="182" y1="180" x2="246" y2="132" stroke="#4ade80" stroke-width="1.5" stroke-dasharray="4 3" opacity="0.35"/>
+      <line x1="246" y1="132" x2="238" y2="98" stroke="#8b949e" stroke-width="1" stroke-dasharray="3 3" opacity="0.45"/>
+      <!-- Vector B (blue key) -->
+      <line x1="182" y1="180" x2="268" y2="112" stroke="url(#vecB)" stroke-width="3.5" stroke-linecap="round" marker-end="url(#arrowB)" filter="url(#softGlowSm)"/>
+      <!-- Vector A (green query) -->
+      <line x1="182" y1="180" x2="238" y2="98" stroke="url(#vecA)" stroke-width="3.5" stroke-linecap="round" marker-end="url(#arrowA)" filter="url(#softGlowSm)"/>
+      <!-- Tips as grab handles -->
+      <circle cx="238" cy="98" r="7" fill="#0d1117" stroke="#4ade80" stroke-width="2.5" filter="url(#softGlowSm)">
+        <animate attributeName="r" values="7;8.5;7" dur="2.4s" repeatCount="indefinite"/>
+      </circle>
+      <circle cx="268" cy="112" r="7" fill="#0d1117" stroke="#60a5fa" stroke-width="2.5" filter="url(#softGlowSm)"/>
+      <!-- origin node -->
+      <circle cx="182" cy="180" r="4" fill="#e6edf3" opacity="0.85"/>
+      <!-- angle arc -->
+      <path d="M210 160 A 36 36 0 0 0 214 148" fill="none" stroke="#4ade80" stroke-width="1.5" opacity="0.7"/>
+      <text x="222" y="148" fill="#8b949e" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="10">θ</text>
+    </g>
+    <!-- Labels -->
+    <text x="64" y="78" fill="#8b949e" font-family="ui-sans-serif, system-ui, -apple-system, sans-serif" font-size="11" font-weight="600" letter-spacing="0.08em">DOT PRODUCT</text>
+    <g font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11">
+      <text x="64" y="280" fill="#4ade80">q</text>
+      <text x="76" y="280" fill="#8b949e">·</text>
+      <text x="86" y="280" fill="#60a5fa">k</text>
+      <text x="100" y="280" fill="#8b949e">=</text>
+      <text x="116" y="280" fill="#e6edf3" font-weight="600">0.87</text>
+    </g>
+    <!-- Drag hint -->
+    <g transform="translate(268 268)" opacity="0.75">
+      <circle r="11" fill="#161b22" stroke="#30363d" stroke-width="1"/>
+      <path d="M-3 -2 L0 -5 L3 -2 M-3 2 L0 5 L3 2 M-2 -3 L-5 0 L-2 3 M2 -3 L5 0 L2 3" fill="none" stroke="#8b949e" stroke-width="1.2" stroke-linecap="round"/>
+    </g>
+  </g>
+
+  <!-- ===== CENTER: Wordmark + pitch ===== -->
+  <g filter="url(#textShadow)">
+    <!-- Monogram: tensor brackets + T -->
+    <g transform="translate(578 72)">
+      <rect x="0" y="0" width="44" height="44" rx="10" fill="#0d1117" stroke="#4ade80" stroke-width="1.5"/>
+      <path d="M11 12 H17 M11 12 V32 M11 32 H17" fill="none" stroke="#4ade80" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M33 12 H27 M33 12 V32 M33 32 H27" fill="none" stroke="#4ade80" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+      <text x="22" y="30" text-anchor="middle" fill="#e6edf3" font-family="ui-sans-serif, system-ui, -apple-system, sans-serif" font-size="17" font-weight="700">T</text>
+    </g>
+
+    <text x="600" y="158" text-anchor="middle" fill="url(#titleGrad)" font-family="ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, sans-serif" font-size="56" font-weight="750" letter-spacing="-0.03em">TensorDojo</text>
+
+    <rect x="470" y="176" width="260" height="2" rx="1" fill="url(#barGrad)" opacity="0.9">
+      <animate attributeName="opacity" values="0.55;1;0.55" dur="3.2s" repeatCount="indefinite"/>
+    </rect>
+
+    <text x="600" y="210" text-anchor="middle" fill="#c9d1d9" font-family="ui-sans-serif, system-ui, -apple-system, sans-serif" font-size="16" font-weight="500">Learn how LLMs work by manipulating them</text>
+    <text x="600" y="236" text-anchor="middle" fill="#8b949e" font-family="ui-sans-serif, system-ui, -apple-system, sans-serif" font-size="13">Drag the math. Feel the intuition. Read the proof.</text>
+  </g>
+
+  <!-- Pill stats -->
+  <g font-family="ui-sans-serif, system-ui, -apple-system, sans-serif" font-size="12" font-weight="600">
+    <g transform="translate(430 258)">
+      <rect width="100" height="28" rx="14" fill="#161b22" stroke="#30363d"/>
+      <circle cx="16" cy="14" r="3.5" fill="#4ade80"/>
+      <text x="28" y="18" fill="#e6edf3">58 lessons</text>
+    </g>
+    <g transform="translate(542 258)">
+      <rect width="116" height="28" rx="14" fill="#161b22" stroke="#30363d"/>
+      <circle cx="16" cy="14" r="3.5" fill="#60a5fa"/>
+      <text x="28" y="18" fill="#e6edf3">84 live sims</text>
+    </g>
+    <g transform="translate(670 258)">
+      <rect width="100" height="28" rx="14" fill="#161b22" stroke="#30363d"/>
+      <circle cx="16" cy="14" r="3.5" fill="#a78bfa"/>
+      <text x="28" y="18" fill="#e6edf3">0 videos</text>
+    </g>
+  </g>
+
+  <!-- ===== RIGHT: Attention matrix ===== -->
+  <g>
+    <rect x="884" y="56" width="268" height="248" rx="14" fill="url(#panelFill)" stroke="url(#cardEdge)" stroke-width="1"/>
+    <text x="900" y="78" fill="#8b949e" font-family="ui-sans-serif, system-ui, -apple-system, sans-serif" font-size="11" font-weight="600" letter-spacing="0.08em">ATTENTION</text>
+    <text x="1136" y="78" text-anchor="end" fill="#6e7681" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="10">softmax(QKᵀ/√d)</text>
+
+    <!-- Token labels -->
+    <g font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="10" fill="#8b949e">
+      <text x="940" y="104" text-anchor="middle">the</text>
+      <text x="992" y="104" text-anchor="middle">cat</text>
+      <text x="1044" y="104" text-anchor="middle">sat</text>
+      <text x="1096" y="104" text-anchor="middle">on</text>
+      <text x="916" y="140" text-anchor="end">the</text>
+      <text x="916" y="188" text-anchor="end">cat</text>
+      <text x="916" y="236" text-anchor="end">sat</text>
+      <text x="916" y="284" text-anchor="end">on</text>
+    </g>
+
+    <!-- Heatmap 4×4 — diagonal peaks like causal self-attention -->
+    <g transform="translate(924 116)">
+      <rect x="0" y="0" width="40" height="40" rx="5" fill="#4ade80" opacity="0.95" filter="url(#softGlowSm)"/>
+      <rect x="52" y="0" width="40" height="40" rx="5" fill="#4ade80" opacity="0.18"/>
+      <rect x="104" y="0" width="40" height="40" rx="5" fill="#4ade80" opacity="0.1"/>
+      <rect x="156" y="0" width="40" height="40" rx="5" fill="#4ade80" opacity="0.06"/>
+
+      <rect x="0" y="48" width="40" height="40" rx="5" fill="#4ade80" opacity="0.32"/>
+      <rect x="52" y="48" width="40" height="40" rx="5" fill="#4ade80" opacity="0.9" filter="url(#softGlowSm)"/>
+      <rect x="104" y="48" width="40" height="40" rx="5" fill="#4ade80" opacity="0.22"/>
+      <rect x="156" y="48" width="40" height="40" rx="5" fill="#4ade80" opacity="0.12"/>
+
+      <rect x="0" y="96" width="40" height="40" rx="5" fill="#4ade80" opacity="0.16"/>
+      <rect x="52" y="96" width="40" height="40" rx="5" fill="#4ade80" opacity="0.38"/>
+      <rect x="104" y="96" width="40" height="40" rx="5" fill="#4ade80" opacity="0.92" filter="url(#softGlowSm)"/>
+      <rect x="156" y="96" width="40" height="40" rx="5" fill="#4ade80" opacity="0.18"/>
+
+      <rect x="0" y="144" width="40" height="40" rx="5" fill="#4ade80" opacity="0.12"/>
+      <rect x="52" y="144" width="40" height="40" rx="5" fill="#4ade80" opacity="0.22"/>
+      <rect x="104" y="144" width="40" height="40" rx="5" fill="#4ade80" opacity="0.45"/>
+      <rect x="156" y="144" width="40" height="40" rx="5" fill="#4ade80" opacity="0.94" filter="url(#softGlowSm)">
+        <animate attributeName="opacity" values="0.78;1;0.78" dur="2.8s" repeatCount="indefinite"/>
+      </rect>
+
+      <g font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="9" fill="#0d1117" font-weight="700" text-anchor="middle">
+        <text x="20" y="24">.82</text>
+        <text x="72" y="72">.71</text>
+        <text x="124" y="120">.74</text>
+        <text x="176" y="168">.68</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- Connecting arcs: idea flows from vectors → brand → attention -->
+  <g fill="none" stroke="#4ade80" stroke-width="1" opacity="0.22" stroke-dasharray="3 5">
+    <path d="M316 180 C380 160, 420 150, 470 150"/>
+    <path d="M730 150 C780 150, 820 170, 884 180"/>
+  </g>
+  <g filter="url(#softGlowSm)">
+    <circle r="2.5" fill="#4ade80">
+      <animateMotion dur="4s" repeatCount="indefinite" path="M316 180 C380 160, 420 150, 470 150"/>
+    </circle>
+    <circle r="2.5" fill="#4ade80" opacity="0.85">
+      <animateMotion dur="4.5s" begin="0.8s" repeatCount="indefinite" path="M730 150 C780 150, 820 170, 884 180"/>
+    </circle>
+  </g>
+
+  <!-- Bottom micro-caption -->
+  <text x="600" y="328" text-anchor="middle" fill="#484f58" font-family="ui-sans-serif, system-ui, -apple-system, sans-serif" font-size="11" letter-spacing="0.04em">INTERACTIVE LLM FUNDAMENTALS · MATH YOU CAN GRAB</text>
+</svg>

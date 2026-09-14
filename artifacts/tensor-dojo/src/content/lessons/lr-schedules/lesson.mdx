@@ -1,0 +1,67 @@
+import { MathCode } from '@/components/lesson/MathCode';
+import { Callout } from '@/components/lesson/Callout';
+
+## You've picked an optimizer. The single most important hyperparameter is the learning rate — and it shouldn't be constant.
+
+The optimizer lesson picked the step equation. The SGD lesson sampled a batch. The data and the loss are fixed. The remaining knob is $\eta$ — the *learning rate* — and so far we've treated it as a single constant. In practice, the LR is the single most important hyperparameter in a training run, and it's almost never constant. It changes over the course of training in a schedule the engineer picks ahead of time.
+
+Two reasons the LR should change: **early instability**, and **late oscillation**. Early in training, the model's parameters are at their random initialization, the loss surface is unfamiliar, and an adaptive optimizer (Adam) hasn't yet built up its per-parameter statistics. A large constant LR at this point blows the model up. **Warmup**: start with a small LR, ramp up to the peak over the first $W$ steps. Late in training, the model is near a minimum and the LR is still the same magnitude as in the early steps, so it overshoots the minimum and oscillates around it without settling. **Decay**: shrink the LR as training progresses so the model can settle. Modern training is almost always **warmup + cosine decay** — the two together are the conventional default.
+
+## The formulas
+
+For a step $t \in [0, T)$ with peak LR $\eta_{\max}$ and floor $\eta_{\min}$:
+
+**Constant:** $\eta(t) = \eta_{\max}$.
+
+**Linear decay:** $\eta(t) = \eta_{\max} \cdot \max(0, 1 - t/T)$.
+
+**Cosine decay:** $\eta(t) = \eta_{\min} + (\eta_{\max} - \eta_{\min}) \cdot \tfrac{1}{2}\bigl(1 + \cos(\pi \cdot t/T)\bigr)$. Starts at $\eta_{\max}$, ends at $\eta_{\min}$, with the decay rate proportional to the slope of a cosine.
+
+**Warmup + cosine:** for the first $W$ steps, $\eta(t) = \eta_{\max} \cdot (t / W)$ (linear ramp from 0 to $\eta_{\max}$). For $t \geq W$, $\eta(t) = \eta_{\min} + (\eta_{\max} - \eta_{\min}) \cdot \tfrac{1}{2}\bigl(1 + \cos(\pi \cdot (t - W) / (T - W))\bigr)$. The conventional modern default.
+
+<MathCode
+  math="\eta(t) = \begin{cases} \eta_{\max} \cdot \frac{t}{W} & 0 \le t < W \\ \eta_{\min} + (\eta_{\max} - \eta_{\min}) \cdot \frac{1}{2}\bigl(1 + \cos(\pi \cdot \frac{t - W}{T - W})\bigr) & W \le t \le T \end{cases}"
+  code={`def warmup_cosine(t, total, peak, warmup, floor=0.0):
+    if t < warmup:
+        return peak * (t / warmup)            # linear ramp 0 → peak
+    if t >= total:
+        return floor                          # training is over; pin at floor
+    # Cosine decay peak → floor over the remaining (total − warmup) steps.
+    remaining = total - warmup
+    return floor + (peak - floor) * 0.5 * (
+        1 + math.cos(math.pi * (t - warmup) / remaining)
+    )`}
+  caption="The conventional modern default: linear warmup over the first W steps, then cosine decay from peak to η_min over the remaining T − W steps. The floor (often 0) keeps the schedule numerically safe past the end."
+/>
+
+<Callout title="Why warmup helps Adam" targetInteractive="schedule-explorer">
+  Adam's per-parameter step size depends on its running statistics $m$ and $v$. At step 0, $m = v = 0$ for every parameter, and the bias-corrected values are tiny — Adam's first few steps are intentionally small. With a constant peak LR, those first few steps have a large *global* multiplier, which the bias correction can't offset. Warmup gives Adam a few steps to build up its statistics before the LR is large.
+</Callout>
+
+## Try it
+
+The centerpiece is a control panel: a schedule-kind selector plus sliders for total steps, peak LR, and (when warmup is in play) warmup steps. The top plot shows the LR schedule; the bottom plot is a simulated loss trajectory driven by that schedule.
+
+<Callout targetInteractive="schedule-explorer">
+  Pick "Constant" and watch the loss trajectory. The LR is the same at every step; the simulated loss decreases steadily but settles with some residual oscillation near the end, because the same LR is now too large for the small losses near the minimum.
+</Callout>
+
+<Callout targetInteractive="schedule-explorer">
+  Pick "Warmup + cosine" and watch the loss trajectory. The first few steps have a tiny LR (the model is settling in from initialization); the LR ramps up to the peak; then it decays to 0. The early ramp prevents the "first few steps are unstable" failure mode of plain cosine; the late decay gives the loss a clean settle. This is the conventional default for a reason.
+</Callout>
+
+<Callout title="Side by side" targetInteractive="schedule-comparison">
+  Open the secondary widget. Three columns: constant, cosine, warmup + cosine. All run on the same synthetic loss problem with the same peak LR and total steps. Warmup + cosine wins by a small but consistent margin — the early warmup stabilizes the trajectory, the late decay lets it settle.
+</Callout>
+
+## Reading the result
+
+**The LR schedule has the same shape, almost regardless of the problem.** Linear warmup over the first 1–5% of training, then cosine decay from peak to (often) 0 over the remaining 95–99%. The exact fraction of warmup and the exact peak LR are tuned, but the *shape* is conventional. The schedule is the cheapest way to get a free improvement on most training runs.
+
+**The peak LR and the schedule are coupled, not independent.** A peak LR that's too high will diverge the model regardless of the schedule. The schedule controls how the LR *changes*; it can't rescue a peak that's wrong. The right way to pick the peak LR is to run a short training with a constant LR and find the largest one that doesn't diverge, then pick a peak 3–10× smaller. Once the peak is right, the schedule is decoration.
+
+**Cosine decay is a default, not a law.** Other schedules work: linear decay, step decay, exponential decay. Cosine's appeal is its shape — *slow at both ends, fastest in the middle* (the derivative of $\tfrac{1}{2}(1+\cos(\pi t/T))$ is zero at the endpoints and maximal at $t = T/2$). The slow start lets the model linger near peak LR while it's still finding the basin; the fast middle drops it most of the way; the slow end gives a long fine-grained settling tail. The differences between these schedules are usually small; the difference between *a* schedule and *no* schedule (constant) is large.
+
+## Recap
+
+Three takeaways. **A learning-rate schedule is the LR as a function of training step**, and the conventional modern default is warmup + cosine decay. **Warmup fixes the early instability** (especially for Adam), and **decay fixes the late oscillation**. **The peak LR is the only thing that needs careful tuning**; the schedule's *shape* is conventional and the differences between schedules are small. The optimizer is fixed, the data is sampled, the LR schedule is set — the math of training is fully specified. The next two lessons handle the *systems* side: **mixed precision** (run the matmul in bf16, the optimizer in fp32) and **gradient checkpointing** (trade compute for activation memory). Without them, modern big-model training doesn't fit on real hardware.

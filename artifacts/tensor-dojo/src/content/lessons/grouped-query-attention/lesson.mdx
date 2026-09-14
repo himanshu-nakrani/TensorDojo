@@ -1,0 +1,73 @@
+import { MathCode } from '@/components/lesson/MathCode';
+import { Callout } from '@/components/lesson/Callout';
+
+## The cache is a gigabyte per request. Can we shrink it?
+
+Look ahead a few lessons: an inference-time optimization called the **KV cache** stores every previous token's K and V so the model doesn't have to recompute them. The price is memory — at 2048 tokens of context, a vanilla 7B-class MHA cache is around 1 GB *per request*. Scale to 70B parameters and 32k context and the cache balloons into tens of gigabytes per request. With even a few simultaneous users, the cache — not the model weights — becomes what doesn't fit in GPU memory.
+
+So the cache memory has to come down. The previous lesson's multi-head attention told you where to look: every head stores its own K and V. Eight heads means eight K matrices and eight V matrices to cache. The natural question is whether all of them need to be distinct.
+
+## What does each head actually use K and V for?
+
+A query head is a "question." It computes $\mathbf{q}_h = \mathbf{x} W_h^Q$, then asks "which earlier tokens look like what I care about?" The answer is the dot product $\mathbf{q}_h \cdot \mathbf{k}_j$. The *question* lives in the query projection; the K matrix is just where the answer lookup happens. K and V together describe what content the sequence has, *not* what any particular head is asking about.
+
+Grouped-query attention (GQA) exploits this asymmetry. Keep all the query heads — they're where the model's "different ways of looking" live. Share K and V across groups of query heads. Pick a group factor $g$ that divides $h$; you now have $h$ query heads but only $h/g$ KV heads. The cache shrinks by exactly $g$.
+
+$$
+n_{Q} = h, \quad n_{KV} = h / g, \quad \text{cache bytes} \;\propto\; n_{KV} \cdot d_{\text{head}} \cdot L \cdot n
+$$
+
+<MathCode
+  math="n_{KV} = h / g, \qquad \text{cache} \propto n_{KV} \cdot d_{\text{head}} \cdot L \cdot n"
+  code={`# Vanilla MHA: K and V have the same head count as Q.
+W_q = nn.Linear(d_model, n_heads * d_head)
+W_k = nn.Linear(d_model, n_heads * d_head)
+W_v = nn.Linear(d_model, n_heads * d_head)
+
+# GQA: K and V have FEWER heads. Each KV head is shared by
+# (n_heads / n_kv_heads) query heads.
+W_q = nn.Linear(d_model, n_heads    * d_head)
+W_k = nn.Linear(d_model, n_kv_heads * d_head)  # <-- smaller
+W_v = nn.Linear(d_model, n_kv_heads * d_head)  # <-- smaller
+
+# At attention time, repeat KV heads to match Q heads.
+k_full = k.repeat_interleave(n_heads // n_kv_heads, dim=1)
+v_full = v.repeat_interleave(n_heads // n_kv_heads, dim=1)`}
+  caption="The change is two layer dimensions and one repeat_interleave. The rest of the attention computation is unchanged."
+/>
+
+## Try it
+
+<Callout targetInteractive="gqa-head-layout">
+  Default is GQA-4: eight query heads sharing two KV heads. Switch to MHA — every query head gets its own KV head, the cache bar fills the chart, and the lines unfan out. Switch to MQA — every query head shares one KV head, the line bundle collapses, the cache is 8× smaller. GQA-2 and GQA-4 are the middle ground production uses.
+</Callout>
+
+<Callout title="Why production lands at GQA-8, not MQA" targetInteractive="gqa-head-layout">
+  MQA was tried first (Shazeer 2019) — and it works, but the quality drop is noticeable enough that fine-tuning has to compensate. GQA (Ainslie 2023) showed that going from MHA to GQA-8 gives almost all of MQA's cache savings with essentially no quality regression. LLaMA-2 70B picked GQA-8 specifically because the LLaMA team measured the trade-off and found 8× shrinkage to be the sweet spot.
+</Callout>
+
+## A second look
+
+<Callout targetInteractive="gqa-attention-patterns">
+  Under MHA each row is a qualitatively different attention pattern — each query head reads a different K. Switch to GQA-2: pairs of rows now read from the same K matrix (the ↘KV labels show the pairing). The rows in a pair don't become identical (each head still has its own Q), but the *shape* of each pair's row is constrained — both attentions come from the same K. Under MQA all eight rows read the same K. Re-sample a few times to see the structural pattern hold across different random projections.
+</Callout>
+
+<Callout title="The pedagogical price is not 'rows become identical'" targetInteractive="gqa-attention-patterns">
+  This is worth saying out loud because it's the GQA misconception that shows up most often. GQA does *not* tie query heads together — they still have independent Q projections, so their scores against the shared K are different. What GQA gives up is the freedom for two query heads in a group to attend to *qualitatively different positions* — say, head 0 attending to the previous token and head 1 attending to a syntactic head three tokens back. The same K matrix has to support both, which is a real constraint. Empirically that constraint costs little.
+</Callout>
+
+## Reading the result
+
+Three things to internalize.
+
+**Query heads stay independent; K and V are shared per group.** The model still has $h$ ways of asking. What it gives up is $h$ ways of *looking up the answer* — the answer pool comes from $h/g$ shared K, V matrices. This is the architectural shape: shrink only the half of attention that gets cached.
+
+**Cache shrinkage equals the group factor.** GQA-8 shrinks the cache by 8×. GQA-4 by 4×. MQA — the extreme of GQA where there's a single KV head shared by every query head — shrinks it by $h$. Memory savings are linear and exact; there's no fine print.
+
+**Every production LLM uses it.** LLaMA-2 70B uses GQA-8 (64 query heads, 8 KV heads). Mistral 7B uses GQA-4 (32 query heads, 8 KV heads). Qwen, DeepSeek, and GPT-OSS-class models follow the same pattern. The cost is essentially nothing for the quality the cache savings buy.
+
+## Recap
+
+Three takeaways. **GQA shrinks the KV cache by sharing K and V across groups of query heads.** The query projections stay independent — the model keeps all of its "ways of asking" — but the answer-lookup pool shrinks by the group factor. **Cache memory drops linearly with the group factor**, with little or no quality regression at $g \in \{4, 8\}$ and a measurable but tolerable cost at $g = h$ (MQA). **The architecture change is local**: two layer dimensions get smaller and one `repeat_interleave` shows up before attention. Every modern production LLM ships with some form of grouped-query attention.
+
+The transformer block now has attention sized for the cache it will actually need to hold in GPU memory. The next question is the corresponding *speed* question: how does that attention actually run on the GPU? The next lesson covers **flash attention** — the kernel-level trick that keeps the n×n score matrix off slow HBM and on fast SRAM, the reason 32k-context inference exists on commodity hardware.

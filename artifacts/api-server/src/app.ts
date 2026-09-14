@@ -1,0 +1,152 @@
+import express, {
+  type Express,
+  type Request,
+  type Response,
+  type NextFunction,
+} from "express";
+import cors from "cors";
+import pinoHttp from "pino-http";
+import router from "./routes";
+import { logger } from "./lib/logger";
+
+const app: Express = express();
+
+// Trust reverse proxy (like Nginx, Google Cloud Run) for accurate client IPs in rate limiting
+app.set("trust proxy", 1);
+
+// Disable x-powered-by header to prevent fingerprinting
+app.disable("x-powered-by");
+
+// Add basic security headers
+app.use((_req: Request, res: Response, next: NextFunction) => {
+  res.setHeader("X-Content-Type-Options", "nosniff");
+  res.setHeader("X-Frame-Options", "DENY");
+  res.setHeader("X-XSS-Protection", "1; mode=block");
+  res.setHeader(
+    "Strict-Transport-Security",
+    "max-age=31536000; includeSubDomains; preload",
+  );
+  res.setHeader("Content-Security-Policy", "default-src 'none'");
+  res.setHeader("Cache-Control", "no-store");
+  res.setHeader("Referrer-Policy", "no-referrer");
+  res.setHeader("Permissions-Policy", "geolocation=(), microphone=(), camera=()");
+  res.setHeader("X-DNS-Prefetch-Control", "off");
+  res.setHeader("X-Download-Options", "noopen");
+  res.setHeader("X-Permitted-Cross-Domain-Policies", "none");
+  next();
+});
+
+// Simple in-memory rate limiter to mitigate basic DoS and brute-force
+const rateLimit = new Map<string, { count: number; resetTime: number }>();
+const RATE_LIMIT_WINDOW_MS = 60 * 1000; // 1 minute
+const RATE_LIMIT_MAX_REQUESTS = 100;
+
+setInterval(() => {
+  const now = Date.now();
+  for (const [ip, data] of rateLimit.entries()) {
+    if (now > data.resetTime) rateLimit.delete(ip);
+  }
+}, RATE_LIMIT_WINDOW_MS).unref();
+
+app.use((req: Request, res: Response, next: NextFunction) => {
+  const ip = req.ip || req.socket.remoteAddress || "unknown";
+  const now = Date.now();
+
+  let record = rateLimit.get(ip);
+  if (!record || now > record.resetTime) {
+    // SECURITY: Prevent Memory Exhaustion (DoS)
+    // If the map grows too large, evict the oldest entry (FIFO) to prevent OOM
+    // while maintaining limits for the most recent clients.
+    if (rateLimit.size >= 10000) {
+      const oldestKey = rateLimit.keys().next().value;
+      if (oldestKey !== undefined) {
+        rateLimit.delete(oldestKey);
+      }
+    }
+    record = { count: 0, resetTime: now + RATE_LIMIT_WINDOW_MS };
+    rateLimit.set(ip, record);
+  }
+
+  record.count++;
+  if (record.count > RATE_LIMIT_MAX_REQUESTS) {
+    res.status(429).json({ error: "Too Many Requests" });
+    return;
+  }
+
+  next();
+});
+
+app.use(
+  pinoHttp({
+    logger,
+    serializers: {
+      req(req) {
+        return {
+          id: req.id,
+          method: req.method,
+          url: req.url?.split("?")[0],
+        };
+      },
+      res(res) {
+        return {
+          statusCode: res.statusCode,
+        };
+      },
+    },
+  }),
+);
+
+// Reject TRACE and other non-API methods
+const allowedMethods = [
+  "GET",
+  "POST",
+  "PUT",
+  "DELETE",
+  "PATCH",
+  "OPTIONS",
+  "HEAD",
+];
+app.use((req: Request, res: Response, next: NextFunction) => {
+  if (!allowedMethods.includes(req.method)) {
+    res.setHeader("Allow", allowedMethods.join(", "));
+    res.status(405).json({ error: "Method Not Allowed" });
+    return;
+  }
+  next();
+});
+
+const isProduction = process.env.NODE_ENV === "production";
+const corsOrigin = process.env.CORS_ORIGIN || (isProduction ? "" : "*");
+
+app.use(
+  cors({
+    origin: isProduction
+      ? corsOrigin && corsOrigin !== "*"
+        ? corsOrigin.split(",")
+        : false
+      : "*",
+  }),
+);
+
+// SECURITY: Limit request body size to prevent DoS (Memory Exhaustion)
+app.use(express.json({ limit: "10mb" }));
+app.use(express.urlencoded({ extended: true, limit: "10mb" }));
+
+app.use("/api", router);
+
+// Global error handler to prevent stack trace leaks
+app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+  if (res.headersSent) {
+    return next(err);
+  }
+
+  if (req.log && typeof req.log.error === "function") {
+    req.log.error({ err }, "Unhandled application error");
+  } else {
+    logger.error({ err }, "Unhandled application error");
+  }
+
+  res.status(500).json({ error: "Internal Server Error" });
+});
+
+export default app;

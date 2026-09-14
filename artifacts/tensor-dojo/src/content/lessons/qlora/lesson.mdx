@@ -1,0 +1,110 @@
+import { MathCode } from '@/components/lesson/MathCode';
+import { Callout } from '@/components/lesson/Callout';
+
+## Fine-tuning a 70B model on the GPU that runs Cyberpunk
+
+The LoRA lesson showed how to fine-tune a large model by freezing its weights and training only a tiny low-rank update — 0.1% of the parameters. That trick collapses the **trainable** parameter count, but the *base* model still has to live in memory for the forward and backward pass. A 70B model at 16-bit precision is 140 GB of weights, plus activations and adapter-only gradients on top — comfortably ~180 GB. A single H100 is 80 GB. So even with LoRA, you need three H100s to fine-tune a 70B model in 16-bit, and *more* without LoRA.
+
+**QLoRA**, introduced in a 2023 paper by Dettmers et al., closes that last gap. The idea is to stack two tricks:
+
+1. **Quantize the frozen base to 4 bits.** The 70B model now takes 35 GB instead of 140 GB — small enough to fit on one consumer GPU.
+2. **Keep the LoRA adapters in 16-bit, train as normal.** The adapters are tiny (often under 1% of the base), so 16-bit precision for them costs almost nothing.
+
+The result: a 70B model fine-tuned on a single 24 GB consumer GPU. The 2023 paper trained Guanaco-65B on one GPU in 24 hours and matched ChatGPT on the Vicuna benchmark. Every modern "fine-tune Llama-3-70B at home" recipe is QLoRA underneath.
+
+## The formula
+
+The forward pass for a linear layer in QLoRA is:
+
+$$
+\mathbf{y} = \operatorname{dequantize}(\mathbf{W}_{\text{4bit}}) \cdot \mathbf{x} + \mathbf{B}\mathbf{A}\mathbf{x}
+$$
+
+where $\mathbf{W}_{\text{4bit}}$ is the frozen base weight stored in 4 bits, and $\mathbf{B}\mathbf{A}$ is the LoRA adapter (rank $r$ matrices, kept in 16 bits, trained). The 4-bit base is **dequantized on the fly** to 16 bits during the forward pass; the dequantization is cheap (lookup table) and adds negligible latency.
+
+The training signal flows only through the adapter:
+
+- No gradients on $\mathbf{W}_{\text{4bit}}$ (frozen).
+- Gradients on $\mathbf{A}$ and $\mathbf{B}$ via standard backprop.
+- Optimizer state only for $\mathbf{A}$ and $\mathbf{B}$ — AdamW's $m$ and $v$ moments dominate memory in full fine-tuning, and QLoRA reduces them by the LoRA factor.
+
+The 2023 paper added two technical refinements that matter in practice:
+
+- **NF4** (NormalFloat 4-bit): a 4-bit quantization scheme optimized for normally-distributed weights. Lower error than uniform 4-bit.
+- **Double quantization**: even the quantization constants are quantized, saving another ~0.4 bits per parameter on average.
+- **Paged optimizer states**: optimizer memory spills to CPU when GPU memory spikes (e.g., long sequences), then pages back when needed.
+
+<MathCode
+  math="\mathbf{y} = \operatorname{dq}(\mathbf{W}_{\text{4bit}})\,\mathbf{x} + \mathbf{B}\mathbf{A}\,\mathbf{x}"
+  code={`# Memory cost of fine-tuning a 70B model.
+# Numbers in GB, approximate.
+
+# (1) Full 16-bit fine-tuning:
+weights        = 70 * 2     # 140 GB (fp16)
+gradients      = 70 * 2     # 140 GB
+optimizer      = 70 * 8     # 560 GB (Adam: m, v in fp32)
+activations    = 30         # depends on seq len and batch size
+total_full     = 870        # GB — needs ~11 H100s
+
+# (2) LoRA at 16-bit base:
+weights_base   = 70 * 2     # 140 GB (frozen, no grad)
+weights_adapter= 0.7 * 2    # ~1 GB (rank 16, ~1% params)
+gradients      = 0.7 * 2    # ~1 GB (adapter only)
+optimizer      = 0.7 * 8    # ~6 GB (adapter only)
+activations    = 30
+total_lora     = 178        # GB — needs ~3 H100s
+
+# (3) QLoRA — 4-bit base + LoRA adapter:
+weights_base   = 70 * 0.5   # 35 GB (4-bit)
+weights_adapter= 0.7 * 2    # ~1 GB
+gradients      = 0.7 * 2    # ~1 GB
+optimizer      = 0.7 * 8    # ~6 GB
+activations    = 15         # gradient checkpointing typically on too
+total_qlora    = 58         # GB — fits on one H100, almost on one 4090.
+
+# 870 GB → 58 GB is a 15× reduction. The 2023 paper ran Llama-65B on
+# a single 48 GB A6000 with these tricks plus paged optimizers.`}
+  caption="Three memory budgets for the same task. Full fine-tuning is dominated by Adam optimizer states (8 bytes per parameter, in fp32). LoRA collapses optimizer + gradient cost; QLoRA additionally collapses the base-weight cost."
+/>
+
+<Callout title="Why 4-bit doesn't hurt quality" targetInteractive="qlora-memory">
+  Two things. First, the LoRA adapter is in 16-bit — so any small reconstruction error in the 4-bit base can be absorbed by the trainable adapter during fine-tuning. Second, NF4 is calibrated to the empirical distribution of LLM weights (roughly normal, centered at zero, narrow), so the quantization error is much smaller than naive 4-bit. The 2023 paper showed QLoRA-trained models matched 16-bit LoRA within a few tenths of a benchmark point on MMLU and Vicuna.
+</Callout>
+
+## Try it
+
+The centerpiece is a memory-budget bar chart. The four bars are full fine-tuning, LoRA (16-bit base), QLoRA, and inference-only. Drag the model size and the LoRA rank; watch how the bars rebalance.
+
+<Callout targetInteractive="qlora-memory">
+  Start with 70B at LoRA rank 16. Full fine-tuning needs ~870 GB; LoRA cuts it to ~180 GB; QLoRA cuts it to ~58 GB. Each step is roughly a 3–4× reduction. The full-fine-tuning bar is dominated by **optimizer state** (the red segment) — Adam's $m$ and $v$ moments live in fp32, eight bytes per parameter, four times the weight cost.
+</Callout>
+
+<Callout title="What to watch for" targetInteractive="qlora-memory">
+  Crank the LoRA rank from 16 to 256. The adapter parameter count grows linearly; the QLoRA bar barely moves (the base is still 35 GB, the adapter goes from 1 GB to ~16 GB). Compare to full fine-tuning, which is constant in rank — full FT has no adapter, the whole 70B model is trainable. The rank knob trades adapter capacity for memory; in practice ranks of 16–64 are typical.
+</Callout>
+
+<Callout targetInteractive="qlora-memory">
+  Now drop the model to 7B. Full fine-tuning is now ~87 GB — feasible on 2× A100s. LoRA: ~20 GB — feasible on one. QLoRA: ~6 GB — feasible on a laptop GPU. The reason QLoRA caught on so fast in 2023 wasn't 70B fine-tuning (still rare); it was 7B and 13B fine-tuning on consumer hardware, which is what made the open-source LLM ecosystem possible.
+</Callout>
+
+## Reading the result
+
+**The base model is frozen and quantized.** No gradients touch it. The 4-bit representation is read-only at training time; weights are dequantized on-the-fly to 16-bit during the matmul, then discarded. The 4-bit storage is the only persistent copy.
+
+**LoRA adapters carry the entire training signal.** They are kept in 16-bit (or sometimes bf16), and the optimizer state (Adam $m$, $v$) is computed only for the adapter parameters. This is the same LoRA construction as the previous lesson — the only change is what's *underneath* the adapter.
+
+**Memory savings come from three sources, multiplied.** (1) 4-bit base saves 4× on weight storage. (2) LoRA collapses gradient and optimizer storage to the adapter's size, a 100× reduction in the trainable count. (3) Gradient checkpointing (often paired with QLoRA) trades extra forward FLOPs for lower activation memory.
+
+**Quality is basically unchanged.** The original paper benchmarked QLoRA fine-tunes on MMLU, Vicuna, and BBH against 16-bit LoRA and against fully fine-tuned models, and found differences in the noise. Subsequent work has confirmed: for adapter-based fine-tuning, 4-bit base is essentially free.
+
+## A second look
+
+QLoRA is a stack of three independent tricks: NF4 quantization, LoRA, and paged optimizers. None of them is novel in isolation — 4-bit quantization existed, LoRA existed, optimizer state offloading existed. The contribution was showing they could be combined without quality loss, with a calibrated NF4 scheme that respected the empirical weight distribution. The 2023 paper is a great example of "the whole stack matters more than the individual tricks."
+
+<Callout title="What about inference?" targetInteractive="qlora-memory">
+  QLoRA is a *training* technique; inference uses the quantized base with the LoRA adapter merged in. After training, you can either keep the adapter as a separate small module (useful for serving multiple fine-tunes from one base) or fold it into the base weights for deployment. Both are common in production — adapter-per-task is the trick that lets a single foundation model serve hundreds of fine-tuned variants without 100× the storage.
+</Callout>
+
+## Recap
+
+Three takeaways. **QLoRA = 4-bit frozen base + 16-bit LoRA adapter.** The base provides capability; the adapter carries the fine-tune. **Memory drops 10–25× vs full fine-tuning** with negligible quality loss — the trainable part is small enough that optimizer state and gradients are cheap, and the base is small enough that it fits on one GPU. **It democratized LLM fine-tuning.** Before QLoRA, fine-tuning a 70B model needed a server. After, it ran on a single H100 or two consumer GPUs. The recipe is now standard across HuggingFace's PEFT library, axolotl, Unsloth, and every "fine-tune at home" tutorial you'll find. The next lesson shifts from *how* you fine-tune to *how you know it worked* — **evaluation** — and the gap between perplexity, benchmarks, and the model actually being useful.

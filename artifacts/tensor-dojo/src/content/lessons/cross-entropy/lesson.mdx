@@ -1,0 +1,69 @@
+import { MathCode } from '@/components/lesson/MathCode';
+import { Callout } from '@/components/lesson/Callout';
+
+## For one prediction, how do you turn "the model said this" into a number to minimize?
+
+The last several lessons followed the inference loop end to end: logits become a distribution, a decoding strategy picks one token, the KV cache makes the loop fast per step, speculative decoding amortizes across steps. But every distribution the model produced was already trained — the weights inside those projections came from somewhere. This lesson pivots from inference to training. The piece the model needs to *learn* is the distribution itself, and learning needs a single number that says "this prediction was good" or "this prediction was bad." That number is the **cross-entropy loss** for one example.
+
+The intuition: if the model put 99% of the probability mass on the right answer, the loss should be very small — the model was almost right. If it put 99% on the wrong answer, the loss should be very large. The loss is the negative log of the probability the model gave to the true token.
+
+## The formula
+
+For one example, with the model's predicted distribution $\mathbf{p} = (p_0, p_1, \ldots, p_{V-1})$ and the true token at index $t$:
+
+$$
+H(\mathbf{p}, t) \;=\; -\log p_t
+$$
+
+$p_t$ is the probability the model assigned to the correct answer. If the model is right, $p_t \approx 1$ and the loss is near zero. If the model put zero mass on the truth, the loss is mathematically infinite — there is no recovery from "the model thought the right answer was literally impossible." In practice, implementations clamp $p_t$ away from zero (e.g. at $10^{-12}$) before the log, so the runtime value is capped at $-\log(10^{-12}) \approx 27.6$; that clamp is a numerical floor, not a real escape hatch.
+
+<MathCode
+  math="H(\mathbf{p}, t) = -\log p_t"
+  code={`import numpy as np
+
+def cross_entropy(probs, true_index):
+    # Numerically stable: clamp away from 0 before taking log.
+    p = max(probs[true_index], 1e-12)
+    return -np.log(p)
+
+# Example: 8 tokens, true token at index 0 with p[0] = 0.6
+probs = [0.6, 0.15, 0.1, 0.05, 0.04, 0.03, 0.02, 0.01]
+print(cross_entropy(probs, 0))   # → 0.511  (small, model is right enough)`}
+  caption="The single-example cross-entropy is just -log p[true]. A small modification (subtract the max logit before exponentiating) keeps the computation numerically safe."
+/>
+
+<Callout title="Why the log?" targetInteractive="cross-entropy-explorer">
+  The log is what gives cross-entropy its shape. A linear penalty ("loss = 1 − p[true]") doesn't punish confident wrong answers hard enough — a model that's 100% wrong and a model that's 60% wrong get penalized differently, but not by enough. The log makes the penalty *multiplicative*: halving p[true] doesn't just add a fixed amount, it adds a fixed amount in log-space, which is an exponentially-growing amount in p-space.
+</Callout>
+
+## Try it
+
+<Callout targetInteractive="cross-entropy-explorer">
+  Drag a token's logit slider to change the predicted distribution. Click any token name to set it as the true answer. The single-example loss updates live at the bottom. Push the true token's probability to 0.99 — the loss drops to near 0. Push it to 0.001 — the loss jumps past 6.
+</Callout>
+
+<Callout title="What to watch for" targetInteractive="cross-entropy-explorer">
+  Set the true token to "the" (default), then push its logit slider all the way down to -3. Watch the bar shrink; the loss shoots up. Now push it back up to 3 and watch the loss collapse to near zero. Same model, same vocabulary, same set of logits — only the choice of "which is the true token" changes, and the loss can swing by orders of magnitude.
+</Callout>
+
+## Reading the result
+
+Three properties to internalize.
+
+**The loss is zero when the model is fully right.** $p_t = 1$ gives $H = -\log 1 = 0$. There's no way to be less wrong than 100% right.
+
+**The loss diverges as $p_t \to 0$.** The log goes to $-\infty$ as its argument goes to 0, so the loss goes to $+\infty$. A model that confidently predicts the wrong token — that puts literally zero probability on the right answer — has a loss so large that the rest of the batch becomes a rounding error.
+
+**The loss is sharply asymmetric.** A confident right answer (p=0.99) and a slightly uncertain answer (p=0.5) differ in loss by less than 1 nat. A slightly wrong answer (p=0.3) and a confident wrong answer (p=0.001) differ by 5 nats. The penalty is much steeper on the "wrong" side than the "right" side, which is exactly what training wants: a small mistake should be gently corrected, a big mistake should be corrected hard.
+
+<Callout targetInteractive="cross-entropy-curve">
+  Drag the slider to move the marker along the curve. Notice the asymmetry: between p=1 and p=0.5 the loss goes from 0 to 0.7. Between p=0.5 and p=0.05 (10× smaller) it goes from 0.7 to 3.0 — a 2.3-nat jump. Between p=0.05 and p=0.005 (another 10× smaller) it goes from 3.0 to 5.3 — another 2.3 nats. **Every decade-shrink in p costs the same constant ~2.3 nats** ($\ln 10$), so there is no floor: keep halving $p$ and the loss keeps rising at a predictable rate. The curve is the entire reason cross-entropy is a useful loss.
+</Callout>
+
+## A second look
+
+The curve below is the same loss, but plotted as a static function $H(p) = -\log p$ on a log-scale x-axis. The marker shows the current $p_t$ from the centerpiece. The divergence as $p \to 0$ is what the log scale buys us: a linear x-axis would compress the steep part into a sliver at the left edge; a log x-axis spreads the interesting region (p=0.001 to p=1) across the full width.
+
+## Recap
+
+Three takeaways. **Cross-entropy for one example is $-\log p_t$** — the negative log of the probability the model assigned to the true token. **A confident right answer is near-zero loss; a confident wrong answer is unbounded loss.** The asymmetry is the entire reason cross-entropy is the standard loss for classification: it punishes mistakes in proportion to how wrong they are. **The log scale matters for visualization and for numerical stability** — implementations clamp $p_t$ away from zero before taking the log. The next question is the obvious follow-up: knowing the loss for one example, how does the model *reduce* it? That's **gradient descent**.

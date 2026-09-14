@@ -1,0 +1,70 @@
+import { MathCode } from '@/components/lesson/MathCode';
+import { Callout } from '@/components/lesson/Callout';
+
+## Why can a transformer be 12 layers deep without everything collapsing?
+
+The previous lessons gave us attention in every form a production block uses — multi-head, grouped-query, flash-tiled, sliding-window. What the block doesn't have yet is the structural plumbing that lets you stack a dozen of these on top of each other. A 12-layer transformer is a stack of 12 sublayers, each of which is a non-linear function $\mathbf{x} \mapsto \operatorname{sublayer}(\mathbf{x})$. Naively, the gradient of the loss with respect to the input is the product of 12 Jacobians. The spectral norm of each Jacobian is rarely exactly 1 — for transformer-style sublayers it is typically slightly less than 1, so after 12 multiplications the gradient *vanishes* and the early layers stop learning. (The opposite case, exploding, can also happen if the sublayer is poorly initialized; both are failures of the same product-of-Jacobians problem.) Either way, depth is the enemy.
+
+The fix is two ideas that always travel together in the architecture:
+
+- **Residual connections**: $\mathbf{x} \mapsto \operatorname{sublayer}(\mathbf{x}) + \mathbf{x}$ instead of $\mathbf{x} \mapsto \operatorname{sublayer}(\mathbf{x})$. The gradient of the loss with respect to the input has a direct path through the "+1" identity, so it never has to flow through the sublayer's Jacobian.
+- **Layer normalization**: $\mathbf{x} \mapsto \gamma \cdot \frac{\mathbf{x} - \mu}{\sqrt{\sigma^2 + \epsilon}} + \beta$ for each token's vector independently, where $\mu, \sigma^2$ are the per-token mean and variance. This keeps activations on a stable scale across depth, so the residual stream does not drift toward zero or infinity.
+
+The two together: residuals let gradients flow, layernorm keeps the activations the gradients flow through on a sensible scale.
+
+## The formula
+
+$$
+\mathbf{x}_{l+1} = \mathbf{x}_l + \operatorname{sublayer}_l(\mathbf{x}_l), \qquad
+\mathbf{x}_{l+1} = \operatorname{LayerNorm}\!\left(\mathbf{x}_{l+1}\right)
+$$
+
+In modern transformers, the layernorm is applied *before* the sublayer ("pre-norm"): $\mathbf{x}_{l+1} = \mathbf{x}_l + \operatorname{sublayer}(\operatorname{LN}(\mathbf{x}_l))$. Both orderings are common in the literature; pre-norm is more numerically stable at depth and is what we will see.
+
+<MathCode
+  math="\mathbf{x}_{l+1} = \mathbf{x}_l + \operatorname{sublayer}_l(\operatorname{LN}(\mathbf{x}_l))"
+  code={`def transformer_block(x, W_qkv, W_ff1, W_ff2):
+    # Pre-norm: layernorm before each sublayer
+    h = layernorm(x)
+    attn = multi_head_attention(h, W_qkv)
+    x = x + attn                                          # residual
+    h = layernorm(x)
+    ff = gelu(h @ W_ff1) @ W_ff2
+    x = x + ff                                              # residual
+    return x`}
+  caption="Pre-norm residual block. Each sublayer adds to the running x, never replaces it."
+/>
+
+## Try it
+
+<Callout targetInteractive="residual-stack">
+  With residuals ON, layer norm OFF, drag the stack depth from $N = 1$ to $N = 24$. The per-layer activation norm stays roughly constant (residuals preserve the signal), but the per-layer gradient norm drifts with depth — without layernorm to bound activation scale, this toy stack happens to amplify, but a real transformer's analogous failure mode is the opposite (vanishing gradients into early layers). Either way, the gradient is no longer well-behaved by layer 24, and training is unstable.
+</Callout>
+
+<Callout targetInteractive="residual-stack">
+  Now turn layer norm ON. The activation norm still stays roughly constant, and the gradient norm now stays roughly constant too. The tanh at the end of each sublayer squashes activations to $[-1, 1]$, so without layernorm the residual stream drifts as depths compound. Layernorm re-centers each sublayer's input, breaking the compounding.
+</Callout>
+
+## Reading the result
+
+Three things to internalize.
+
+**The residual stream is the message that flows through the network.** Every sublayer reads from the residual stream and writes back into it. The model's final output for a token is the residual stream at the last layer, projected to vocab. The residual stream is *always* meaningful at every layer — the sublayers are *edits*, not *replacements*.
+
+**Without residuals, the depth limit is brutal.** In a 12-layer model without residuals, the gradient through the network is the product of 12 Jacobians. Spectral norms slightly less than 1 (the typical case for transformer sublayers) drive the product to zero — gradients vanish into the early layers. Spectral norms slightly above 1 explode it. Residuals add a $+1$ to each Jacobian's diagonal, which the chain rule treats as "the gradient can also flow through unchanged". The result is a gradient that is at least 1 in magnitude (the residual path) plus the sublayer's contribution.
+
+**Layernorm is the budget enforcer.** It re-centers each token's vector to zero mean and unit variance before every sublayer. This caps the magnitude of what the sublayer can read and write, so a single sublayer cannot blow up the residual stream. With layernorm, the model can stack 12, 24, 96 sublayers and still train.
+
+The two together are not optional. Residuals give the gradient a path; layernorm keeps the path numerically stable. Drop either, and the model fails to train at depth.
+
+## A second look
+
+A single-token visualization. The same vector is shown before and after layernorm at three different input scales. After layernorm the vector is always zero-mean with magnitude ≈ $\sqrt{d}$, regardless of the input's scale or its starting position.
+
+<Callout targetInteractive="layer-norm-viz">
+  Drag the input scale from $0.5\times$ to $3.0\times$. The "after" arrow always ends at the same length (≈ 1.41) and is always zero-mean, regardless of how big the input was. Notice that the "after" direction is the same across all three scales but *isn't* the same as the input direction — the mean-subtraction step rotates a non-zero-mean input. Layernorm is a per-vector affine transform; the "scale" part is $\gamma / \sqrt{\sigma^2 + \epsilon}$ applied uniformly. Nothing in the layernorm operation knows about other tokens, other layers, or the task.
+</Callout>
+
+## Recap
+
+Three takeaways. **The residual stream is the message that flows through the network** — every sublayer reads from it and writes back, never replaces. The final output for a token is the residual stream at the last layer, projected to vocabulary. **Without residuals, depth is the enemy**: the gradient of the loss with respect to the input is the product of $N$ Jacobians, and transformer-style sublayers have spectral norm $\ne 1$, so the product collapses to 0 (or explodes). **Layernorm is the budget enforcer** — it re-centers each token's vector to zero mean and unit variance before every sublayer, capping what the sublayer can read and write. **Pre-norm is the modern convention**: layernorm before the sublayer, residual after. With these two, a 96-layer transformer trains. The next lesson trims the budget enforcer itself — modern LLMs replaced LayerNorm with the simpler **RMSNorm**, dropping the mean-subtraction and the learned shift, with no measurable quality loss.

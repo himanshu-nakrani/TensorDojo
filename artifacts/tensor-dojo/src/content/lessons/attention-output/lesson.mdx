@@ -1,0 +1,80 @@
+import { MathCode } from '@/components/lesson/MathCode';
+import { Callout } from '@/components/lesson/Callout';
+
+## Once you have the attention weights, what do you do with them?
+
+The previous lesson ended with the attention weight matrix $W$ — the row-wise softmax of the score matrix, with each row summing to one. The $W$ matrix says *how much* of each value vector to use. The next step is the **attention output**: the weighted sum of the value vectors.
+
+For each query position $i$, the output is
+
+$$
+\text{out}_i \;=\; \sum_{j=0}^{n-1} W_{ij} \, \mathbf{v}_j
+$$
+
+$\mathbf{v}_j$ is the value vector for position $j$ — the "what to write" — and $W_{ij}$ is the attention weight from query $i$ to key $j$ — the "how much of this one." The result $\text{out}_i$ is the new representation of token $i$, a weighted mix of the value vectors.
+
+<MathCode
+  math="\text{out}_i = \sum_{j=0}^{n-1} W_{ij} \, \mathbf{v}_j"
+  code={`import numpy as np
+
+def attention_output(W, V):
+    # W:  (n, n) row-stochastic weight matrix (post-softmax)
+    # V:  (n, d) value matrix
+    # out: (n, d) attention output
+    return W @ V
+
+W = np.array([
+    [0.5, 0.3, 0.1, 0.1],
+    [0.1, 0.6, 0.2, 0.1],
+    [0.0, 0.2, 0.7, 0.1],
+    [0.0, 0.1, 0.1, 0.8],
+])
+V = np.array([
+    [1.0, 0.0],
+    [0.0, 1.0],
+    [1.0, 1.0],
+    [0.0, 0.0],
+])
+out = attention_output(W, V)
+# out[0] is token 0's new representation — a weighted sum of all four V's.
+# out[0] = 0.5*[1,0] + 0.3*[0,1] + 0.1*[1,1] + 0.1*[0,0] = [0.6, 0.4]`}
+  caption="The attention output is one matrix product: W · V. The row-stochastic W mixes the value vectors in proportion to the attention weights."
+/>
+
+<Callout title="V carries the content, W chooses the mix" targetInteractive="attention-output-explorer">
+  The $Q$ and $K$ matrices have already done their job by the time we get here — they produced the weight matrix $W$. The value vectors $\mathbf{v}_j$ are what the model *writes*: each $\mathbf{v}_j$ is the "this is what I want to say" representation for token $j$. The weight matrix decides how much of each value to put in each output. $\mathbf{v}_j$ and $W$ play complementary roles — content vs. routing.
+</Callout>
+
+## Try it
+
+The centerpiece shows 4 tokens, each with a draggable 2D value vector. The weight matrix $W$ is computed from a fixed $Q \cdot K$ (you've met this in the previous lesson) with a temperature slider. The four per-token output vectors are the weighted sums, drawn live.
+
+<Callout targetInteractive="attention-output-explorer">
+  Drag $\mathbf{v}_2$ (the third value vector) anywhere on the plane. All four output vectors shift in proportion to $W_{:, 2}$ — the third column of $W$. If $W_{0, 2}$ is large, $\text{out}_0$ shifts a lot; if $W_{3, 2}$ is small, $\text{out}_3$ barely moves. The point: dragging *one* $\mathbf{v}$ moves *all* outputs, by amounts proportional to the *one column* of $W$.
+</Callout>
+
+<Callout title="The bookends of the spectrum" targetInteractive="attention-output-explorer">
+  Click "one-hot at j=2" — every row of $W$ becomes a one-hot at the third column. The math: $\text{out}_i = 1 \cdot \mathbf{v}_2$ for every $i$. Every output collapses to $\mathbf{v}_2$ (the third value vector). Then click "uniform" — every row of $W$ is $1/4$ in every column. The math: $\text{out}_i = \tfrac{1}{4}(\mathbf{v}_0 + \mathbf{v}_1 + \mathbf{v}_2 + \mathbf{v}_3)$ for every $i$. Every output is the *centroid* of the four values, and dragging any $\mathbf{v}$ moves all four outputs by the same amount.
+</Callout>
+
+## Reading the result
+
+Three things to internalize.
+
+**The output of attention is a per-token mix of value vectors.** Each token's new representation is a weighted sum of the value vectors; the weights are the attention row for that token. This is the "what the model says about each token, given the attention pattern" — the architecture has done a soft retrieval from the values.
+
+**The spectrum of $W$ runs from one-hot to uniform.** One-hot $W$ means every output is a single value vector (the model is "looking at" exactly one position). Uniform $W$ means every output is the average of all values (the model is "looking at" everywhere equally). Real attention patterns live in between, and the temperature slider controls where on the spectrum the pattern lands.
+
+**This is self-attention end to end, modulo two numerical wrinkles you haven't met yet.** $Q \cdot K^\top$ → softmax → $W \cdot V$ → output. (The next lesson adds the $\sqrt{d_k}$ scaling that keeps softmax in the linear regime; a few lessons later, causal masking removes the upper triangle so the model can't peek ahead.) The output of attention is the input to the next sublayer at the same block, and the same pattern repeats at the next block.
+
+<Callout targetInteractive="attention-output-explorer">
+  Switch back to "softmax" mode and drag the temperature slider from 0.1 to 3.0. The weight matrix sharpens at $T \to 0$ (every row of $W$ collapses to one-hot) and flattens at $T \to \infty$ (every row of $W$ approaches uniform). The output vectors smoothly trace the path between the two bookend behaviors. The temperature dial is the same dial from the attention-scores and softmax lessons — same parameter, same meaning, applied per row.
+</Callout>
+
+## A second look
+
+The two bookend modes in the centerpiece — one-hot and uniform — are *not* realistic attention patterns, but they make the spectrum concrete. In a real trained model, the rows of $W$ are neither fully one-hot nor fully uniform; they have a few large entries and many small ones, and the temperature of softmax on the score matrix decides the contrast. The lesson's secondary exercise is exactly this: see the temperature move the weight matrix from "sharp" to "flat" and watch the output vectors smoothly trace the path between the bookend behaviors.
+
+## Recap
+
+Three takeaways. **The attention output is the weighted sum of value vectors** — $\text{out}_i = \sum_j W_{ij} \mathbf{v}_j$, with $W$ the row-stochastic weight matrix and $\mathbf{v}_j$ the value vector at position $j$. **V carries the content; W chooses the mix** — the value vectors are the model's "what to write," and the attention weights are the routing decisions. **The spectrum of $W$ runs from one-hot (every output is a single value) to uniform (every output is the centroid of all values)**, with realistic attention patterns in between and temperature controlling the contrast. The next lesson covers a numerical problem with the raw $Q \cdot K$ scores that the architecture has to fix before any of this works at non-trivial dimensions: the variance of the scores grows with $d_k$, which pushes softmax to saturate.

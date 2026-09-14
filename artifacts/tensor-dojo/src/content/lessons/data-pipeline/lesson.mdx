@@ -1,0 +1,34 @@
+import { Callout } from '@/components/lesson/Callout';
+import { Check } from '@/components/lesson/Check';
+
+## The input to training is a stream
+
+A language model does not see a folder of documents. It sees a sequence of token IDs cut into examples, shuffled into batches, and repeated across workers. The data pipeline decides which examples arrive, in what order, and how much duplicate or low-quality material consumes the budget. That makes data engineering part of the model, not a prelude outside the mathematics.
+
+## Throughput is a learning variable
+
+If the accelerator waits for the next batch, compute is idle. If preprocessing is too aggressive, the pipeline can become the bottleneck; if it is too permissive, malformed text and accidental duplicates can dominate training. A useful first model is tokens per second: the number of examples in a batch times their sequence length, divided by the time to produce and consume the batch.
+
+## A prediction worth making
+
+Move the data-size control in the workbench and ask what should happen to the number of optimization steps when the token budget doubles. The answer depends on whether the experiment holds steps fixed or holds tokens fixed. Good experiments name the quantity that is actually controlled.
+
+$$
+\text{tokens} = \text{documents} \times \text{tokens per document}
+$$
+
+<Callout title="Work the idea" targetInteractive="data-budget">
+Drag the **fine-tune dataset-size** slider in the Data Budget Lab and compare scratch vs pretrained final loss. Dataset size here is standing in for pipeline token budget: more unique examples is the analog of more tokens the trainer actually sees.
+</Callout>
+
+<Check
+  id="data-pipeline.core-idea"
+  question={"If the sequence length doubles while the number of sequences per batch stays fixed, what happens to the number of tokens in the batch?"}
+  options={["It is cut in half.", "It doubles.", "It stays fixed because the vocabulary is unchanged.", "It becomes zero until the next epoch."]}
+  answer={1}
+  explanation={"Batch tokens equal sequences per batch multiplied by sequence length. Holding the first fixed and doubling the second doubles the token count."}
+/>
+
+## Recap
+
+The central idea is **Data pipelines**. The implementation detail matters because it changes what the model can learn, how much memory or compute the system needs, or how confidently we can interpret its behavior. Keep the equation visible, name the controlled variables, and treat every benchmark or safeguard as part of the model’s operating definition.

@@ -1,0 +1,63 @@
+import { MathCode } from '@/components/lesson/MathCode';
+import { Callout } from '@/components/lesson/Callout';
+
+## Which key is most relevant to this query?
+
+A model has a query vector $Q_i$ and a row of key vectors $K_0, K_1, \ldots, K_{n-1}$. For each pair, it needs a number: "how well does this key answer this query?". That number is the **attention score** — a raw dot product, $Q_i \cdot K_j$.
+
+The score alone is not enough. The model's softmax in the next step will turn the scores into a probability distribution over the keys, allocating the query's attention. The transformed scores are the **attention weights** — non-negative, summing to one across each row.
+
+The previous lesson was the building block (dot product). This one is the next layer: the **score matrix** $Q K^\top$ is the input, the **weight matrix** is the row-wise softmax of that. The two are not the same thing; confusing them is the most common slip in attention code.
+
+## The formula
+
+For a stack of $n$ query vectors $Q \in \mathbb{R}^{n \times d}$ and a stack of $n$ key vectors $K \in \mathbb{R}^{n \times d}$ (one row per token):
+
+$$
+\text{scores} = Q K^\top \in \mathbb{R}^{n \times n}, \qquad
+\text{weights}_i = \operatorname{softmax}(\text{scores}_i) \text{ per row}
+$$
+
+The score matrix is one dot product per (query, key) pair. The weight matrix is the row-wise softmax.
+
+<MathCode
+  math="\text{scores}_{ij} = Q_i \cdot K_j, \qquad \text{weights}_{ij} = \frac{e^{\text{scores}_{ij}}}{\sum_k e^{\text{scores}_{ik}}}"
+  code={`import numpy as np
+
+scores  = Q @ K.T                                    # (n, n) dot products
+weights = np.exp(scores) / np.exp(scores).sum(axis=-1, keepdims=True)`}
+  caption="Scores = raw dot products. Weights = the row-wise softmax."
+/>
+
+## Try it
+
+<Callout targetInteractive="attention-matrix">
+  Hover the score and weight matrices on the right. Both highlight the same $(i, j)$ cell, so you can see which $Q$–$K$ pair produced which dot product. Now drag a $Q$ vector; the corresponding *row* of both matrices updates live.
+</Callout>
+
+<Callout targetInteractive="attention-matrix">
+  Make $Q_0$ perpendicular to $K_0$. The score cell drops to zero; the weight cell drops too, but not to zero — the other scores in the row are also competing for the softmax mass. Now make $Q_0$ anti-aligned with $K_0$ (opposite direction). The score goes deeply negative; the weight drops close to zero. The score can go negative; the weight cannot.
+</Callout>
+
+## Reading the result
+
+Read the matrices column by column. The score matrix's column $j$ is the dot product of every query with $K_j$. The weight matrix's column $j$ is how much of each query's attention is allocated to $K_j$ — and each row sums to one.
+
+Two facts to internalize.
+
+1. **The score matrix can have any sign and any magnitude.** The dot product has no built-in scale.
+2. **The weight matrix is always non-negative and each row sums to one.** Softmax enforces that, no matter what the input scores look like.
+
+This is why a model can use raw attention scores as a "how aligned" signal in attention probing, but to actually *route* information, it needs the weights.
+
+## A second look
+
+The same matrix with a temperature slider on the softmax. The score matrix is unchanged (raw dot products, no temperature). The weight matrix sharpens as the temperature drops and flattens as it rises.
+
+<Callout targetInteractive="attention-temperature">
+  Drag the slider from $0.1$ to $3.0$ and back. The score matrix does not change — temperature is a softmax parameter, not a dot-product parameter. The weight matrix is what sharpens. The temperature dial is the same control from the Softmax lesson, applied per row.
+</Callout>
+
+## Recap
+
+Three takeaways. **For a stack of queries and a stack of keys, the score matrix is one dot product per (query, key) pair** — $\text{scores} = Q K^\top$, an $n \times n$ matrix. **The weight matrix is the row-wise softmax of the score matrix.** The two are not the same thing; confusing them is the most common slip in attention code. **Scores can be any real number; weights are non-negative and sum to one across each row.** This is why the model can probe with raw scores but must route information with weights. The next lesson uses the weights: multiplying $W$ by the value vectors $V$ gives a per-token mix — the attention output, which is what each token actually receives.

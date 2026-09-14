@@ -1,0 +1,85 @@
+import { MathCode } from '@/components/lesson/MathCode';
+import { Callout } from '@/components/lesson/Callout';
+
+## Attention mixes tokens. What rewrites the *content* of each token after that?
+
+The previous lessons gave the residual block its structure (residuals + norm) and its non-linearity (ReLU, GELU, SiLU, SwiGLU). The block's first sublayer — attention — is the cross-token one: it produces a per-token output that mixes value vectors across the sequence. The *content* of each token, however, is mostly preserved by attention (a token attends heavily to itself, so the output is close to the input).
+
+The piece that *rewrites* the content of each token is the **feed-forward network** — a two-layer MLP with a non-linearity, applied *independently* to each token's vector.
+
+## The formula
+
+For each token vector $\mathbf{x} \in \mathbb{R}^{d_{\text{model}}}$, the FFN computes:
+
+$$
+\operatorname{FFN}(\mathbf{x}) \;=\; W_2 \, \sigma(W_1 \mathbf{x} + \mathbf{b}_1) + \mathbf{b}_2
+$$
+
+with $W_1 \in \mathbb{R}^{d_{\text{hidden}} \times d_{\text{model}}}$, $W_2 \in \mathbb{R}^{d_{\text{model}} \times d_{\text{hidden}}}$, and $\sigma$ a non-linearity. (The matrices left-multiply column vectors here. Frameworks that store $\mathbf{x}$ as a row vector and write $\mathbf{x} W_1$ flip both shapes — the parameter count is the same.) The convention is $d_{\text{hidden}} = 4 \cdot d_{\text{model}}$ (Vaswani et al., 2017) — the **expansion factor** is 4×. The FFN is applied position-wise: it sees one token at a time, no cross-token interaction.
+
+<MathCode
+  math="\operatorname{FFN}(\mathbf{x}) = W_2 \, \sigma(W_1 \mathbf{x} + \mathbf{b}_1) + \mathbf{b}_2"
+  code={`import numpy as np
+
+def gelu(x):
+    # tanh approximation of GELU (the one GPT-2 uses).
+    # Exact form is 0.5 * x * (1 + erf(x / sqrt(2))).
+    return 0.5 * x * (1 + np.tanh(np.sqrt(2/np.pi) * (x + 0.044715*x**3)))
+
+def ffn(x, W1, b1, W2, b2):
+    hidden = gelu(x @ W1 + b1)   # (d_model,) -> (d_hidden,)
+    return hidden @ W2 + b2       # (d_hidden,) -> (d_model,)
+
+# d_model = 4, d_hidden = 16
+d_model, d_hidden = 4, 16
+W1 = np.random.randn(d_model, d_hidden) * 0.1
+b1 = np.zeros(d_hidden)
+W2 = np.random.randn(d_hidden, d_model) * 0.1
+b2 = np.zeros(d_model)
+x = np.array([0.5, -0.3, 0.8, 0.1])          # one token's vector
+out = ffn(x, W1, b1, W2, b2)
+# out.shape == (4,)`}
+  caption="Two linear layers with a non-linearity in between. The hidden dim is typically 4× the model dim — the expansion is where most of the parameters live."
+/>
+
+<Callout title="Why expand, then project?" targetInteractive="feed-forward-explorer">
+  The 4× expansion is the FFN's "thinking room." The first linear layer $W_1$ maps the token's vector from $d_{\text{model}}$ dimensions to a $d_{\text{hidden}}$-dimensional space where the model can express more features. The activation $\sigma$ is what makes this useful — without it, two linear layers in sequence collapse to one. The second linear layer $W_2$ projects back to $d_{\text{model}}$ so the output can write into the residual stream (which is $d_{\text{model}}$-dimensional).
+</Callout>
+
+## Try it
+
+The centerpiece shows a small synthetic vocabulary. Pick a token; the FFN is computed in three steps and each step is rendered as a heatmap. The expansion factor (1×, 2×, 4×, 8×) controls the hidden-dim growth; the activation toggle flips between GELU and ReLU.
+
+<Callout targetInteractive="feed-forward-explorer">
+  Pick "cat". With expansion = 4× and GELU, watch the input 4-dim vector expand to a 16-dim hidden representation, pass through the GELU activation, and project back to 4 dims. Try the same with "mat" or "on" — different inputs, different hidden representations, different outputs. The FFN is a *per-token* function: it sees only one token at a time and rewrites it.
+</Callout>
+
+<Callout title="GELU vs ReLU at the boundary" targetInteractive="feed-forward-explorer">
+  Flip between GELU and ReLU on the pre-activation heatmap. Look at the cells near zero: with ReLU, all negative values collapse to 0 (the cells turn transparent). With GELU, the small negatives pass through as small negatives — $\text{GELU}(-0.1) \approx -0.04$, not 0. GELU's smoothness at zero is what makes the FFN's "thinking" step differentiable in the same way ReLU is not.
+</Callout>
+
+<Callout targetInteractive="feed-forward-explorer">
+  Try expansion = 1×. The hidden dim equals $d_{\text{model}}$, so the FFN is approximately an identity-ish function (with the non-linearity squashing the magnitudes). Try 8× — the hidden dim is 32, the heatmap widens, the FFN has more room to "think." At 4× (the convention), it's wide enough to express the model's internal features.
+</Callout>
+
+## Reading the result
+
+Three things to internalize.
+
+**The FFN is position-wise.** Each token's vector is rewritten independently — the FFN has no notion of "the other tokens" and does not look at attention patterns. Attention mixes tokens; the FFN rewrites each one. The combination — attention output → residual add → FFN → residual add — is the transformer block.
+
+**The expansion is where the parameters live.** A 4× expansion at $d_{\text{model}} = 4$, $d_{\text{hidden}} = 16$ gives $4 \times 16 = 64$ weight parameters in $W_1$ plus another $16 \times 4 = 64$ in $W_2$, plus 16 + 4 biases — 148 total in the FFN. The attention block (4 projections of $d_{\text{model}} \times d_{\text{model}}$ each, counting the output projection) lands at roughly $5 \cdot d_{\text{model}}^2 = 80$. Even at this toy size the FFN is already ~1.85× the attention; at real transformer widths ($d_{\text{model}}$ = 512, 1024, 4096) the gap widens further. Most of the parameters of a trained transformer are in the FFN, not the attention.
+
+**The activation is the non-linearity that makes the FFN interesting.** Two linear layers in sequence, without a non-linearity, collapse to a single linear layer. The previous lesson covered the activation in depth — ReLU, GELU, SiLU, and the gated SwiGLU variant that modern open-source LLMs use. This lesson treats $\sigma$ as a black-box bend; flip GELU vs ReLU in the centerpiece to see how different the boundary at zero is.
+
+<Callout targetInteractive="ffn-parameter-count">
+  The "Where the parameters live" widget lets you drag d_model and pick d_hidden and see the FFN's share of the block's total parameters. At d_model = 4, d_hidden = 16 (4×), the FFN is 148 / (148 + 80) ≈ 65% of the block. At d_model = 32, d_hidden = 32 (1×), the FFN is ~29% (attention dominates); at d_model = 32, d_hidden = 256 (8×), the FFN climbs to ~77%. The lesson: at the conventional 4× expansion, most of a transformer's parameters live in the FFN.
+</Callout>
+
+## A second look
+
+The "Where the parameters live" widget makes the FFN's role concrete. In a modern transformer with $d_{\text{model}} = 1024$ and 4× expansion, the FFN has $1024 \times 4096 \times 2 = 8.4$ million parameters per block; the attention block has $4 \times 1024 \times 1024 = 4.2$ million. Across 96 blocks, the FFN is ~$800$M parameters; the attention is ~$400$M. The routing is the attention; the thinking is the FFN.
+
+## Recap
+
+Three takeaways. **The FFN is a position-wise two-layer MLP** — $W_2 \sigma(W_1 \mathbf{x} + \mathbf{b}_1) + \mathbf{b}_2$, applied to each token's vector independently. **The 4× expansion is where the parameters live** — most of a transformer's parameters are in the FFN, not the attention. **GELU (or ReLU) is the non-linearity that makes the FFN interesting** — without it, two linear layers collapse to one. This is the second sublayer in the block. Attention mixes tokens across the sequence; the FFN rewrites each token's content. Modern models exploit the FFN's parameter dominance with **mixture of experts** — replace one big FFN with N small ones, route each token to top-k — and that's the next lesson before we assemble the full block.

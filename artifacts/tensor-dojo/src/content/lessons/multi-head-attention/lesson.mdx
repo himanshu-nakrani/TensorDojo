@@ -1,0 +1,62 @@
+import { MathCode } from '@/components/lesson/MathCode';
+import { Callout } from '@/components/lesson/Callout';
+
+## What if the same sentence has many simultaneous structures?
+
+One attention computation is one similarity story. "The animal didn't cross because it was tired" — the word *it* refers to *the animal*, but it also has a syntactic relation to *was*. These are different questions about the same sentence, and one attention head can only answer one.
+
+The trick: run several attention computations in parallel, each with its own learned Q, K, V projections. Concatenate the results. The model has *h* simultaneous "views" of the same sequence. The cost is roughly the same as one big attention; the expressive power multiplies because each head can specialize.
+
+## The formula
+
+Given $Q, K, V$ each of shape $[n, d_{\text{model}}]$, split $d_{\text{model}}$ into $h$ heads of size $d_k = d_{\text{model}} / h$:
+
+$$
+\text{head}_i = \operatorname{softmax}\!\left(\frac{Q_i K_i^\top}{\sqrt{d_k}} + M\right) V_i, \qquad
+\operatorname{output} = \operatorname{concat}(\text{head}_1, \ldots, \text{head}_h) \cdot W_{\text{out}}
+$$
+
+Each head $i \in \{1, \ldots, h\}$ has its own learned $W_i^Q, W_i^K, W_i^V \in \mathbb{R}^{d_{\text{model}} \times d_k}$ that project the shared input into a head-specific subspace. The $W_{\text{out}}$ projection mixes the head outputs back into $d_{\text{model}}$.
+
+<MathCode
+  math="\text{head}_i = \operatorname{softmax}\!\left(\frac{Q W_i^Q (K W_i^K)^\top}{\sqrt{d_k}} + M\right) V W_i^V \quad\text{($M$ = causal mask if any)}"
+  code={`# h = d_model / d_k heads in parallel
+heads = [softmax((Q @ Wq_h) @ (K @ Wk_h).T / sqrt(d_k)) @ (V @ Wv_h)
+         for Wq_h, Wk_h, Wv_h in zip(Wq, Wk, Wv)]
+output = concat(heads, dim=-1) @ W_out`}
+  caption="h small attentions, then a linear mix back to d_model."
+/>
+
+## Try it
+
+<Callout targetInteractive="multi-head-explorer">
+  With $h = 4$ heads, drag head 1's Q rotation slider. The top-left 2×2 weight heatmap for head 1 reshapes — that head is now "looking at" a different pair of positions. Heads 2, 3, 4 are unchanged. The matching K rotation slider just below rotates the keys for that head instead of the queries; both knobs together let you shape the head's full projection. The point: each head is its own small attention, and they live in parallel.
+</Callout>
+
+<Callout targetInteractive="multi-head-explorer">
+  With $n = 4$ and $h = 4$, every head has $d_k = 2$ (one cell per row in the heatmap). Drag the head-count slider to $h = 1$: the four small heatmaps collapse into one. The cost is the same (one Q, one K, one V), but the expressivity is one story instead of four. Multiple heads buy breadth at no asymptotic cost.
+</Callout>
+
+## Reading the result
+
+Three properties to internalize.
+
+**Each head is a small attention with its own projection.** The total parameter count is roughly the same as a single-head attention with the same $d_{\text{model}}$, because the projections $W_h^Q, W_h^K, W_h^V$ are small ($d_{\text{model}} \times d_k$) and there are $h$ of them. The model pays for $h$ small projections instead of one big one — the FLOPs are similar, the capacity is $h$-way.
+
+**Different heads learn different "questions" about the same input.** In a trained model, one head might attend to the previous token (a bigram view), another to syntactic heads, another to long-range coreference. The model is not told what each head should do; training discovers useful decompositions, and ablation studies show that some heads end up far more important than others. The interactive here cannot show that learning — the rotation sliders simulate what the parallel structure makes *possible*, not what training produces. Take the lesson as: the architecture leaves room for $h$ different stories, and trained models actually use that room.
+
+**The output projection mixes the head results back into $d_{\text{model}}$.** Without $W_{\text{out}}$, the next layer would see $h$ separate streams of dimension $d_k$ and have no way to use them as a single $d_{\text{model}}$-dimensional vector. $W_{\text{out}}$ is the layer's "read the heads and write a single thing" step.
+
+A useful mental model: $h$ attention heads are $h$ small experts, each looking at the same input from a different angle, each producing a small write to a shared output. The model learns which expert to trust for which token.
+
+## A second look
+
+A side-by-side: same sentence, different number of heads.
+
+<Callout targetInteractive="multi-head-explorer">
+  With the same $n = 4$ and $d_k = 2$ total (i.e. $d_{\text{model}} = 2 h$), try $h = 1$ vs $h = 4$. With $h = 1$, every attention pattern must serve every purpose. With $h = 4$, the model has four independent "looks" at the sequence. The cost is the same — but the expressivity multiplies, because the same $W_{\text{out}}$ now has four different "opinions" to mix.
+</Callout>
+
+## Recap
+
+Three takeaways. **Multi-head attention is $h$ small attentions in parallel, each with its own learned $W_i^Q, W_i^K, W_i^V$ projection.** Total parameter count is roughly constant — the projections are small and there are $h$ of them. **Different heads learn different "questions" about the same input**: in a trained model, one head might attend to the previous token, another to a syntactic head, another to a long-range coreferent. Training discovers useful decompositions; the architecture leaves the room. **The output projection $W_{\text{out}}$ mixes the head results back into $d_{\text{model}}$** — without it, the next layer would have no way to use the $h$ separate streams as a single vector. The vanilla scheme above puts every head on equal footing: every head has its own Q, K, and V projection, and each head stores its own K and V in the cache. That's what the original transformer did, and what every production LLM since LLaMA-2 has moved away from. The next lesson covers **grouped-query attention** — keep all the query heads, but share K and V across groups, so the KV cache shrinks by the group factor. It's the change LLaMA-2 70B, Mistral, Qwen, and every other modern decoder-only LLM ships with.

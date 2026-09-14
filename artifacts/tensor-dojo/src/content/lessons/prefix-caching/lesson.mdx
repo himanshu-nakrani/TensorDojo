@@ -1,0 +1,34 @@
+import { Callout } from '@/components/lesson/Callout';
+import { Check } from '@/components/lesson/Check';
+
+## Prefill and decode are different
+
+Before the first generated token, the model processes the prompt in a prefill pass. That pass creates the key/value states used by later decoding. If thousands of requests begin with the same system instructions or retrieved document, recomputing that prefix is redundant.
+
+## Cache only when the prefix is stable
+
+A prefix cache is keyed by the exact token sequence and model configuration that produced it. A one-token change invalidates the matching suffix, and changes in adapters, positions, or attention masks can make states incompatible. Correctness comes before reuse: cached states must correspond to the same computation.
+
+## The gain grows with shared context
+
+The saved work is proportional to the repeated prefix. Short shared prompts may not justify cache management; long policy prompts, codebases, or documents often do. Compare cold and warm paths in the workbench and identify which request patterns benefit.
+
+$$
+\text{new prefill work} \approx \text{total prompt} - \text{reused prefix}
+$$
+
+<Callout title="Work the idea" targetInteractive="prefix-cache">
+Drag the **sequence-length** slider, then switch **log / linear** scale. Sequence-length cost is standing in for a shared prefix: the cached bar is the work you skip when later requests reuse the same prompt prefix.
+</Callout>
+
+<Check
+  id="prefix-caching.core-idea"
+  question={"What work does prefix caching avoid?"}
+  options={["Recomputing the same prompt\u2019s key/value states.", "Computing the final answer without decoding.", "Updating the model weights during serving.", "Tokenizing every new suffix twice."]}
+  answer={0}
+  explanation={"A valid prefix cache reuses the key/value states created by the shared prompt, so only the new suffix needs fresh prefill computation."}
+/>
+
+## Recap
+
+The central idea is **Prefix caching**. The implementation detail matters because it changes what the model can learn, how much memory or compute the system needs, or how confidently we can interpret its behavior. Keep the equation visible, name the controlled variables, and treat every benchmark or safeguard as part of the model’s operating definition.

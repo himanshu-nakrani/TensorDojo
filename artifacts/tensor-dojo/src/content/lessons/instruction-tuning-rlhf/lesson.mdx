@@ -1,0 +1,76 @@
+import { MathCode } from '@/components/lesson/MathCode';
+import { Callout } from '@/components/lesson/Callout';
+
+## What if the training signal isn't a label, but a preference?
+
+Every lesson in this module so far has had a clean training signal: cross-entropy against a one-hot label, MSE against a target value, or full fine-tuning against new labeled data. The evaluation interlude covered how to *measure* whether a fine-tune worked; this lesson covers a training signal qualitatively different from any we've used. Real LLM assistant training has something different. Human labelers are shown two model outputs and asked: which one is better? The label isn't "the right answer." It's "this is better than that."
+
+This is how instruction-following models are trained in practice. Supervised fine-tuning gets the model close — it learns to follow templates and produce plausible outputs. But "plausible" and "good" are not the same thing. Preference data is what closes the gap: it tells the model, across thousands of examples, which outputs humans actually prefer. The signal is comparative, not absolute.
+
+How do you do gradient descent on a preference? The comparison isn't differentiable as written. You need a loss function that turns "response A is better than response B" into a scalar the gradient can work with.
+
+## The DPO loss
+
+The clean modern answer is Direct Preference Optimization. Let π(y | x) = softmax(logits) be the model's policy — the distribution over candidate responses given a prompt. For a preference triple (prompt x, preferred y⁺, dispreferred y⁻), DPO's loss is:
+
+$$L = -\log \sigma\big(\beta \cdot ( \log \pi(y^+ | x) - \log \pi(y^- | x) - \log \pi_{ref}(y^+ | x) + \log \pi_{ref}(y^- | x) ) \big)$$
+
+The bracketed quantity is the policy's log-ratio over the preference pair, minus the reference policy's log-ratio over the same pair. The reference policy is the model *before* preference training — usually a checkpoint from supervised fine-tuning. β is a temperature parameter controlling how strongly the loss responds to the preference signal.
+
+When the policy already prefers y⁺ over y⁻ more than the reference does, the inner term is positive, σ(·) is close to 1, and the loss is near zero. When the policy prefers y⁻, the loss is large. Gradient descent pushes the policy toward preferring y⁺.
+
+The reference policy is not just bookkeeping — it acts as an anchor. Without it, the loss would push the model to assign all probability to the single highest-ranked response across every prompt, collapsing the distribution. The reference prevents that: the loss penalizes deviating from the reference policy *more than necessary* to honor the preference. β controls the trade-off: small β means the policy stays close to the reference; large β means the preference signal dominates.
+
+**The math is just SGD; the loss is the only new thing.**
+
+<MathCode
+  math="L_{\text{DPO}} = -\log\sigma\!\Big(\beta\bigl(\log\pi(y^+|x) - \log\pi(y^-|x) - \log\pi_{\text{ref}}(y^+|x) + \log\pi_{\text{ref}}(y^-|x)\bigr)\Big)"
+  code={`# One DPO update on one preference triple.
+def dpo_step(logits, logits_ref, preferred, dispreferred, beta=1.0, lr=0.3):
+    # Δ = log-ratio difference (the logSumExp terms cancel inside the
+    # log-ratio, so we only need the raw logits at y+ and y-).
+    delta = (logits[preferred] - logits[dispreferred]) \\
+          - (logits_ref[preferred] - logits_ref[dispreferred])
+    z = beta * delta
+    # Gradient through -log σ(z): dL/dz = σ(z) - 1, near -1 when z << 0.
+    g = beta * (sigmoid(z) - 1)
+    # Only the preferred and dispreferred logits have non-zero gradient.
+    logits[preferred]    -= lr * g            # pushed up (g is negative)
+    logits[dispreferred] += lr * g            # pushed down (g is negative)
+    return logits`}
+  caption="The full update is two scalar changes per step — one for the preferred response, one for the dispreferred. Everything else is the standard sigmoid + chain-rule machinery."
+/>
+
+## Try it
+
+<Callout targetInteractive="preference-policy-trainer">
+  Press Step. The first preference is 'response 1 over response 0' — response 1's bar grows, response 0's bar shrinks. Keep stepping. Each triple is a single gradient update on two scalars (the preferred and dispreferred logits). After 6 steps you've completed one epoch; after 3–4 epochs the policy has converged on the dataset's preferences. The mechanism is just SGD on the DPO loss.
+</Callout>
+
+## Where the reward model fits in
+
+Real RLHF stacks have a two-stage structure: train a reward model on the preference data, then train the policy against the reward model. The reward model takes a prompt and a response as input and outputs a scalar score — higher is better, from the perspective of the preference data it was trained on. The policy is then updated to put higher probability on higher-scoring responses, with a KL penalty to the reference policy to prevent the distribution from collapsing.
+
+The reward model is the *learnable intermediary*. It abstracts the preferences into a continuous score, which the policy then optimizes against. This separation is useful for a practical reason: you can train a single reward model once, then use it to generate training signal for many policy update steps, sampling new responses from the policy at each step and scoring them with the frozen reward model. On-policy sampling gives the policy better coverage of its own weaknesses.
+
+DPO collapses these two stages into one loss. The mathematical derivation shows that the optimal DPO policy implicitly defines a reward model — the DPO objective and the RLHF objective have the same optimal solution. The two-stage structure and the one-loss structure are equivalent at optimality. DPO is simpler to implement and often more stable in practice; the two-stage structure is more flexible for large-scale production systems.
+
+<Callout targetInteractive="reward-model-view">
+  Two panes. The policy's response probabilities update as before. The reward model's scores update in parallel, using the same preference triples but with the simpler Bradley-Terry loss. Watch the two move together: when the policy raises response 1's probability, the reward model raises response 1's score. They're encoding the same information, just differently — the policy as a distribution, the reward model as scores.
+</Callout>
+
+## What's out of scope
+
+DPO is the cleanest preference-learning loss. The full RLHF stack — PPO, on-policy sample collection, KL regularization to the reference, advantage estimation, clipping — is more elaborate and (in practice) more brittle. Production systems use DPO or its successors (IPO, ORPO, KTO) for most preference work because they're simpler and converge more reliably. The math of the policy update is the same as everything in this lab: take a loss, take a gradient, take a step. The novelty is in shaping the loss to learn from preferences instead of labels.
+
+What this lesson also doesn't cover: the quality of the preference data, the size of the preference dataset, the choice of reference model, the effect of β on the final policy, or the infrastructure for collecting human preferences at scale. These are real and important, but they're engineering and research questions, not conceptual ones. The conceptual question — how does gradient descent apply to preference data? — has a clean answer, and you now have it.
+
+## Recap
+
+**Preference data is just another training signal** — pairs of (preferred, dispreferred) outputs become the gradient via the DPO loss.
+
+**The DPO loss is one log-ratio over the preference pair**, anchored to a reference policy. The gradient is two scalars per step. The optimizer is the same SGD you've used for the whole module.
+
+**A reward model is the conceptual intermediary** — it learns to score outputs from preferences, and the policy optimizes against those scores. DPO mathematically fuses the two; the separation is useful for intuition.
+
+**You started this lab at the dot product, and you've now seen a policy trained on preferences.** Every step in between — softmax, attention, gradient descent, backpropagation, optimizers, end-to-end training, regularization, fine-tuning — is in this interactive. The policy is just softmax over logits. The update is just gradient descent. The "training signal is preference" loss is just one more clever way to shape a scalar that the gradient can chew on. None of this is magic. The hard part was getting to the point where it all looks like the same machinery. The next lesson takes the same preference data and skips the reward model entirely — that's **DPO**.

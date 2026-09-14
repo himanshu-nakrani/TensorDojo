@@ -1,0 +1,34 @@
+import { Callout } from '@/components/lesson/Callout';
+import { Check } from '@/components/lesson/Check';
+
+## Confidence is a forecast
+
+If a model assigns 0.8 probability to a class across many examples, calibration says roughly 80 percent of those examples should be correct. Accuracy only counts whether the top choice was right; calibration evaluates the relationship between probability and frequency.
+
+## Cross-entropy rewards honest probability
+
+A confident wrong prediction receives a much larger penalty than a cautious wrong prediction. This is why cross-entropy can distinguish a model that says 0.51 from one that says 0.99 even when both choose the same class.
+
+## Calibration is a deployment property
+
+A calibrated score can support thresholding, routing, abstention, or human review. But calibration can shift under distribution change. A model calibrated on one task or population may become overconfident elsewhere, so the measurement must match the deployment setting.
+
+$$
+\Pr(Y=1 \mid \hat{p}=0.8) \approx 0.8
+$$
+
+<Callout title="Work the idea" targetInteractive="confidence-lab">
+Drag the **model confidence** slider below 1 (flatten) then above 1 (sharpen) and watch perplexity. Confidence is standing in for calibration: whether predicted probabilities match how often the model is actually right.
+</Callout>
+
+<Check
+  id="calibration.core-idea"
+  question={"What does it mean for a classifier to be calibrated near probability 0.8?"}
+  options={["About 80% of examples assigned 0.8 should be correct.", "Every example assigned 0.8 must be correct.", "The model must have 80 layers.", "The loss must always equal 0.8."]}
+  answer={0}
+  explanation={"Calibration compares predicted probabilities with empirical frequencies: predictions near 0.8 should be correct roughly 80% of the time."}
+/>
+
+## Recap
+
+The central idea is **Calibration**. The implementation detail matters because it changes what the model can learn, how much memory or compute the system needs, or how confidently we can interpret its behavior. Keep the equation visible, name the controlled variables, and treat every benchmark or safeguard as part of the model’s operating definition.

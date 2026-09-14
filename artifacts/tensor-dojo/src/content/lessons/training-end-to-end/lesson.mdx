@@ -1,0 +1,75 @@
+import { MathCode } from '@/components/lesson/MathCode';
+import { Callout } from '@/components/lesson/Callout';
+
+## You have a model, a loss, an optimizer, a schedule, a dataset. What does one training run actually look like?
+
+The previous lessons built each piece individually. **Backprop** computes the gradient of a loss with respect to every parameter in a model. **SGD** samples batches of examples and averages their gradients. **Optimizers** turn gradients into parameter updates. **Schedules** scale the update size over time. **Mixed precision** and **gradient checkpointing** make the whole thing fit on real hardware. The training *run* is the loop that wires them all together.
+
+The lesson is the loop. For step in range(N): sample a batch → forward → loss → backward → optimizer step → schedule the LR → log. Every step is one of the pieces from a previous lesson. The thing the reader gets to *see* is the loss curve over thousands of steps, with all the pieces wired up — and a few presets that show what each piece contributes.
+
+## The loop
+
+$$
+\text{for } t = 0, 1, \ldots, T-1: \quad
+\theta \leftarrow \theta - \eta(t) \cdot \text{step}(\theta, g_t, \text{state}_t)
+$$
+
+where $g_t$ is the gradient of the loss over the batch sampled at step $t$, and the per-step $\text{step}$ is whatever optimizer the run is using (SGD, momentum, Adam).
+
+<MathCode
+  math="\theta_{t+1} = \theta_t - \eta(t) \cdot \text{optimizer}(\theta_t, g_t, \text{state}_t), \quad g_t = \frac{1}{B} \sum_{i \in \mathcal{B}_t} \nabla L(\theta_t; x_i, t_i)"
+  code={`def train(model, dataset, *, optimizer, schedule, peak_lr,
+             batch_size, num_steps, warmup_steps):
+    state = optimizer.init_state(model.params)
+    for t in range(num_steps):
+        batch = sample(dataset, batch_size, rng)
+        g = mean(backward(model, x, t) for (x, t) in batch)
+        lr = schedule(t, total=num_steps, peak=peak_lr, warmup=warmup_steps)
+        model.params, state = optimizer.step(
+            model.params, g, state, lr=lr,
+        )
+        if t % log_every == 0:
+            log(loss=model.loss(dataset.test), accuracy=...)
+    return model`}
+  caption="The whole training run is one loop. Sample batch, forward, loss, backward, optimizer step, schedule the LR, log. The pieces are all from previous lessons; the loop is what composes them."
+/>
+
+<Callout title="What's new in this lesson" targetInteractive="training-end-to-end">
+  Nothing is *new* in the math sense. The previous four lessons built each piece. This lesson is the first time they all run together on the same model, the same loss, the same data, in the same loop. The point is "training is a loop" — every piece is in service of the loop, and the loop is what training actually is.
+</Callout>
+
+## Try it
+
+The centerpiece is a 2D 3-class classification task (~200 samples, ~67 per class, labels assigned by which of three angular sectors the point falls in). The model is a tiny MLP: 2 → 8 → 8 → 3 with ReLU activations, 123 parameters (16 + 8 + 64 + 8 + 24 + 3, weights and biases for the three layers). The default config trains to ≥ 90% test accuracy in 300 steps. Three preset buttons — Default, LR too high, No schedule — reconfigure all the controls and let you re-run with a single click.
+
+<Callout targetInteractive="training-end-to-end">
+  Press Train. The loss descends smoothly from ~1.1 (random-prediction cross-entropy on 3 classes) to a small value in 300 steps. Test accuracy climbs from ~33% to ≥ 90%. The default is Adam, batch 16, peak LR 5e-3, warmup + cosine. This is the conventional modern recipe.
+</Callout>
+
+<Callout title="What each piece is doing" targetInteractive="training-end-to-end">
+  Read the right column while the run is in progress. Optimizer = Adam (the per-parameter adaptive step size from the optimizers lesson). Schedule = warmup + cosine. Batch = 16. Peak LR = 5e-3. The forward, loss, and backward are the per-step operations from backprop. The loop wires them together; nothing else.
+</Callout>
+
+<Callout title="The diverges preset" targetInteractive="training-end-to-end">
+  Press "LR too high." The optimizer flips to SGD, the peak LR jumps to 5.0, the schedule flips to constant. Press Train. Within the first few steps the loss is `Infinity` (the optimizer steps the parameters off the edge of the float range); the run never recovers, and the final test accuracy is around 33% — random for a 3-class problem. The preset exists to demonstrate *what a too-large LR looks like*, not as a thing to use.
+</Callout>
+
+<Callout title="The no-schedule preset" targetInteractive="training-end-to-end">
+  Press "No schedule." The optimizer stays at Adam, the schedule flips to constant. Press Train. The loss descends cleanly — Adam's per-parameter adaptation is doing its job — but the final loss is a touch worse than the default. The test accuracy is the more telling comparison: the default's cosine decay lets the model settle near a minimum without overshooting; the constant LR keeps the same step size throughout, and the late steps bounce around the minimum.
+</Callout>
+
+<Callout title="Three at once" targetInteractive="training-preset-comparison">
+  Open the secondary widget. The three presets are run automatically on the same dataset; their loss curves appear on the same plot, with the final loss and test accuracy reported under each curve. This is the cleanest demonstration that the three knobs (optimizer, LR peak, schedule) are independent: change one at a time, the difference is attributable to that one knob.
+</Callout>
+
+## Reading the result
+
+**A training run is a loop.** The forward, loss, backward, optimizer step, and LR scheduling are all operations the loop calls once per step. The math of each operation is from a previous lesson; the *composition* is what training is. Once you can read the loop, you can read any modern training script — they all reduce to this shape, with different model architectures, different loss functions, different optimizers, and different schedules. The differences are in the *pieces*, not the *loop*.
+
+**The three presets isolate the three knobs.** "Default" uses Adam + warmup+cosine + LR 5e-3. "LR too high" uses SGD + constant + LR 5.0. "No schedule" uses Adam + constant + LR 5e-3. The difference between default and diverges is *mostly* the LR peak and the optimizer; the difference between default and no-schedule is *only* the schedule. The comparison widget runs all three on the same dataset and shows the difference side by side, with no other variables changed. This is how you debug a real training run: change one knob at a time.
+
+**The default config is the conventional modern recipe for a reason.** Adam + warmup + cosine + a small batch is robust across a wide range of problems. You don't tune the optimizer or the schedule shape; you tune the peak LR. Most of the engineering effort in modern training is in the *data pipeline* — the sampler, the augmentation, the shuffling — not in the loop itself. The loop is solved; the data is the problem.
+
+## Recap
+
+Three takeaways. **A training run is a loop** that calls the previous four lessons' pieces in sequence: sample a batch, forward, loss, backward, optimizer step, schedule the LR, log. The pieces are independent of each other; the loop is what composes them. **The default config — Adam + warmup + cosine + a small batch — is the conventional modern recipe** and a sensible starting point for almost any problem; tune the peak LR first, the rest later. **The three presets in the secondary widget isolate the three knobs** (optimizer, LR peak, schedule) by changing one at a time, which is how you debug a real training run. The loop runs the same way regardless of model size — but the very first question a real training run has to answer is "how big *should* the model be?" The next lesson is **scaling laws**: the empirical curves that tell you how to split a fixed compute budget between parameters and training tokens.

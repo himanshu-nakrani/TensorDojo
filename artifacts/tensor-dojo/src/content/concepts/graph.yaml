@@ -1,0 +1,654 @@
+nodes:
+  # Foundational math
+  - id: vector
+    title: Vector
+  - id: vector-magnitude
+    title: Vector magnitude
+  - id: dot-product
+    title: Dot product
+  - id: cos-theta
+    title: Cosine similarity
+  - id: projection
+    title: Vector projection
+  - id: softmax
+    title: Softmax
+  - id: attention-score
+    title: Attention score
+  - id: attention-weight
+    title: Attention weight
+  - id: temperature
+    title: Temperature
+  - id: scaled-dot-product
+    title: Scaled dot product
+  - id: attention-output
+    title: Attention output
+  - id: kv-cache
+    title: KV cache
+  - id: speculative-decoding
+    title: Speculative decoding
+  - id: bpe
+    title: Byte-pair encoding
+  - id: token-embedding
+    title: Token embedding
+  - id: positional-encoding
+    title: Positional encoding
+  - id: rope
+    title: Rotary positional encoding
+  - id: causal-mask
+    title: Causal mask
+  - id: multi-head
+    title: Multi-head attention
+  - id: gqa
+    title: Grouped-query attention
+  - id: flash-attention
+    title: Flash attention
+  - id: residual
+    title: Residual connection
+  - id: layer-norm
+    title: Layer normalization
+  - id: feed-forward
+    title: Feed-forward network
+  - id: gelu
+    title: GELU activation
+  - id: moe
+    title: Mixture of experts
+  - id: decoding-strategy
+    title: Decoding strategy
+  - id: cross-entropy
+    title: Cross-entropy loss
+  - id: gradient-descent
+    title: Gradient descent
+  - id: chain-rule
+    title: Chain rule (backpropagation)
+  - id: mini-batch
+    title: Mini-batch gradient
+  - id: momentum
+    title: Momentum
+  - id: adam
+    title: Adam optimizer
+  - id: warmup
+    title: Warmup
+  - id: cosine-decay
+    title: Cosine learning-rate decay
+  - id: training-loop
+    title: Training loop
+  - id: scaling-laws
+    title: Scaling laws
+
+  # Regularization module
+  - id: overfitting
+    title: Overfitting
+  - id: weight-decay
+    title: L2 weight decay
+  - id: dropout
+    title: Dropout
+  - id: batch-norm
+    title: Batch normalization
+  - id: early-stopping
+    title: Early stopping
+  - id: data-augmentation
+    title: Data augmentation
+
+  # Fine-tuning module
+  - id: pretraining
+    title: Pretraining
+  - id: fine-tuning
+    title: Fine-tuning
+  - id: layer-freezing
+    title: Layer freezing
+  - id: catastrophic-forgetting
+    title: Catastrophic forgetting
+  - id: quantization
+    title: Weight quantization
+  - id: lora
+    title: LoRA
+  - id: evaluation
+    title: Evaluation (perplexity, benchmarks)
+  - id: low-rank-update
+    title: Low-rank update
+  - id: dpo-loss
+    title: DPO loss
+  - id: reward-model
+    title: Reward model
+  - id: preference-data
+    title: Preference data
+
+  # Lesson concept nodes
+  - id: dot-product-concept
+    title: "Dot product as alignment"
+    lesson: dot-product
+  - id: matrix-multiplication-concept
+    title: "Matrix multiplication: dot products, stacked"
+    lesson: matrix-multiplication
+  - id: vector-projection-concept
+    title: "Vector projection and cosine similarity"
+    lesson: vector-projection
+  - id: softmax-concept
+    title: "Softmax: turning scores into a distribution"
+    lesson: softmax
+  - id: attention-scores-concept
+    title: "Attention scores: who attends to whom"
+    lesson: attention-scores
+  - id: attention-output-concept
+    title: "Attention output: the weighted sum of values"
+    lesson: attention-output
+  - id: scaled-attention-concept
+    title: "Why we scale attention by √d_k"
+    lesson: scaled-attention
+  - id: tokenization-concept
+    title: "Tokenization: from strings to ids"
+    lesson: tokenization
+  - id: token-embeddings-concept
+    title: "Token embeddings: from ids to vectors"
+    lesson: token-embeddings
+  - id: positional-encoding-concept
+    title: "Positional encoding: giving order to a bag"
+    lesson: positional-encoding
+  - id: rope-concept
+    title: "RoPE: rotation, not addition"
+    lesson: rope
+  - id: causal-mask-concept
+    title: "Causal masking: don't peek at the future"
+    lesson: causal-mask
+  - id: multi-head-attention-concept
+    title: "Multi-head attention: parallel views"
+    lesson: multi-head-attention
+  - id: gqa-concept
+    title: "Grouped-query attention: shrinking the cache"
+    lesson: grouped-query-attention
+  - id: flash-attention-concept
+    title: "Flash attention: same math, different memory pattern"
+    lesson: flash-attention
+  - id: residuals-layernorm-concept
+    title: "Residual connections + layer normalization"
+    lesson: residuals-layernorm
+  - id: rms-norm-concept
+    title: "RMSNorm: layer norm without the mean"
+    lesson: rms-norm
+  - id: activations-concept
+    title: "Activations: the bend that makes a network non-linear"
+    lesson: activations
+  - id: feed-forward-concept
+    title: "Feed-forward network: per-token rewriting"
+    lesson: feed-forward
+  - id: moe-concept
+    title: "Mixture of experts: more parameters at the same compute"
+    lesson: mixture-of-experts
+  - id: transformer-block
+    title: "The transformer block: putting it all together"
+    lesson: transformer-block
+  - id: sampling-decoding-concept
+    title: "Sampling and decoding: from logits to a token"
+    lesson: sampling-decoding
+  - id: beam-search-concept
+    title: "Beam search: looking k steps ahead"
+    lesson: beam-search
+  - id: kv-cache-concept
+    title: "KV cache: making inference fast"
+    lesson: kv-cache
+  - id: speculative-decoding-concept
+    title: "Speculative decoding: a small model drafts, the big one verifies"
+    lesson: speculative-decoding
+  - id: cross-entropy-concept
+    title: "Cross-entropy: how the model knows it was wrong"
+    lesson: cross-entropy
+  - id: gradient-descent-concept
+    title: "Gradient descent: walking the loss downhill"
+    lesson: gradient-descent
+  - id: loss-landscapes-concept
+    title: "Loss landscapes: what gradient descent walks on"
+    lesson: loss-landscapes
+  - id: vanishing-exploding-gradients-concept
+    title: "Vanishing and exploding gradients"
+    lesson: vanishing-exploding-gradients
+  - id: backpropagation-concept
+    title: "Backpropagation: chain rule for the whole network"
+    lesson: backpropagation
+  - id: sgd-concept
+    title: "Stochastic gradient descent: training with batches"
+    lesson: sgd
+  - id: optimizers-concept
+    title: "Optimizers: SGD, momentum, Adam"
+    lesson: optimizers
+  - id: lr-schedules-concept
+    title: "Learning-rate schedules: how aggressively to step, over time"
+    lesson: lr-schedules
+  - id: training-end-to-end-concept
+    title: "Training a tiny model, end to end"
+    lesson: training-end-to-end
+  - id: scaling-laws-concept
+    title: "Scaling laws: how big should the model be?"
+    lesson: scaling-laws
+  - id: overfitting-concept
+    title: "Overfitting: when the model memorizes the data"
+    lesson: overfitting
+  - id: weight-decay-concept
+    title: "L2 weight decay: penalizing big weights"
+    lesson: weight-decay
+  - id: dropout-concept
+    title: "Dropout: training an ensemble for free"
+    lesson: dropout
+  - id: batch-norm-concept
+    title: "Batch normalization: stabilizing activations"
+    lesson: batch-norm
+  - id: early-stopping-augmentation-concept
+    title: "Early stopping + data augmentation"
+    lesson: early-stopping-augmentation
+  - id: pretraining-vs-finetuning-concept
+    title: "Pretraining vs fine-tuning"
+    lesson: pretraining-vs-finetuning
+  - id: freezing-vs-full-finetuning-concept
+    title: "Freezing vs full fine-tuning"
+    lesson: freezing-vs-full-finetuning
+  - id: catastrophic-forgetting-concept
+    title: "Catastrophic forgetting"
+    lesson: catastrophic-forgetting
+  - id: quantization-concept
+    title: "Quantization: storing 4 bits per weight"
+    lesson: quantization
+  - id: lora-concept
+    title: "LoRA: low-rank adaptation"
+    lesson: lora
+  - id: evaluation-concept
+    title: "Evaluation: how the field measures models"
+    lesson: evaluation
+  - id: instruction-tuning-rlhf-concept
+    title: "Instruction tuning & RLHF intuition"
+    lesson: instruction-tuning-rlhf
+  - id: distillation-concept
+    title: "Knowledge distillation: small model learns from big model"
+    lesson: distillation
+  - id: weight-initialization-concept
+    title: "Weight initialization: starting at variance 1"
+    lesson: weight-initialization
+  - id: in-context-learning-concept
+    title: "In-context learning: few-shot prompting"
+    lesson: in-context-learning
+  - id: chain-of-thought-concept
+    title: "Chain-of-thought: thinking step by step"
+    lesson: chain-of-thought
+  - id: sliding-window-attention-concept
+    title: "Sliding-window attention"
+    lesson: sliding-window-attention
+  - id: weight-tying-concept
+    title: "Weight tying: shared embedding/output"
+    lesson: weight-tying
+  - id: dpo-concept
+    title: "DPO: direct preference optimization"
+    lesson: dpo
+  - id: qlora-concept
+    title: "QLoRA: 4-bit base + LoRA"
+    lesson: qlora
+  - id: mixed-precision-concept
+    title: "Mixed precision: bf16 + fp32"
+    lesson: mixed-precision
+  - id: gradient-checkpointing-concept
+    title: "Gradient checkpointing"
+    lesson: gradient-checkpointing
+  - id: rag-concept
+    title: "RAG: retrieve, then generate"
+    lesson: rag
+
+edges:
+  # Atomic prerequisite chain
+  - from: vector
+    to: vector-magnitude
+  - from: vector
+    to: dot-product
+  - from: vector-magnitude
+    to: cos-theta
+  - from: dot-product
+    to: cos-theta
+  - from: dot-product
+    to: projection
+  - from: cos-theta
+    to: projection
+  - from: dot-product
+    to: softmax
+  - from: softmax
+    to: temperature
+  - from: softmax
+    to: attention-score
+  - from: attention-score
+    to: attention-weight
+  - from: temperature
+    to: attention-weight
+  - from: attention-score
+    to: scaled-dot-product
+  - from: scaled-dot-product
+    to: attention-weight
+  - from: attention-weight
+    to: attention-output
+  - from: attention-score
+    to: causal-mask
+  - from: causal-mask
+    to: attention-weight
+  - from: attention-score
+    to: multi-head
+  - from: multi-head
+    to: attention-weight
+  - from: attention-score
+    to: residual
+  - from: residual
+    to: layer-norm
+  - from: layer-norm
+    to: attention-weight
+  - from: feed-forward
+    to: gelu
+  - from: feed-forward
+    to: moe
+  - from: attention-output
+    to: kv-cache
+  - from: kv-cache
+    to: speculative-decoding
+  - from: decoding-strategy
+    to: speculative-decoding
+  - from: multi-head
+    to: gqa
+  - from: kv-cache
+    to: gqa
+  - from: attention-output
+    to: flash-attention
+  - from: gqa
+    to: flash-attention
+  - from: flash-attention
+    to: sliding-window-attention-concept
+  - from: causal-mask
+    to: sliding-window-attention-concept
+  - from: softmax
+    to: bpe
+  - from: bpe
+    to: token-embedding
+  - from: token-embedding
+    to: attention-score
+  - from: token-embedding
+    to: positional-encoding
+  - from: positional-encoding
+    to: rope
+  - from: cross-entropy
+    to: softmax
+  - from: gradient-descent
+    to: cross-entropy
+
+  # Capstone edges (block): only the 6 atom concepts whose
+  # lessons are the *direct* prerequisite lessons of the block.
+  - from: multi-head
+    to: transformer-block
+  - from: residual
+    to: transformer-block
+  - from: layer-norm
+    to: transformer-block
+  - from: feed-forward
+    to: transformer-block
+  - from: causal-mask
+    to: transformer-block
+  - from: positional-encoding
+    to: transformer-block
+  - from: token-embedding
+    to: transformer-block
+
+  # Sampling + decoding: prerequisite edges into the lesson.
+  - from: softmax
+    to: sampling-decoding-concept
+  - from: decoding-strategy
+    to: sampling-decoding-concept
+  - from: attention-output
+    to: transformer-block
+
+  # Lesson concept nodes
+  - from: dot-product
+    to: dot-product-concept
+  - from: dot-product
+    to: matrix-multiplication-concept
+  - from: projection
+    to: vector-projection-concept
+  - from: softmax
+    to: softmax-concept
+  - from: attention-score
+    to: attention-scores-concept
+  - from: attention-output
+    to: attention-output-concept
+  - from: scaled-dot-product
+    to: scaled-attention-concept
+  - from: bpe
+    to: tokenization-concept
+  - from: kv-cache
+    to: kv-cache-concept
+  - from: speculative-decoding
+    to: speculative-decoding-concept
+  - from: token-embedding
+    to: token-embeddings-concept
+  - from: token-embeddings-concept
+    to: weight-tying-concept
+  - from: dot-product-concept
+    to: weight-tying-concept
+  - from: positional-encoding
+    to: positional-encoding-concept
+  - from: rope
+    to: rope-concept
+  - from: causal-mask
+    to: causal-mask-concept
+  - from: multi-head
+    to: multi-head-attention-concept
+  - from: gqa
+    to: gqa-concept
+  - from: flash-attention
+    to: flash-attention-concept
+  - from: residual
+    to: residuals-layernorm-concept
+  - from: residuals-layernorm-concept
+    to: rms-norm-concept
+  - from: layer-norm
+    to: rms-norm-concept
+  - from: gelu
+    to: activations-concept
+  - from: activations-concept
+    to: feed-forward-concept
+  - from: feed-forward
+    to: feed-forward-concept
+  - from: moe
+    to: moe-concept
+  - from: decoding-strategy
+    to: sampling-decoding-concept
+  - from: sampling-decoding-concept
+    to: beam-search-concept
+  - from: beam-search-concept
+    to: in-context-learning-concept
+  - from: attention-output-concept
+    to: in-context-learning-concept
+  - from: in-context-learning-concept
+    to: chain-of-thought-concept
+  - from: sampling-decoding-concept
+    to: chain-of-thought-concept
+  - from: chain-of-thought-concept
+    to: rag-concept
+  - from: in-context-learning-concept
+    to: rag-concept
+  - from: dot-product-concept
+    to: rag-concept
+  - from: token-embeddings-concept
+    to: rag-concept
+  - from: cross-entropy
+    to: cross-entropy-concept
+  - from: gradient-descent
+    to: gradient-descent-concept
+  - from: gradient-descent-concept
+    to: loss-landscapes-concept
+  - from: loss-landscapes-concept
+    to: vanishing-exploding-gradients-concept
+  - from: residuals-layernorm-concept
+    to: vanishing-exploding-gradients-concept
+  - from: vanishing-exploding-gradients-concept
+    to: backpropagation-concept
+  - from: vanishing-exploding-gradients-concept
+    to: weight-initialization-concept
+  - from: weight-initialization-concept
+    to: backpropagation-concept
+  - from: chain-rule
+    to: backpropagation-concept
+  - from: mini-batch
+    to: sgd-concept
+  - from: momentum
+    to: optimizers-concept
+  - from: adam
+    to: optimizers-concept
+  - from: warmup
+    to: lr-schedules-concept
+  - from: cosine-decay
+    to: lr-schedules-concept
+  - from: lr-schedules-concept
+    to: mixed-precision-concept
+  - from: mixed-precision-concept
+    to: gradient-checkpointing-concept
+  - from: backpropagation-concept
+    to: gradient-checkpointing-concept
+  - from: mixed-precision-concept
+    to: qlora-concept
+  - from: training-loop
+    to: training-end-to-end-concept
+  - from: training-loop
+    to: scaling-laws
+  - from: scaling-laws
+    to: scaling-laws-concept
+  - from: training-end-to-end-concept
+    to: scaling-laws-concept
+  - from: multi-head
+    to: transformer-block
+  - from: residual
+    to: transformer-block
+  - from: layer-norm
+    to: transformer-block
+  - from: feed-forward
+    to: transformer-block
+  - from: causal-mask
+    to: transformer-block
+  - from: positional-encoding
+    to: transformer-block
+  - from: token-embedding
+    to: transformer-block
+
+  # Regularization module edges
+  - from: cross-entropy
+    to: overfitting
+  - from: gradient-descent
+    to: overfitting
+  - from: overfitting
+    to: overfitting-concept
+  - from: overfitting
+    to: weight-decay
+  - from: sgd-concept
+    to: weight-decay
+  - from: optimizers-concept
+    to: weight-decay
+  - from: weight-decay
+    to: weight-decay-concept
+  - from: backpropagation-concept
+    to: dropout
+  - from: overfitting
+    to: dropout
+  - from: dropout
+    to: dropout-concept
+  - from: layer-norm
+    to: batch-norm
+  - from: sgd-concept
+    to: batch-norm
+  - from: batch-norm
+    to: batch-norm-concept
+  - from: cross-entropy
+    to: early-stopping
+  - from: overfitting
+    to: early-stopping
+  - from: early-stopping
+    to: early-stopping-augmentation-concept
+  - from: data-augmentation
+    to: early-stopping-augmentation-concept
+  - from: overfitting
+    to: data-augmentation
+
+  # Fine-tuning module edges
+  - from: gradient-descent
+    to: pretraining
+  - from: pretraining
+    to: fine-tuning
+  - from: training-loop
+    to: fine-tuning
+  - from: pretraining
+    to: pretraining-vs-finetuning-concept
+  - from: fine-tuning
+    to: pretraining-vs-finetuning-concept
+  - from: fine-tuning
+    to: layer-freezing
+  - from: chain-rule
+    to: layer-freezing
+  - from: pretraining-vs-finetuning-concept
+    to: freezing-vs-full-finetuning-concept
+  - from: layer-freezing
+    to: freezing-vs-full-finetuning-concept
+  - from: fine-tuning
+    to: catastrophic-forgetting
+  - from: sgd-concept
+    to: catastrophic-forgetting
+  - from: optimizers-concept
+    to: catastrophic-forgetting
+  - from: freezing-vs-full-finetuning-concept
+    to: catastrophic-forgetting-concept
+  - from: catastrophic-forgetting
+    to: catastrophic-forgetting-concept
+  - from: fine-tuning
+    to: quantization
+  - from: catastrophic-forgetting-concept
+    to: quantization-concept
+  - from: quantization
+    to: quantization-concept
+  - from: fine-tuning
+    to: low-rank-update
+  - from: low-rank-update
+    to: lora
+  - from: quantization-concept
+    to: lora-concept
+  - from: catastrophic-forgetting-concept
+    to: lora-concept
+  - from: lora
+    to: lora-concept
+  - from: cross-entropy
+    to: evaluation
+  - from: fine-tuning
+    to: evaluation
+  - from: evaluation
+    to: evaluation-concept
+  - from: lora-concept
+    to: evaluation-concept
+  - from: softmax
+    to: dpo-loss
+  - from: cross-entropy
+    to: dpo-loss
+  - from: preference-data
+    to: dpo-loss
+  - from: preference-data
+    to: reward-model
+  - from: lora-concept
+    to: instruction-tuning-rlhf-concept
+  - from: evaluation-concept
+    to: instruction-tuning-rlhf-concept
+  - from: dpo-loss
+    to: instruction-tuning-rlhf-concept
+  - from: reward-model
+    to: instruction-tuning-rlhf-concept
+  - from: instruction-tuning-rlhf-concept
+    to: dpo-concept
+  - from: cross-entropy
+    to: dpo-concept
+  - from: dpo-concept
+    to: distillation-concept
+  - from: lora-concept
+    to: qlora-concept
+  - from: quantization-concept
+    to: qlora-concept
+  - from: instruction-tuning-rlhf-concept
+    to: distillation-concept
+  - from: cross-entropy
+    to: distillation-concept
+  - from: softmax
+    to: distillation-concept
+  - from: temperature
+    to: distillation-concept

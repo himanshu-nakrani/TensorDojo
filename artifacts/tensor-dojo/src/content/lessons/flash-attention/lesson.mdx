@@ -1,0 +1,82 @@
+import { MathCode } from '@/components/lesson/MathCode';
+import { Callout } from '@/components/lesson/Callout';
+
+## A modern GPU has 3 PFLOPS of compute. Why is attention slow?
+
+Take an H100. It can do roughly $3 \times 10^{15}$ floating-point operations per second. A 4096 × 4096 attention computation needs about $5 \times 10^{10}$ operations — finishable in microseconds, on paper. In practice it takes milliseconds, sometimes tens of them. The compute is sitting idle. Where is the time going?
+
+It's going to memory. The same H100 has only about $3 \times 10^{12}$ bytes per second of HBM bandwidth — roughly a thousandth of its compute throughput. Whenever a kernel reads or writes HBM, the SMs wait. Naive attention writes the entire $n \times n$ score matrix to HBM, then reads it back to apply softmax, then again to multiply by V. For $n = 4096$ that score matrix is 32 MB; for $n = 16384$ it's half a gigabyte. The math is fast; the round trip is slow.
+
+Flash attention (Dao et al., 2022) doesn't change the math. The output is bit-for-bit identical to the textbook formula. What it changes is the access pattern: never write the score matrix to HBM at all. Compute attention in tiles small enough to fit in on-chip SRAM, with a running softmax that accumulates across tiles. HBM traffic drops by roughly the block factor; wall-clock follows.
+
+## The trick
+
+Tile Q, K, V into blocks of size $B \times d$. Load one block of each into SRAM. Compute the corresponding $B \times B$ score tile, apply softmax to it locally, multiply by the V block, accumulate into a running output. Move to the next tile. The score matrix exists only as a transient $B \times B$ tile in SRAM — never as a persisted $n \times n$ matrix in HBM.
+
+The running softmax is the only nontrivial bit. Naive softmax needs to see all $n$ scores to compute the normalizer. Flash uses an *online* update: keep a running max and a running sum of $\exp(\text{score} - \text{running max})$, adjust both when a new tile arrives. The math is exact; the trick is just that it's incremental.
+
+$$
+\text{Naive HBM} \sim O(n^2), \qquad \text{Flash HBM} \sim O(n \cdot d)
+$$
+
+<MathCode
+  math="\text{HBM}_{\text{naive}} \sim n^2 + n d, \qquad \text{HBM}_{\text{flash}} \sim n d + n^2 d / B"
+  code={`# Naive attention: writes the n × n score matrix to HBM.
+def attention_naive(Q, K, V):
+    S = Q @ K.T                       # n × n, written to HBM
+    P = softmax(S, dim=-1)            # n × n, read from + written to HBM
+    return P @ V                      # n × d, written to HBM
+
+# Flash attention: same math, tile-based, online softmax in SRAM.
+def attention_flash(Q, K, V, block=64):
+    O = torch.zeros_like(Q)
+    l = torch.zeros(Q.shape[0])       # running sum of exp
+    m = torch.full((Q.shape[0],), -float('inf'))  # running max
+    for j_start in range(0, n, block):
+        Kj = K[j_start:j_start+block]  # load K block into SRAM
+        Vj = V[j_start:j_start+block]  # load V block into SRAM
+        Sj = Q @ Kj.T                  # B × n tile, stays in SRAM
+        m_new = torch.maximum(m, Sj.max(dim=-1).values)
+        l_new = torch.exp(m - m_new) * l + torch.exp(Sj - m_new[:, None]).sum(-1)
+        O = (l / l_new)[:, None] * torch.exp(m - m_new)[:, None] * O + \\
+            (torch.exp(Sj - m_new[:, None]) / l_new[:, None]) @ Vj
+        m, l = m_new, l_new
+    return O`}
+  caption="Same output, very different memory pattern. The n × n score matrix never touches HBM. Real implementations are CUDA kernels; the algorithm above is the math behind them."
+/>
+
+## Try it
+
+<Callout targetInteractive="flash-attention-traffic">
+  Start at n=256 — the two bars are close. Drag the slider up. At n=4096 naive's bar pulls noticeably ahead; at n=16384 the gap is several orders of magnitude. Notice the peak-SRAM readout: by n=2048 the naive score matrix already needs ~8 MB of working set, far more than the 100 KB any single SM has on chip. That's why naive attention is bandwidth-limited at long context, and why flash is the speed story everyone talks about.
+</Callout>
+
+<Callout title="Why this matters for long context" targetInteractive="flash-attention-traffic">
+  Pre-flash, the longest practical context for production LLMs was around 2-4k tokens — not because attention was algorithmically hard at longer lengths, but because the n² HBM traffic became prohibitive. Flash attention is the single biggest reason 32k, 128k, and now million-token contexts exist on commodity hardware. The math hasn't changed; the access pattern has.
+</Callout>
+
+## A second look
+
+<Callout targetInteractive="flash-attention-tiling">
+  Watch the cursor sweep through tiles. The whole grid is never bright at once — that's the algorithmic invariant. Each tile lights up briefly as it's computed in SRAM, then fades. Toggle between B=2, B=4, B=8: smaller blocks mean more tiles and more SRAM round-trips; larger blocks mean fewer tiles but a bigger on-chip working set. Production picks the largest B that fits.
+</Callout>
+
+<Callout title="Block size is a hardware constant" targetInteractive="flash-attention-tiling">
+  Real flash-attention kernels use B=64 or B=128 on H100s, picking the largest block that fits in SRAM after Q, K, V are loaded. The block size isn't tuned per-model or per-input — it's a property of the hardware. New GPUs with bigger SRAM (Blackwell adds substantially more) shift this number up; the algorithm itself doesn't change.
+</Callout>
+
+## Reading the result
+
+Three things to internalize.
+
+**Same math, different memory pattern.** Flash attention produces bit-identical output to naive attention. There's no approximation, no quality trade-off, no hyperparameter to tune for accuracy. The optimization is purely in *where* the data lives during the computation: SRAM (fast, on-chip, small) instead of HBM (slow, off-chip, large). This is why it can be a drop-in replacement in every modern attention library.
+
+**HBM is the binding constraint, not FLOPs.** Modern GPUs have FLOPS-to-bandwidth ratios of 100-1000×. Any kernel that touches HBM more than it does math is bandwidth-limited. Attention's $n^2$ score matrix is the canonical example: $n^2$ memory ops per $n^2 \cdot d$ FLOPs means HBM dominates at any non-trivial $d$. Flash collapses that to $n \cdot d$ HBM ops, putting attention back in the compute-bound regime where the FLOPs actually get used.
+
+**It composes with everything else.** Flash works with GQA (each head still tiles independently), with the KV cache (the cache stores the same K and V flash reads), with RoPE (rotation is per-token, applied before tiling), with causal masking (just zero out the upper-triangular part of each score tile). It's not an alternative to those — it's the kernel underneath them.
+
+## Recap
+
+Three takeaways. **Flash attention is a memory-access optimization, not an algorithmic one** — the math is identical to textbook softmax-attention. **Tile-based computation with an online softmax keeps the entire score matrix off HBM**, reducing memory traffic from $O(n^2)$ to $O(n \cdot d)$. **It is the kernel modern LLMs run inside** — every production attention implementation since 2023 uses flash or a variant, and the existence of 32k+ context models is downstream of it.
+
+The block now has attention sized for cache (GQA) and a kernel that doesn't choke on long context (flash). The next question is the structural one we've been deferring: how do you stack a dozen of these blocks deep without the gradients collapsing? That's residual connections and layer norm, two ideas that always travel together.

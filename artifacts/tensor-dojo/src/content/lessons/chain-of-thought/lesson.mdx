@@ -1,0 +1,100 @@
+import { MathCode } from '@/components/lesson/MathCode';
+import { Callout } from '@/components/lesson/Callout';
+
+## Why "let's think step by step" actually works
+
+The in-context learning lesson showed how examples in the prompt change a frozen model's behavior. **Chain-of-thought** prompting is a particular kind of in-context example — instead of demonstrating `Q → A`, you demonstrate `Q → reasoning steps → A`. The 2022 paper that introduced the term measured a striking effect: the same models that scored 17% on a multi-step math benchmark with direct prompting scored 57% when prompted to think step by step. No fine-tuning. No new weights. Just a different prompt template.
+
+The mechanism is mechanical, not magical. A transformer's forward pass has a **fixed amount of compute per token**: $L$ layers, each doing one attention + one MLP step. For a hard problem that needs more compute than that, asking for the answer in one token forces the model to do all the reasoning inside that single forward pass — which it usually can't. Asking for *intermediate tokens* lets the model spread the computation across many forward passes: each step's tokens become part of the context for the next step. The reasoning is offloaded from the model's hidden activations into the visible token stream.
+
+This is why chain-of-thought disproportionately helps on **multi-step tasks** (arithmetic, logic puzzles, planning) and barely helps on **single-step tasks** (lookups, simple classification). The trick only buys you something when the problem actually needs more compute than one forward pass can deliver.
+
+## The formula
+
+For a problem with answer $a$, given a question $q$, direct decoding samples:
+
+$$
+a \sim p_\theta(a \mid q)
+$$
+
+Chain-of-thought decoding samples a reasoning trace $r = (r_1, \ldots, r_T)$ *and then* the answer:
+
+$$
+r \sim p_\theta(r \mid q), \qquad a \sim p_\theta(a \mid q, r)
+$$
+
+The second decode is conditioned on the trace. Each intermediate $r_t$ is sampled one at a time, with each new token added to the context — so the model gets to attend to its own previous reasoning before predicting the next step.
+
+The marginal probability of the right answer is:
+
+$$
+p_\theta(a^* \mid q) = \sum_r p_\theta(a^* \mid q, r) \cdot p_\theta(r \mid q)
+$$
+
+For problems where some $r^*$ exists such that $p_\theta(a^* \mid q, r^*) \gg p_\theta(a^* \mid q)$ — i.e., the right reasoning trace makes the answer easy — sampling the trace first dramatically increases the chance of the right answer. For problems where no useful trace exists, CoT doesn't help.
+
+<MathCode
+  math="p_\theta(a^* \mid q) = \sum_r p_\theta(a^* \mid q, r) \cdot p_\theta(r \mid q)"
+  code={`# Direct prompt:
+prompt_direct = "Q: A store has 17 apples. They sell 4, then buy 12 more. How many apples now?\\nA:"
+# Likely sample: a single number, often wrong on multi-step problems.
+
+# Chain-of-thought prompt:
+prompt_cot = """Q: A bakery has 23 muffins. They sell 8, then bake 15 more. How many muffins now?
+A: Start with 23. Sell 8: 23 − 8 = 15. Bake 15 more: 15 + 15 = 30. Answer: 30.
+
+Q: A store has 17 apples. They sell 4, then buy 12 more. How many apples now?
+A:"""
+# The 1-shot example demonstrates the reasoning format. The model is now
+# very likely to emit "Start with 17. Sell 4: 17 − 4 = 13. Buy 12 more:
+# 13 + 12 = 25. Answer: 25." — and it's right, because each intermediate
+# step has lower per-token entropy than the final answer would have on
+# its own.
+
+# Zero-shot CoT (Kojima et al., 2022): just append the magic words.
+prompt_zero_shot_cot = "Q: ... how many apples now?\\nA: Let's think step by step."
+# Surprisingly effective for capable models; bad for small ones.`}
+  caption="The trick is to convert one hard prediction (the final answer in one token) into a sequence of easier predictions (each step in turn)."
+/>
+
+<Callout title="The depth analogy" targetInteractive="cot-explorer">
+  A 96-layer transformer has 96 attention steps to think with before committing to one token. That's a lot — but it's finite. Once the problem needs more, the only way to think harder is to think *longer*: emit intermediate tokens and condition future computation on them. The "scratchpad" lives in the context, not in the weights.
+</Callout>
+
+## Try it
+
+The centerpiece runs the same toy problem ("13 × 4 + 27 = ?") under two prompting strategies, toggled by the header switch. **Direct** asks for the answer in one token; **Chain-of-thought** unrolls intermediate steps. In CoT mode, hit *Step* to advance one token at a time and watch how the distribution sharpens as the trace grows.
+
+<Callout targetInteractive="cot-explorer">
+  Run "Direct" first. The model emits a single answer-token distribution. The right answer (79) has some mass, but so do 78, 80, 52, 81 — close-but-wrong values that share a digit pattern with the correct answer. The probability of getting the right answer in one shot is mediocre.
+</Callout>
+
+<Callout title="What to watch for" targetInteractive="cot-explorer">
+  Now run "Chain-of-thought" and click Step a few times. Each click adds one intermediate token: "13 × 4 = 52", then "52 + 27 = ", then "79". The distribution at *each* intermediate step is sharp (the multiplication and addition sub-tasks are each easy). And the final answer is committed only after the model has the intermediate result in its own context — turning a hard one-shot prediction into a sequence of easy ones.
+</Callout>
+
+<Callout targetInteractive="cot-explorer">
+  Compare the final answer distributions. Direct: probability of 79 is moderate; the wrong answers are competitive. CoT: probability of 79 is high; the wrong answers are crushed. Same toy "model", same problem — the difference is entirely the prompting strategy.
+</Callout>
+
+## Reading the result
+
+**The mechanism is amortization.** A hard problem takes more compute than the model has per token. CoT lets the model use *multiple* forward passes — one per intermediate token — by writing partial results into the context. Each forward pass is still bounded by the model's depth, but the *total* compute the model brings to bear is now `depth × tokens`, not just `depth`.
+
+**CoT helps multi-step tasks, not lookups.** Asking a model "What's the capital of France?" with CoT doesn't help — the answer is one lookup, the model's forward pass already handles it. Asking the same model "If a train leaves Boston at 3pm at 60mph and another leaves NYC at 4pm at 80mph, when do they meet?" — that's where CoT shines. The improvement scales with the number of reasoning steps the problem actually requires.
+
+**CoT emerges at scale.** Small models (under ~10B parameters) often don't benefit from CoT — they can't reliably generate coherent intermediate steps, so the trace adds noise rather than signal. Above ~62B parameters the effect becomes large; the 2022 paper called this an "emergent" capability. Modern reasoning-tuned models (o1, R1, Gemini 2.5 Thinking) are *trained* to produce long traces and benefit from CoT in proportion to how long they're allowed to think.
+
+**Variants and extensions.** Zero-shot CoT ("let's think step by step") — surprisingly effective on capable models. Self-consistency — sample many traces, take the majority answer; reliably better than single CoT. Tree-of-thoughts — branch and prune over traces; useful for problems with verifiable subgoals. Reasoning models — RL-tune the model itself to produce long traces and to be rewarded for the final answer's correctness. All of them are variants of the same core idea: spread the computation across more tokens.
+
+## A second look
+
+CoT and ICL are siblings. Both work because the prompt is a software interface to a frozen network. ICL conditions the model on the *shape* of the task (Q/A pairs, classification, translation). CoT conditions it on the *process* of the task (step-by-step reasoning). The 2022 paper's "Let's think step by step" is a magic incantation only in the sense that the prompt is a programming language and "let's think step by step" is one of its most useful primitives.
+
+<Callout title="The cost: tokens" targetInteractive="cot-explorer">
+  CoT trades latency and cost for accuracy. A 500-token reasoning trace is 500× the inference cost of a single-token answer. For a customer support bot, that's expensive. For solving a hard math problem once, it's free. The economic question is always "how many extra tokens am I willing to pay for one more correct answer."
+</Callout>
+
+## Recap
+
+Three takeaways. **Chain-of-thought is a prompting trick — no weights change.** The model emits intermediate reasoning tokens before committing to the answer; the answer is then conditioned on the trace. **The mechanism is amortization.** A hard problem needs more compute than one forward pass can provide; CoT spreads the computation across multiple forward passes, each conditioned on the last. **CoT helps multi-step tasks at scale.** Small models don't benefit; large models benefit dramatically; reasoning-tuned models benefit most. The next lesson takes the prompt-shaping idea one step further: instead of putting *examples* or *reasoning steps* in the prompt, you put *facts the model has never seen* in the prompt — retrieved at query time from a vector store. That's **RAG**.

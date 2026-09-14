@@ -1,0 +1,75 @@
+## 2024-05-16 - [Security Headers]
+**Vulnerability:** Missing basic security headers like Strict-Transport-Security, X-Content-Type-Options, etc., exposing the app to XSS, clickjacking and MIME sniffing attacks.
+**Learning:** Adding custom Express middleware is preferred over adding new dependencies like `helmet` when maintaining a strict no-new-dependencies policy.
+**Prevention:** Implement standard security headers via a simple custom middleware for any new Express applications in the workspace.
+## 2025-03-09 - Express Security Headers
+
+**Vulnerability:** Missing basic HTTP security headers (X-Content-Type-Options, X-Frame-Options, X-XSS-Protection) and exposed x-powered-by header in the Express API server.
+**Learning:** These basic protections should be enabled by default. While `helmet` is standard, we can apply them manually without new dependencies. Also, be careful modifying payload limits or CORS configurations as they can easily break existing functionality.
+**Prevention:** Always include basic security headers in Express setups.
+
+## 2025-03-09 - Express CORS and Advanced Security Headers
+
+**Vulnerability:** Weak CORS configuration (`*`) and missing advanced HTTP security headers (Strict-Transport-Security, Content-Security-Policy) in the Express API server.
+**Learning:** Default `cors()` allows all origins. It should be restricted in production. Pure APIs that only return JSON should have restrictive CSPs (`default-src 'none'`) to prevent XSS if a response is ever accidentally rendered in a browser.
+**Prevention:** Configure CORS based on environment and add HSTS/CSP headers.
+## 2025-03-09 - Overly Permissive Default CORS
+
+**Vulnerability:** The default CORS configuration in `artifacts/api-server/src/app.ts` allowed all origins (`*`) if the `CORS_ORIGIN` environment variable was empty or set to `*`.
+**Learning:** Default fallbacks for environmental variables in sensitive configurations can open up major holes. A permissive default might be fine for local dev, but should never make it to production unnoticed. Also, redundant security middleware configurations can cause confusion.
+**Prevention:** In production environments, default to denying cross-origin requests (or being extremely restrictive) when specific configuration variables are absent, instead of falling back to a wildcard. Always review security-related boilerplate code for duplicate or conflicting settings.
+
+## 2024-05-18 - Express Rate Limiting
+**Vulnerability:** Missing rate limiting on the API server, leaving it vulnerable to basic DoS and brute-force attacks.
+**Learning:** We can implement a simple in-memory rate limiter using standard Node.js/Express constructs instead of adding new dependencies. It's crucial to `unref()` the cleanup `setInterval` so it doesn't block the process from exiting gracefully.
+**Prevention:** Include basic rate limiting on API endpoints to prevent abuse.
+
+## 2025-03-09 - CSS Injection / XSS in UI Component Boilerplate
+**Vulnerability:** Found a CSS Injection and XSS vulnerability in `artifacts/tensor-dojo/src/components/ui/chart.tsx`. The component used `dangerouslySetInnerHTML` to inject dynamic `id` and `color` variables into a `<style>` block without sanitization. An attacker could potentially break out of the CSS rules and insert malicious scripts (e.g. `</style><script>alert(1)</script>`).
+**Learning:** Standard UI component boilerplate (like Recharts wrappers) often implements dynamic styling using `<style dangerouslySetInnerHTML>` to support theme variables. This pattern is inherently unsafe if any of the interpolated variables depend on user input. Even "safe-looking" things like element IDs or hex colors can be exploited.
+**Prevention:** Always sanitize any interpolated variables when using `dangerouslySetInnerHTML` in `<style>` blocks. For IDs, strip non-alphanumeric/dash/underscore characters. For colors, strip characters that can break CSS or HTML rules (`[;{}"'<>]`).
+## 2025-03-09 - CSS Injection / XSS in Sandbox UI Component Boilerplate
+**Vulnerability:** Found a CSS Injection and XSS vulnerability in `artifacts/mockup-sandbox/src/components/ui/chart.tsx` similar to one previously found in `tensor-dojo`. The component used `dangerouslySetInnerHTML` to inject dynamic `id` and `color` variables into a `<style>` block without sanitization. An attacker could potentially break out of the CSS rules and insert malicious scripts.
+**Learning:** Standard UI component boilerplate often implements dynamic styling using `<style dangerouslySetInnerHTML>` to support theme variables. This pattern is inherently unsafe if any of the interpolated variables depend on user input. Even "safe-looking" things like element IDs or hex colors can be exploited. Duplicate boilerplate components in different workspace packages might share the same vulnerabilities.
+**Prevention:** Always sanitize any interpolated variables when using `dangerouslySetInnerHTML` in `<style>` blocks. For IDs, strip non-alphanumeric/dash/underscore characters. For colors, strip characters that can break CSS or HTML rules (`[;{}"'<>]`).
+## 2026-07-28 - Rate Limiting Reverse Proxy Bypass
+**Vulnerability:** The Express API server did not have `trust proxy` configured. When deployed behind a reverse proxy (like Nginx, AWS ALB, or Google Cloud Run), `req.ip` returns the IP of the reverse proxy rather than the actual client. This causes the custom rate limiter to limit the proxy's IP, potentially resulting in a Denial of Service (DoS) for all legitimate users sharing that proxy.
+**Learning:** Rate limiting based on `req.ip` without configuring `trust proxy` correctly is a common pitfall in Express applications. It can lead to widespread access denial when a single user exceeds the limit, as the proxy's IP is penalized.
+**Prevention:** Always configure `app.set('trust proxy', 1)` (or the appropriate number of hops) when deploying Express applications behind a reverse proxy, especially when relying on IP-based rate limiting or logging.
+## 2024-07-27 - Unsanitized Object Keys in dangerouslySetInnerHTML
+**Vulnerability:** XSS/CSS Injection via unsanitized configuration keys used in `<style dangerouslySetInnerHTML>` inside UI chart components.
+**Learning:** Even if the values (like colors) are sanitized, the keys from external/user-provided configuration objects can be exploited if they are directly interpolated into the style string. A malicious object key (e.g., `"</style><script>alert('XSS')</script>": { color: "red" }`) will break out of the `<style>` context and execute arbitrary code.
+**Prevention:** Always sanitize ALL variables (both keys and values) before injecting them into `dangerouslySetInnerHTML`. Use a strict regex (like `/[^a-zA-Z0-9-_]/g`) to strip out any characters that could close tags or rules.
+## 2024-08-02 - [Fix CSS Injection in Chart Components]
+**Vulnerability:** CSS injection and potential XSS vulnerability in `ChartStyle` components where colors parsed from chart configs were unsafely injected into a `<style dangerouslySetInnerHTML>` block, using a flawed denylist regex `/[;{}"'<>]/g`.
+**Learning:** Denylist regex sanitizations are inherently risky because they only block known bad characters and can easily miss creative evasion techniques. A strict allowlist is required when interpolating values into `<style>` tags.
+**Prevention:** Always use strict allowlist regexes when sanitizing dynamically injected CSS values. For CSS colors (hex, rgb, hsl), use a regex like `/[^a-zA-Z0-9-_.#(),%\s\/]/g` to ensure only mathematically valid characters pass through while stripping anything that could break out of a CSS rule.
+## 2025-03-09 - Memory Exhaustion DoS in Custom Rate Limiter
+**Vulnerability:** The custom in-memory rate limiter in the Express API server stored IP states in an unbounded `Map`. An attacker could spoof numerous IP addresses or use a botnet, causing the map to grow indefinitely until the server crashes with an Out of Memory (OOM) error.
+**Learning:** Naive in-memory rate limiters must bound their maximum size. Clearing the entire map when full causes a rate-limiting bypass. Evicting the oldest entries (using `map.keys().next().value`) is a safer approach to prevent OOM while maintaining active limits.
+**Prevention:** Always enforce a size limit on in-memory caches or state maps to prevent memory exhaustion DoS attacks.
+## 2025-03-09 - Express JSON Body Size Limit and Permissions Policy
+**Vulnerability:** Missing request body size limits (`express.json()` and `express.urlencoded()`) and the `Permissions-Policy` header in the Express API server.
+**Learning:** Default limits in middleware can sometimes be too large or not explicit enough. Setting an explicit reasonable limit (e.g., 10mb) helps mitigate memory exhaustion DoS attacks. Also, modern security headers like `Permissions-Policy` should be explicitly set to reduce the application's attack surface.
+**Prevention:** Always set an explicit `limit` on body parsing middleware and include comprehensive security headers in Express applications.
+## 2026-08-29 - Upgrade Playwright to fix high severity CVE
+**Vulnerability:** Playwright had a high severity vulnerability (CVE/GHSA-7mvr-c777-76hp) where it downloads and installs browsers without verifying the authenticity of the SSL certificate.
+**Learning:** Developer tools like Playwright that execute shell operations or downloads can introduce severe vulnerabilities into CI pipelines or local dev environments. Running `pnpm audit` helps catch these quickly.
+**Prevention:** Ensure `pnpm audit` is part of regular maintenance and CI to catch vulnerabilities in both prod and dev dependencies.
+## 2025-03-09 - Missing Frontend Security Headers
+**Vulnerability:** The Vercel deployment configuration (`vercel.json`) did not specify security headers, exposing the frontend to MIME sniffing, clickjacking, and XSS risks without strict transport security.
+**Learning:** For statically deployed Vite/React apps on Vercel, Express middleware headers do not apply. Set nosniff, X-Frame-Options (or CSP frame-ancestors), and HSTS at the edge. Do not ship X-XSS-Protection (removed from Chromium) or HSTS preload unless the domain is submitted to hstspreload.org.
+**Prevention:** Always verify that security headers are configured at the edge or hosting layer for static frontends.
+## 2026-09-06 - Resolve Dependency Vulnerabilities with pnpm overrides
+**Vulnerability:** Found multiple high and moderate severity vulnerabilities in dependencies (`fast-uri`, `qs`, `browserslist`, etc.) during routine `pnpm audit`.
+**Learning:** Using `pnpm audit` effectively identifies vulnerable packages across the workspace. Since it's a monorepo, many of these vulnerabilities are inherited via transitive dependencies from deeply nested toolchains (e.g. `orval`, `@vitejs/plugin-react`).
+**Prevention:** Pin patched versions in `pnpm-workspace.yaml` `overrides` (e.g. `fast-uri: 3.1.7`, `qs: 6.16.0`) rather than stacking `pnpm audit --fix` range selectors. Audit-fix output can leave the old vulnerable pin next to unbounded `>=` replacements, which may pull a major version outside the dependent's declared range. Re-run `pnpm i` so the lockfile snapshot matches the pin.
+## 2025-03-09 - Missing Permissions-Policy Header on Static Frontend
+**Vulnerability:** The Vercel deployment configuration (`vercel.json`) did not specify the `Permissions-Policy` header, leaving the frontend with a potentially larger attack surface by allowing access to sensitive APIs (geolocation, microphone, camera) if compromised via XSS.
+**Learning:** For statically deployed Vite/React apps on Vercel, Express middleware headers do not apply. All security headers must be explicitly configured in the deployment configuration (e.g., `vercel.json`). It's easy to overlook `Permissions-Policy` when setting up static hosting.
+**Prevention:** Always verify that a comprehensive set of security headers, including `Permissions-Policy`, is configured at the edge or hosting layer for static frontends.
+
+## 2024-05-18 - [Prevent Cross-Site Tracing (XST) via HTTP Method Allowlist]
+**Vulnerability:** The Express API server did not explicitly restrict HTTP methods, potentially allowing unusual methods like `TRACE` or `TRACK` which can be exploited for Cross-Site Tracing (XST) to bypass HttpOnly cookies, or cause unexpected behavior in downstream proxies.
+**Learning:** By default, Express will handle any method if a middleware or route matches (e.g. `app.use()`). It's a fundamental security practice (Defense in Depth) to explicitly reject methods that the application does not intend to support before they reach any further processing.
+**Prevention:** Always implement an early middleware that checks `req.method` against a strict allowlist (e.g., GET, POST, PUT, DELETE, PATCH, OPTIONS, HEAD) and returns a 405 Method Not Allowed response for anything else.

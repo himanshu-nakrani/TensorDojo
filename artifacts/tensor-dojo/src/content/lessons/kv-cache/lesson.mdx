@@ -1,0 +1,75 @@
+import { MathCode } from '@/components/lesson/MathCode';
+import { Callout } from '@/components/lesson/Callout';
+
+## Generating the 4097th token of a response. How much work?
+
+You feed the model a 4096-token prompt. It produces logits, you sample one token. Now you feed back all 4097 tokens to get token 4098. Then all 4098 to get 4099. Inference is fundamentally a loop, and each iteration is at least as expensive as the last.
+
+In the naive implementation, each iteration *also recomputes every layer's keys and values for the entire prefix*. Token 4098's generation does the work for tokens 1, 2, …, 4097 over again — even though those tokens haven't changed since the previous step. For an $n$-token response, the total work scales as $O(n^3 \cdot d)$: the cube comes from $n$ generation steps, each of which does $O(n^2 \cdot d)$ work over the prefix so far.
+
+This is the largest, most obvious source of redundancy in transformer inference, and almost every modern serving stack fixes it the same way: by caching the keys and values per layer.
+
+## The redundancy
+
+At each generation step $t$, the model needs three projections of every token's embedding: $\mathbf{Q}$, $\mathbf{K}$, $\mathbf{V}$. Attention then uses **only the current token's query** ($\mathbf{q}_t$) against the **entire prefix's keys and values** ($\mathbf{K}_{1:t}$, $\mathbf{V}_{1:t}$).
+
+But $\mathbf{K}_{1:t-1}$ and $\mathbf{V}_{1:t-1}$ are bit-identical to what they were on the previous step: the embeddings of tokens 1 through $t-1$ haven't changed, and neither have the projection weights. So keep them in memory.
+
+$$
+\mathbf{K}_{\text{cache}} \mathrel{{+}{=}} \mathbf{k}_t, \quad \mathbf{V}_{\text{cache}} \mathrel{{+}{=}} \mathbf{v}_t
+$$
+
+Per step, this turns work that grows linearly with $t$ (recompute all $t$ rows) into work that's constant in $t$ for the projections (compute one row) plus linear in $t$ for the attention dot products themselves (still need to attend to the whole cache).
+
+<MathCode
+  math="\mathbf{K}_{\text{cache}} \leftarrow [\mathbf{K}_{\text{cache}}; \mathbf{k}_t], \qquad \mathbf{V}_{\text{cache}} \leftarrow [\mathbf{V}_{\text{cache}}; \mathbf{v}_t]"
+  code={`# Per layer, per generation step:
+k_new = x_t @ W_k   # 1 × d  (one row, NOT the whole sequence)
+v_new = x_t @ W_v   # 1 × d
+q_new = x_t @ W_q   # 1 × d
+
+# Append to the persistent cache.
+k_cache = torch.cat([k_cache, k_new], dim=0)  # (t × d)
+v_cache = torch.cat([v_cache, v_new], dim=0)
+
+# Attend the new query against the full cache.
+scores = q_new @ k_cache.T / math.sqrt(d)     # 1 × t
+attn   = softmax(scores) @ v_cache            # 1 × d`}
+  caption="One row in, one row out. Per-step projection cost is now constant in t; the only sequence-length term left is the attention itself, which is linear."
+/>
+
+## Try it
+
+<Callout targetInteractive="kv-cache-builder">
+  Start in "With cache" mode and press *Generate next* a few times. Only the newest row in K and V repaints. Now switch the mode toggle to "Naive recompute" without resetting. The same step repaints every row in both matrices — that's the wasted work the cache exists to avoid. The counter at the bottom shows it directly: cached stays constant, naive grows.
+</Callout>
+
+<Callout title="Why the prompt is 'free'" targetInteractive="kv-cache-builder">
+  Step 0 is the prefill: the prompt's K and V are computed once in both modes. The win comes during *generation*. This is why production serving usually reports two latencies separately — time-to-first-token (prefill) and time-per-output-token (decode). The cache helps only the second number, which is why long prompts feel slow even with a perfect cache.
+</Callout>
+
+## A second look
+
+<Callout targetInteractive="kv-cache-cost-chart">
+  Slide from 4 → 2048. The "Nx faster" readout grows the whole way: at 32 tokens cached is already ~16× faster, at 256 it's ~130×, at 2048 it's over 1000×. The numbers are dramatic because the sim defaults to a 4096-dimensional head, where the n²·d term in naive's cost dwarfs everything else; the *qualitative* point is what matters — the gap widens with sequence length because naive is one polynomial degree higher.
+</Callout>
+
+<Callout title="The trade-off is memory" targetInteractive="kv-cache-cost-chart">
+  At sequence length 2048, the cache memory readout is around 1 GB for a 7B-class model (the sim uses d=4096, 32 layers, bf16 — multiply through and you get $2 \cdot 2048 \cdot 4096 \cdot 32 \cdot 2$ bytes = 1 GB). For a 70B model with a 32k context, the cache balloons to tens of gigabytes — per request. This is *the* reason context length is a meaningful product axis: not because the math gets harder, but because the cache no longer fits in GPU memory. Variants like grouped-query attention and multi-query attention exist specifically to shrink this number.
+</Callout>
+
+## Reading the result
+
+Three things to internalize.
+
+**The cache turns generation from cubic to quadratic.** Naive total work is $O(n^3 \cdot d)$ — the bottleneck is rebuilding the projections every step. Cached total work is $O(n^2 \cdot d)$ — the attention dot product is the only sequence-length term left. For $n = 2048$ this is roughly a hundred-fold difference. Without the cache, ChatGPT-style streaming wouldn't be practical at all.
+
+**Memory replaces compute.** The cache is roughly $2 \cdot n \cdot d \cdot L \cdot \text{bytes}$ in size — two matrices (K and V), per layer, per token, at fp16 or bf16. For a 7B model with $d = 4096$, $L = 32$ layers, at 2048 tokens, that's ${\sim}0.5$ GB. Per request. Multiply by simultaneous users and you see why serving infrastructure obsesses over cache eviction, paged attention, and quantized caches.
+
+**Context length is a memory budget, not a math budget.** "How long can the model's context be?" reduces to "how much KV cache memory fits in GPU memory?" That's why every architecture shift in the last two years — grouped-query attention, multi-query attention, MLA, sparse attention — has been about reducing the per-token cache footprint, not about getting smarter attention. The standard fix the curriculum covers next is **grouped-query attention**: keep all the query heads, share K and V across groups, shrink the cache by exactly the group factor. It's what LLaMA-2 70B, Mistral, Qwen, and every modern production decoder uses.
+
+## Recap
+
+Three takeaways. **Autoregressive generation is a loop, and naively each iteration redoes the work of all the previous iterations.** The KV cache fixes this by keeping prior keys and values in memory: $O(n^2 \cdot d)$ total instead of $O(n^3 \cdot d)$. **The cost paid is memory** — the cache itself can be larger than the model weights at long context lengths. **Context length is gated by cache memory**, not by the math, which is why so much modern architecture work targets the cache footprint specifically.
+
+We've now seen the model run end-to-end at inference time: tokens in, embeddings, attention, sampling, repeat, with the cache making the loop fast per step. The next lesson covers **speculative decoding** — how to make *multiple* steps run in parallel using a small draft model. After that, the chapter pivots from inference to training, starting with the loss function the model is actually minimizing.

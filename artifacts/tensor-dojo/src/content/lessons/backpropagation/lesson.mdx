@@ -1,0 +1,82 @@
+import { MathCode } from '@/components/lesson/MathCode';
+import { Callout } from '@/components/lesson/Callout';
+
+## Knowing the gradient at one point is one thing. How does the gradient get computed for a network with thousands of parameters?
+
+The previous lessons gave us a loss surface and the architectural fixes (residuals, norm, careful init) that keep gradients well-behaved across depth. What none of those lessons answered: *how* does the gradient at any single parameter actually get computed? A toy demo had `gradient(p)` return a 2-vector. A real network has thousands — millions — of parameters. How does the gradient get computed for *all* of them at once?
+
+The answer is the **chain rule**, applied layer by layer, in reverse. Forward pass computes activations layer-by-layer; backward pass propagates $\partial L / \partial z$ layer-by-layer in reverse, using the local Jacobian of each layer. Cost is one forward + one backward, roughly 2× a forward pass. No magic, no autodiff library — just the chain rule applied systematically.
+
+## The formula
+
+For a layer that maps $h_{\text{in}} \to h_{\text{out}}$ via $h = \sigma(W h_{\text{in}} + b)$:
+
+$$
+\frac{\partial L}{\partial W} \;=\; \frac{\partial L}{\partial h} \cdot h_{\text{in}}^{\top}, \qquad
+\frac{\partial L}{\partial h_{\text{in}}} \;=\; W^{\top} \cdot \frac{\partial L}{\partial h}
+$$
+
+For a ReLU activation, the local derivative is the indicator $\mathbb{1}\{z > 0\}$. The loss in this lesson's centerpiece is squared error $L = \tfrac{1}{2}(y - t)^2$, so the final-layer signal is $\delta^{(L)} = y - t$. (Swap in a softmax + cross-entropy head and the same machinery produces $\delta^{(L)} = p - y_\text{onehot}$ — the cleanest gradient in deep learning.) The chain stitches the local pieces together.
+
+<MathCode
+  math="\delta^{(L)} = y - t \text{ (MSE; for softmax+CE: } p - y_\text{onehot}\text{)}, \quad \delta^{(l)} = (W^{(l+1)})^{\top} \delta^{(l+1)} \odot \mathbb{1}\{z^{(l)} > 0\}, \quad \frac{\partial L}{\partial W^{(l)}} = \delta^{(l)} (h^{(l-1)})^{\top}"
+  code={`# A toy 3-layer MLP: 2 -> 4 -> 2 -> 1, ReLU activations, MSE loss.
+# This is the lesson's centerpiece, by hand.
+
+def forward(params, x, t):
+    z1 = params['W1'] @ x + params['b1']            # (4,)
+    h1 = np.maximum(0, z1)                          # ReLU
+    z2 = params['W2'] @ h1 + params['b2']           # (2,)
+    h2 = np.maximum(0, z2)
+    z3 = params['W3'] @ h2 + params['b3']           # (1,)
+    y = z3[0]
+    L = 0.5 * (y - t) ** 2
+    return {'x': x, 'z1': z1, 'h1': h1, 'z2': z2, 'h2': h2, 'y': y, 'L': L, 't': t}
+
+def backward(params, cache):
+    # dL/dy = (y - t)
+    dLdy = cache['y'] - cache['t']
+    dLdz3 = dLdy
+    dLdW3 = dLdz3[:, None] * cache['h2'][None, :]  # (1, 2)
+    dLdh2 = params['W3'].T @ dLdz3                 # (2,)
+    dLdz2 = dLdh2 * (cache['z2'] > 0)              # ReLU gate
+    dLdW2 = dLdz2[:, None] * cache['h1'][None, :]
+    dLdh1 = params['W2'].T @ dLdz2
+    dLdz1 = dLdh1 * (cache['z1'] > 0)
+    dLdW1 = dLdz1[:, None] * cache['x'][None, :]
+    return {'W1': dLdW1, 'W2': dLdW2, 'W3': dLdW3,
+            'b1': dLdz1, 'b2': dLdz2, 'b3': dLdz3}`}
+  caption="The forward pass stores every intermediate. The backward pass walks the chain rule in reverse, multiplying by the local Jacobian at each step. One forward + one backward = roughly 2× a forward pass."
+/>
+
+<Callout title={`Why "backprop" if it's just the chain rule?`} targetInteractive="backprop-explorer">
+  The chain rule itself is trivial: $\partial L / \partial W = \partial L / \partial h \cdot \partial h / \partial W$. The clever part is *carrying the partial derivatives layer by layer* in reverse order, so each step uses only local information. The name "backpropagation" is just the 1986 paper title for "the chain rule, applied in reverse, efficiently."
+</Callout>
+
+## Try it
+
+The centerpiece is a 3-layer MLP (2 → 4 → 2 → 1, ReLU activations) on a single training example. Every weight and bias is a slider; drag one and the local gradient $\partial L / \partial(\text{that weight})$ updates next to the slider.
+
+<Callout targetInteractive="backprop-explorer">
+  Pick a W1 weight in the right column. The activations panel on the left shows $h_1 = \text{relu}(z_1)$. The gradient next to your weight is $\partial L / \partial W_1[i][j] = \delta_1[i] \cdot x[j]$, where $\delta_1$ is the backprop signal arriving at layer 1. The signal is a product of every layer's contribution from the loss down to the weight you picked.
+</Callout>
+
+<Callout title="Show me the path" targetInteractive="backprop-explorer">
+  Click a slider, then look at the highlight. Every weight on the chain-rule path from the loss down to the weight you picked is highlighted. A bias in the last layer has a short path; a weight in the first layer has a long one that touches every W and b between it and the loss.
+</Callout>
+
+<Callout targetInteractive="backprop-cross-section">
+  Pick the same weight on the cross-section widget. The plot sweeps that single weight across $[-2, +2]$ and shows the loss as a function of it. The dashed line is the tangent at the current value, with slope $\partial L / \partial$ — exactly the value backprop reports. The numerical gradient in the right column agrees to within numerical precision; that agreement is the build-time check that the backprop is correct.
+</Callout>
+
+## Reading the result
+
+**The gradient at every weight is the product of the local Jacobians along the path from that weight to the loss.** For the first layer's weight $W_1[i][j]$, the gradient is $\delta_1[i] \cdot x[j]$ — where $\delta_1$ is the backprop signal at the first layer, which itself is the product of the W2, W3 weights, the ReLU gates, and the loss derivative. The path is a multiplication; the gradient is the value of that product at the current point.
+
+**The cost is roughly 2× a forward pass.** You run the forward pass once and cache every intermediate ($x$, $z_1$, $h_1$, $z_2$, $h_2$, $y$, $L$). Then the backward pass walks the chain rule in reverse, and each step is a matrix-vector product of the same cost as one layer's forward. For a network with $L$ layers, the total is $L$ forward + $L$ backward = $2L$ matrix-vector products, or roughly 2× a forward pass. Without this trick, recomputing the gradient for each parameter independently would be $L$ times more expensive.
+
+**The ReLU gate is the only place a non-linearity enters the backward pass.** Every other operation in the network (matrix multiply, bias add) is a linear function; its Jacobian is the local matrix itself. ReLU's Jacobian is the indicator $\mathbb{1}\{z > 0\}$: 1 if the neuron fired, 0 if it didn't. The chain rule multiplies through these gates, so a weight whose path passes through a dead ReLU gets gradient 0 — its parameter can't learn until the upstream weights change enough to bring $z$ above zero.
+
+## Recap
+
+Three takeaways. **Backpropagation is the chain rule applied layer by layer in reverse.** The forward pass stores every intermediate; the backward pass walks the chain rule backward, multiplying by the local Jacobian at each step. **The cost is one forward + one backward, roughly 2× a forward pass.** **The gradient at any single parameter is the product of every layer's local Jacobian along the chain from that parameter to the loss** — and the centerpiece lets you pick any parameter, drag its slider, and see the gradient at that weight update live. The next question: real datasets have millions of examples, not one. How does the gradient get computed across the whole dataset?

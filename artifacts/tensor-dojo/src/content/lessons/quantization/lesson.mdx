@@ -1,0 +1,75 @@
+import { MathCode } from '@/components/lesson/MathCode';
+import { Callout } from '@/components/lesson/Callout';
+
+## A 70-billion-parameter model is 140 GB. A consumer GPU has 24. How does this work at all?
+
+At fp16, each parameter is 2 bytes. A 70B-parameter model is therefore 140 GB of weights — about six times the memory of a high-end consumer GPU. The arithmetic does not work, and yet `llama.cpp` runs 70B-class models on a Mac Mini, `ollama` runs them on a laptop, and the entire local-inference ecosystem assumes that LLMs are something a hobbyist can plausibly own.
+
+The reason is quantization. Instead of storing each weight as a 16-bit float, store it as a 4-bit integer code that *points into* a small table of representable values. The weight is now a quarter of its original size, the model is 4× smaller, and the 70B fits in 35 GB instead of 140. The trick that makes this possible — and the reason it doesn't destroy model quality — is the subject of this lesson.
+
+## The trick
+
+Pick a finite set of values the weight can take. For 4-bit quantization, that's $2^4 = 16$ possible values; for 8-bit it's 256. Snap every original weight to the nearest representable value, and store only the integer code (`0..15` for 4-bit). To reconstruct the float, multiply the code by a per-group **scale** and optionally subtract a per-group **zero point**.
+
+The scale lives in fp16 and is shared by a group of ~64 or ~128 weights, so its memory overhead is negligible. The codes are the bulk of the storage and they are 4 bits each. That's where the 4× savings come from.
+
+$$
+\text{code} = \operatorname{round}\!\left(\frac{w - z}{s}\right), \qquad \hat{w} = s \cdot \text{code} + z
+$$
+
+<MathCode
+  math="\text{code} = \operatorname{round}\!\left(\frac{w - z}{s}\right), \qquad \hat{w} = s \cdot \text{code} + z"
+  code={`# Symmetric quantization of one group of weights to 4-bit.
+import torch
+
+def quantize_symmetric(w, bits=4):
+    qmax = 2 ** (bits - 1) - 1          # 7 for 4-bit
+    scale = w.abs().max() / qmax        # one fp16 scalar per group
+    codes = torch.round(w / scale).clamp(-qmax - 1, qmax)
+    return codes.to(torch.int8), scale
+
+def dequantize_symmetric(codes, scale):
+    return codes.to(torch.float16) * scale
+
+# 4-bit storage: 4 bits per weight + one fp16 scale per ~128 weights.
+# For a 7B model: 7e9 * 4 / 8 ≈ 3.5 GB instead of 14 GB.`}
+  caption="Symmetric quantization: zero point is implicitly 0, scale is the only metadata. Affine quantization adds a zeroPoint integer so the levels can be off-centered for skewed distributions (e.g. ReLU outputs)."
+/>
+
+The choice of representable values matters. Symmetric quantization spaces them evenly around zero — clean and standard for weights, which trained networks keep approximately centered. Affine quantization fits the levels to the actual data range using a zero-point offset, which extracts more useful precision from skewed distributions (the standard choice for activations). The lesson's second sim shows both side by side.
+
+## Try it
+
+<Callout targetInteractive="quantization-distribution">
+  Start at 8-bit: the quantized comb is dense enough that the eye can't tell it apart from the original. Drop to 4-bit: only 16 distinct values across the entire range, and yet 4-bit-quantized 7B models stay within a point of fp16 on most benchmarks. Drop to 2-bit and the RMS error spikes; that's the cliff production-grade quantization sits just above.
+</Callout>
+
+<Callout title="Where the model size numbers come from" targetInteractive="quantization-distribution">
+  Toggle through 7B / 13B / 70B on the right panel at 4-bit. The 7B model fits in 3.5 GB — small enough to run on a phone. The 70B model fits in 35 GB — small enough for a 40 GB A100 or two consumer GPUs. The whole "open-weights" ecosystem of the last two years rests on these numbers being what they are.
+</Callout>
+
+## A second look
+
+<Callout targetInteractive="quantization-levels">
+  In symmetric mode with the skewed distribution: many ticks land outside the actual data range — wasted bits. Switch to affine and the ticks redistribute to cover the data range, getting more useful precision out of the same bit budget. Drag the input slider and watch which tick a given value rounds to.
+</Callout>
+
+<Callout title="Why production mixes both" targetInteractive="quantization-levels">
+  Weights are approximately centered around zero by construction (they emerge from trained networks initialized symmetrically), so symmetric is fine and cheaper. Activations after ReLU or GELU are non-negative, so symmetric wastes half the codes on values that never occur — affine is the standard choice there. Every production quantizer (GPTQ, AWQ, bitsandbytes, gguf) makes this distinction.
+</Callout>
+
+## Reading the result
+
+Three things to internalize.
+
+**Quantization is lossy by construction.** Every quantized weight has a small rounding error; the model is no longer numerically equivalent to its fp16 self. What makes it work is that LLMs are *robust* to this kind of small per-weight noise — orders of magnitude more robust than the bit-width suggests. The error per weight is roughly $s/2$ (half a scale-step), and most matrix multiplications average enough of these errors together that the result is nearly indistinguishable from the unquantized output.
+
+**4-bit is the production sweet spot.** Below 4 bits (3-bit, 2-bit), quality regression becomes noticeable. Above 4 bits (5, 6, 8), you're paying memory for almost no quality gain. The `gguf` Q4_K_M format, `GPTQ-4bit`, and `AWQ-4bit` all converge on this neighborhood for the same reason: it's where the bytes-per-accuracy curve breaks.
+
+**QLoRA is the consumer-fine-tuning recipe.** Keep the base model in 4-bit (so it fits in GPU memory). Add a small set of fp16 LoRA adapters on top (the next lesson covers them). Fine-tune only the adapters; the quantized base weights stay frozen. This is how you fine-tune a 70B model on a single A100 — the entire reason QLoRA (Dettmers et al. 2023) was a watershed paper.
+
+## Recap
+
+Three takeaways. **Quantization replaces each fp16 weight with a 4-bit integer code into a small table of representable values**, shrinking weight memory by 4×. **A per-group fp16 scale (and optional zero point) is shared across ~128 weights**, making the metadata overhead negligible. **4-bit is what production ships** — below it quality breaks, above it you pay memory for nothing. Combined with LoRA, this is what makes fine-tuning consumer-accessible: keep the base model quantized and frozen, train a small set of fp16 adapters on top.
+
+That last sentence is the bridge into the final piece of fine-tuning the curriculum hasn't yet covered. We've seen that the simplest fine-tuning strategy (touch every weight, full precision) is too expensive in memory, and that freezing some layers helps but leaves a lot on the table. The next lesson covers the modern answer: don't restrict *which* parameters you train, restrict the *shape* of the update. That's **LoRA**.

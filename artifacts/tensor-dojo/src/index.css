@@ -1,0 +1,730 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ===========================================================================
+   THEME TOKENS
+
+   Two palettes: light is the default on :root; dark overrides via .dark on
+   <html>. Every Tailwind color in tailwind.config.ts reads through one of
+   these tokens as `rgb(var(--token) / <alpha-value>)`, so `bg-bg`, `text-ink`,
+   `border-border`, and even `bg-bg/40` all theme-swap automatically.
+
+   Tokens are stored as bare RGB triplets (space-separated channels) so the
+   Tailwind alpha modifier can build a translucent color. Inline styles and
+   SVG attributes that need the same color wrap the variable in `rgb()`,
+   e.g. `fill="rgb(var(--accent))"`.
+
+   A handful of tokens are kept as full rgba values because they bake in a
+   specific opacity that doesn't make sense to expose to Tailwind
+   (--accent-soft, --accent-faint, --accent-dim, --negative-bg, etc.).
+   =========================================================================== */
+
+:root {
+  /* Typefaces — "Humanist Clarity": IBM Plex Sans for reading,
+     IBM Plex Mono for labels/code. Newsreader is the home-page
+     display serif ("lab notebook" editorial voice). Consumed by
+     tailwind.config.ts font-sans / font-mono / font-display. */
+  --font-sans: 'IBM Plex Sans';
+  --font-mono: 'IBM Plex Mono';
+  --font-display: 'Newsreader';
+
+  /* Surfaces — warm paper-adjacent neutrals (lab notebook light).
+     Still AA-safe with the blue accent; cooler slate lives on as
+     dark-mode canvas. */
+  --bg: 246 241 232;              /* warm paper */
+  --bg-elevated: 255 252 247;     /* cream card / notebook page */
+  --bg-code: 238 232 221;         /* warm code/input well */
+
+  /* Text — warm ink, not pure cool slate */
+  --fg: 28 25 23;                 /* stone-900 */
+  --fg-prose: 41 37 36;           /* stone-800 */
+  --fg-muted: 87 83 78;           /* stone-600 */
+  --fg-subtle: 120 113 108;       /* stone-500 */
+
+  /* Lines */
+  --border: 231 224 212;          /* warm hairline */
+  --border-strong: 214 211 209;   /* stone-300 */
+
+  /* The single accent (design-spec §8) — manipulated things only. */
+  --accent: 37 99 235;            /* blue-600; ~5.2:1 on --bg */
+  --accent-hover: 29 78 216;      /* blue-700 */
+  --accent-fg: 255 255 255;       /* text/icon on accent surfaces */
+
+  /* Charting tokens */
+  --grid: 226 232 240;
+  --positive: 21 128 61;          /* green stays semantic (correct/positive) */
+  --negative: 185 28 28;          /* red-700; AA on --bg */
+  --warning: 180 83 9;            /* amber-700; AA (4.5:1) on --bg for small text */
+
+  /* Categorical series colors — used by sims that need to plot
+     multiple lines that are NOT ordered or signed (e.g. three
+     optimizer traces, four batch-size traces). Distinct from
+     --positive/--negative; chosen to be perceptually
+     distinguishable and theme-aware. */
+  --series-1: 37 99 235;          /* blue — same hue as accent in light */
+  --series-2: 217 119 6;          /* amber-600 */
+  --series-3: 124 58 237;         /* violet-600 */
+  --series-4: 13 148 136;         /* teal-600 */
+
+  /* Pre-baked translucent variants — kept as full rgba because they
+     describe a specific visual, not a "themed color at 30%". */
+  --accent-soft: rgba(37, 99, 235, 0.10);
+  --accent-faint: rgba(37, 99, 235, 0.06);
+  --accent-dim: rgba(37, 99, 235, 0.32);
+
+  /* Hover state for the elevated surface. */
+  --bg-elevated-hover: 245 239 230;
+
+  /* Glow color for the focus ring on inputs. */
+  --accent-shadow: rgba(37, 99, 235, 0.18);
+
+  /* Pre-baked negative bar bg (the "wrong answer" red with built-in alpha). */
+  --negative-bg: rgba(185, 28, 28, 0.7);
+
+  /* Subtle top-edge highlight on elevated cards. The dark theme
+     uses a faint white inset to suggest light from above; light
+     theme uses a faint black inset for the same suggestion. */
+  --shadow-inset: inset 0 1px 0 rgba(28, 25, 23, 0.04);
+
+  /* Heatmap cell-number halo — matches --bg so text reads on any
+     cell tint. Inline-styled as `rgb(var(--cell-halo))`. */
+  --cell-halo: 246 241 232;
+
+  /* Code blocks — deliberately inverted (dark panel on light page),
+     the signature move of the approved "Humanist Clarity" design.
+     Inline code stays on --bg-code; only block code inverts. */
+  --code-block-bg: 15 23 42;      /* slate-900 */
+  --code-block-fg: 241 245 249;   /* slate-100 */
+  --code-block-border: 15 23 42;
+}
+
+:root.dark {
+  /* "Humanist Clarity" dark — the same cool slate family as light
+     mode, inverted: slate-900 canvas, slate-800 surfaces, blue-400
+     accent. Text sits slightly below max contrast to avoid glare. */
+  --bg: 15 23 42;                  /* slate-900 */
+  --bg-elevated: 30 41 59;         /* slate-800 */
+  --bg-code: 30 41 59;
+
+  --fg: 226 232 240;               /* slate-200 — headings, ink */
+  --fg-prose: 203 213 225;         /* slate-300 — lesson prose, below max contrast */
+  --fg-muted: 168 180 197;         /* between slate-300/400 for secondary UI */
+  --fg-subtle: 148 163 184;        /* slate-400 — AA on --bg */
+
+  --border: 51 65 85;              /* slate-700 */
+  --border-strong: 71 85 105;      /* slate-600 */
+
+  --accent: 96 165 250;            /* blue-400 — bright on the slate canvas */
+  --accent-hover: 147 197 253;     /* blue-300 */
+  --accent-fg: 15 23 42;
+
+  --grid: 51 65 85;
+  --positive: 74 222 128;
+  --negative: 248 113 113;
+  --warning: 251 191 36;           /* amber-400 */
+
+  --series-1: 96 165 250;          /* blue */
+  --series-2: 251 191 36;          /* amber-400 */
+  --series-3: 167 139 250;         /* violet-400 */
+  --series-4: 45 212 191;          /* teal-400 */
+
+  --accent-soft: rgba(96, 165, 250, 0.16);
+  --accent-faint: rgba(96, 165, 250, 0.10);
+  --accent-dim: rgba(96, 165, 250, 0.30);
+
+  --bg-elevated-hover: 38 51 73;
+  --accent-shadow: rgba(96, 165, 250, 0.15);
+
+  --negative-bg: rgba(248, 113, 113, 0.7);
+  --shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+
+  --cell-halo: 15 23 42;
+
+  /* Code wells sink below the page in dark mode (slate-950). */
+  --code-block-bg: 2 6 23;
+  --code-block-fg: 226 232 240;
+  --code-block-border: 51 65 85;
+}
+
+/* ===========================================================================
+   KaTeX — let math inherit the page's text color.
+   =========================================================================== */
+.katex {
+  color: inherit;
+  font-size: 1.05em;
+}
+.katex-display {
+  margin: 1.5rem 0 !important;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 2px;
+}
+/* Display math directly in the prose flow gets the framed treatment
+   from the approved design: hairline top/bottom, faint surface lift.
+   Nested display math (inside MathCode cards etc.) is excluded. */
+.lesson-body > .katex-display {
+  margin: 2rem 0 !important;
+  padding: 1.5rem 0 calc(1.5rem + 2px);
+  border-top: 1px solid rgb(var(--border));
+  border-bottom: 1px solid rgb(var(--border));
+  background: rgb(var(--bg-elevated) / 0.5);
+}
+/* The MathML annotation layer is visually hidden but can cause
+   horizontal overflow on narrow viewports. The .katex container
+   must clip it so absolutely-positioned MathML children don't
+   extend the scroll width. */
+.katex {
+  overflow: hidden;
+}
+.katex-mathml,
+.katex-mathml math {
+  overflow: hidden;
+  max-width: 100%;
+  position: absolute;
+  clip-path: inset(50%);
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  border: 0;
+}
+
+/* Lab-notebook paper grid — home page only. Lessons stay flat so
+   sims and prose don't compete with a graph underlay. */
+.lab-home {
+  background-image:
+    linear-gradient(rgb(var(--fg) / 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(var(--fg) / 0.035) 1px, transparent 1px);
+  background-size: 28px 28px;
+  background-attachment: local;
+}
+:root.dark .lab-home {
+  /* Dark mode: faint cool grid so the notebook metaphor survives
+     without washing out elevated cards. */
+  background-image:
+    linear-gradient(rgb(255 255 255 / 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(255 255 255 / 0.025) 1px, transparent 1px);
+}
+
+/* Home display headings — Newsreader editorial voice. */
+.lab-display {
+  font-family: var(--font-display), Georgia, serif;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  font-optical-sizing: auto;
+}
+
+/* Notebook figure card: cream page + left ink spine + soft paper shadow. */
+.lab-note {
+  position: relative;
+  background: rgb(var(--bg-elevated));
+  border: 1px solid rgb(var(--border));
+  border-radius: 2px 12px 12px 2px;
+  box-shadow:
+    4px 8px 0 rgb(var(--fg) / 0.03),
+    0 18px 40px rgb(var(--fg) / 0.06);
+}
+.lab-note::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  border-radius: 2px 0 0 2px;
+  background: linear-gradient(
+    180deg,
+    rgb(var(--accent)),
+    rgb(var(--accent) / 0.55)
+  );
+}
+:root.dark .lab-note {
+  box-shadow:
+    4px 8px 0 rgb(0 0 0 / 0.2),
+    0 18px 40px rgb(0 0 0 / 0.35);
+}
+
+/* Paper card — slightly softer corners than the app-wide rounded-xl. */
+.lab-card {
+  background: rgb(var(--bg-elevated));
+  border: 1px solid rgb(var(--border));
+  border-radius: 4px;
+  box-shadow: 0 1px 0 rgb(var(--fg) / 0.04);
+}
+:root.dark .lab-card {
+  box-shadow: var(--shadow-inset);
+}
+
+/* Selection — same accent on both themes. */
+::selection {
+  background: rgb(var(--accent));
+  color: rgb(var(--accent-fg));
+}
+
+/* ===========================================================================
+   Slider (themed via tokens). The .slider element is rendered by the
+   Slider primitive with a CSS custom property --fill set inline.
+   =========================================================================== */
+.slider {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  height: 24px;
+  cursor: pointer;
+  padding: 0;
+  margin: 0;
+}
+.slider:focus {
+  outline: none;
+}
+.slider:focus-visible {
+  outline: 2px solid rgb(var(--accent));
+  outline-offset: 4px;
+  border-radius: 2px;
+}
+
+/* WebKit / Blink — fill to var(--fill), unfilled in --border-strong. */
+.slider::-webkit-slider-runnable-track {
+  height: 4px;
+  border-radius: 2px;
+  background: linear-gradient(
+    to right,
+    rgb(var(--accent)) 0%,
+    rgb(var(--accent)) var(--fill, 0%),
+    rgb(var(--border-strong)) var(--fill, 0%),
+    rgb(var(--border-strong)) 100%
+  );
+}
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 16px;
+  width: 16px;
+  border-radius: 50%;
+  background: rgb(var(--accent));
+  margin-top: -6px;
+  border: 3px solid rgb(var(--bg));
+  box-shadow: 0 0 0 1px rgb(var(--accent));
+  transition: transform 120ms ease-out, box-shadow 120ms ease-out;
+}
+.slider:hover::-webkit-slider-thumb {
+  transform: scale(1.12);
+}
+.slider:focus-visible::-webkit-slider-thumb {
+  box-shadow:
+    0 0 0 1px rgb(var(--bg)),
+    0 0 0 4px rgb(var(--accent));
+  transform: scale(1.12);
+}
+
+/* Firefox */
+.slider::-moz-range-track {
+  height: 4px;
+  border-radius: 2px;
+  background: rgb(var(--border-strong));
+}
+.slider::-moz-range-progress {
+  height: 4px;
+  border-radius: 2px;
+  background: rgb(var(--accent));
+}
+.slider::-moz-range-thumb {
+  height: 16px;
+  width: 16px;
+  border-radius: 50%;
+  background: rgb(var(--accent));
+  border: 3px solid rgb(var(--bg));
+  box-shadow: 0 0 0 1px rgb(var(--accent));
+  cursor: pointer;
+  transition: transform 120ms ease-out, box-shadow 120ms ease-out;
+}
+.slider:hover::-moz-range-thumb {
+  transform: scale(1.12);
+}
+.slider:focus-visible::-moz-range-thumb {
+  box-shadow:
+    0 0 0 1px rgb(var(--bg)),
+    0 0 0 4px rgb(var(--accent));
+  transform: scale(1.12);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .slider::-webkit-slider-thumb,
+  .slider::-moz-range-thumb {
+    transition: none;
+  }
+  .slider:hover::-webkit-slider-thumb,
+  .slider:focus-visible::-webkit-slider-thumb,
+  .slider:hover::-moz-range-thumb,
+  .slider:focus-visible::-moz-range-thumb {
+    transform: none;
+  }
+}
+
+/* ===========================================================================
+   Number input
+   =========================================================================== */
+.number-input {
+  background: rgb(var(--bg-code));
+  border: 1px solid rgb(var(--border));
+  color: rgb(var(--fg));
+  border-radius: 4px;
+  padding: 6px 8px;
+  /* 16px on mobile: anything smaller triggers iOS Safari's focus
+     auto-zoom, which jars the whole sim out of view. Tighten back to
+     the compact 0.875rem once we're past the mobile breakpoint. */
+  font-size: 16px;
+  text-align: center;
+  transition: border-color 120ms ease-out, box-shadow 120ms ease-out;
+  -moz-appearance: textfield;
+}
+@media (min-width: 640px) {
+  .number-input {
+    font-size: 0.875rem;
+  }
+}
+.number-input::-webkit-outer-spin-button,
+.number-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.number-input:hover {
+  border-color: rgb(var(--border-strong));
+}
+.number-input:focus {
+  outline: none;
+  border-color: rgb(var(--accent));
+  box-shadow: 0 0 0 2px var(--accent-shadow);
+}
+.number-input:focus-visible {
+  outline: 2px solid rgb(var(--accent));
+  outline-offset: 1px;
+}
+.number-input--error {
+  border-color: rgb(var(--negative));
+}
+.number-input--error:focus {
+  border-color: rgb(var(--negative));
+  box-shadow: 0 0 0 2px rgba(var(--negative), 0.25);
+}
+.number-input--error:focus-visible {
+  outline-color: rgb(var(--negative));
+}
+
+/* ===========================================================================
+   Universal :focus-visible ring
+   =========================================================================== */
+.focus-ring:focus-visible {
+  outline: 2px solid rgb(var(--accent));
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+.lesson-body a:focus-visible {
+  outline: 2px solid rgb(var(--accent));
+  outline-offset: 2px;
+}
+
+/* Screen-reader-only utility. */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ===========================================================================
+   Lesson body (prose)
+   =========================================================================== */
+.lesson-body {
+  color: rgb(var(--fg-prose));
+  font-size: 1.0625rem;
+  line-height: 1.7;
+}
+.lesson-body > * + * {
+  margin-top: 1.25rem;
+}
+.lesson-body h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: rgb(var(--fg));
+  letter-spacing: -0.01em;
+  line-height: 1.25;
+  margin-top: 3.5rem;
+  margin-bottom: 1rem;
+}
+.lesson-body h2:first-child {
+  margin-top: 0;
+}
+.lesson-body h3 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: rgb(var(--fg));
+  margin-top: 1.5rem;
+  margin-bottom: 0.25rem;
+}
+.lesson-body p {
+  margin: 0;
+}
+.lesson-body strong {
+  color: rgb(var(--fg));
+  font-weight: 600;
+}
+.lesson-body em {
+  font-style: italic;
+}
+.lesson-body a {
+  color: rgb(var(--accent));
+  text-decoration: none;
+  border-bottom: 1px solid var(--accent-dim);
+  transition: border-color 120ms;
+}
+.lesson-body a:hover {
+  border-bottom-color: rgb(var(--accent));
+}
+.lesson-body code {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.875em;
+  background: rgb(var(--bg-code));
+  border: 1px solid rgb(var(--border));
+  border-radius: 3px;
+  padding: 1px 5px;
+  color: rgb(var(--fg));
+}
+.lesson-body pre {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  background: rgb(var(--code-block-bg));
+  border: 1px solid rgb(var(--code-block-border));
+  border-radius: 8px;
+  padding: 18px 20px;
+  overflow-x: auto;
+  font-size: 0.875rem;
+  line-height: 1.65;
+  color: rgb(var(--code-block-fg));
+  margin: 0;
+}
+.lesson-body pre code {
+  background: transparent;
+  border: 0;
+  padding: 0;
+  font-size: inherit;
+  color: inherit;
+}
+.lesson-body kbd {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.75rem;
+  background: rgb(var(--bg-code));
+  border: 1px solid rgb(var(--border-strong));
+  border-bottom-width: 2px;
+  border-radius: 3px;
+  padding: 1px 5px;
+  color: rgb(var(--fg));
+}
+.lesson-body ol,
+.lesson-body ul {
+  padding-left: 1.5rem;
+  margin: 0;
+}
+.lesson-body ol > li + li,
+.lesson-body ul > li + li {
+  margin-top: 0.75rem;
+}
+.lesson-body ol > li::marker {
+  color: rgb(var(--fg-subtle));
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.85em;
+}
+.lesson-body blockquote {
+  border-left: 2px solid rgb(var(--border-strong));
+  padding-left: 1rem;
+  color: rgb(var(--fg-muted));
+  font-style: italic;
+  margin: 0;
+}
+
+/* The UA-margin resets above (`.lesson-body p { margin: 0 }` etc.,
+   specificity 0,1,1) also defeat the `> * + *` flow rule (0,1,0),
+   which silently removed ALL spacing between consecutive paragraphs.
+   Re-assert the rhythm for direct children only — nested paragraphs
+   (inside callouts, cards) keep their zeroed margins. */
+.lesson-body > p,
+.lesson-body > pre,
+.lesson-body > ol,
+.lesson-body > ul,
+.lesson-body > blockquote {
+  margin-top: 1.25rem;
+}
+.lesson-body > :is(p, pre, ol, ul, blockquote):first-child {
+  margin-top: 0;
+}
+
+/* Inline math inside prose should pick up ink color. */
+.inline-math .katex {
+  font-size: 1em;
+}
+
+/* ===========================================================================
+   Workbench pulse (the diagnosis flow triggers this).
+   Longer + larger than before so the eye actually lands on it
+   after smooth-scroll resolves.
+   =========================================================================== */
+@keyframes pulse-ring {
+  0% {
+    box-shadow:
+      0 0 0 0 var(--accent-shadow),
+      0 0 0 0 var(--accent-soft);
+  }
+  60% {
+    box-shadow:
+      0 0 0 6px var(--accent-shadow),
+      0 0 0 14px var(--accent-faint);
+  }
+  100% {
+    box-shadow:
+      0 0 0 14px transparent,
+      0 0 0 26px transparent;
+  }
+}
+.animate-pulse-ring {
+  animation: pulse-ring 1200ms ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-pulse-ring {
+    animation: none;
+    box-shadow: 0 0 0 2px var(--accent-shadow);
+  }
+}
+
+/* ===========================================================================
+   Entrance animations — fade-up on first paint. Applied via the
+   .animate-fade-up class with optional --delay custom property.
+   Respects prefers-reduced-motion (elements appear instantly).
+   =========================================================================== */
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-fade-up {
+  animation: fade-up 600ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: var(--delay, 0ms);
+}
+@media (prefers-reduced-motion: reduce) {
+  .animate-fade-up {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ===========================================================================
+   Card surface (a small inset highlight on elevated cards).
+   Use the .card-surface utility anywhere a sim card wants the
+   top-edge highlight. Token resolves per theme.
+   =========================================================================== */
+.card-surface {
+  box-shadow: var(--shadow-inset);
+}
+
+/* ===========================================================================
+   Code panel — the inverted (dark-on-light-page) code surface used by
+   MathCode's code half. Same tokens as .lesson-body pre.
+   =========================================================================== */
+.code-panel {
+  background: rgb(var(--code-block-bg));
+  color: rgb(var(--code-block-fg));
+}
+
+/* ===========================================================================
+   Theme switch — skip transitions on every element so a class swap doesn't
+   cascade a 200ms color tween across the whole page.
+   =========================================================================== */
+.theme-switching,
+.theme-switching * {
+  transition: none !important;
+}
+
+/* ===========================================================================
+   Themed thin scrollbar for horizontally scrollable sim panels (e.g. the
+   matmul explorer). Uses theme tokens so the bar matches light/dark rather
+   than the browser default, which renders a bright track on the dark canvas.
+   =========================================================================== */
+.scroll-x-themed {
+  scrollbar-width: thin; /* Firefox */
+  scrollbar-color: rgb(var(--border-strong)) transparent;
+}
+.scroll-x-themed::-webkit-scrollbar {
+  height: 8px;
+}
+.scroll-x-themed::-webkit-scrollbar-track {
+  background: transparent;
+}
+.scroll-x-themed::-webkit-scrollbar-thumb {
+  background-color: rgb(var(--border-strong));
+  border-radius: 9999px;
+}
+.scroll-x-themed::-webkit-scrollbar-thumb:hover {
+  background-color: rgb(var(--fg-subtle));
+}
+
+/* Vertical sibling of .scroll-x-themed — for panels that scroll on the
+   y-axis (e.g. the lesson workbench aside, which scrolls independently of
+   the reading column). */
+.scroll-y-themed {
+  scrollbar-width: thin; /* Firefox */
+  scrollbar-color: rgb(var(--border-strong)) transparent;
+}
+.scroll-y-themed::-webkit-scrollbar {
+  width: 8px;
+}
+.scroll-y-themed::-webkit-scrollbar-track {
+  background: transparent;
+}
+.scroll-y-themed::-webkit-scrollbar-thumb {
+  background-color: rgb(var(--border-strong));
+  border-radius: 9999px;
+}
+.scroll-y-themed::-webkit-scrollbar-thumb:hover {
+  background-color: rgb(var(--fg-subtle));
+}
+
+/* ===========================================================================
+   Container-query split for sim panels that pair a canvas with a readout
+   column. The lesson workbench docks sims in a narrow (~390px) column, so a
+   viewport `md:` breakpoint wrongly triggers the two-column layout there and
+   crushes the canvas to a sliver. Query the container instead: stack (canvas
+   full-width on top, readouts below) until the container is wide enough.
+   =========================================================================== */
+.sim-split {
+  container-type: inline-size;
+}
+.sim-split__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+/* Let grid cells shrink to fit the panel instead of overflowing — the
+   readout tables and signed-bar rows would otherwise clip on the right. */
+.sim-split__grid > * {
+  min-width: 0;
+}
+/* Two columns only once the container is genuinely wide enough for the
+   canvas *and* the readout column (its width is per-widget via
+   --sim-aside-w, default 16rem). In the ~390px docked workbench this never
+   triggers, so the layout stays stacked and fully readable. */
+@container (min-width: 44rem) {
+  .sim-split__grid {
+    grid-template-columns: minmax(0, 1fr) var(--sim-aside-w, 16rem);
+  }
+}

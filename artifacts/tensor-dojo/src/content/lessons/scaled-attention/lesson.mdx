@@ -1,0 +1,58 @@
+import { MathCode } from '@/components/lesson/MathCode';
+import { Callout } from '@/components/lesson/Callout';
+
+## Why divide by √(d_k)?
+
+The previous lesson used $Q \cdot K$ as the attention score. That score is a sum of $d_k$ products of $N(0, 1)$ random variables. The variance of one such product is $1$, and the variance of the sum is $d_k$. As $d_k$ grows — from $16$ in early transformers to $128$ in modern heads — the raw score values spread wider. Wide scores push $\operatorname{softmax}$ to one entry; a one-hot softmax has zero gradient; the model stops learning.
+
+The fix is a single number: $\sqrt{d_k}$. Divide every score by $\sqrt{d_k}$ and the variance returns to $1$ regardless of dimension. Pre-softmax scores look the same at any $d_k$. Softmax no longer saturates by default. This is "scaled dot-product attention", the single most important numerical trick in the original Transformer paper.
+
+## The formula
+
+For a $d_k$-dimensional embedding dimension:
+
+$$
+\operatorname{score}(\mathbf{q}, \mathbf{k}) \;=\; \frac{\mathbf{q} \cdot \mathbf{k}}{\sqrt{d_k}}
+$$
+
+<MathCode
+  math="\operatorname{score}(\mathbf{q}, \mathbf{k}) = \frac{\mathbf{q} \cdot \mathbf{k}}{\sqrt{d_k}}"
+  code={`import numpy as np
+
+def scaled_dot(q, k):
+    return q @ k / np.sqrt(k.shape[-1])
+
+scores = Q @ K.T / np.sqrt(d_k)`}
+  caption="The one line of code that makes attention trainable."
+/>
+
+## Try it
+
+<Callout targetInteractive="scaling-histogram">
+  Start at $d_k = 16$ with the toggle off. The histogram is wide and spread out — the regime softmax breaks in. Now flip the scale toggle on. The histogram snaps to a unit-scale bell curve. The standard-deviation text above the chart drops from $\sqrt{16} = 4$ to $1$.
+</Callout>
+
+<Callout targetInteractive="scaling-histogram">
+  With the scale on, step through $d_k = 1, 8, 64, 128$. The histogram shape does not change. The x-axis labels change (it shows the *scaled* value), but the bell-curve shape is constant. The architecture can use whatever dimension it wants; the downstream softmax sees the same distribution of scores every time.
+</Callout>
+
+## Reading the result
+
+Two facts to internalize.
+
+1. **Variance grows linearly with $d_k$.** $d_k = 1$ is a thin sliver; $d_k = 16$ is four times as wide; $d_k = 64$ is eight times as wide. Each is a Gaussian with mean zero and standard deviation $\sqrt{d_k}$. The text above the chart reads the empirical standard deviation of the $4{,}000$ samples and compares it to the theoretical $\sqrt{d_k}$.
+2. **The scale toggle brings every $d_k$ back to a unit bell.** The toggle does not change the *shape* of the data — only the x-axis scale. The variance is $1$ at every dimension.
+
+**Why $\sqrt{d_k}$ specifically?** If we divided by $d_k$, the scores would shrink too fast: the standard deviation would be $1/\sqrt{d_k} \to 0$ as $d_k$ grew, the softmax would approach a uniform distribution, and the model would not learn to attend. $\sqrt{d_k}$ is the unique divisor that normalises the variance to a constant, independent of $d_k$. The proof: $\operatorname{Var}(\sum_i q_i k_i) = \sum_i \operatorname{Var}(q_i)\operatorname{Var}(k_i) = d_k$ for independent unit Gaussians, and the standard deviation is $\sqrt{d_k}$.
+
+## A second look
+
+The same four-token attention matrix from the previous lesson, here as a sanity check that wide scores really do break softmax.
+
+<Callout targetInteractive="attention-matrix-scaled">
+  Drag the $Q$ and $K$ vectors until one of the score cells reads $4.0$ or higher. The weight cell in the same position is essentially $1.0$ — softmax has saturated. The other weights in the same row are $\approx 0$ and their gradients with them. That is exactly the failure mode the $\sqrt{d_k}$ divisor exists to prevent: shrink the scores back into the linear regime, and the weight distribution carries information again.
+</Callout>
+
+## Recap
+
+Three takeaways. **For unit-Gaussian $\mathbf{Q}$ and $\mathbf{K}$ of dimension $d_k$, the raw dot product has variance $d_k$.** The histogram gets wider as $d_k$ grows, even though the inputs themselves don't change. **Wide scores push softmax to saturate** — one entry absorbs essentially all the weight, the rest go to 0, gradients vanish. **Dividing every score by $\sqrt{d_k}$ brings the variance to 1 at every dimension.** The trick is purely a matter of *units*: it does not change what the model attends to, only the numerical scale of the scores. The attention output is now numerically well-behaved at any $d_k$. The next lesson adds the final structural rule for autoregressive generation: a position is not allowed to attend to its future, so we mask the upper triangle of the score matrix — **causal masking**.

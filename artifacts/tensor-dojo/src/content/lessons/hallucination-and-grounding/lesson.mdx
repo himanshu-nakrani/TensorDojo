@@ -1,0 +1,34 @@
+import { Callout } from '@/components/lesson/Callout';
+import { Check } from '@/components/lesson/Check';
+
+## Fluency is a local objective
+
+Next-token prediction rewards continuations that look plausible in context. A plausible continuation can be false, especially when the prompt asks for a detail not represented in the model’s learned distribution. The model can produce a confident sentence without having consulted a source.
+
+## Grounding adds a checkable path
+
+Retrieval-augmented generation supplies documents or records at inference time. The generator can condition on that evidence, cite it, or be instructed to abstain when the evidence is missing. Retrieval helps, but irrelevant or contradictory documents can still lead to a persuasive error.
+
+## Evaluate claims, not just style
+
+A grounded system needs claim-level evaluation: is the answer supported, is the citation relevant, and did the response omit an important qualification? Use the explorer to compare a fluent answer with a supported answer and name the evidence that would change your confidence.
+
+$$
+p(y \mid x, D) \propto p(y \mid x, \text{retrieved evidence }D)
+$$
+
+<Callout title="Work the idea" targetInteractive="evidence-grounding">
+Pick a **query**, then drag **top-k**. Retrieved documents are standing in for grounding evidence: the generator only “knows” what made it into the prompt.
+</Callout>
+
+<Check
+  id="hallucination-and-grounding.core-idea"
+  question={"Why can a language model hallucinate even when its sentence is fluent?"}
+  options={["Token likelihood rewards plausible continuation, not guaranteed truth.", "Fluency means the model queried a database.", "The vocabulary contains no factual words.", "Attention prevents all unsupported claims."]}
+  answer={0}
+  explanation={"The language objective models likely text. It does not itself verify that every generated claim is supported by external evidence."}
+/>
+
+## Recap
+
+The central idea is **Hallucination and grounding**. The implementation detail matters because it changes what the model can learn, how much memory or compute the system needs, or how confidently we can interpret its behavior. Keep the equation visible, name the controlled variables, and treat every benchmark or safeguard as part of the model’s operating definition.
