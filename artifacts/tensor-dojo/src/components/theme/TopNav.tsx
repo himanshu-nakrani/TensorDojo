@@ -1,12 +1,15 @@
+import { useEffect, useRef, useState } from "react";
+import { useLocation } from "wouter";
+import { Link } from "wouter";
 
-
-import { useEffect, useRef, useState } from 'react';
-import { useLocation } from 'wouter';
-import { Link } from 'wouter';
-
-import clsx from 'clsx';
-import { ThemeToggle } from './ThemeToggle';
-import { useSearchPalette } from '@/components/search/SearchPalette';
+import clsx from "clsx";
+import { ThemeToggle } from "./ThemeToggle";
+import { useSearchPalette } from "@/components/search/SearchPalette";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface NavLink {
   href: string;
@@ -17,14 +20,14 @@ interface NavLink {
 
 const LINKS: readonly NavLink[] = [
   {
-    href: '/lessons',
-    label: 'Lessons',
-    match: (p) => p === '/lessons' || p.startsWith('/lessons/'),
+    href: "/lessons",
+    label: "Lessons",
+    match: (p) => p === "/lessons" || p.startsWith("/lessons/"),
   },
   {
-    href: '/map',
-    label: 'Concept map',
-    match: (p) => p === '/map',
+    href: "/map",
+    label: "Concept map",
+    match: (p) => p === "/map",
   },
 ];
 
@@ -51,7 +54,7 @@ export function TopNav() {
   useEffect(() => {
     setIsMac(/Mac|iPhone|iPad/i.test(navigator.userAgent));
   }, []);
-  const modKey = isMac ? '⌘' : 'Ctrl';
+  const modKey = isMac ? "⌘" : "Ctrl";
 
   // Close the drawer whenever the route changes.
   useEffect(() => {
@@ -62,17 +65,17 @@ export function TopNav() {
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setOpen(false);
+      if (e.key === "Escape") setOpen(false);
     };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
   }, [open]);
 
   // Lock body scroll while the drawer is open.
   useEffect(() => {
     if (!open) return;
     const prev = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
+    document.body.style.overflow = "hidden";
     return () => {
       document.body.style.overflow = prev;
     };
@@ -86,7 +89,7 @@ export function TopNav() {
       const drawer = drawerRef.current;
       if (!drawer) return;
       const focusable = drawer.querySelectorAll<HTMLElement>(
-        'a[href], button:not([disabled])',
+        "a[href], button:not([disabled])",
       );
       focusable[0]?.focus();
     } else if (wasOpen.current) {
@@ -96,11 +99,11 @@ export function TopNav() {
   }, [open]);
 
   const trapKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key !== 'Tab') return;
+    if (e.key !== "Tab") return;
     const drawer = drawerRef.current;
     if (!drawer) return;
     const focusable = Array.from(
-      drawer.querySelectorAll<HTMLElement>('a[href], button:not([disabled])'),
+      drawer.querySelectorAll<HTMLElement>("a[href], button:not([disabled])"),
     );
     if (focusable.length === 0) return;
     const first = focusable[0]!;
@@ -133,7 +136,9 @@ export function TopNav() {
             className="focus-ring inline-flex items-center gap-2 rounded-sm text-[13px] font-mono text-ink hover:text-accent transition-colors"
             aria-label="Tensor Dojo — home"
           >
-            <span aria-hidden="true" className="text-accent">◆</span>
+            <span aria-hidden="true" className="text-accent">
+              ◆
+            </span>
             <span className="tracking-[0.04em] font-semibold">tensor dojo</span>
           </Link>
 
@@ -147,12 +152,10 @@ export function TopNav() {
                 <Link
                   key={link.href}
                   href={link.href}
-                  aria-current={active ? 'page' : undefined}
+                  aria-current={active ? "page" : undefined}
                   className={clsx(
-                    'focus-ring inline-flex h-9 items-center rounded-md px-3 text-[13px] font-mono transition-colors',
-                    active
-                      ? 'text-accent'
-                      : 'text-fg-muted hover:text-ink',
+                    "focus-ring inline-flex h-9 items-center rounded-md px-3 text-[13px] font-mono transition-colors",
+                    active ? "text-accent" : "text-fg-muted hover:text-ink",
                   )}
                 >
                   {link.label}
@@ -177,26 +180,40 @@ export function TopNav() {
           </nav>
 
           <div className="flex items-center gap-1 md:hidden">
-            <button
-              type="button"
-              onClick={search.open}
-              aria-label="Search lessons"
-              className="focus-ring inline-flex h-11 w-11 items-center justify-center rounded-md text-fg-muted hover:text-ink hover:bg-bg-elevated-hover transition-colors"
-            >
-              <DesktopSearchIcon />
-            </button>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button
+                  type="button"
+                  onClick={search.open}
+                  aria-label="Search lessons"
+                  className="focus-ring inline-flex h-11 w-11 items-center justify-center rounded-md text-fg-muted hover:text-ink hover:bg-bg-elevated-hover transition-colors"
+                >
+                  <DesktopSearchIcon />
+                </button>
+              </TooltipTrigger>
+              <TooltipContent side="bottom">
+                <p>Search lessons</p>
+              </TooltipContent>
+            </Tooltip>
             <ThemeToggle />
-            <button
-              ref={toggleRef}
-              type="button"
-              aria-label={open ? 'Close menu' : 'Open menu'}
-              aria-expanded={open}
-              aria-controls="top-nav-drawer"
-              onClick={() => setOpen((o) => !o)}
-              className="focus-ring inline-flex h-11 w-11 items-center justify-center rounded-md text-fg-muted hover:text-ink hover:bg-bg-elevated-hover transition-colors"
-            >
-              {open ? <CloseIcon /> : <MenuIcon />}
-            </button>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button
+                  ref={toggleRef}
+                  type="button"
+                  aria-label={open ? "Close menu" : "Open menu"}
+                  aria-expanded={open}
+                  aria-controls="top-nav-drawer"
+                  onClick={() => setOpen((o) => !o)}
+                  className="focus-ring inline-flex h-11 w-11 items-center justify-center rounded-md text-fg-muted hover:text-ink hover:bg-bg-elevated-hover transition-colors"
+                >
+                  {open ? <CloseIcon /> : <MenuIcon />}
+                </button>
+              </TooltipTrigger>
+              <TooltipContent side="bottom">
+                <p>{open ? "Close menu" : "Open menu"}</p>
+              </TooltipContent>
+            </Tooltip>
           </div>
         </div>
       </header>
@@ -221,12 +238,12 @@ export function TopNav() {
                 <Link
                   key={link.href}
                   href={link.href}
-                  aria-current={active ? 'page' : undefined}
+                  aria-current={active ? "page" : undefined}
                   className={clsx(
-                    'focus-ring inline-flex min-h-[48px] items-center rounded-md px-3 text-[15px] font-mono transition-colors',
+                    "focus-ring inline-flex min-h-[48px] items-center rounded-md px-3 text-[15px] font-mono transition-colors",
                     active
-                      ? 'text-accent bg-accent-soft'
-                      : 'text-ink hover:bg-bg-elevated-hover',
+                      ? "text-accent bg-accent-soft"
+                      : "text-ink hover:bg-bg-elevated-hover",
                   )}
                 >
                   {link.label}
