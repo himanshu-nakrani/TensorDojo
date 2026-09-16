@@ -1,4 +1,5 @@
 import { Link } from 'wouter';
+import { Logo } from '@/components/theme/Logo';
 
 /**
  * Landing-page footer. Three logical columns that collapse to a
@@ -7,13 +8,11 @@ import { Link } from 'wouter';
  */
 export function Footer() {
   return (
-    <footer className="mt-24 sm:mt-32 pt-8 border-t border-border border-dashed">
+    <footer className="mt-24 sm:mt-32 pt-8 border-t border-border">
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-8">
         <div>
           <div className="inline-flex items-center gap-2 text-[13px] font-mono text-ink mb-2">
-            <span aria-hidden="true" className="text-accent">
-              ◆
-            </span>
+            <Logo size={17} className="text-ink shrink-0" />
             <span className="tracking-[0.04em] font-semibold">tensor dojo</span>
           </div>
           <p className="text-[13px] text-fg-muted leading-relaxed max-w-[28ch]">
@@ -49,7 +48,7 @@ export function Footer() {
               href="https://github.com/himanshu-nakrani"
               target="_blank"
               rel="noopener noreferrer"
-              className="focus-ring text-ink hover:text-accent transition-colors rounded-sm"
+              className="focus-ring text-ink hover:text-accent-2 transition-colors rounded-sm"
             >
               @himanshu-nakrani
             </a>

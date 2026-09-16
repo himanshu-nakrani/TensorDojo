@@ -61,7 +61,7 @@ export function Callout({
       className={clsx(
         'my-6 rounded-md border-l-2 pl-6 pr-5 py-4',
         variant === 'try'
-          ? 'border-accent bg-accent-faint'
+          ? 'border-accent-2 bg-accent-2-faint'
           : 'border-border-strong bg-surface',
         className,
       )}
@@ -69,7 +69,7 @@ export function Callout({
       <div
         className={clsx(
           'text-[11px] uppercase tracking-[0.12em] font-mono mb-2',
-          variant === 'try' ? 'text-accent' : 'text-muted',
+          variant === 'try' ? 'text-accent-2' : 'text-muted',
         )}
       >
         {title}
@@ -81,7 +81,7 @@ export function Callout({
         <button
           type="button"
           onClick={handleOpen}
-          className="focus-ring mt-3 inline-flex items-center min-h-[44px] px-3 py-2 text-[12px] uppercase tracking-[0.12em] font-mono text-accent hover:text-accent-hover hover:bg-accent-soft rounded-md transition-colors -mx-3"
+          className="focus-ring mt-3 inline-flex items-center min-h-[44px] px-3 py-2 text-[12px] uppercase tracking-[0.12em] font-mono text-accent-2 hover:text-accent-2-hover hover:bg-accent-2-soft rounded-md transition-colors -mx-3"
         >
           {isNarrow && inlineEntry ? 'Try it here →' : 'Open in workbench →'}
         </button>

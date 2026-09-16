@@ -1,4 +1,4 @@
-import { Route, Switch, Router as WouterRouter } from 'wouter';
+import { Route, Switch, Router as WouterRouter, useLocation } from 'wouter';
 import { TopNav } from '@/components/theme/TopNav';
 import { SearchPaletteProvider } from '@/components/search/SearchPalette';
 import { Spinner } from '@/components/ui/spinner';
@@ -19,6 +19,15 @@ const PageLoader = () => (
     </div>
   </div>
 );
+
+function RouteFade({ children }: { children: ReactNode }) {
+  const [pathname] = useLocation();
+  return (
+    <div key={pathname} className="route-enter">
+      {children}
+    </div>
+  );
+}
 
 function Router() {
   return (
@@ -65,7 +74,7 @@ class AppErrorBoundary extends Component<{ children: ReactNode }, AppErrorBounda
               Try again
             </button>
             <a
-              className="focus-ring rounded-md bg-accent px-4 py-2 text-sm font-mono text-white hover:bg-accent-hover"
+              className="focus-ring rounded-md bg-accent px-4 py-2 text-sm font-mono text-accent-fg hover:bg-accent-hover"
               href="/lessons"
             >
               Browse lessons
@@ -85,7 +94,9 @@ function App() {
           <SearchPaletteProvider>
             <TopNav />
             <Suspense fallback={<PageLoader />}>
-              <Router />
+              <RouteFade>
+                <Router />
+              </RouteFade>
             </Suspense>
           </SearchPaletteProvider>
         </WouterRouter>

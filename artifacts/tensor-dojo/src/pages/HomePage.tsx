@@ -4,12 +4,24 @@ import { ResumeStrip } from "@/components/home/ResumeStrip";
 import { StatsStrip } from "@/components/home/StatsStrip";
 import { WhyTiles } from "@/components/home/WhyTiles";
 import { CurriculumGrid } from "@/components/home/CurriculumGrid";
+import { ProofBand } from "@/components/home/ProofBand";
+import { FinalCta } from "@/components/home/FinalCta";
 import { FaqAccordion } from "@/components/home/FaqAccordion";
 import { Footer } from "@/components/home/Footer";
+import { Reveal } from "@/components/motion/Reveal";
 import { listLessonMeta } from "@/lib/lessons-meta";
+import { useDocumentMeta } from "@/hooks/use-document-meta";
+import { track } from "@/lib/analytics";
 
 export default function HomePage() {
   const lessonCount = listLessonMeta().length;
+
+  useDocumentMeta({
+    title: "TensorDojo — learn how LLMs work by manipulating them",
+    description:
+      "80 interactive lessons across 10 tracks. Every concept is a sim you can drag, with the math underneath you can read.",
+    path: "/",
+  });
 
   return (
     <main
@@ -19,7 +31,7 @@ export default function HomePage() {
     >
       {/* HERO — editorial lab notebook */}
       <section className="relative grid grid-cols-1 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.95fr)] gap-10 lg:gap-14 items-start pb-14 sm:pb-20">
-        <div className="relative order-2 lg:order-1 max-w-[560px]">
+        <div className="relative order-2 lg:order-1 max-w-[560px] lg:pr-12">
           <div
             className="animate-fade-up text-[12px] uppercase tracking-[0.16em] text-fg-muted font-mono mb-5"
             style={{ "--delay": "0ms" } as React.CSSProperties}
@@ -27,7 +39,7 @@ export default function HomePage() {
             A lab for language models
           </div>
           <h1
-            className="animate-fade-up lab-display text-ink leading-[1.08] text-balance mb-5 text-[2.5rem] sm:text-[3.1rem] lg:text-[3.4rem]"
+            className="animate-fade-up lab-display text-ink leading-[1.08] text-balance mb-5 text-display-xl lg:text-display-2xl"
             style={{ "--delay": "80ms" } as React.CSSProperties}
           >
             Learn AI the way scientists learn: by{" "}
@@ -36,7 +48,7 @@ export default function HomePage() {
             </em>
           </h1>
           <p
-            className="animate-fade-up text-[1.05rem] sm:text-[1.125rem] text-muted leading-relaxed mb-8 text-pretty"
+            className="animate-fade-up text-body-md sm:text-body-lg text-muted leading-relaxed mb-8 text-pretty max-w-[48ch]"
             style={{ "--delay": "160ms" } as React.CSSProperties}
           >
             {lessonCount} interactive lessons. Real math on every page — not
@@ -49,14 +61,16 @@ export default function HomePage() {
           >
             <Link
               href="/lessons/dot-product"
-              className="focus-ring inline-flex items-center gap-2 min-h-[48px] px-5 py-3 rounded text-[14px] font-semibold bg-accent text-accent-fg hover:bg-accent-hover transition-colors"
+              onClick={() => track("cta_click", { source: "hero", target: "lesson-01" })}
+              className="focus-ring inline-flex items-center gap-2 min-h-[48px] px-5 py-3 rounded text-[14px] font-semibold bg-accent-2 text-accent-2-fg hover:bg-accent-2-hover transition-colors"
             >
               Open lesson 01
               <span aria-hidden="true">→</span>
             </Link>
             <Link
               href="/lessons"
-              className="focus-ring inline-flex items-center gap-2 min-h-[48px] px-5 py-3 rounded text-[14px] font-mono text-ink border border-border-strong hover:border-accent hover:text-accent transition-colors"
+              onClick={() => track("cta_click", { source: "hero", target: "curriculum" })}
+              className="focus-ring inline-flex items-center gap-2 min-h-[48px] px-5 py-3 rounded text-[14px] font-mono text-ink border border-border-strong hover:border-accent-2 hover:text-accent-2 transition-colors"
             >
               Browse the curriculum
             </Link>
@@ -70,7 +84,7 @@ export default function HomePage() {
         </div>
 
         <div
-          className="relative animate-fade-up order-1 lg:order-2 min-w-0 lg:pt-2"
+          className="relative animate-fade-up order-1 lg:order-2 min-w-0 lg:pt-2 lg:-ml-14 lg:mt-10 z-10"
           style={{ "--delay": "120ms" } as React.CSSProperties}
         >
           <HeroInteractive />
@@ -84,17 +98,37 @@ export default function HomePage() {
 
       {/* WHY THIS WORKS */}
       <div className="mb-20 sm:mb-28">
-        <WhyTiles />
+        <Reveal>
+          <WhyTiles />
+        </Reveal>
       </div>
 
-      {/* CURRICULUM */}
+      {/* CURRICULUM — journey rail with local progress */}
       <div className="mb-20 sm:mb-28">
-        <CurriculumGrid />
+        <Reveal>
+          <CurriculumGrid />
+        </Reveal>
+      </div>
+
+      {/* PROOF */}
+      <div className="mb-20 sm:mb-28">
+        <Reveal>
+          <ProofBand />
+        </Reveal>
       </div>
 
       {/* FAQ */}
+      <div className="mb-20 sm:mb-28">
+        <Reveal>
+          <FaqAccordion />
+        </Reveal>
+      </div>
+
+      {/* FINAL CTA */}
       <div className="mb-12">
-        <FaqAccordion />
+        <Reveal>
+          <FinalCta />
+        </Reveal>
       </div>
 
       <Footer />

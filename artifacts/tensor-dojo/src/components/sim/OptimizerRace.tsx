@@ -30,6 +30,7 @@ const PEAK_LR = 0.05;
 function valley(a: number, b: number): number {
   return 0.5 * (a - 0.8) * (a - 0.8) + 4.0 * (b + 0.4) * (b + 0.4);
 }
+const lossValley = ([a, b]: readonly [number, number]) => valley(a, b);
 
 interface OptimizerTrace {
   id: string;
@@ -117,7 +118,7 @@ export function OptimizerRace() {
       <div className="sim-split__grid">
         <div>
           <LossLandscape
-            loss={([a, b]) => valley(a, b)}
+            loss={lossValley}
             trajectories={traces.map((tr) => ({
               id: tr.id,
               points: tr.points,
@@ -251,7 +252,7 @@ export function MomentumSweep() {
       <div className="sim-split__grid">
         <div>
           <LossLandscape
-            loss={([a, b]) => valley(a, b)}
+            loss={lossValley}
             trajectories={[
               {
                 id: 'm',

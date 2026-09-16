@@ -44,6 +44,7 @@ function lossAB(a: number, b: number): number {
   // mini-batch trajectories don't all snap to the same line.
   return 0.4 * (a - 0.8) ** 2 + 0.6 * (b + 0.4) ** 2 + 0.2 * a * b;
 }
+const lossABFn = ([a, b]: readonly [number, number]) => lossAB(a, b);
 
 const NUM_STEPS = 30;
 const ETA = 0.4;
@@ -95,7 +96,7 @@ export function SGDBatchExplorer() {
         {/* Loss surface + trajectories */}
         <div>
           <LossLandscape
-            loss={([a, b]) => lossAB(a, b)}
+            loss={lossABFn}
             trajectories={allTrajectories.map((tr, i) => ({
               id: tr.id,
               points: tr.result.trajectory.map((m) => [m.a, m.b] as [number, number]),

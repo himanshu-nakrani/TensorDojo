@@ -90,26 +90,60 @@ export const NumberInput = forwardRef<HTMLInputElement, NumberInputProps>(
       commit(e.target.value);
     };
 
+    const nudge = (dir: 1 | -1) => {
+      let next = value + dir * step;
+      if (typeof min === 'number') next = Math.max(min, next);
+      if (typeof max === 'number') next = Math.min(max, next);
+      next = Math.round(next * 1e6) / 1e6;
+      setBuffer(null);
+      if (next !== value) onChange(next);
+    };
+
     return (
-      <input
-        ref={ref}
-        type="number"
-        inputMode="decimal"
-        value={display}
-        step={step}
-        min={min}
-        max={max}
-        aria-label={ariaLabel}
-        onChange={handleChange}
-        onBlur={handleBlur}
-        onKeyDown={onKeyDown}
-        aria-invalid={inError || undefined}
-        className={clsx(
-          'number-input font-mono',
-          inError && 'number-input--error',
-          className,
-        )}
-      />
+      // className sizes the WHOLE control (callers pass w-28 / w-full);
+      // the input flexes to whatever remains after the stepper. Fixed
+      // widths must budget ~20px for the stepper: w-28 leaves ~90px of
+      // field, enough for -10.5 at the mobile 16px font.
+      <span className={clsx('inline-flex items-stretch', className)}>
+        <input
+          ref={ref}
+          type="number"
+          inputMode="decimal"
+          value={display}
+          step={step}
+          min={min}
+          max={max}
+          aria-label={ariaLabel}
+          onChange={handleChange}
+          onBlur={handleBlur}
+          onKeyDown={onKeyDown}
+          aria-invalid={inError || undefined}
+          className={clsx(
+            'number-input font-mono flex-1 min-w-0 !rounded-r-none',
+            inError && 'number-input--error',
+          )}
+        />
+        <span className="inline-flex flex-col border border-l-0 border-border rounded-r-[3px] bg-bg-code overflow-hidden">
+          <button
+            type="button"
+            tabIndex={-1}
+            aria-hidden="true"
+            onClick={() => nudge(1)}
+            className="flex-1 px-1.5 text-[8px] leading-none text-fg-muted transition-colors hover:text-accent hover:bg-bg-elevated-hover border-b border-border"
+          >
+            ▲
+          </button>
+          <button
+            type="button"
+            tabIndex={-1}
+            aria-hidden="true"
+            onClick={() => nudge(-1)}
+            className="flex-1 px-1.5 text-[8px] leading-none text-fg-muted transition-colors hover:text-accent hover:bg-bg-elevated-hover"
+          >
+            ▼
+          </button>
+        </span>
+      </span>
     );
   },
 );

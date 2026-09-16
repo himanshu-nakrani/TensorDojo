@@ -186,6 +186,13 @@ resume point.
 follow its dependencies backward.
 - **Resume point** is highlighted on `/` and `/map` from `localStorage` —
   no account, no backend.
+- **Completion tracking**: "Mark as complete" at the end of every lesson
+  feeds per-track progress bars (home + `/lessons`), the nav progress
+  ring, and a track "belt" when you finish all of its lessons. Stored in
+  `localStorage` only.
+- **Share** a lesson from its header (copy link, Web Share, X intent);
+  every route ships its own title/OG tags and `/og.png` unfurls as the
+  social card.
 - **←/→** navigates prev/next within a lesson when no input is focused.
 
 ---
@@ -234,6 +241,9 @@ pnpm run validate:lessons                           # verify all 80 lesson regis
 pnpm run benchmark:math                             # run tensor-operation baselines
 pnpm run test:e2e:install                            # install Chromium for browser tests
 pnpm run test:e2e                                   # run browser regression tests
+VISUAL_TESTS=1 pnpm run test:e2e                     # …plus visual snapshot tests (OS-agnostic baselines)
+node scripts/generate-og.mjs                        # regenerate public/og.png social card
+SITE_URL=https://your.domain node scripts/generate-sitemap.mjs   # regenerate public/sitemap.xml
 pnpm --filter @workspace/tensor-dojo run serve      # preview the built app
 pnpm run typecheck                                  # strict TS, no emit
 ```
@@ -346,13 +356,16 @@ config as `rgb(var(--token) / <alpha-value>)`. Existing classes
 (`bg-bg`, `text-ink`, `border-border`, `bg-bg/40`) work in both themes
 without per-component overrides.
 
-**One accent, one rule.** The accent (teal) is reserved for the things
-the reader can move (sliders, knobs, dominant bars) and the things the
-reader is navigating to (resume node, hover/focus states). Static chrome
-— headings, body text, borders, code fences — never uses it.
+**Two signals, strict jobs.** The design ("scientific instrument") runs
+two accents: `--accent` (cyan) marks only what the reader can *move* —
+sliders, knobs, draggable tips, live readouts; `--accent-2` (blue) marks
+*navigation and progress* — links, resume, progress bars, belts. Static
+chrome never wears either. Light mode is the printed manual (paper
+stone), dark mode the bench (near-black ink); both share one geometry
+of hairlines, bezels, and sharp corners.
 
-**Typography**: Inter (UI prose) + JetBrains Mono (numbers, labels,
-code).
+**Typography**: IBM Plex Sans (prose + display, semibold tight) +
+IBM Plex Mono (every label, readout, and figure number).
 
 **Math**: KaTeX via `remark-math` + `rehype-katex`. Display mode for
 the headline equation of a section, inline for everything else.
@@ -362,7 +375,15 @@ the headline equation of a section, inline for everything else.
 The curriculum is complete enough to launch. What's still ahead:
 
 - Capstone notebooks: take the toy sims into real Hugging Face / PyTorch
-- Analytics + an actual launch post
+- An actual launch post
+
+Analytics: `src/lib/analytics.ts` is a vendor-agnostic facade that forwards
+product events (`lesson_complete`, `hero_preset`, `search_navigate`, …) to
+Plausible / PostHog / GA4 **only when built with `VITE_ANALYTICS=on`** —
+otherwise `track()` is a no-op and a stray third-party snippet can never
+turn the site into a tracking surface. Events carry slugs and counts only;
+assessment correctness never leaves the device. Add `?debugAnalytics` to
+any URL to log events to the console.
 
 ### Authoring assessments
 

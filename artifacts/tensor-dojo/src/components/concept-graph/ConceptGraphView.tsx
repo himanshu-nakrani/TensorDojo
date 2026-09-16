@@ -36,23 +36,11 @@ import type { CrossTrackEdge, TrackSection } from '@/lib/content/map-data';
  * available under a disclosure as the accessible fallback.
  */
 
-/** One muted hue per track, in TRACKS order. Reads on both the
- *  white (light) and slate-800 (dark) card surfaces. */
-const TRACK_COLORS = [
-  '#6366f1', // indigo
-  '#0ea5e9', // sky
-  '#14b8a6', // teal
-  '#16a34a', // green
-  '#d97706', // amber
-  '#ea580c', // orange
-  '#e11d48', // rose
-  '#9333ea', // purple
-  '#06b6d4', // cyan
-  '#c026d3', // fuchsia
-];
-
+/** One hue per track, in TRACKS order, from the themed
+ *  --track-N tokens so the map matches whichever face of the
+ *  instrument (manual / bench) is showing. */
 function trackColor(idx: number): string {
-  return TRACK_COLORS[idx % TRACK_COLORS.length]!;
+  return `rgb(var(--track-${(idx % 10) + 1}))`;
 }
 
 const NODE_W = 210;
@@ -242,7 +230,7 @@ interface View {
   k: number;
 }
 
-export function ConceptMapView({ sections, graph, firstSlug }: { sections: TrackSection[], graph: LaidOutGraph, firstSlug: string | undefined }) {
+export function ConceptMapView({ sections, graph, firstSlug, highlightTrack }: { sections: TrackSection[], graph: LaidOutGraph, firstSlug: string | undefined, highlightTrack?: string | null }) {
   const [visited, setVisited] = useState<Set<string>>(() => new Set());
   const [resumeSlug, setResumeSlug] = useState<string | null>(null);
 
@@ -263,17 +251,17 @@ export function ConceptMapView({ sections, graph, firstSlug }: { sections: Track
   return (
     <div className="space-y-6">
       <div className="md:hidden">
-        <MapList sections={sections} visited={visited} resumeSlug={resumeSlug} />
+        <MapList sections={sections} visited={visited} resumeSlug={resumeSlug} filterTrack={highlightTrack} />
       </div>
 
       <div className="hidden md:block">
-        <MapGraph sections={sections} visited={visited} resumeSlug={resumeSlug} graph={graph} firstSlug={firstSlug} />
+        <MapGraph sections={sections} visited={visited} resumeSlug={resumeSlug} graph={graph} firstSlug={firstSlug} highlightTrack={highlightTrack} />
         <details className="mt-6">
           <summary className="focus-ring cursor-pointer text-[12px] uppercase tracking-[0.12em] text-fg-muted font-mono hover:text-ink transition-colors">
             Show accessible list view
           </summary>
           <div className="mt-4">
-            <MapList sections={sections} visited={visited} resumeSlug={resumeSlug} />
+            <MapList sections={sections} visited={visited} resumeSlug={resumeSlug} filterTrack={highlightTrack} />
           </div>
         </details>
       </div>
@@ -288,13 +276,15 @@ function MapGraph({
   visited,
   resumeSlug,
   graph,
-  firstSlug
+  firstSlug,
+  highlightTrack,
 }: {
   sections: TrackSection[];
   visited: Set<string>;
   resumeSlug: string | null;
   graph: LaidOutGraph;
   firstSlug: string | undefined;
+  highlightTrack?: string | null;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [size, setSize] = useState({ w: 0, h: 0 });
@@ -419,6 +409,12 @@ function MapGraph({
     return s;
   }, [active, graph.neighbours]);
 
+  // Track filter (chips above the canvas): everything outside the
+  // selected track dims the same way hover-tracing dims it.
+  const hlIdx = highlightTrack
+    ? sections.findIndex((sec) => sec.id === highlightTrack)
+    : -1;
+
   const activeEdges = active ? graph.incident.get(active) ?? new Set<string>() : null;
 
   return (
@@ -456,7 +452,7 @@ function MapGraph({
             </defs>
             {graph.edges.map((edge) => {
               const isActive = activeEdges?.has(edge.id) ?? false;
-              const dim = activeSet !== null && !isActive;
+              const dim = (activeSet !== null && !isActive) || (hlIdx >= 0 && edge.trackIdx !== hlIdx);
               const color =
                 edge.kind === 'cross' ? trackColor(edge.trackIdx) : 'rgb(var(--border-strong))';
               const baseOpacity = edge.kind === 'cross' ? 0.5 : 0.55;
@@ -487,7 +483,7 @@ function MapGraph({
                 node={node}
                 visited={visited.has(node.id)}
                 resume={resumeSlug === node.id}
-                dim={activeSet !== null && !activeSet.has(node.id)}
+                dim={(activeSet !== null && !activeSet.has(node.id)) || (hlIdx >= 0 && node.trackIdx !== hlIdx)}
                 highlighted={active === node.id}
                 onActivate={() => setActive(node.id)}
                 onDeactivate={() => setActive((cur) => (cur === node.id ? null : cur))}
@@ -532,7 +528,7 @@ function ControlButton({
       title={label}
       onClick={onClick}
       onPointerDown={(e) => e.stopPropagation()}
-      className="focus-ring flex h-8 w-8 items-center justify-center rounded-md border border-border bg-bg-elevated text-[15px] leading-none text-fg-muted shadow-sm hover:border-accent hover:text-ink transition-colors card-surface"
+      className="focus-ring flex h-8 w-8 items-center justify-center rounded-md border border-border bg-bg-elevated text-[15px] leading-none text-fg-muted shadow-sm hover:border-accent-2 hover:text-ink transition-colors card-surface"
     >
       {children}
     </button>
@@ -589,11 +585,11 @@ function GraphNodeCard({
         className={[
           'focus-ring group relative flex h-full w-full flex-col justify-between overflow-hidden rounded-lg border bg-bg-elevated pl-3 pr-2.5 py-2 transition-shadow card-surface',
           resume
-            ? 'border-accent ring-2 ring-accent/30'
+            ? 'border-accent-2 ring-2 ring-accent-2/30'
             : highlighted
-              ? 'border-accent shadow-md'
+              ? 'border-accent-2 shadow-md'
               : visited
-                ? 'border-accent/40'
+                ? 'border-accent-2/40'
                 : 'border-border',
         ].join(' ')}
       >
@@ -605,7 +601,7 @@ function GraphNodeCard({
         />
         {resume && (
           <span
-            className="absolute -top-2 right-2 rounded bg-accent px-1.5 py-0.5 text-[10px] font-mono uppercase tracking-[0.1em] text-accent-fg"
+            className="absolute -top-2 right-2 rounded bg-accent-2 px-1.5 py-0.5 text-[10px] font-mono uppercase tracking-[0.1em] text-accent-2-fg"
             aria-hidden="true"
           >
             Resume
@@ -635,7 +631,7 @@ function GraphNodeCard({
               aria-hidden="true"
               className={
                 visited
-                  ? 'inline-block h-1.5 w-1.5 rounded-full bg-accent ring-2 ring-accent/20'
+                  ? 'inline-block h-1.5 w-1.5 rounded-full bg-accent-2 ring-2 ring-accent-2/20'
                   : 'inline-block h-1.5 w-1.5 rounded-full border border-border-strong'
               }
             />
@@ -669,20 +665,28 @@ function MapList({
   sections,
   visited,
   resumeSlug,
+  filterTrack,
 }: {
   sections: TrackSection[];
   visited: Set<string>;
   resumeSlug: string | null;
+  /** When set (track chips), only that track's section is listed. */
+  filterTrack?: string | null;
 }) {
+  const shown = filterTrack
+    ? sections.filter((sec) => sec.id === filterTrack)
+    : sections;
   return (
     <div className="space-y-6">
-      {sections.map((section, trackIdx) => (
+      {shown.map((section) => (
         <section key={section.id}>
           <h2 className="mb-1 flex items-center gap-2 text-[12px] font-mono font-semibold uppercase tracking-[0.12em] text-ink">
             <span
               aria-hidden="true"
               className="inline-block h-2.5 w-2.5 rounded-full"
-              style={{ backgroundColor: trackColor(trackIdx) }}
+              // Index into the FULL track list so colors stay stable
+              // when the chips filter the list down to one track.
+              style={{ backgroundColor: trackColor(sections.indexOf(section)) }}
             />
             {section.label}
           </h2>
@@ -701,9 +705,9 @@ function MapList({
                     className={[
                       'block min-h-[64px] rounded-lg border bg-bg-elevated p-3 transition-colors focus-ring card-surface',
                       isResume
-                        ? 'border-accent ring-2 ring-accent/30'
+                        ? 'border-accent-2 ring-2 ring-accent-2/30'
                         : isVisited
-                          ? 'border-accent/40'
+                          ? 'border-accent-2/40'
                           : 'border-border',
                     ].join(' ')}
                   >
@@ -714,7 +718,7 @@ function MapList({
                             aria-hidden="true"
                             className={
                               isVisited
-                                ? 'inline-block h-2 w-2 shrink-0 rounded-full bg-accent ring-2 ring-accent/20'
+                                ? 'inline-block h-2 w-2 shrink-0 rounded-full bg-accent-2 ring-2 ring-accent-2/20'
                                 : 'inline-block h-2 w-2 shrink-0 rounded-full border border-border-strong'
                             }
                           />
@@ -725,12 +729,12 @@ function MapList({
                         <div className="mt-1 flex items-center gap-3 text-[12px] font-mono text-fg-muted">
                           <span>{lesson.minutes} min</span>
                           {prereqCount > 0 && (
-                            <span className="inline-flex items-center gap-1 text-accent">
+                            <span className="inline-flex items-center gap-1 text-accent-2">
                               ↗ {prereqCount} cross-track prereq{prereqCount === 1 ? '' : 's'}
                             </span>
                           )}
                           {isResume && (
-                            <span className="rounded bg-accent px-1.5 py-0.5 text-[11px] uppercase tracking-[0.12em] text-accent-fg">
+                            <span className="rounded bg-accent-2 px-1.5 py-0.5 text-[11px] uppercase tracking-[0.12em] text-accent-2-fg">
                               Resume
                             </span>
                           )}
@@ -764,7 +768,7 @@ function Legend({ sections, hasResume }: { sections: TrackSection[]; hasResume: 
       <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-[11px] font-mono text-fg-muted">
         <span className="uppercase tracking-[0.12em] text-dim">Legend</span>
         <span className="inline-flex items-center gap-1.5">
-          <span aria-hidden="true" className="inline-block h-2.5 w-2.5 rounded-full bg-accent ring-2 ring-accent/20" />
+          <span aria-hidden="true" className="inline-block h-2.5 w-2.5 rounded-full bg-accent-2 ring-2 ring-accent-2/20" />
           visited
         </span>
         <span className="inline-flex items-center gap-1.5">
@@ -785,7 +789,7 @@ function Legend({ sections, hasResume }: { sections: TrackSection[]; hasResume: 
         </span>
         {hasResume && (
           <span className="inline-flex items-center gap-1.5">
-            <span className="inline-block rounded bg-accent px-1 py-0.5 uppercase tracking-[0.12em] text-accent-fg">
+            <span className="inline-block rounded bg-accent-2 px-1 py-0.5 uppercase tracking-[0.12em] text-accent-2-fg">
               Resume
             </span>
             where you left off

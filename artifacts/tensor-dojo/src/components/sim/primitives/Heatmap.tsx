@@ -117,6 +117,10 @@ export function Heatmap({
   // value; the observer kicks in after mount.
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [containerWidth, setContainerWidth] = useState<number | null>(null);
+  // Roving tabindex: small focusable grids are ONE tab stop; arrow
+  // keys walk the cells (Tab-through-16-cells was a keyboard slog).
+  const [rover, setRover] = useState<{ r: number; c: number }>({ r: 0, c: 0 });
+  const cellEls = useRef(new Map<string, SVGGElement>());
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
@@ -209,14 +213,77 @@ export function Heatmap({
             cellFill = 'rgb(var(--accent))';
             cellOpacity = accentOpacity(Math.abs(v) / max);
           }
+          // Cell cross-highlight must work without a mouse (ux-audit
+          // deferred item): tap fires the same highlight on touch, and
+          // small grids (≤ 6×6, e.g. the attention matrix) also expose
+          // cells in the tab order with focus/blur. Large grids skip
+          // tabIndex so they don't flood keyboard navigation.
+          const focusable =
+            onCellHover !== undefined && rows <= 6 && cols <= 6 && !compact;
           return (
             <g
               key={`${i}-${j}`}
+              ref={(el) => {
+                if (el) cellEls.current.set(`${i}-${j}`, el);
+                else cellEls.current.delete(`${i}-${j}`);
+              }}
+              tabIndex={
+                focusable
+                  ? rover.r === i && rover.c === j
+                    ? 0
+                    : -1
+                  : undefined
+              }
+              role={focusable ? 'button' : undefined}
+              aria-label={
+                focusable
+                  ? `Cell row ${rowLabels?.[i] ?? i + 1}, column ${
+                      colLabels?.[j] ?? j + 1
+                    }: ${Number.isFinite(v) ? v.toFixed(precision) : 'masked'}`
+                  : undefined
+              }
               onMouseEnter={
                 onCellHover ? () => onCellHover({ row: i, col: j }) : undefined
               }
               onMouseLeave={onCellHover ? () => onCellHover(null) : undefined}
+              onClick={
+                onCellHover ? () => onCellHover({ row: i, col: j }) : undefined
+              }
+              onFocus={
+                focusable
+                  ? () => {
+                      setRover({ r: i, c: j });
+                      onCellHover?.({ row: i, col: j });
+                    }
+                  : undefined
+              }
+              onBlur={focusable ? () => onCellHover?.(null) : undefined}
+              onKeyDown={
+                focusable
+                  ? (e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        onCellHover?.({ row: i, col: j });
+                        return;
+                      }
+                      const deltas: Record<string, [number, number]> = {
+                        ArrowRight: [0, 1],
+                        ArrowLeft: [0, -1],
+                        ArrowDown: [1, 0],
+                        ArrowUp: [-1, 0],
+                      };
+                      const d = deltas[e.key];
+                      if (!d) return;
+                      e.preventDefault();
+                      const r = Math.min(rows - 1, Math.max(0, i + d[0]));
+                      const c = Math.min(cols - 1, Math.max(0, j + d[1]));
+                      setRover({ r, c });
+                      cellEls.current.get(`${r}-${c}`)?.focus();
+                    }
+                  : undefined
+              }
               style={onCellHover ? { cursor: 'crosshair' } : undefined}
+              className={focusable ? 'focus-ring' : undefined}
             >
               <rect
                 x={x + (compact ? 0 : 1)}

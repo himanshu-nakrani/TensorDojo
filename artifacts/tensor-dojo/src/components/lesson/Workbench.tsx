@@ -6,6 +6,7 @@ import {
   useContext,
   useMemo,
   useRef,
+  useEffect,
   useState,
   type ReactNode,
   type ComponentType,
@@ -100,6 +101,14 @@ export function Workbench({
     }
     return defaultActive || interactives[0]?.id || '';
   });
+  // Remembers the last expanded interactive within the session so a
+  // sub-lg collapse followed by a rotate back across lg restores the
+  // figure the reader actually had open, not the default one.
+  const lastOpenRef = useRef<string>('');
+  useEffect(() => {
+    if (active) lastOpenRef.current = active;
+  }, [active]);
+
   const [pulse, setPulse] = useState<{ id: string; version: number } | null>(
     null,
   );
@@ -163,7 +172,15 @@ export function Workbench({
   }, [writeInteractiveToUrl]);
 
   const toggleInteractive = useCallback((id: string) => {
-    const next = active === id ? '' : id;
+    // At lg+ the rail is a tabset: every non-active panel is hidden, so
+    // collapsing the open one would leave an empty workbench with no
+    // way back (single-interactive lessons have no tablist). Collapse
+    // is a mobile-only affordance where panels stack as an accordion.
+    const desktop =
+      typeof window !== 'undefined' &&
+      typeof window.matchMedia === 'function' &&
+      window.matchMedia('(min-width: 1024px)').matches;
+    const next = active === id ? (desktop ? id : '') : id;
     setActive(next);
     writeInteractiveToUrl(next);
   }, [active, writeInteractiveToUrl]);
@@ -178,6 +195,34 @@ export function Workbench({
     (id: string) => interactiveById.get(id),
     [interactiveById],
   );
+
+  // Portrait collapse can leave active === ''. Crossing lg hides every
+  // inactive panel and (for single-figure lessons) the tablist, so
+  // restore last-open, then URL, then default.
+  useEffect(() => {
+    if (
+      typeof window === 'undefined' ||
+      typeof window.matchMedia !== 'function'
+    )
+      return;
+    const mq = window.matchMedia('(min-width: 1024px)');
+    const restore = () => {
+      if (!mq.matches) return;
+      setActive((cur) => {
+        if (cur !== '') return cur;
+        if (lastOpenRef.current && interactiveById.has(lastOpenRef.current))
+          return lastOpenRef.current;
+        const requested = new URLSearchParams(window.location.search).get(
+          'interactive',
+        );
+        if (requested && interactiveById.has(requested)) return requested;
+        return defaultActive || interactives[0]?.id || '';
+      });
+    };
+    mq.addEventListener('change', restore);
+    return () => mq.removeEventListener('change', restore);
+  }, [defaultActive, interactives, interactiveById]);
+
 
   const ctxValue = useMemo<WorkbenchContextValue>(
     () => ({ focusInteractive, getInteractive }),
@@ -245,18 +290,56 @@ function DefaultLayout({
       {/* Right: workbench — sticky on desktop with its OWN scrollbar, so a
           tall interactive scrolls independently of the reading column
           instead of sharing (or being clipped by) the page scroll. */}
-      <aside className="min-w-0 space-y-4 lg:sticky lg:top-16 lg:self-start lg:max-h-[calc(100vh-5rem)] lg:overflow-y-auto scroll-y-themed">
-        {interactives.map((entry) => (
-          <Item
-            key={entry.id}
-            entry={entry}
-            active={active}
-            pulse={pulse}
-            refs={refs}
-            focusInteractive={focusInteractive}
-            toggleInteractive={toggleInteractive}
-          />
-        ))}
+      <aside className="min-w-0 lg:sticky lg:top-[104px] lg:self-start lg:max-h-[calc(100vh-124px)] lg:overflow-y-auto scroll-y-themed">
+        {interactives.length > 1 && (
+          <div
+            role="tablist"
+            aria-label="Lesson interactives"
+            className="hidden lg:flex flex-wrap gap-1 mb-4 rounded-sm border border-border bg-bg-code p-1"
+          >
+            {interactives.map((entry, i) => (
+              <button
+                key={entry.id}
+                type="button"
+                role="tab"
+                aria-selected={active === entry.id}
+                onClick={() => {
+                  if (active !== entry.id) toggleInteractive(entry.id);
+                }}
+                className={clsx(
+                  'focus-ring inline-flex items-center gap-1.5 rounded-[2px] border px-2.5 py-1.5 text-[11px] font-mono transition-colors',
+                  active === entry.id
+                    ? 'border-accent/60 bg-accent-faint text-accent'
+                    : 'border-transparent text-fg-muted hover:text-ink',
+                )}
+              >
+                <span
+                  aria-hidden="true"
+                  className={clsx(
+                    'h-1 w-1 rounded-full',
+                    active === entry.id ? 'bg-accent' : 'bg-border-strong',
+                  )}
+                />
+                {String(i + 1).padStart(2, '0')} · {entry.title}
+              </button>
+            ))}
+          </div>
+        )}
+        <div className="space-y-4">
+          {interactives.map((entry, i) => (
+            <div key={entry.id} className={clsx(active !== entry.id && 'lg:hidden')}>
+              <Item
+                entry={entry}
+                figNumber={i + 1}
+                active={active}
+                pulse={pulse}
+                refs={refs}
+                focusInteractive={focusInteractive}
+                toggleInteractive={toggleInteractive}
+              />
+            </div>
+          ))}
+        </div>
       </aside>
     </div>
   );
@@ -287,6 +370,7 @@ function WideLayout({
           <Item
             key={entry.id}
             entry={entry}
+            figNumber={interactives.indexOf(entry) + 1}
             active={active}
             pulse={pulse}
             refs={refs}
@@ -301,6 +385,7 @@ function WideLayout({
             <Item
               key={entry.id}
               entry={entry}
+              figNumber={interactives.indexOf(entry) + 1}
               active={active}
               pulse={pulse}
               refs={refs}
@@ -316,12 +401,14 @@ function WideLayout({
 
 function Item({
   entry,
+  figNumber,
   active,
   pulse,
   refs,
   toggleInteractive,
 }: {
   entry: InteractiveEntry;
+  figNumber?: number;
   active: string;
   pulse: { id: string; version: number } | null;
   refs: React.MutableRefObject<Record<string, HTMLDivElement | null>>;
@@ -337,6 +424,7 @@ function Item({
       title={entry.title}
       description={entry.description}
       caption={entry.caption}
+      figNumber={figNumber}
       isActive={isActive}
       onToggle={() => toggleInteractive(entry.id)}
       pulseKey={pulse?.id === entry.id ? pulse.version : null}

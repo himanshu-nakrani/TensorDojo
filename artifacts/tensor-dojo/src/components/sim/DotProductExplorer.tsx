@@ -8,6 +8,7 @@ import {
 } from '@/components/sim/primitives/VectorCanvas';
 import { SimFrame } from '@/components/sim/primitives/SimFrame';
 import { cosTheta, dot, magnitude } from '@/lib/math/linalg';
+import { useCountUp } from '@/hooks/use-count-up';
 
 export interface DotProductPreset {
   a?: readonly [number, number];
@@ -31,7 +32,13 @@ function fmt(x: number, digits = 2): string {
  * bar visualizes a·b on a fixed scale so positive vs negative is
  * unambiguous.
  */
-export function DotProductExplorer({ preset }: { preset?: DotProductPreset }) {
+export function DotProductExplorer({
+  preset,
+  drawIn = false,
+}: {
+  preset?: DotProductPreset;
+  drawIn?: boolean;
+}) {
   const [a, setA] = useState<[number, number]>(() => {
     const v = preset?.a ?? DEFAULT_A;
     return [v[0], v[1]];
@@ -41,10 +48,10 @@ export function DotProductExplorer({ preset }: { preset?: DotProductPreset }) {
     return [v[0], v[1]];
   });
 
-  const dp = useMemo(() => dot(a, b), [a, b]);
-  const ma = useMemo(() => magnitude(a), [a]);
-  const mb = useMemo(() => magnitude(b), [b]);
-  const c = useMemo(() => cosTheta(a, b), [a, b]);
+  const dp = useCountUp(useMemo(() => dot(a, b), [a, b]));
+  const ma = useCountUp(useMemo(() => magnitude(a), [a]));
+  const mb = useCountUp(useMemo(() => magnitude(b), [b]));
+  const c = useCountUp(useMemo(() => cosTheta(a, b), [a, b]));
 
   const vectors: VectorCanvasVector[] = [
     { id: 'a', label: 'a', value: a },
@@ -70,6 +77,7 @@ export function DotProductExplorer({ preset }: { preset?: DotProductPreset }) {
   return (
     <SimFrame title="Drag a or b · watch a · b" onReset={reset}>
       <VectorCanvas
+        drawIn={drawIn}
         vectors={vectors}
         onChange={setVector}
         height={280}
