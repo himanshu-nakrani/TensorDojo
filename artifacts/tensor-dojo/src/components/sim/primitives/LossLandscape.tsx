@@ -9,6 +9,23 @@ const Y_RANGE: [number, number] = [-2, 2];
 const NX = 60;
 const NY = 60;
 
+const STATIC_CELLS = (() => {
+  const cells: { dsX: number; dsY: number; scX: number; scY: number }[] = [];
+  for (let i = 0; i < NY; i += 1) {
+    const y = Y_RANGE[0] + (i / (NY - 1)) * (Y_RANGE[1] - Y_RANGE[0]);
+    for (let j = 0; j < NX; j += 1) {
+      const x = X_RANGE[0] + (j / (NX - 1)) * (X_RANGE[1] - X_RANGE[0]);
+      cells.push({
+        dsX: x,
+        dsY: y,
+        scX: ((x - X_RANGE[0]) / (X_RANGE[1] - X_RANGE[0])) * PLOT_W,
+        scY: PLOT_H - ((y - Y_RANGE[0]) / (Y_RANGE[1] - Y_RANGE[0])) * PLOT_H,
+      });
+    }
+  }
+  return cells;
+})();
+
 export interface LossLandscapeProps {
   /**
    * Loss function. Both points are in design-space coordinates
@@ -70,36 +87,50 @@ export function LossLandscape({
   marker,
   ariaLabel,
 }: LossLandscapeProps) {
-  // Pre-compute the loss surface as a colormap (downsampled).
-  const surface = useMemo(() => {
-    const grid: number[][] = [];
-    for (let i = 0; i < NY; i += 1) {
-      const row: number[] = [];
-      const y = Y_RANGE[0] + (i / (NY - 1)) * (Y_RANGE[1] - Y_RANGE[0]);
-      for (let j = 0; j < NX; j += 1) {
-        const x = X_RANGE[0] + (j / (NX - 1)) * (X_RANGE[1] - X_RANGE[0]);
-        row.push(loss([x, y]));
-      }
-      grid.push(row);
+  // Pre-compute and memoize the 3600 `<rect>` cell elements.
+  // By depending strictly on a stable `loss` function reference, this avoids
+  // remapping and reallocating all 3600 elements on every animation frame/render.
+  const surfaceCells = useMemo(() => {
+    // 1. Compute loss values and max.
+    const vals = new Float32Array(STATIC_CELLS.length);
+    let max = -Infinity;
+    for (let i = 0; i < STATIC_CELLS.length; i++) {
+      const c = STATIC_CELLS[i]!;
+      const v = loss([c.dsX, c.dsY]);
+      vals[i] = v;
+      if (v > max) max = v;
     }
-    const flat = grid.flat();
-    const max = Math.max(...flat);
-    return { grid, max };
-  }, [loss]);
 
-  // Opacities are rounded to 4dp to avoid SSR/client float-repr
-  // mismatches (see PHASE_NOTES_REFINE / GradientDescentExplorer).
-  const round4 = (n: number): number => Math.round(n * 1e4) / 1e4;
-  const cellStyle = (
-    v: number,
-  ): { fill: string; opacity: number } => {
-    if (v > surface.max * 0.6) {
-      const t = Math.min(1, v / surface.max);
-      return { fill: 'rgb(var(--negative))', opacity: round4(t * 0.7) };
-    }
-    const t = Math.max(0, 1 - v / (surface.max * 0.5));
-    return { fill: 'rgb(var(--accent))', opacity: round4(t * 0.4) };
-  };
+    // 2. Build the cell elements.
+    const round4 = (n: number) => Math.round(n * 1e4) / 1e4;
+    const w = PLOT_W / (NX - 1) + 0.5;
+    const h = PLOT_H / (NY - 1) + 0.5;
+
+    return STATIC_CELLS.map((c, i) => {
+      const v = vals[i]!;
+      let fill = 'rgb(var(--accent))';
+      let opacity = 0;
+      if (v > max * 0.6) {
+        const t = Math.min(1, v / max);
+        fill = 'rgb(var(--negative))';
+        opacity = round4(t * 0.7);
+      } else {
+        const t = Math.max(0, 1 - v / (max * 0.5));
+        opacity = round4(t * 0.4);
+      }
+      return (
+        <rect
+          key={i}
+          x={c.scX}
+          y={c.scY}
+          width={w}
+          height={h}
+          fill={fill}
+          opacity={opacity}
+        />
+      );
+    });
+  }, [loss]);
 
   return (
     <svg
@@ -109,22 +140,7 @@ export function LossLandscape({
       aria-label={ariaLabel ?? '2D loss surface with overlaid trajectories.'}
     >
       {/* Surface cells */}
-      {surface.grid.map((row, i) =>
-        row.map((v, j) => {
-          const s = cellStyle(v);
-          return (
-            <rect
-              key={`c${i}-${j}`}
-              x={toScreenX(X_RANGE[0] + (j / (NX - 1)) * (X_RANGE[1] - X_RANGE[0]))}
-              y={toScreenY(Y_RANGE[0] + (i / (NY - 1)) * (Y_RANGE[1] - Y_RANGE[0]))}
-              width={PLOT_W / (NX - 1) + 0.5}
-              height={PLOT_H / (NY - 1) + 0.5}
-              fill={s.fill}
-              opacity={s.opacity}
-            />
-          );
-        }),
-      )}
+      {surfaceCells}
       {/* Trajectories */}
       {trajectories.map((tr) => {
         const finite = tr.points.filter(
