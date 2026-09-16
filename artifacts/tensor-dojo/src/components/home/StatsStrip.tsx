@@ -27,8 +27,10 @@ export function StatsStrip({
   ];
 
   if (variant === 'inline') {
+    // 2×2 so the row never wraps to a lone fourth stat inside the
+    // hero column at any viewport.
     return (
-      <dl className="flex flex-wrap items-baseline gap-x-5 gap-y-2 font-mono text-[12px] sm:text-[13px] text-fg-muted">
+      <dl className="grid grid-cols-2 items-baseline gap-x-6 gap-y-2 font-mono text-[12px] sm:text-[13px] text-fg-muted">
         {stats.map((stat) => (
           <div key={stat.label} className="inline-flex items-baseline gap-1.5">
             <dd className="font-semibold text-ink tabular-nums">{stat.value}</dd>

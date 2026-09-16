@@ -3,6 +3,8 @@ import { loadConceptGraph } from "@/lib/content/loaders";
 import { listLessonMeta } from "@/lib/lessons-meta";
 import { buildTrackSections } from "@/lib/content/map-data";
 import { useDocumentMeta } from "@/hooks/use-document-meta";
+import { useCompletions } from "@/hooks/use-completions";
+import { trackColor } from "@/lib/track-color";
 import { useState } from "react";
 import clsx from "clsx";
 
@@ -31,6 +33,7 @@ export default function MapPage() {
   });
 
   const [trackFilter, setTrackFilter] = useState<string | null>(null);
+  const { set: completed } = useCompletions();
 
   return (
     <main
@@ -87,7 +90,19 @@ export default function MapPage() {
                 : 'border-border text-fg-muted hover:border-accent-2/50 hover:text-ink',
             )}
           >
-            {String(i + 1).padStart(2, '0')} · {section.label}
+            <span style={{ color: trackColor(i) }}>
+              {String(i + 1).padStart(2, '0')}
+            </span>
+            {' · '}{section.label}
+            {completed.size > 0 && (
+              <span className="tabular-nums opacity-70">
+                {' '}
+                {section.lessons.filter((l) => completed.has(l.slug)).length ===
+                section.lessons.length
+                  ? '✓'
+                  : `${section.lessons.filter((l) => completed.has(l.slug)).length}/${section.lessons.length}`}
+              </span>
+            )}
           </button>
         ))}
       </div>

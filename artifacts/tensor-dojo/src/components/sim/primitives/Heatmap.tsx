@@ -1,6 +1,6 @@
 
 
-import { useEffect, useId, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import clsx from 'clsx';
 
 export type HeatmapColormap = 'accent' | 'diverging';
@@ -90,7 +90,6 @@ export function Heatmap({
   onCellHover,
   ariaLabel,
 }: HeatmapProps) {
-  const titleId = useId();
   const rows = values.length;
   const cols = rows > 0 ? values[0]!.length : 0;
 
@@ -154,11 +153,8 @@ export function Heatmap({
       preserveAspectRatio="xMidYMid meet"
       className="block w-full h-auto"
       role="img"
-      aria-labelledby={titleId}
+      aria-label={ariaLabel ?? `Heatmap with ${rows} rows and ${cols} columns.`}
     >
-      <title id={titleId}>
-        {ariaLabel ?? `Heatmap with ${rows} rows and ${cols} columns.`}
-      </title>
 
       {/* Column labels */}
       {colLabels &&

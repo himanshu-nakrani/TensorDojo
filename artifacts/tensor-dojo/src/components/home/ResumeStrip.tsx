@@ -10,8 +10,8 @@ import { getLessonMeta } from '@/lib/lessons-meta';
  * editorial for them.
  *
  * Lives directly under the hero on `/`. Independent from the
- * full resume card on `/lessons`, which uses the existing
- * `LessonCardList.ResumeCard` and has a stacked layout.
+ * full resume card on `/lessons`, which lives in
+ * `lessons/LessonDirectory` and has a stacked layout.
  */
 export function ResumeStrip() {
   const [slug, setSlug] = useState<string | null>(null);

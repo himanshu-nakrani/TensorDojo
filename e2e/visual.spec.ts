@@ -35,10 +35,12 @@ async function scrollThrough(page: import('@playwright/test').Page) {
   await page.evaluate(async () => {
     const h = document.body.scrollHeight;
     for (let y = 0; y <= h; y += 600) {
-      window.scrollTo(0, y);
+      // 'instant' beats the html { scroll-behavior: smooth } token so
+      // reveal sections trigger deterministically before capture.
+      window.scrollTo({ top: y, behavior: 'instant' });
       await new Promise((r) => setTimeout(r, 60));
     }
-    window.scrollTo(0, 0);
+    window.scrollTo({ top: 0, behavior: 'instant' });
     await new Promise((r) => setTimeout(r, 400));
   });
 }
@@ -122,9 +124,14 @@ test('first-time visitor sees the onboarding card on lesson 01', async ({ page }
   await page.getByRole('button', { name: 'Start dragging' }).click();
   await expect(dialog).toHaveCount(0);
 
-  // Remembered on the next visit.
-  await page.reload();
-  await expect(page.getByRole('dialog')).toHaveCount(0);
+  // Remembered on the next visit. A fresh page in the same context
+  // carries none of this test's init scripts (which strip the flag on
+  // every navigation), so the dismissal in localStorage is the only
+  // thing deciding whether the card returns.
+  const next = await page.context().newPage();
+  await next.goto('/lessons/dot-product');
+  await expect(next.getByRole('dialog')).toHaveCount(0);
+  await next.close();
 });
 
 test('lesson head carries route-specific meta', async ({ page }) => {
