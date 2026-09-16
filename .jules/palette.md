@@ -27,3 +27,7 @@
 ## 2024-03-09 - Accessible names for Radix UI primitives Close buttons
 **Learning:** Radix UI primitives like `ToastPrimitives.Close`, `DialogPrimitives.Close`, and `SheetPrimitive.Close` do not automatically provide accessible names for their internal icon-only buttons. The library relies on developers explicitly adding `aria-label` attributes or visually hidden text (like `<span className="sr-only">Close</span>`) to these elements.
 **Action:** When implementing or auditing Radix UI close buttons, always verify they contain either an `aria-label` or visually hidden text to ensure they are accessible to screen reader users.
+
+## 2024-03-09 - Accessible Tooltips for Icon-Only Buttons
+**Learning:** React single-page apps often use native `title` attributes on icon-only buttons for tooltips, which may lack visual styling, contrast, or programmatic control for all users.
+**Action:** When creating icon-only buttons (like `ThemeToggle`), wrap them in an accessible tooltip component (e.g., `@/components/ui/tooltip`) inside a globally-enabled `<TooltipProvider>` to enhance visual accessibility while maintaining the screen reader `aria-label`.

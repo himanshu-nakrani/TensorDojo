@@ -2,6 +2,7 @@ import { Route, Switch, Router as WouterRouter } from 'wouter';
 import { TopNav } from '@/components/theme/TopNav';
 import { SearchPaletteProvider } from '@/components/search/SearchPalette';
 import { Spinner } from '@/components/ui/spinner';
+import { TooltipProvider } from '@/components/ui/tooltip';
 import { Component, lazy, Suspense, type ErrorInfo, type ReactNode } from 'react';
 
 const HomePage = lazy(() => import('@/pages/HomePage'));
@@ -79,14 +80,16 @@ class AppErrorBoundary extends Component<{ children: ReactNode }, AppErrorBounda
 function App() {
   return (
     <AppErrorBoundary>
-      <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, '')}>
-        <SearchPaletteProvider>
-          <TopNav />
-          <Suspense fallback={<PageLoader />}>
-            <Router />
-          </Suspense>
-        </SearchPaletteProvider>
-      </WouterRouter>
+      <TooltipProvider delayDuration={0}>
+        <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, '')}>
+          <SearchPaletteProvider>
+            <TopNav />
+            <Suspense fallback={<PageLoader />}>
+              <Router />
+            </Suspense>
+          </SearchPaletteProvider>
+        </WouterRouter>
+      </TooltipProvider>
     </AppErrorBoundary>
   );
 }
