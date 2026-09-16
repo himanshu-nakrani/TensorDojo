@@ -203,6 +203,9 @@
    (lesson TOC, /lessons#track-…) must land below it, not under it. */
 html {
   scroll-padding-top: 96px;
+  /* Anchor jumps (track chips, TOC, curriculum tiles) glide instead of
+     teleporting; the guard keeps reduced-motion readers at instant. */
+  scroll-behavior: smooth;
 }
 
 /* ===========================================================================
@@ -691,6 +694,13 @@ html {
     transform: translateY(0);
   }
 }
+/* Long catalogue pages: let the browser skip layout/paint of
+   off-screen track sections until they approach the viewport. */
+.cv-auto {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 640px;
+}
+
 .animate-fade-up {
   animation: fade-up 600ms cubic-bezier(0.16, 1, 0.3, 1) both;
   animation-delay: var(--delay, 0ms);
@@ -933,18 +943,16 @@ html {
 
 /* ===========================================================================
    Signature motions (design v2).
-   - draw-in: vectors stroke themselves out of the origin on mount.
+   - vector-grow: vectors scale out of the origin on mount.
    - route-enter: 120-240ms cross-fade when the route swaps.
    Both collapse under prefers-reduced-motion.
    =========================================================================== */
-@keyframes draw-sweep {
-  from { stroke-dashoffset: 1; }
-  to { stroke-dashoffset: 0; }
+@keyframes vector-grow {
+  from { transform: scale(0.001); }
+  to { transform: scale(1); }
 }
-.draw-in {
-  stroke-dasharray: 1;
-  stroke-dashoffset: 1;
-  animation: draw-sweep 640ms var(--ease-sweep) both;
+.vector-grow {
+  animation: vector-grow 640ms var(--ease-sweep) both;
 }
 @keyframes route-fade {
   from { opacity: 0; transform: translateY(4px); }
@@ -954,12 +962,16 @@ html {
   animation: route-fade var(--dur-base) var(--ease-sweep) both;
 }
 @media (prefers-reduced-motion: reduce) {
-  .draw-in {
-    stroke-dasharray: none;
-    stroke-dashoffset: 0;
+  .vector-grow {
     animation: none;
   }
   .route-enter {
     animation: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
   }
 }

@@ -215,7 +215,6 @@ export function VectorCanvas({
   };
 
   const [ox, oy] = toScreen(0, 0);
-  const titleId = `vc-${vectors.map((v) => v.id).join('-')}`;
 
   return (
     <svg
@@ -224,17 +223,15 @@ export function VectorCanvas({
       className="w-full block touch-none select-none"
       style={{ height }}
       role="img"
-      aria-labelledby={titleId}
+      aria-label={
+        ariaLabel ??
+        `2D plane with ${vectors.length} vector${vectors.length === 1 ? '' : 's'}.`
+      }
       onPointerMove={onPointerMove}
       onPointerUp={onPointerUp}
       onPointerCancel={onPointerUp}
       onPointerLeave={onPointerUp}
     >
-      <title id={titleId}>
-        {ariaLabel ??
-          `2D plane with ${vectors.length} vector${vectors.length === 1 ? '' : 's'}.`}
-      </title>
-
       {/* Background */}
       <rect x={0} y={0} width={VIEW} height={VIEW} className="fill-surface" />
 
@@ -286,31 +283,45 @@ export function VectorCanvas({
           ({ lx: tx + 4, ly: ty - 4, anchor: 'start', width: 0 } as LabelPos);
         return (
           <g key={v.id}>
-            {/* Arrow line */}
+            {/* Line + head grow out of the origin as one group: a
+                transform-based draw-in, because dash-offset sweeps
+                mis-render under non-scaling-stroke. */}
+            <g
+              className={drawIn ? 'vector-grow' : undefined}
+              style={
+                drawIn
+                  ? {
+                      transformOrigin: `${ox}px ${oy}px`,
+                      animationDelay: `${i * 120}ms`,
+                    }
+                  : undefined
+              }
+            >
             <line
               x1={ox}
               y1={oy}
               x2={tx}
               y2={ty}
-              pathLength={drawIn ? 1 : undefined}
-              style={drawIn ? { animationDelay: `${i * 120}ms` } : undefined}
               className={clsx(
                 'transition-all duration-150 ease-out',
                 isDragging ? 'stroke-accent-hover' : 'stroke-accent',
-                drawIn && 'draw-in',
               )}
               strokeWidth={isDragging ? 1.8 : 1.2}
               vectorEffect="non-scaling-stroke"
               strokeLinecap="round"
             />
-            {/* Arrow head (a small triangle) */}
+            {/* Arrow head: a small triangle rotated to point along the
+                vector; it rides the grow-from-origin sweep with the
+                line so it never floats detached. */}
             <polygon
-              points={`${tx},${ty} ${tx - 2.6},${ty - 1.5} ${tx - 2.6},${ty + 1.5}`}
+              points={`${tx + 0.6},${ty} ${tx - 3.2},${ty - 1.9} ${tx - 3.2},${ty + 1.9}`}
+              transform={`rotate(${(Math.atan2(ty - oy, tx - ox) * 180) / Math.PI} ${tx} ${ty})`}
               className={clsx(
-                'transition-all duration-150 ease-out',
+                'vector-arrow transition-all duration-150 ease-out',
                 isDragging ? 'fill-accent-hover' : 'fill-accent',
               )}
             />
+            </g>
             {/* Focus ring — visible only when this tip has keyboard
                 focus. Rendered as a separate non-interactive ring under
                 the hit area so the SVG stroke is genuinely thicker than

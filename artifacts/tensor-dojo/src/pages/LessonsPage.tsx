@@ -1,4 +1,4 @@
-import { LessonCardList } from "@/components/home/LessonCardList";
+import { LessonDirectory } from "@/components/lessons/LessonDirectory";
 import { useDocumentMeta } from "@/hooks/use-document-meta";
 
 export default function LessonsPage() {
@@ -15,7 +15,7 @@ export default function LessonsPage() {
       tabIndex={-1}
       className="mx-auto px-6 sm:px-10 py-12 sm:py-16 max-w-wide"
     >
-      <header className="mb-10 max-w-prose">
+      <header className="mb-8 max-w-prose">
         <div className="text-[12px] uppercase tracking-[0.18em] text-fg-muted font-mono mb-3">
           Lessons
         </div>
@@ -28,7 +28,7 @@ export default function LessonsPage() {
         </p>
       </header>
 
-      <LessonCardList />
+      <LessonDirectory />
     </main>
   );
 }

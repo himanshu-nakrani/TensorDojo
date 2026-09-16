@@ -1,6 +1,6 @@
 
 
-import { useId } from 'react';
+
 import clsx from 'clsx';
 
 interface BarChartProps {
@@ -23,7 +23,6 @@ export function BarChart({
   height = 220,
   ariaLabel,
 }: BarChartProps) {
-  const titleId = useId();
   const n = values.length;
   const max = Math.max(0.001, ...values);
 
@@ -41,12 +40,10 @@ export function BarChart({
         className="w-full block"
         style={{ height }}
         role="img"
-        aria-labelledby={titleId}
+        aria-label={
+          ariaLabel ?? `Bar chart with ${n} bars. Max value ${max.toFixed(3)}.`
+        }
       >
-        <title id={titleId}>
-          {ariaLabel ??
-            `Bar chart with ${n} bars. Max value ${max.toFixed(3)}.`}
-        </title>
         {/* Faint baseline at the chart floor. */}
         <line
           x1={0}
