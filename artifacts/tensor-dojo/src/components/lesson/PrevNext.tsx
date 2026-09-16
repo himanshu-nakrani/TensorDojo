@@ -90,14 +90,14 @@ export function PrevNext({ slug }: PrevNextProps) {
               <span className="block text-[12px] uppercase tracking-[0.12em] text-fg-muted font-mono mb-0.5">
                 {prevIsNewTrack ? (
                   <>
-                    <span className="text-accent">New track</span>
+                    <span className="text-accent-2">New track</span>
                     <span className="text-fg-muted"> · previous</span>
                   </>
                 ) : (
                   'Previous lesson'
                 )}
               </span>
-              <span className="block text-[14px] font-medium text-ink leading-snug group-hover:text-accent transition-colors">
+              <span className="block text-[14px] font-medium text-ink leading-snug group-hover:text-accent-2 transition-colors">
                 {prevLesson.meta.title}
               </span>
             </span>
@@ -114,14 +114,14 @@ export function PrevNext({ slug }: PrevNextProps) {
               <span className="block text-[12px] uppercase tracking-[0.12em] text-fg-muted font-mono mb-0.5">
                 {nextIsNewTrack ? (
                   <>
-                    <span className="text-accent">New track</span>
+                    <span className="text-accent-2">New track</span>
                     <span className="text-fg-muted"> · next</span>
                   </>
                 ) : (
                   'Next lesson'
                 )}
               </span>
-              <span className="block text-[14px] font-medium text-ink leading-snug group-hover:text-accent transition-colors">
+              <span className="block text-[14px] font-medium text-ink leading-snug group-hover:text-accent-2 transition-colors">
                 {nextLesson.meta.title}
               </span>
             </span>

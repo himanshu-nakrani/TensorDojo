@@ -113,6 +113,10 @@ regressing something the author tuned deliberately and wants visual review:
   (1.05 / 1.1 / 1.125 / 1.15rem); collapsing them changes rendered sizes
   across 58 lessons + home + map, so it belongs in its own visually
   reviewed pass, not a blind sweep.
+  *Update (launch polish pass): named tokens (`display-*`, `body-*`,
+  `label-*`) now exist in `tailwind.config.ts` and the home surfaces use
+  them; lesson prose still uses the reviewed `.lesson-body` scale, so no
+  rendered sizes shifted.*
 - **`--negative` for a neutral second series** (test points / residual /
   test-loss line) — flagged as semantic red-misuse, but "train blue / test
   red" is a widespread ML-chart convention and the current pairing is
@@ -120,6 +124,13 @@ regressing something the author tuned deliberately and wants visual review:
 - **Chart series redundant encoding** — adding a shape per series so hue
   isn't the sole signal. Lower priority: the legends already carry the
   color→meaning mapping in words, and blue/red is CVD-distinguishable.
+
+*Update (launch polish pass): two items from this list are now resolved —
+`Heatmap` cells gained tap + focus/Enter cross-highlight (small grids are
+tab-navigable with per-cell `aria-label`s), and hover-only affordances have
+a `.hover-affordance` utility that force-reveals under
+`@media (hover: none)`. `SimFrame` headers now wrap by default (Focus
+Area 1 suggestion).*
 
 **Done in this change** (were deferred in the first pass):
 

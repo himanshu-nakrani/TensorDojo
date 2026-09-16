@@ -15,7 +15,12 @@ interface SimFrameProps {
    * `onReset` is ignored.
    */
   headerAction?: ReactNode;
-  /** Adds `flex-wrap gap-3` to the header row for narrow viewports. */
+  /**
+   * Header row wrapping. Defaults to true — wide action groups
+   * (segmented controls, multiple buttons) squeeze the title on
+   * narrow viewports otherwise (ux-audit deferred item, resolved).
+   * Pass `headerWrap={false}` for headers that must stay on one line.
+   */
   headerWrap?: boolean;
   className?: string;
   children: ReactNode;
@@ -26,7 +31,7 @@ export function SimFrame({
   onReset,
   resetLabel = 'Reset',
   headerAction,
-  headerWrap,
+  headerWrap = true,
   className,
   children,
 }: SimFrameProps) {
@@ -45,7 +50,7 @@ export function SimFrame({
   return (
     <div
       className={clsx(
-        'rounded-xl border border-border bg-surface p-6 sm:p-8 card-surface',
+        'bezel rounded-lg border border-border bg-surface p-6 sm:p-8 shadow-card',
         className,
       )}
     >

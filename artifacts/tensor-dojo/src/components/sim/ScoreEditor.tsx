@@ -99,7 +99,7 @@ export function ScoreEditor({ preset }: { preset?: ScoreEditorPreset }) {
                   onChange={(v) => setScore(i, v)}
                   onKeyDown={handleKey(i)}
                   ariaLabel={`Score ${i + 1}`}
-                  className="w-20"
+                  className="w-28"
                   ref={(el) => {
                     inputRefs.current[i] = el;
                   }}

@@ -32,6 +32,11 @@ interface VectorCanvasProps {
   /** Rendered height in pixels. */
   height?: number;
   /**
+   * One-shot signature motion: vectors draw themselves in from the
+   * origin on mount (stroke-dash sweep). Used by the landing hero.
+   */
+  drawIn?: boolean;
+  /**
    * Optional overlay: a function that receives `toScreen` and returns
    * additional SVG children to render on top of the plane, between
    * the axes and the vector labels. Use this for projection lines,
@@ -68,6 +73,7 @@ export function VectorCanvas({
   showGrid = true,
   readOnly = false,
   height = 320,
+  drawIn = false,
   overlay,
   ariaLabel,
 }: VectorCanvasProps) {
@@ -272,7 +278,7 @@ export function VectorCanvas({
       {overlay?.(toScreen)}
 
       {/* Vectors */}
-      {vectors.map((v) => {
+      {vectors.map((v, i) => {
         const [tx, ty] = toScreen(v.value[0], v.value[1]);
         const isDragging = dragging === v.id;
         const lay =
@@ -286,9 +292,12 @@ export function VectorCanvas({
               y1={oy}
               x2={tx}
               y2={ty}
+              pathLength={drawIn ? 1 : undefined}
+              style={drawIn ? { animationDelay: `${i * 120}ms` } : undefined}
               className={clsx(
                 'transition-all duration-150 ease-out',
                 isDragging ? 'stroke-accent-hover' : 'stroke-accent',
+                drawIn && 'draw-in',
               )}
               strokeWidth={isDragging ? 1.8 : 1.2}
               vectorEffect="non-scaling-stroke"
@@ -329,6 +338,7 @@ export function VectorCanvas({
               r={6}
               fill="transparent"
               className={clsx(
+                'vector-hit',
                 !readOnly && 'cursor-grab focus:outline-none',
                 isDragging && 'cursor-grabbing',
                 readOnly && 'cursor-default',
@@ -348,7 +358,7 @@ export function VectorCanvas({
               cy={ty}
               r={isDragging ? 3.6 : 2.8}
               className={clsx(
-                'transition-all duration-150 ease-out pointer-events-none',
+                'vector-tip transition-all duration-150 ease-out pointer-events-none',
                 'fill-accent',
               )}
               stroke={isDragging ? 'rgb(var(--bg))' : 'transparent'}

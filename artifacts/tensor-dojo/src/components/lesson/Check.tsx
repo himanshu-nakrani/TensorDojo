@@ -1,5 +1,6 @@
 import { useEffect, useId, useState } from 'react';
 import { getCheckResult, recordCheck, type CheckResult } from '@/lib/progress/mastery';
+import { track } from '@/lib/analytics';
 
 interface CheckProps {
   id: string;
@@ -30,7 +31,7 @@ export function Check({ id, question, options, answer, explanation }: CheckProps
       className="my-8 rounded-md border border-border bg-surface px-5 py-5 sm:px-6"
       aria-labelledby={`${groupId}-question`}
     >
-      <p className="text-[11px] uppercase tracking-[0.14em] font-mono text-accent">Check your intuition</p>
+      <p className="text-[11px] uppercase tracking-[0.14em] font-mono text-accent-2">Check your intuition</p>
       <h3 id={`${groupId}-question`} className="mt-2 text-base font-semibold text-ink">
         {question}
       </h3>
@@ -40,9 +41,9 @@ export function Check({ id, question, options, answer, explanation }: CheckProps
           const checked = selected === index;
           const answerState = submitted
             ? index === answer
-              ? 'border-green-600 bg-green-50 text-green-950 dark:border-green-400 dark:bg-green-950/30 dark:text-green-100'
+              ? 'border-[rgb(var(--positive))] bg-[rgb(var(--positive)/0.08)] text-ink'
               : checked
-                ? 'border-red-600 bg-red-50 text-red-950 dark:border-red-400 dark:bg-red-950/30 dark:text-red-100'
+                ? 'border-[rgb(var(--negative))] bg-[rgb(var(--negative)/0.08)] text-ink'
                 : 'border-border text-fg-muted'
             : checked
               ? 'border-accent bg-accent-faint text-ink'
@@ -66,7 +67,7 @@ export function Check({ id, question, options, answer, explanation }: CheckProps
       </div>
 
       {savedResult?.correct && !submitted && (
-        <p className="mt-3 text-xs font-mono text-green-700 dark:text-green-300" role="status">
+        <p className="mt-3 text-xs font-mono text-[rgb(var(--positive))]" role="status">
           Mastered · {savedResult.attempts} {savedResult.attempts === 1 ? 'attempt' : 'attempts'}
         </p>
       )}
@@ -74,12 +75,13 @@ export function Check({ id, question, options, answer, explanation }: CheckProps
       {!submitted ? (
         <button
           type="button"
-          className="focus-ring mt-4 rounded-md bg-accent px-4 py-2 text-[12px] font-mono uppercase tracking-[0.1em] text-white enabled:hover:bg-accent-hover disabled:cursor-not-allowed disabled:opacity-50"
+          className="focus-ring mt-4 rounded-md bg-accent px-4 py-2 text-[12px] font-mono uppercase tracking-[0.1em] text-accent-fg enabled:hover:bg-accent-hover disabled:cursor-not-allowed disabled:opacity-50"
           disabled={selected === null}
           onClick={() => {
             const correct = selected === answer;
             setSubmitted(true);
             setSavedResult(recordCheck(id, correct));
+            track('check_answer', { check: id });
           }}
         >
           Check answer

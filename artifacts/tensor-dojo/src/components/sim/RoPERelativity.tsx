@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from 'react';
 import clsx from 'clsx';
+import { Segmented } from '@/components/sim/primitives/Segmented';
 import { SimFrame } from '@/components/sim/primitives/SimFrame';
 import { applyRope, dot } from '@/lib/math/rope';
 
@@ -126,24 +127,15 @@ export function RoPERelativity() {
       onReset={reset}
       headerAction={
         <div className="flex items-center gap-3">
-          <div className="flex border border-border rounded overflow-hidden font-mono text-[11px]">
-            {(['single-pair', 'all-pairs'] as const).map((m) => (
-              <button
-                key={m}
-                type="button"
-                onClick={() => setMode(m)}
-                aria-pressed={mode === m}
-                className={clsx(
-                  'px-2 py-0.5 transition-colors focus-ring',
-                  mode === m
-                    ? 'bg-accent-soft text-accent'
-                    : 'text-muted hover:text-ink',
-                )}
-              >
-                {m === 'single-pair' ? 'pair 0 only' : 'all 4 pairs'}
-              </button>
-            ))}
-          </div>
+          <Segmented<'single-pair' | 'all-pairs'>
+            ariaLabel="Curve mode"
+            value={mode}
+            onChange={setMode}
+            options={[
+              { value: 'single-pair' as const, label: 'pair 0 only' },
+              { value: 'all-pairs' as const, label: 'all 4 pairs' },
+            ]}
+          />
           <button
             type="button"
             onClick={reset}

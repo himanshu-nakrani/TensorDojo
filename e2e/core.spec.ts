@@ -18,7 +18,7 @@ test('new systems lesson route renders its assessment and workbench', async ({ p
 
 test('unknown lesson routes render the not-found page', async ({ page }) => {
   await page.goto('/lessons/does-not-exist');
-  await expect(page.getByRole('heading', { name: 'Lost?' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Out of distribution.' })).toBeVisible();
   await expect(page.getByRole('link', { name: /← Home/i })).toBeVisible();
 });
 
@@ -42,7 +42,9 @@ test('shareable interactive state reopens the requested workbench panel', async 
 
 test('continuous-batching lesson exposes occupancy control', async ({ page }) => {
   await page.goto('/lessons/continuous-batching');
-  await expect(page.getByRole('heading', { name: /Continuous batching/i })).toBeVisible();
+  await expect(
+    page.getByRole('heading', { name: /Continuous batching/i, level: 1 }),
+  ).toBeVisible();
   await expect(page.getByRole('slider', { name: /occupancy/i })).toBeVisible();
 });
 

@@ -47,7 +47,7 @@ export function WhyTiles() {
       <ul className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5">
         {TILES.map((tile) => (
           <li key={tile.eyebrow} className="lab-card p-6 sm:p-7">
-            <div className="text-[12px] uppercase tracking-[0.12em] font-mono text-accent mb-3">
+            <div className="text-[12px] uppercase tracking-[0.12em] font-mono text-accent-2 mb-3">
               {tile.eyebrow}
             </div>
             <h3 className="text-[1.125rem] font-semibold text-ink tracking-[-0.005em] mb-2 leading-snug">
