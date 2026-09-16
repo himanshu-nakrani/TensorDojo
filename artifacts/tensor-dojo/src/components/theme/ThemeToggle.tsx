@@ -1,9 +1,9 @@
-import { useTheme } from "@/lib/theme/use-theme";
+import { useTheme } from '@/lib/theme/use-theme';
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-} from "@/components/ui/tooltip";
+} from '@/components/ui/tooltip';
 
 /**
  * Single icon-only button that swaps the document's theme class.
@@ -17,9 +17,9 @@ import {
  */
 export function ThemeToggle() {
   const { theme, toggle } = useTheme();
-  const next = theme === "dark" ? "light" : "dark";
+  const next = theme === 'dark' ? 'light' : 'dark';
   const label =
-    next === "light" ? "Switch to light theme" : "Switch to dark theme";
+    next === 'light' ? 'Switch to light theme' : 'Switch to dark theme';
 
   return (
     <Tooltip>
@@ -29,9 +29,9 @@ export function ThemeToggle() {
           onClick={toggle}
           aria-label={label}
           className="focus-ring inline-flex h-11 w-11 items-center justify-center rounded-md text-fg-muted hover:text-ink hover:bg-bg-elevated-hover transition-colors"
-          aria-pressed={theme === "dark"}
+          aria-pressed={theme === 'dark'}
         >
-          {theme === "dark" ? <SunIcon /> : <MoonIcon />}
+          {theme === 'dark' ? <SunIcon /> : <MoonIcon />}
         </button>
       </TooltipTrigger>
       <TooltipContent side="bottom">

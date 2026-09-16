@@ -1,15 +1,20 @@
-import { useEffect, useRef, useState } from "react";
-import { useLocation } from "wouter";
-import { Link } from "wouter";
+import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
+import { useLocation } from 'wouter';
+import { Link } from 'wouter';
 
-import clsx from "clsx";
-import { ThemeToggle } from "./ThemeToggle";
-import { useSearchPalette } from "@/components/search/SearchPalette";
+import clsx from 'clsx';
+import { ThemeToggle } from './ThemeToggle';
+import { Logo } from './Logo';
+import { useSearchPalette } from '@/components/search/SearchPalette';
+import { useCompletions } from '@/hooks/use-completions';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+  getLessonMeta,
+  prevNext,
+  readingOrder,
+  trackForSlug,
+} from '@/lib/lessons-meta';
+import { track } from '@/lib/analytics';
 
 interface NavLink {
   href: string;
@@ -43,6 +48,50 @@ const LINKS: readonly NavLink[] = [
 export function TopNav() {
   const [pathname] = useLocation();
   const [open, setOpen] = useState(false);
+  const { count } = useCompletions();
+  const order = useMemo(() => readingOrder(), []);
+  const total = order.length;
+  const onLesson = pathname.startsWith('/lessons/');
+  const lessonSlug = onLesson ? pathname.slice('/lessons/'.length) : '';
+  // Index comes from readingOrder() — the same sequence prevNext()
+  // walks — so the "NN/80" readout and the ← → arrows never disagree.
+  const lessonIndex = lessonSlug ? order.indexOf(lessonSlug) : -1;
+  const lessonMeta = useMemo(
+    () => (lessonSlug ? getLessonMeta(lessonSlug) : undefined),
+    [lessonSlug],
+  );
+  const lessonNav = useMemo(
+    () => (lessonSlug ? prevNext(lessonSlug) : { prev: undefined, next: undefined }),
+    [lessonSlug],
+  );
+  const [progress, setProgress] = useState(0);
+
+  // Reading progress on lesson routes: fraction of the document
+  // scrolled, mapped onto the thin accent bar under the header.
+  useEffect(() => {
+    if (!onLesson) {
+      setProgress(0);
+      return;
+    }
+    let raf = 0;
+    const update = () => {
+      raf = 0;
+      const doc = document.documentElement;
+      const max = doc.scrollHeight - window.innerHeight;
+      setProgress(max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0);
+    };
+    const onScroll = () => {
+      if (raf === 0) raf = window.requestAnimationFrame(update);
+    };
+    update();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    return () => {
+      if (raf !== 0) window.cancelAnimationFrame(raf);
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onScroll);
+    };
+  }, [onLesson, pathname]);
   const drawerRef = useRef<HTMLDivElement>(null);
   const toggleRef = useRef<HTMLButtonElement>(null);
   const wasOpen = useRef(false);
@@ -133,12 +182,10 @@ export function TopNav() {
         <div className="mx-auto flex h-12 max-w-[1500px] items-center justify-between gap-4 px-4 sm:px-6">
           <Link
             href="/"
-            className="focus-ring inline-flex items-center gap-2 rounded-sm text-[13px] font-mono text-ink hover:text-accent transition-colors"
+            className="focus-ring inline-flex items-center gap-2 rounded-sm text-[13px] font-mono text-ink hover:text-accent-2 transition-colors"
             aria-label="Tensor Dojo — home"
           >
-            <span aria-hidden="true" className="text-accent">
-              ◆
-            </span>
+             <Logo size={17} className="text-ink shrink-0" />
             <span className="tracking-[0.04em] font-semibold">tensor dojo</span>
           </Link>
 
@@ -154,8 +201,8 @@ export function TopNav() {
                   href={link.href}
                   aria-current={active ? "page" : undefined}
                   className={clsx(
-                    "focus-ring inline-flex h-9 items-center rounded-md px-3 text-[13px] font-mono transition-colors",
-                    active ? "text-accent" : "text-fg-muted hover:text-ink",
+                    'focus-ring inline-flex h-9 items-center rounded-md px-3 text-[13px] font-mono transition-colors',
+                    active ? 'text-accent-2' : 'text-fg-muted hover:text-ink',
                   )}
                 >
                   {link.label}
@@ -164,7 +211,10 @@ export function TopNav() {
             })}
             <button
               type="button"
-              onClick={search.open}
+              onClick={() => {
+                track('search_open', { source: 'topnav' });
+                search.open();
+              }}
               aria-label="Search lessons"
               className="focus-ring inline-flex h-9 items-center gap-2 rounded-md px-3 text-[13px] font-mono text-fg-muted hover:text-ink transition-colors"
             >
@@ -174,17 +224,22 @@ export function TopNav() {
                 {modKey}K
               </kbd>
             </button>
+            {count > 0 && <ProgressRing count={count} total={total} />}
             <span className="ml-2">
               <ThemeToggle />
             </span>
           </nav>
 
           <div className="flex items-center gap-1 md:hidden">
+            {count > 0 && <ProgressRing count={count} total={total} compact />}
             <Tooltip>
               <TooltipTrigger asChild>
                 <button
                   type="button"
-                  onClick={search.open}
+                  onClick={() => {
+                    track('search_open', { source: 'topnav-mobile' });
+                    search.open();
+                  }}
                   aria-label="Search lessons"
                   className="focus-ring inline-flex h-11 w-11 items-center justify-center rounded-md text-fg-muted hover:text-ink hover:bg-bg-elevated-hover transition-colors"
                 >
@@ -216,6 +271,27 @@ export function TopNav() {
             </Tooltip>
           </div>
         </div>
+        {onLesson && lessonMeta && (
+          <LessonContextBar
+            index={lessonIndex}
+            total={total}
+            trackLabel={trackForSlug(lessonSlug)?.label}
+            title={lessonMeta.meta.title}
+            prev={lessonNav.prev}
+            next={lessonNav.next}
+          />
+        )}
+        {onLesson && progress > 0 && (
+          <div
+            aria-hidden="true"
+            className="absolute bottom-0 left-0 right-0 h-[2px] pointer-events-none"
+          >
+            <div
+              className="reading-progress h-full w-full"
+              style={{ '--progress': progress } as CSSProperties}
+            />
+          </div>
+        )}
       </header>
 
       {open && (
@@ -226,7 +302,13 @@ export function TopNav() {
           aria-modal="true"
           aria-label="Navigation"
           onKeyDown={trapKeyDown}
-          className="fixed inset-0 top-12 z-30 md:hidden bg-bg/95 backdrop-blur-md"
+          className={clsx(
+            'fixed inset-0 z-30 md:hidden bg-bg/95 backdrop-blur-md',
+            // The sticky header grows a context tier on lesson routes;
+            // the drawer must start below the whole header, not below
+            // the brand row, or the context bar overlays its top.
+            onLesson && lessonMeta ? 'top-[84px]' : 'top-12',
+          )}
         >
           <nav
             aria-label="Primary"
@@ -242,18 +324,139 @@ export function TopNav() {
                   className={clsx(
                     "focus-ring inline-flex min-h-[48px] items-center rounded-md px-3 text-[15px] font-mono transition-colors",
                     active
-                      ? "text-accent bg-accent-soft"
-                      : "text-ink hover:bg-bg-elevated-hover",
+                      ? 'text-accent-2 bg-accent-2-soft'
+                      : 'text-ink hover:bg-bg-elevated-hover',
                   )}
                 >
                   {link.label}
                 </Link>
               );
             })}
+            {count > 0 && (
+              <div className="mt-3 border-t border-border pt-3 px-3 text-[12px] font-mono text-fg-muted tabular-nums">
+                {count} / {total} lessons complete
+              </div>
+            )}
           </nav>
         </div>
       )}
     </>
+  );
+}
+
+/**
+ * Second header tier on lesson routes: track, position in the
+ * curriculum, lesson title, and prev/next jumps — the instrument's
+ * status row. Keeps readers oriented without scrolling to PrevNext.
+ */
+function LessonContextBar({
+  index,
+  total,
+  trackLabel,
+  title,
+  prev,
+  next,
+}: {
+  index: number;
+  total: number;
+  trackLabel?: string;
+  title: string;
+  prev?: string;
+  next?: string;
+}) {
+  return (
+    <div className="border-t border-border/60">
+      <div className="mx-auto flex h-9 max-w-[1500px] items-center gap-3 px-4 sm:px-6 font-mono text-[11px]">
+        {trackLabel && (
+          <span className="uppercase tracking-[0.14em] text-accent-2 truncate max-w-[38vw] sm:max-w-none">
+            {trackLabel}
+          </span>
+        )}
+        <span className="text-fg-subtle tabular-nums shrink-0">
+          {String(index + 1).padStart(2, '0')}/{total}
+        </span>
+        <span className="hidden md:block text-fg-muted truncate">{title}</span>
+        <span className="ml-auto flex items-center gap-1 shrink-0">
+          {prev ? (
+            <Link
+              href={`/lessons/${prev}`}
+              aria-label="Previous lesson"
+              className="focus-ring inline-flex h-7 w-7 items-center justify-center rounded-sm border border-border text-fg-muted hover:border-accent-2 hover:text-accent-2 transition-colors"
+            >
+              ←
+            </Link>
+          ) : (
+            <span aria-hidden="true" className="inline-flex h-7 w-7 items-center justify-center text-border-strong">←</span>
+          )}
+          {next ? (
+            <Link
+              href={`/lessons/${next}`}
+              aria-label="Next lesson"
+              className="focus-ring inline-flex h-7 w-7 items-center justify-center rounded-sm border border-border text-fg-muted hover:border-accent-2 hover:text-accent-2 transition-colors"
+            >
+              →
+            </Link>
+          ) : (
+            <span aria-hidden="true" className="inline-flex h-7 w-7 items-center justify-center text-border-strong">→</span>
+          )}
+        </span>
+      </div>
+    </div>
+  );
+}
+
+/**
+ * Completion progress ring — appears in the nav once the reader has
+ * completed at least one lesson. Links to /lessons where the full
+ * per-track progress lives.
+ */
+function ProgressRing({
+  count,
+  total,
+  compact,
+}: {
+  count: number;
+  total: number;
+  compact?: boolean;
+}) {
+  const frac = total > 0 ? Math.min(1, count / total) : 0;
+  const r = 8;
+  const c = 2 * Math.PI * r;
+  return (
+    <Link
+      href="/lessons"
+      aria-label={`${count} of ${total} lessons complete — see all progress`}
+      title={`${count}/${total} complete`}
+      className={clsx(
+        'focus-ring inline-flex items-center gap-1.5 rounded-md transition-colors',
+        compact ? 'h-11 px-2' : 'h-9 ml-1 px-2',
+      )}
+    >
+      <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true">
+        <circle
+          cx="10"
+          cy="10"
+          r={r}
+          fill="none"
+          stroke="rgb(var(--border-strong))"
+          strokeWidth="2"
+        />
+        <circle
+          cx="10"
+          cy="10"
+          r={r}
+          fill="none"
+          stroke="rgb(var(--accent-2))"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeDasharray={`${(frac * c).toFixed(2)} ${c.toFixed(2)}`}
+          transform="rotate(-90 10 10)"
+        />
+      </svg>
+      <span className="hidden lg:inline text-[11px] font-mono text-fg-muted tabular-nums">
+        {count}/{total}
+      </span>
+    </Link>
   );
 }
 

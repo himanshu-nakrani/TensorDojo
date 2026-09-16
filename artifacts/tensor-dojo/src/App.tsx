@@ -1,33 +1,33 @@
-import { Route, Switch, Router as WouterRouter } from "wouter";
-import { TopNav } from "@/components/theme/TopNav";
-import { SearchPaletteProvider } from "@/components/search/SearchPalette";
-import { Spinner } from "@/components/ui/spinner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import {
-  Component,
-  lazy,
-  Suspense,
-  type ErrorInfo,
-  type ReactNode,
-} from "react";
+import { Route, Switch, Router as WouterRouter, useLocation } from 'wouter';
+import { TopNav } from '@/components/theme/TopNav';
+import { SearchPaletteProvider } from '@/components/search/SearchPalette';
+import { Spinner } from '@/components/ui/spinner';
+import { TooltipProvider } from '@/components/ui/tooltip';
+import { Component, lazy, Suspense, type ErrorInfo, type ReactNode } from 'react';
 
-const HomePage = lazy(() => import("@/pages/HomePage"));
-const MapPage = lazy(() => import("@/pages/MapPage"));
-const LessonsPage = lazy(() => import("@/pages/LessonsPage"));
-const LessonPage = lazy(() => import("@/pages/LessonPage"));
-const NotFoundPage = lazy(() => import("@/pages/NotFoundPage"));
+const HomePage = lazy(() => import('@/pages/HomePage'));
+const MapPage = lazy(() => import('@/pages/MapPage'));
+const LessonsPage = lazy(() => import('@/pages/LessonsPage'));
+const LessonPage = lazy(() => import('@/pages/LessonPage'));
+const NotFoundPage = lazy(() => import('@/pages/NotFoundPage'));
 
 const PageLoader = () => (
-  <div
-    className="min-h-screen flex items-center justify-center bg-bg"
-    role="status"
-  >
+  <div className="min-h-screen flex items-center justify-center bg-bg" role="status">
     <div className="text-muted text-sm font-mono flex items-center gap-2">
       <Spinner className="text-accent" aria-hidden="true" />
       <span>Loading…</span>
     </div>
   </div>
 );
+
+function RouteFade({ children }: { children: ReactNode }) {
+  const [pathname] = useLocation();
+  return (
+    <div key={pathname} className="route-enter">
+      {children}
+    </div>
+  );
+}
 
 function Router() {
   return (
@@ -43,10 +43,7 @@ function Router() {
 
 type AppErrorBoundaryState = { error: Error | null };
 
-class AppErrorBoundary extends Component<
-  { children: ReactNode },
-  AppErrorBoundaryState
-> {
+class AppErrorBoundary extends Component<{ children: ReactNode }, AppErrorBoundaryState> {
   state: AppErrorBoundaryState = { error: null };
 
   static getDerivedStateFromError(error: Error): AppErrorBoundaryState {
@@ -54,7 +51,7 @@ class AppErrorBoundary extends Component<
   }
 
   componentDidCatch(error: Error, info: ErrorInfo) {
-    console.error("TensorDojo application error", error, info.componentStack);
+    console.error('TensorDojo application error', error, info.componentStack);
   }
 
   render() {
@@ -63,15 +60,10 @@ class AppErrorBoundary extends Component<
     return (
       <main className="min-h-screen flex items-center justify-center bg-bg px-6 py-16">
         <section className="w-full max-w-xl rounded-md border border-border bg-surface p-8 text-center shadow-sm">
-          <p className="text-[11px] uppercase tracking-[0.16em] font-mono text-accent">
-            Something went wrong
-          </p>
-          <h1 className="mt-3 text-2xl font-semibold text-ink">
-            The lab needs a reset.
-          </h1>
+          <p className="text-[11px] uppercase tracking-[0.16em] font-mono text-accent">Something went wrong</p>
+          <h1 className="mt-3 text-2xl font-semibold text-ink">The lab needs a reset.</h1>
           <p className="mt-3 text-sm leading-relaxed text-fg-muted">
-            This page could not finish rendering. Your local lesson progress is
-            still safe.
+            This page could not finish rendering. Your local lesson progress is still safe.
           </p>
           <div className="mt-6 flex flex-wrap justify-center gap-3">
             <button
@@ -82,7 +74,7 @@ class AppErrorBoundary extends Component<
               Try again
             </button>
             <a
-              className="focus-ring rounded-md bg-accent px-4 py-2 text-sm font-mono text-white hover:bg-accent-hover"
+              className="focus-ring rounded-md bg-accent px-4 py-2 text-sm font-mono text-accent-fg hover:bg-accent-hover"
               href="/lessons"
             >
               Browse lessons
@@ -97,16 +89,18 @@ class AppErrorBoundary extends Component<
 function App() {
   return (
     <AppErrorBoundary>
-      <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
-        <TooltipProvider>
+      <TooltipProvider delayDuration={0}>
+        <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, '')}>
           <SearchPaletteProvider>
             <TopNav />
             <Suspense fallback={<PageLoader />}>
-              <Router />
+              <RouteFade>
+                <Router />
+              </RouteFade>
             </Suspense>
           </SearchPaletteProvider>
-        </TooltipProvider>
-      </WouterRouter>
+        </WouterRouter>
+      </TooltipProvider>
     </AppErrorBoundary>
   );
 }

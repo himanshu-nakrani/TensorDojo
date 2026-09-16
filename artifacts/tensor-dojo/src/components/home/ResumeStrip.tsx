@@ -36,13 +36,13 @@ export function ResumeStrip() {
   return (
     <Link
       href={`/lessons/${entry.meta.slug}`}
-      className="group focus-ring flex items-center justify-between gap-4 rounded border border-accent bg-accent-faint px-5 py-4 transition-colors hover:bg-accent-soft"
+      className="group focus-ring flex items-center justify-between gap-4 rounded border border-accent-2 bg-accent-2-faint px-5 py-4 transition-colors hover:bg-accent-2-soft"
     >
       <div className="flex items-center gap-4 min-w-0">
-        <span aria-hidden="true" className="hidden sm:inline-block text-[11px] uppercase tracking-[0.12em] font-mono text-accent shrink-0">
+        <span aria-hidden="true" className="hidden sm:inline-block text-[11px] uppercase tracking-[0.12em] font-mono text-accent-2 shrink-0">
           Resume →
         </span>
-        <span aria-hidden="true" className="sm:hidden text-[11px] uppercase tracking-[0.12em] font-mono text-accent shrink-0">
+        <span aria-hidden="true" className="sm:hidden text-[11px] uppercase tracking-[0.12em] font-mono text-accent-2 shrink-0">
           Resume
         </span>
         <span className="text-[15px] sm:text-[16px] font-semibold text-ink truncate">
@@ -56,7 +56,7 @@ export function ResumeStrip() {
         </span>
         <span
           aria-hidden="true"
-          className="text-accent group-hover:translate-x-0.5 transition-transform motion-reduce:transition-none"
+          className="text-accent-2 group-hover:translate-x-0.5 transition-transform motion-reduce:transition-none"
         >
           →
         </span>
