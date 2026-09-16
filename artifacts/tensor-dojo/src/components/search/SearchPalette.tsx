@@ -13,6 +13,7 @@ import {
 } from 'react';
 import { Command } from 'cmdk';
 import { listLessonMeta, TRACKS, trackForSlug } from '@/lib/lessons-meta';
+import { track } from '@/lib/analytics';
 
 /**
  * Global Cmd-K command palette.
@@ -107,7 +108,10 @@ export function SearchPaletteProvider({ children }: { children: ReactNode }) {
       if (e.altKey || e.shiftKey) return;
       e.preventDefault();
       if (isOpenRef.current) close();
-      else open();
+      else {
+        track('search_open', { source: 'cmdk' });
+        open();
+      }
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
@@ -117,6 +121,8 @@ export function SearchPaletteProvider({ children }: { children: ReactNode }) {
 
   const go = useCallback(
     (slug: string) => {
+      pushRecent(slug);
+      track('search_navigate', { slug });
       close();
       navigate(`/lessons/${slug}`);
     },
@@ -151,6 +157,31 @@ interface Grouped {
   items: GroupedItem[];
 }
 
+// ---------------------------------------------------------------------------
+// Recent lessons — last five palette selections, localStorage-only.
+// ---------------------------------------------------------------------------
+const RECENTS_KEY = 'tld-recents';
+
+function readRecents(): string[] {
+  if (typeof window === 'undefined') return [];
+  try {
+    const parsed: unknown = JSON.parse(window.localStorage.getItem(RECENTS_KEY) ?? '[]');
+    return Array.isArray(parsed) ? parsed.filter((x): x is string => typeof x === 'string').slice(0, 5) : [];
+  } catch {
+    return [];
+  }
+}
+
+function pushRecent(slug: string): void {
+  if (typeof window === 'undefined') return;
+  try {
+    const next = [slug, ...readRecents().filter((s) => s !== slug)].slice(0, 5);
+    window.localStorage.setItem(RECENTS_KEY, JSON.stringify(next));
+  } catch {
+    /* private mode — recents are a nicety, not a requirement */
+  }
+}
+
 function PaletteOverlay({
   onClose,
   grouped,
@@ -161,6 +192,11 @@ function PaletteOverlay({
   onSelect: (slug: string) => void;
 }) {
   const panelRef = useRef<HTMLDivElement>(null);
+  const [recents] = useState<string[]>(() => readRecents());
+  const [query, setQuery] = useState('');
+  const recentItems = recents
+    .map((slug) => grouped.map((g) => g.items).flat().find((i) => i.slug === slug))
+    .filter((i): i is GroupedItem => Boolean(i));
 
   // Lock body scroll while the palette is open.
   useEffect(() => {
@@ -230,6 +266,7 @@ function PaletteOverlay({
             <SearchIcon />
             <Command.Input
               autoFocus
+              onValueChange={setQuery}
               placeholder={`Search ${grouped.reduce((n, g) => n + g.items.length, 0)} lessons by title, summary, or track…`}
               className="flex-1 bg-transparent text-[14px] text-ink placeholder:text-fg-subtle rounded-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
             />
@@ -241,6 +278,30 @@ function PaletteOverlay({
             <Command.Empty className="px-4 py-8 text-center text-[13px] font-mono text-fg-muted">
               No lessons match.
             </Command.Empty>
+            {query.trim() === '' && recentItems.length > 0 && (
+              <Command.Group
+                heading="Recent"
+                className="px-2 [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:py-1.5 [&_[cmdk-group-heading]]:text-[10px] [&_[cmdk-group-heading]]:uppercase [&_[cmdk-group-heading]]:tracking-[0.12em] [&_[cmdk-group-heading]]:text-accent-2 [&_[cmdk-group-heading]]:font-mono"
+              >
+                {recentItems.map((item) => (
+                  <Command.Item
+                    key={`recent-${item.slug}`}
+                    value={`recent ${item.title} ${item.summary} ${item.trackLabel}`}
+                    onSelect={() => onSelect(item.slug)}
+                    className="group flex flex-col gap-0.5 rounded-md px-3 py-2 cursor-pointer data-[selected=true]:bg-accent-2-soft data-[selected=true]:text-ink"
+                  >
+                    <div className="flex items-baseline justify-between gap-3">
+                      <span className="text-[14px] text-ink font-medium leading-tight">
+                        {item.title}
+                      </span>
+                      <span className="shrink-0 text-[10px] uppercase tracking-[0.12em] font-mono text-dim">
+                        {item.trackLabel}
+                      </span>
+                    </div>
+                  </Command.Item>
+                ))}
+              </Command.Group>
+            )}
             {grouped.map(({ track, items }) => (
               <Command.Group
                 key={track.id}
@@ -253,7 +314,7 @@ function PaletteOverlay({
                     // The full searchable string. cmdk uses this for filtering.
                     value={`${item.title} ${item.summary} ${item.trackLabel}`}
                     onSelect={() => onSelect(item.slug)}
-                    className="group flex flex-col gap-0.5 rounded-md px-3 py-2 cursor-pointer data-[selected=true]:bg-accent-soft data-[selected=true]:text-ink"
+                    className="group flex flex-col gap-0.5 rounded-md px-3 py-2 cursor-pointer data-[selected=true]:bg-accent-2-soft data-[selected=true]:text-ink"
                   >
                     <div className="flex items-baseline justify-between gap-3">
                       <span className="text-[14px] text-ink font-medium leading-tight">

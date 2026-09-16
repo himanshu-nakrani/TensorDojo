@@ -47,3 +47,7 @@ Thumbs.db
 # Replit
 .cache/
 .local/
+
+# playwright run output (snapshots baselines stay committed)
+test-results/
+playwright-report/

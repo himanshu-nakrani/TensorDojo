@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import clsx from 'clsx';
+import { Segmented } from '@/components/sim/primitives/Segmented';
 import { SimFrame } from '@/components/sim/primitives/SimFrame';
 import {
   VectorCanvas,
@@ -95,24 +96,15 @@ export function RoPERotator() {
       onReset={reset}
       headerAction={
         <div className="flex items-center gap-3">
-          <div className="flex border border-border rounded overflow-hidden font-mono text-[11px]">
-            {Array.from({ length: N_PAIRS }, (_, i) => (
-              <button
-                key={i}
-                type="button"
-                onClick={() => setPairIdx(i)}
-                aria-pressed={pairIdx === i}
-                className={clsx(
-                  'px-2 py-0.5 transition-colors focus-ring',
-                  pairIdx === i
-                    ? 'bg-accent-soft text-accent'
-                    : 'text-muted hover:text-ink',
-                )}
-              >
-                pair {i}
-              </button>
-            ))}
-          </div>
+          <Segmented<number>
+            ariaLabel="Dimension pair"
+            value={pairIdx}
+            onChange={setPairIdx}
+            options={Array.from({ length: N_PAIRS }, (_, i) => ({
+              value: i,
+              label: `pair ${i}`,
+            }))}
+          />
           <button
             type="button"
             onClick={reset}

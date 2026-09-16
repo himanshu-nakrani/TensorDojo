@@ -88,9 +88,9 @@ function ResumeButton({
     <Link
       href={`/lessons/${slug}`}
       data-cta={variant}
-      className="focus-ring group inline-flex items-baseline gap-3 rounded-lg border border-accent bg-accent-soft px-5 py-4 transition-colors hover:border-accent hover:bg-accent-faint"
+      className="focus-ring group inline-flex items-baseline gap-3 rounded-lg border border-accent-2 bg-accent-2-soft px-5 py-4 transition-colors hover:border-accent-2 hover:bg-accent-2-faint"
     >
-      <span className="text-[11px] uppercase tracking-[0.12em] text-accent font-mono">
+      <span className="text-[11px] uppercase tracking-[0.12em] text-accent-2 font-mono">
         {prefix}
       </span>
       <span className="text-[1.05rem] font-semibold text-ink tracking-[-0.005em]">
@@ -98,7 +98,7 @@ function ResumeButton({
       </span>
       <span
         aria-hidden="true"
-        className="text-accent text-[1.1rem] leading-none transition-transform group-hover:translate-x-0.5"
+        className="text-accent-2 text-[1.1rem] leading-none transition-transform group-hover:translate-x-0.5"
       >
         →
       </span>

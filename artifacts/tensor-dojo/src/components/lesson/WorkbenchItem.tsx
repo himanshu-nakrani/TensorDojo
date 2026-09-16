@@ -18,6 +18,8 @@ interface WorkbenchItemProps {
   onToggle: () => void;
   /** Bumping this triggers a pulse animation on the item. */
   pulseKey: number | null;
+  /** 1-based figure number rendered in the panel header (`FIG. 03`). */
+  figNumber?: number;
   children: ReactNode;
 }
 
@@ -37,6 +39,7 @@ export const WorkbenchItem = forwardRef<HTMLDivElement, WorkbenchItemProps>(
       isActive,
       onToggle,
       pulseKey,
+      figNumber,
       children,
     },
     ref,
@@ -56,24 +59,36 @@ export const WorkbenchItem = forwardRef<HTMLDivElement, WorkbenchItemProps>(
         ref={ref}
         data-interactive-id={id}
         className={clsx(
-          'rounded-xl border bg-surface transition-shadow',
-          isActive
-            ? 'border-accent/60 ring-1 ring-accent/20 shadow-[0_8px_24px_-12px_var(--accent-shadow)]'
-            : 'border-border',
+          'relative rounded-lg border bg-surface transition-shadow shadow-card',
+          isActive ? 'border-accent/70' : 'border-border',
           pulsing && 'animate-pulse-ring',
         )}
       >
+        {/* status LED strip on the active panel */}
+        <span
+          aria-hidden="true"
+          className={clsx(
+            'absolute left-0 top-0 h-full w-[2px] rounded-l-lg transition-colors',
+            isActive ? 'bg-accent' : 'bg-transparent',
+          )}
+        />
         <button
           type="button"
           onClick={onToggle}
           aria-expanded={isActive}
           aria-controls={panelId}
-          className="focus-ring w-full px-5 py-4 flex items-center gap-4 text-left rounded-xl"
+          className="focus-ring w-full px-5 py-4 flex items-center gap-4 text-left rounded-lg"
         >
           <Chevron open={isActive} />
           <span className="flex-1 min-w-0">
-            <span className="block text-[12px] uppercase tracking-[0.12em] text-dim font-mono">
-              {isActive ? 'Active · Interactive' : 'Interactive'}
+            <span className="flex items-center gap-2 text-[11px] uppercase tracking-[0.14em] text-dim font-mono">
+              {figNumber !== undefined && (
+                <span className={isActive ? 'text-accent' : undefined}>
+                  Fig. {String(figNumber).padStart(2, '0')}
+                </span>
+              )}
+              <span aria-hidden="true">·</span>
+              <span>{isActive ? 'Live' : 'Interactive'}</span>
             </span>
             <span className="block text-sm font-semibold text-ink tracking-[-0.005em]">
               {title}
@@ -84,6 +99,14 @@ export const WorkbenchItem = forwardRef<HTMLDivElement, WorkbenchItemProps>(
               </span>
             )}
           </span>
+          <span
+            aria-hidden="true"
+            title={isActive ? 'Active' : 'Idle'}
+            className={clsx(
+              'shrink-0 h-1.5 w-1.5 rounded-full',
+              isActive ? 'bg-accent shadow-[0_0_6px_var(--accent-shadow)]' : 'bg-border-strong',
+            )}
+          />
         </button>
 
         {isActive && (

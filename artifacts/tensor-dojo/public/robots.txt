@@ -1,2 +1,5 @@
 User-agent: *
 Allow: /
+
+# Set SITE_URL and re-run scripts/generate-sitemap.mjs after deploying.
+Sitemap: https://tensordojo.vercel.app/sitemap.xml

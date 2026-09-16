@@ -4,6 +4,11 @@ import { LessonShell } from '@/components/lesson/LessonShell';
 import { Workbench } from '@/components/lesson/Workbench';
 import { PrevNext } from '@/components/lesson/PrevNext';
 import { VisitTracker } from '@/components/lesson/VisitTracker';
+import { LessonCompleteBar } from '@/components/lesson/LessonCompleteBar';
+import { LessonToc } from '@/components/lesson/LessonToc';
+import { OnboardingOverlay } from '@/components/lesson/OnboardingOverlay';
+import { useDocumentMeta } from '@/hooks/use-document-meta';
+import { track } from '@/lib/analytics';
 import {
   getLessonMeta,
   loadLessonInteractives,
@@ -33,6 +38,16 @@ function LessonContent({ slug }: { slug: string }) {
   const [interactives, setInteractives] = useState<readonly InteractiveEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
+
+  useDocumentMeta({
+    title: `${meta.title} — TensorDojo`,
+    description: meta.summary,
+    path: `/lessons/${slug}`,
+  });
+
+  useEffect(() => {
+    track('lesson_start', { slug });
+  }, [slug]);
 
   useEffect(() => {
     let cancelled = false;
@@ -105,11 +120,14 @@ function LessonContent({ slug }: { slug: string }) {
   return (
     <LessonShell title={meta.title} minutes={meta.minutes} summary={meta.summary} objectives={meta.objectives}>
       <VisitTracker slug={slug} />
+      <LessonToc slug={slug} />
+      {slug === 'dot-product' && <OnboardingOverlay />}
       <Workbench
         interactives={interactives}
         defaultActive={defaultActive}
         prose={<Lesson />}
       />
+      <LessonCompleteBar slug={slug} />
       <PrevNext slug={slug} />
     </LessonShell>
   );

@@ -20,131 +20,189 @@
    (--accent-soft, --accent-faint, --accent-dim, --negative-bg, etc.).
    =========================================================================== */
 
+/* ===========================================================================
+   DESIGN v2 — "SCIENTIFIC INSTRUMENT"
+
+   Two faces of one instrument: `manual` (light, printed-manual paper)
+   and `bench` (dark, the default lab bench). Same geometry, same
+   tokens; only the values swap.
+
+   Signal rules:
+     --accent    the manipulable signal (cyan). Sliders, knobs,
+                 draggable tips, live values. Nothing chrome wears it.
+     --accent-2  the navigation signal (blue). Progress, resume,
+                 links, active nav. Never on a sim control.
+     --positive / --negative / --warning keep their semantic jobs.
+   =========================================================================== */
+
 :root {
-  /* Typefaces — "Humanist Clarity": IBM Plex Sans for reading,
-     IBM Plex Mono for labels/code. Newsreader is the home-page
-     display serif ("lab notebook" editorial voice). Consumed by
-     tailwind.config.ts font-sans / font-mono / font-display. */
+  /* Typefaces — Plex Sans for prose/display, Plex Mono for every
+     label, readout, and figure number. Display is sans-semibold
+     tight-tracked (the instrument voice replaced the serif). */
   --font-sans: 'IBM Plex Sans';
   --font-mono: 'IBM Plex Mono';
-  --font-display: 'Newsreader';
+  --font-display: 'IBM Plex Sans';
 
-  /* Surfaces — warm paper-adjacent neutrals (lab notebook light).
-     Still AA-safe with the blue accent; cooler slate lives on as
-     dark-mode canvas. */
-  --bg: 246 241 232;              /* warm paper */
-  --bg-elevated: 255 252 247;     /* cream card / notebook page */
-  --bg-code: 238 232 221;         /* warm code/input well */
+  /* Surface tiers: canvas → raised (cards) → sunken (wells, inputs)
+     → overlay (menus, toasts). */
+  --bg: 245 245 244;              /* manual paper (stone-100) */
+  --bg-elevated: 252 252 251;     /* raised card */
+  --bg-code: 231 229 228;         /* sunken well */
+  --overlay: 255 255 255;
 
-  /* Text — warm ink, not pure cool slate */
-  --fg: 28 25 23;                 /* stone-900 */
-  --fg-prose: 41 37 36;           /* stone-800 */
-  --fg-muted: 87 83 78;           /* stone-600 */
-  --fg-subtle: 120 113 108;       /* stone-500 */
+  --fg: 23 23 23;
+  --fg-prose: 41 41 41;
+  --fg-muted: 82 82 82;
+  --fg-subtle: 115 115 115;
 
-  /* Lines */
-  --border: 231 224 212;          /* warm hairline */
-  --border-strong: 214 211 209;   /* stone-300 */
+  --border: 214 214 214;
+  --border-strong: 168 168 168;
 
-  /* The single accent (design-spec §8) — manipulated things only. */
-  --accent: 37 99 235;            /* blue-600; ~5.2:1 on --bg */
-  --accent-hover: 29 78 216;      /* blue-700 */
-  --accent-fg: 255 255 255;       /* text/icon on accent surfaces */
+  --accent: 14 116 144;           /* cyan-700; 5.4:1 on --bg */
+  --accent-hover: 21 94 117;      /* cyan-800 */
+  --accent-fg: 255 255 255;
+  --accent-2: 37 99 235;          /* blue-600 — navigation signal */
+  --accent-2-hover: 29 78 216;
+  --accent-2-fg: 255 255 255;     /* text on accent-2 fills (light) */
 
-  /* Charting tokens */
-  --grid: 226 232 240;
-  --positive: 21 128 61;          /* green stays semantic (correct/positive) */
-  --negative: 185 28 28;          /* red-700; AA on --bg */
-  --warning: 180 83 9;            /* amber-700; AA (4.5:1) on --bg for small text */
+  --grid: 228 228 227;
+  --positive: 21 128 61;
+  --negative: 185 28 28;
+  --warning: 180 83 9;
 
-  /* Categorical series colors — used by sims that need to plot
-     multiple lines that are NOT ordered or signed (e.g. three
-     optimizer traces, four batch-size traces). Distinct from
-     --positive/--negative; chosen to be perceptually
-     distinguishable and theme-aware. */
-  --series-1: 37 99 235;          /* blue — same hue as accent in light */
-  --series-2: 217 119 6;          /* amber-600 */
-  --series-3: 124 58 237;         /* violet-600 */
-  --series-4: 13 148 136;         /* teal-600 */
+  --series-1: 37 99 235;
+  --series-2: 217 119 6;
+  --series-3: 124 58 237;
+  --series-4: 190 24 93;          /* pink-600 — clear of cyan + blue */
 
-  /* Pre-baked translucent variants — kept as full rgba because they
-     describe a specific visual, not a "themed color at 30%". */
-  --accent-soft: rgba(37, 99, 235, 0.10);
-  --accent-faint: rgba(37, 99, 235, 0.06);
-  --accent-dim: rgba(37, 99, 235, 0.32);
+  --accent-soft: rgba(14, 116, 144, 0.10);
+  --accent-faint: rgba(14, 116, 144, 0.06);
+  --accent-dim: rgba(14, 116, 144, 0.35);
+  --accent-2-soft: rgba(37, 99, 235, 0.10);
+  --accent-2-faint: rgba(37, 99, 235, 0.06);
 
-  /* Hover state for the elevated surface. */
-  --bg-elevated-hover: 245 239 230;
+  --bg-elevated-hover: 245 245 244;
+  --accent-shadow: rgba(14, 116, 144, 0.20);
 
-  /* Glow color for the focus ring on inputs. */
-  --accent-shadow: rgba(37, 99, 235, 0.18);
-
-  /* Pre-baked negative bar bg (the "wrong answer" red with built-in alpha). */
   --negative-bg: rgba(185, 28, 28, 0.7);
+  --shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.7);
 
-  /* Subtle top-edge highlight on elevated cards. The dark theme
-     uses a faint white inset to suggest light from above; light
-     theme uses a faint black inset for the same suggestion. */
-  --shadow-inset: inset 0 1px 0 rgba(28, 25, 23, 0.04);
+  /* Crisp instrument shadows: tight, no bloom. */
+  --shadow-card:
+    inset 0 1px 0 rgba(255, 255, 255, 0.7),
+    0 1px 2px rgba(23, 23, 23, 0.08);
+  --shadow-pop:
+    0 2px 4px rgba(23, 23, 23, 0.10),
+    0 8px 24px rgba(23, 23, 23, 0.14);
 
-  /* Heatmap cell-number halo — matches --bg so text reads on any
-     cell tint. Inline-styled as `rgb(var(--cell-halo))`. */
-  --cell-halo: 246 241 232;
+  --cell-halo: 245 245 244;
 
-  /* Code blocks — deliberately inverted (dark panel on light page),
-     the signature move of the approved "Humanist Clarity" design.
-     Inline code stays on --bg-code; only block code inverts. */
-  --code-block-bg: 15 23 42;      /* slate-900 */
-  --code-block-fg: 241 245 249;   /* slate-100 */
-  --code-block-border: 15 23 42;
+  /* Categorical track palette (concept map columns, cross-track arcs,
+     legend dots). Ten hues tuned per theme: saturated-enough to tell
+     apart on paper, brightened for the dark bench. Referenced as
+     rgb(var(--track-N)) so both themes stay in the token system. */
+  --track-1: 79 70 229;    /* indigo-600 */
+  --track-2: 2 132 199;    /* sky-600 */
+  --track-3: 13 148 136;   /* teal-600 */
+  --track-4: 21 128 61;    /* green-600 */
+  --track-5: 217 119 6;    /* amber-600 */
+  --track-6: 234 88 12;    /* orange-600 */
+  --track-7: 225 29 72;    /* rose-600 */
+  --track-8: 147 51 234;   /* purple-600 */
+  --track-9: 8 145 178;    /* cyan-600 */
+  --track-10: 192 38 211;  /* fuchsia-600 */
+
+  /* Motion tokens — one language app-wide. */
+  --ease-sweep: cubic-bezier(0.16, 1, 0.3, 1);
+  --dur-fast: 120ms;
+  --dur-base: 240ms;
+  --dur-slow: 480ms;
+
+  /* Code blocks invert: a bench screen inside the manual. */
+  --code-block-bg: 11 13 17;
+  --code-block-fg: 226 232 240;
+  --code-block-border: 38 43 52;
 }
 
 :root.dark {
-  /* "Humanist Clarity" dark — the same cool slate family as light
-     mode, inverted: slate-900 canvas, slate-800 surfaces, blue-400
-     accent. Text sits slightly below max contrast to avoid glare. */
-  --bg: 15 23 42;                  /* slate-900 */
-  --bg-elevated: 30 41 59;         /* slate-800 */
-  --bg-code: 30 41 59;
+  /* The bench: near-black blue ink, hairline drafting grid, cyan
+     signal for anything you can move. */
+  --bg: 11 13 17;
+  --bg-elevated: 18 21 27;
+  --bg-code: 6 8 10;
+  --overlay: 26 30 38;
 
-  --fg: 226 232 240;               /* slate-200 — headings, ink */
-  --fg-prose: 203 213 225;         /* slate-300 — lesson prose, below max contrast */
-  --fg-muted: 168 180 197;         /* between slate-300/400 for secondary UI */
-  --fg-subtle: 148 163 184;        /* slate-400 — AA on --bg */
+  --fg: 232 235 238;
+  --fg-prose: 205 210 216;
+  --fg-muted: 154 161 170;
+  --fg-subtle: 120 127 136;
 
-  --border: 51 65 85;              /* slate-700 */
-  --border-strong: 71 85 105;      /* slate-600 */
+  --border: 38 43 52;
+  --border-strong: 62 69 80;
 
-  --accent: 96 165 250;            /* blue-400 — bright on the slate canvas */
-  --accent-hover: 147 197 253;     /* blue-300 */
-  --accent-fg: 15 23 42;
+  --accent: 34 211 238;           /* cyan-400; ~10:1 on --bg */
+  --accent-hover: 103 232 249;    /* cyan-300 */
+  --accent-fg: 8 47 63;           /* cyan-950 text on cyan fills */
+  --accent-2: 96 165 250;         /* blue-400 */
+  --accent-2-hover: 147 197 253;
+  --accent-2-fg: 2 6 23;          /* slate-950 text on blue-400 fills */
 
-  --grid: 51 65 85;
+  --grid: 30 34 42;
   --positive: 74 222 128;
   --negative: 248 113 113;
-  --warning: 251 191 36;           /* amber-400 */
+  --warning: 251 191 36;
 
-  --series-1: 96 165 250;          /* blue */
-  --series-2: 251 191 36;          /* amber-400 */
-  --series-3: 167 139 250;         /* violet-400 */
-  --series-4: 45 212 191;          /* teal-400 */
+  --series-1: 96 165 250;
+  --series-2: 251 191 36;
+  --series-3: 167 139 250;
+  --series-4: 244 114 182;
 
-  --accent-soft: rgba(96, 165, 250, 0.16);
-  --accent-faint: rgba(96, 165, 250, 0.10);
-  --accent-dim: rgba(96, 165, 250, 0.30);
+  --accent-soft: rgba(34, 211, 238, 0.14);
+  --accent-faint: rgba(34, 211, 238, 0.08);
+  --accent-dim: rgba(34, 211, 238, 0.32);
+  --accent-2-soft: rgba(96, 165, 250, 0.16);
+  --accent-2-faint: rgba(96, 165, 250, 0.10);
 
-  --bg-elevated-hover: 38 51 73;
-  --accent-shadow: rgba(96, 165, 250, 0.15);
+  --bg-elevated-hover: 24 28 35;
+  --accent-shadow: rgba(34, 211, 238, 0.18);
 
   --negative-bg: rgba(248, 113, 113, 0.7);
-  --shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+  --shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.04);
 
-  --cell-halo: 15 23 42;
+  --shadow-card:
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    0 1px 2px rgba(0, 0, 0, 0.5);
+  --shadow-pop:
+    0 2px 4px rgba(0, 0, 0, 0.5),
+    0 8px 24px rgba(0, 0, 0, 0.6);
 
-  /* Code wells sink below the page in dark mode (slate-950). */
-  --code-block-bg: 2 6 23;
+  --cell-halo: 11 13 17;
+
+  --track-1: 129 140 248;  /* indigo-400 */
+  --track-2: 56 189 248;   /* sky-400 */
+  --track-3: 45 212 191;   /* teal-400 */
+  --track-4: 74 222 128;   /* green-400 */
+  --track-5: 251 191 36;   /* amber-400 */
+  --track-6: 251 146 60;   /* orange-400 */
+  --track-7: 251 113 133;  /* rose-400 */
+  --track-8: 192 132 252;  /* purple-400 */
+  --track-9: 34 211 238;   /* cyan-400 */
+  --track-10: 232 121 249; /* fuchsia-400 */
+
+  --ease-sweep: cubic-bezier(0.16, 1, 0.3, 1);
+  --dur-fast: 120ms;
+  --dur-base: 240ms;
+  --dur-slow: 480ms;
+
+  --code-block-bg: 6 8 10;
   --code-block-fg: 226 232 240;
-  --code-block-border: 51 65 85;
+  --code-block-border: 38 43 52;
+}
+
+/* Sticky header is two tiers on lesson routes (~84px). In-page anchors
+   (lesson TOC, /lessons#track-…) must land below it, not under it. */
+html {
+  scroll-padding-top: 96px;
 }
 
 /* ===========================================================================
@@ -190,70 +248,60 @@
   border: 0;
 }
 
-/* Lab-notebook paper grid — home page only. Lessons stay flat so
-   sims and prose don't compete with a graph underlay. */
+/* Drafting grid — home page only. Minor 24px lines with a major line
+   every 120px, like engineering paper. Lessons stay flat. */
 .lab-home {
   background-image:
-    linear-gradient(rgb(var(--fg) / 0.035) 1px, transparent 1px),
-    linear-gradient(90deg, rgb(var(--fg) / 0.035) 1px, transparent 1px);
-  background-size: 28px 28px;
+    linear-gradient(rgb(var(--fg) / 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(var(--fg) / 0.05) 1px, transparent 1px),
+    linear-gradient(rgb(var(--fg) / 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(var(--fg) / 0.025) 1px, transparent 1px);
+  background-size:
+    120px 120px,
+    120px 120px,
+    24px 24px,
+    24px 24px;
   background-attachment: local;
 }
 :root.dark .lab-home {
-  /* Dark mode: faint cool grid so the notebook metaphor survives
-     without washing out elevated cards. */
   background-image:
-    linear-gradient(rgb(255 255 255 / 0.025) 1px, transparent 1px),
-    linear-gradient(90deg, rgb(255 255 255 / 0.025) 1px, transparent 1px);
+    linear-gradient(rgb(255 255 255 / 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(255 255 255 / 0.045) 1px, transparent 1px),
+    linear-gradient(rgb(255 255 255 / 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(255 255 255 / 0.02) 1px, transparent 1px);
 }
 
-/* Home display headings — Newsreader editorial voice. */
+/* Display type — the instrument voice: sans semibold, tight. */
 .lab-display {
-  font-family: var(--font-display), Georgia, serif;
-  font-weight: 400;
-  letter-spacing: -0.02em;
-  font-optical-sizing: auto;
+  font-family: var(--font-display), ui-sans-serif, system-ui, sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.025em;
 }
 
-/* Notebook figure card: cream page + left ink spine + soft paper shadow. */
+/* Instrument bezel: raised panel + inner hairline well. Used by the
+   hero figure and any surface that frames a live sim. */
 .lab-note {
   position: relative;
   background: rgb(var(--bg-elevated));
   border: 1px solid rgb(var(--border));
-  border-radius: 2px 12px 12px 2px;
-  box-shadow:
-    4px 8px 0 rgb(var(--fg) / 0.03),
-    0 18px 40px rgb(var(--fg) / 0.06);
+  border-radius: 6px;
+  box-shadow: var(--shadow-card);
 }
-.lab-note::before {
+.lab-note::after {
   content: '';
   position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 4px;
-  border-radius: 2px 0 0 2px;
-  background: linear-gradient(
-    180deg,
-    rgb(var(--accent)),
-    rgb(var(--accent) / 0.55)
-  );
-}
-:root.dark .lab-note {
-  box-shadow:
-    4px 8px 0 rgb(0 0 0 / 0.2),
-    0 18px 40px rgb(0 0 0 / 0.35);
+  inset: 5px;
+  border: 1px solid rgb(var(--border) / 0.55);
+  border-radius: 3px;
+  pointer-events: none;
 }
 
-/* Paper card — slightly softer corners than the app-wide rounded-xl. */
+/* Panel card — the resting surface for tiles and strips. */
 .lab-card {
   background: rgb(var(--bg-elevated));
   border: 1px solid rgb(var(--border));
-  border-radius: 4px;
-  box-shadow: 0 1px 0 rgb(var(--fg) / 0.04);
-}
-:root.dark .lab-card {
-  box-shadow: var(--shadow-inset);
+  border-radius: 6px;
+  box-shadow: var(--shadow-card);
 }
 
 /* Selection — same accent on both themes. */
@@ -284,69 +332,96 @@
   border-radius: 2px;
 }
 
-/* WebKit / Blink — fill to var(--fill), unfilled in --border-strong. */
+/* Lever track: sunken channel with calibration ticks every 12.5%,
+   filled to var(--fill) in the manipulable signal. */
 .slider::-webkit-slider-runnable-track {
-  height: 4px;
+  height: 6px;
   border-radius: 2px;
-  background: linear-gradient(
-    to right,
-    rgb(var(--accent)) 0%,
-    rgb(var(--accent)) var(--fill, 0%),
-    rgb(var(--border-strong)) var(--fill, 0%),
-    rgb(var(--border-strong)) 100%
-  );
+  border: 1px solid rgb(var(--border));
+  background:
+    linear-gradient(
+      to right,
+      rgb(var(--accent)) 0%,
+      rgb(var(--accent)) var(--fill, 0%),
+      transparent var(--fill, 0%),
+      transparent 100%
+    ),
+    repeating-linear-gradient(
+      90deg,
+      rgb(var(--border-strong) / 0.7) 0 1px,
+      transparent 1px calc(100% / 8)
+    ),
+    rgb(var(--bg-code));
 }
+/* Lever thumb: a gripped rectangular handle, not a dot. */
 .slider::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  height: 16px;
-  width: 16px;
-  border-radius: 50%;
-  background: rgb(var(--accent));
-  margin-top: -6px;
-  border: 3px solid rgb(var(--bg));
-  box-shadow: 0 0 0 1px rgb(var(--accent));
-  transition: transform 120ms ease-out, box-shadow 120ms ease-out;
+  height: 22px;
+  width: 12px;
+  border-radius: 2px;
+  background:
+    repeating-linear-gradient(
+      180deg,
+      rgb(var(--accent-fg) / 0.55) 0 1px,
+      transparent 1px 4px
+    ),
+    rgb(var(--accent));
+  margin-top: -9px;
+  border: 1px solid rgb(var(--accent-hover));
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.3);
+  transition: transform var(--dur-fast) var(--ease-sweep);
 }
 .slider:hover::-webkit-slider-thumb {
-  transform: scale(1.12);
+  transform: scaleY(1.08);
 }
 .slider:focus-visible::-webkit-slider-thumb {
   box-shadow:
-    0 0 0 1px rgb(var(--bg)),
+    0 0 0 2px rgb(var(--bg)),
     0 0 0 4px rgb(var(--accent));
-  transform: scale(1.12);
 }
 
 /* Firefox */
 .slider::-moz-range-track {
-  height: 4px;
+  height: 6px;
   border-radius: 2px;
-  background: rgb(var(--border-strong));
+  border: 1px solid rgb(var(--border));
+  background:
+    repeating-linear-gradient(
+      90deg,
+      rgb(var(--border-strong) / 0.7) 0 1px,
+      transparent 1px calc(100% / 8)
+    ),
+    rgb(var(--bg-code));
 }
 .slider::-moz-range-progress {
-  height: 4px;
+  height: 6px;
   border-radius: 2px;
   background: rgb(var(--accent));
 }
 .slider::-moz-range-thumb {
-  height: 16px;
-  width: 16px;
-  border-radius: 50%;
-  background: rgb(var(--accent));
-  border: 3px solid rgb(var(--bg));
-  box-shadow: 0 0 0 1px rgb(var(--accent));
+  height: 22px;
+  width: 12px;
+  border-radius: 2px;
+  background:
+    repeating-linear-gradient(
+      180deg,
+      rgb(var(--accent-fg) / 0.55) 0 1px,
+      transparent 1px 4px
+    ),
+    rgb(var(--accent));
+  border: 1px solid rgb(var(--accent-hover));
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.3);
   cursor: pointer;
-  transition: transform 120ms ease-out, box-shadow 120ms ease-out;
+  transition: transform var(--dur-fast) var(--ease-sweep);
 }
 .slider:hover::-moz-range-thumb {
-  transform: scale(1.12);
+  transform: scaleY(1.08);
 }
 .slider:focus-visible::-moz-range-thumb {
   box-shadow:
-    0 0 0 1px rgb(var(--bg)),
+    0 0 0 2px rgb(var(--bg)),
     0 0 0 4px rgb(var(--accent));
-  transform: scale(1.12);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -726,5 +801,165 @@
 @container (min-width: 44rem) {
   .sim-split__grid {
     grid-template-columns: minmax(0, 1fr) var(--sim-aside-w, 16rem);
+  }
+}
+
+/* ===========================================================================
+   Scroll reveal — .reveal starts hidden; .reveal-in (added by an
+   IntersectionObserver in components/motion/Reveal.tsx) plays the
+   fade-up. Stagger via --delay. Reduced motion: always visible.
+   =========================================================================== */
+.reveal {
+  opacity: 0;
+  transform: translateY(14px);
+  transition:
+    opacity 600ms cubic-bezier(0.16, 1, 0.3, 1),
+    transform 600ms cubic-bezier(0.16, 1, 0.3, 1);
+  transition-delay: var(--delay, 0ms);
+}
+.reveal.reveal-in {
+  opacity: 1;
+  transform: translateY(0);
+}
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+/* ===========================================================================
+   Completion celebration — the "Mark complete" success beat.
+   .celebrate-check pops a checkmark; .celebrate-sparks fans out six
+   small accent sparks. Both are one-shot CSS animations kicked off by
+   mounting the element.
+   =========================================================================== */
+@keyframes celebrate-pop {
+  0% { transform: scale(0.4); opacity: 0; }
+  60% { transform: scale(1.15); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+.celebrate-check {
+  animation: celebrate-pop 420ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+@keyframes celebrate-spark {
+  0% { transform: translate(0, 0) scale(1); opacity: 1; }
+  100% {
+    transform: translate(var(--spark-x, 0px), var(--spark-y, -28px)) scale(0.3);
+    opacity: 0;
+  }
+}
+.celebrate-sparks span {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 5px;
+  height: 5px;
+  border-radius: 9999px;
+  background: rgb(var(--accent-2));
+  animation: celebrate-spark 700ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: var(--delay, 0ms);
+}
+@media (prefers-reduced-motion: reduce) {
+  .celebrate-check { animation: none; }
+  .celebrate-sparks { display: none; }
+}
+
+/* ===========================================================================
+   Reading progress — the thin accent bar under TopNav on lesson routes.
+   Width is driven inline via --progress (0..1).
+   =========================================================================== */
+.reading-progress {
+  transform-origin: left center;
+  transform: scaleX(var(--progress, 0));
+  background: rgb(var(--accent-2));
+  transition: transform 80ms linear;
+}
+
+/* ===========================================================================
+   Touch affordance — hover-only hints (arrows, "drag me" chips) stay
+   hidden on pointer devices until hover, but must be visible on touch
+   where hover never fires (ux-audit deferred item).
+   =========================================================================== */
+.hover-affordance {
+  opacity: 0;
+  transition: opacity 200ms ease, transform 200ms ease;
+}
+.group:hover .hover-affordance,
+.group:focus-visible .hover-affordance,
+.group:focus-within .hover-affordance {
+  opacity: 1;
+}
+@media (hover: none) {
+  .hover-affordance {
+    opacity: 1;
+  }
+}
+
+/* Print: never ship blank sections to paper / PDF export. */
+@media print {
+  .reveal {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+}
+
+/* ===========================================================================
+   Instrument bezel — inner hairline well inside framed panels
+   (SimFrame, figure cards). Purely decorative; never intercepts.
+   =========================================================================== */
+.bezel {
+  position: relative;
+}
+.bezel::after {
+  content: '';
+  position: absolute;
+  inset: 4px;
+  border: 1px solid rgb(var(--border) / 0.5);
+  border-radius: 3px;
+  pointer-events: none;
+}
+
+/* Vector tip hover affordance: hovering (or keyboard-focusing) the
+   invisible hit area rings the visible tip so draggability reads
+   before the first grab — on pointer and keyboard alike. */
+.vector-hit:hover ~ .vector-tip,
+.vector-hit:focus-visible ~ .vector-tip {
+  stroke: rgb(var(--bg));
+  stroke-width: 2;
+}
+
+/* ===========================================================================
+   Signature motions (design v2).
+   - draw-in: vectors stroke themselves out of the origin on mount.
+   - route-enter: 120-240ms cross-fade when the route swaps.
+   Both collapse under prefers-reduced-motion.
+   =========================================================================== */
+@keyframes draw-sweep {
+  from { stroke-dashoffset: 1; }
+  to { stroke-dashoffset: 0; }
+}
+.draw-in {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: draw-sweep 640ms var(--ease-sweep) both;
+}
+@keyframes route-fade {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.route-enter {
+  animation: route-fade var(--dur-base) var(--ease-sweep) both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .draw-in {
+    stroke-dasharray: none;
+    stroke-dashoffset: 0;
+    animation: none;
+  }
+  .route-enter {
+    animation: none;
   }
 }

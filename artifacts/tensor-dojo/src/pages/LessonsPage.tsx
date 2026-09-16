@@ -1,6 +1,14 @@
 import { LessonCardList } from "@/components/home/LessonCardList";
+import { useDocumentMeta } from "@/hooks/use-document-meta";
 
 export default function LessonsPage() {
+  useDocumentMeta({
+    title: "All lessons — TensorDojo",
+    description:
+      "Eighty interactive lessons across ten tracks, in reading order — from the dot product through attention, training, LoRA, DPO, and safety.",
+    path: "/lessons",
+  });
+
   return (
     <main
       id="main"
