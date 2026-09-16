@@ -52,3 +52,6 @@
 ## 2025-02-18 - EmbeddingDimensionSlider lazy pre-computation
 **Learning:** Found that `EmbeddingDimensionSlider.tsx` was generating the O(V*d) `allVectors` using `synthesizeEmbeddings` on every drag of the dimension slider via `useMemo`. An eager `STATIC_PROJECTED` table for d=2..64 would miss an out-of-range `preset.d` and pay for unused dimensions at module load.
 **Action:** Cache projected embeddings in a module-level Map keyed by `d` so remounts reuse a previously visited dimension. First visit still synthesizes and projects on the main thread; cache hits skip that work.
+## 2025-02-18 - LossLandscape inline function memoization fix
+**Learning:** `LossLandscape.tsx` recomputed a 3600-element `<rect>` grid on every render because parent components (`OptimizerRace` and `SGDBatchExplorer`) passed inline anonymous arrow functions to the `loss` prop (e.g., `loss={([a, b]) => lossAB(a, b)}`). This broke the internal `useMemo` dependency array tracking.
+**Action:** Codebase convention for React performance: Avoid passing inline anonymous functions as props to computationally heavy components that rely on `useMemo`. Hoist these functions to stable module-level constants to prevent cache invalidation and unnecessary O(N) DOM reallocations.
