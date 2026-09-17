@@ -12,6 +12,11 @@ import { getVisited, getLastVisited } from '@/lib/progress/visits';
 import { useCompletions } from '@/hooks/use-completions';
 import { trackColor } from '@/lib/track-color';
 import type { CrossTrackEdge, TrackSection } from '@/lib/content/map-data';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 
 /**
  * The concept map is an interactive dependency graph.
@@ -675,16 +680,22 @@ function ControlButton({
   children: React.ReactNode;
 }) {
   return (
-    <button
-      type="button"
-      aria-label={label}
-      title={label}
-      onClick={onClick}
-      onPointerDown={(e) => e.stopPropagation()}
-      className="focus-ring flex h-8 w-8 items-center justify-center rounded-md border border-border bg-bg-elevated text-[15px] leading-none text-fg-muted shadow-sm hover:border-accent-2 hover:text-ink transition-colors card-surface"
-    >
-      {children}
-    </button>
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <button
+          type="button"
+          aria-label={label}
+          onClick={onClick}
+          onPointerDown={(e) => e.stopPropagation()}
+          className="focus-ring flex h-8 w-8 items-center justify-center rounded-md border border-border bg-bg-elevated text-[15px] leading-none text-fg-muted shadow-sm hover:border-accent-2 hover:text-ink transition-colors card-surface"
+        >
+          {children}
+        </button>
+      </TooltipTrigger>
+      <TooltipContent side="left">
+        <p>{label}</p>
+      </TooltipContent>
+    </Tooltip>
   );
 }
 
