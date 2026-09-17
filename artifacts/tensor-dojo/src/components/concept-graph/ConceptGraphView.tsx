@@ -11,6 +11,11 @@ import dagre from 'dagre';
 import { getVisited, getLastVisited } from '@/lib/progress/visits';
 import { useCompletions } from '@/hooks/use-completions';
 import { trackColor } from '@/lib/track-color';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 import type { CrossTrackEdge, TrackSection } from '@/lib/content/map-data';
 
 /**
@@ -255,7 +260,7 @@ export function ConceptMapView({ sections, graph, firstSlug, highlightTrack }: {
       <div className="hidden md:block">
         <MapGraph sections={sections} visited={visited} completed={completed} resumeSlug={resumeSlug} graph={graph} firstSlug={firstSlug} highlightTrack={highlightTrack} />
         <details className="mt-6">
-          <summary className="focus-ring cursor-pointer text-[12px] uppercase tracking-[0.12em] text-fg-muted font-mono hover:text-ink transition-colors">
+          <summary className="summary-marker focus-ring cursor-pointer text-[12px] uppercase tracking-[0.12em] text-fg-muted font-mono hover:text-ink transition-colors">
             Show accessible list view
           </summary>
           <div className="mt-4">
@@ -675,16 +680,22 @@ function ControlButton({
   children: React.ReactNode;
 }) {
   return (
-    <button
-      type="button"
-      aria-label={label}
-      title={label}
-      onClick={onClick}
-      onPointerDown={(e) => e.stopPropagation()}
-      className="focus-ring flex h-8 w-8 items-center justify-center rounded-md border border-border bg-bg-elevated text-[15px] leading-none text-fg-muted shadow-sm hover:border-accent-2 hover:text-ink transition-colors card-surface"
-    >
-      {children}
-    </button>
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <button
+          type="button"
+          aria-label={label}
+          onClick={onClick}
+          onPointerDown={(e) => e.stopPropagation()}
+          className="focus-ring flex h-8 w-8 items-center justify-center rounded-md border border-border bg-bg-elevated text-[15px] leading-none text-fg-muted shadow-sm hover:border-accent-2 hover:text-ink transition-colors card-surface"
+        >
+          {children}
+        </button>
+      </TooltipTrigger>
+      <TooltipContent side="left" className="font-mono text-[11px]">
+        {label}
+      </TooltipContent>
+    </Tooltip>
   );
 }
 

@@ -159,7 +159,7 @@ export function HeroInteractive() {
             aria-hidden="true"
             className="ml-auto hidden sm:block text-[10px] font-mono text-fg-subtle"
           >
-            auto-cycling
+            {pinned ? 'paused — yours to drag' : 'auto-cycling'}
           </span>
         )}
       </div>
