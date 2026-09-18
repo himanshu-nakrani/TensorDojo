@@ -100,7 +100,7 @@ export function LessonShell({
             360px row, so below sm the group stacks and the divider
             flips axis; no overflow-hidden, so focus rings stay
             visible. */}
-        <div className="mt-5 flex w-full sm:w-auto flex-col sm:flex-row items-stretch divide-y sm:divide-y-0 sm:divide-x divide-border border border-border rounded-sm bg-bg-elevated">
+        <div className="no-print mt-5 flex w-full sm:w-auto flex-col sm:flex-row items-stretch divide-y sm:divide-y-0 sm:divide-x divide-border border border-border rounded-sm bg-bg-elevated">
           <button
             type="button"
             onClick={copyLessonLink}

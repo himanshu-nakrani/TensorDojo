@@ -40,6 +40,7 @@
    =========================================================================== */
 
 :root {
+  color-scheme: light;
   /* Typefaces — Plex Sans for prose/display, Plex Mono for every
      label, readout, and figure number. Display is sans-semibold
      tight-tracked (the instrument voice replaced the serif). */
@@ -53,27 +54,27 @@
 
   /* Surface tiers: canvas → raised (cards) → sunken (wells, inputs)
      → overlay (menus, toasts). */
-  --bg: 245 245 244;              /* manual paper (stone-100) */
-  --bg-elevated: 252 252 251;     /* raised card */
-  --bg-code: 231 229 228;         /* sunken well */
-  --overlay: 255 255 255;
+  --bg: 247 244 240;              /* warm paper manual face */
+  --bg-elevated: 252 250 247;     /* raised card */
+  --bg-code: 238 234 229;         /* sunken well */
+  --overlay: 255 253 250;
 
-  --fg: 23 23 23;
-  --fg-prose: 41 41 41;
-  --fg-muted: 82 82 82;
-  --fg-subtle: 115 115 115;
+  --fg: 42 38 35;                 /* warm charcoal, never pure black */
+  --fg-prose: 62 57 53;
+  --fg-muted: 100 95 90;
+  --fg-subtle: 112 106 100;      /* >=4.5:1 for 10-11px mono labels */
 
-  --border: 214 214 214;
-  --border-strong: 168 168 168;
+  --border: 222 216 209;
+  --border-strong: 186 178 169;
 
-  --accent: 23 23 23;             /* the ink itself; ~15:1 on --bg */
-  --accent-hover: 64 64 64;       /* neutral lift on hover */
-  --accent-fg: 245 245 244;       /* paper on ink fills */
-  --accent-2: 23 23 23;           /* same mono voice for nav/progress */
-  --accent-2-hover: 64 64 64;
-  --accent-2-fg: 245 245 244;     /* paper on ink fills */
+  --accent: 176 84 46;            /* terracotta signal; ~5:1 on --bg */
+  --accent-hover: 150 68 36;      /* deeper terracotta on hover */
+  --accent-fg: 255 251 247;       /* paper on terracotta fills */
+  --accent-2: 176 84 46;          /* same voice for nav/progress */
+  --accent-2-hover: 150 68 36;
+  --accent-2-fg: 255 251 247;     /* paper on terracotta fills */
 
-  --grid: 228 228 227;
+  --grid: 232 227 220;
   --positive: 21 128 61;
   --negative: 185 28 28;
   --warning: 180 83 9;
@@ -83,14 +84,14 @@
   --series-3: 124 58 237;
   --series-4: 190 24 93;          /* pink-600 — clear of cyan + blue */
 
-  --accent-soft: rgba(23, 23, 23, 0.10);
-  --accent-faint: rgba(23, 23, 23, 0.06);
-  --accent-dim: rgba(23, 23, 23, 0.35);
-  --accent-2-soft: rgba(23, 23, 23, 0.10);
-  --accent-2-faint: rgba(23, 23, 23, 0.06);
+  --accent-soft: rgba(176, 84, 46, 0.10);
+  --accent-faint: rgba(176, 84, 46, 0.06);
+  --accent-dim: rgba(176, 84, 46, 0.35);
+  --accent-2-soft: rgba(176, 84, 46, 0.10);
+  --accent-2-faint: rgba(176, 84, 46, 0.06);
 
-  --bg-elevated-hover: 245 245 244;
-  --accent-shadow: rgba(23, 23, 23, 0.20);
+  --bg-elevated-hover: 245 241 236;
+  --accent-shadow: rgba(176, 84, 46, 0.20);
 
   --negative-bg: rgba(185, 28, 28, 0.7);
   --shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.7);
@@ -103,7 +104,7 @@
     0 2px 4px rgba(23, 23, 23, 0.10),
     0 8px 24px rgba(23, 23, 23, 0.14);
 
-  --cell-halo: 245 245 244;
+  --cell-halo: 252 250 247;
 
   /* Categorical track palette (concept map columns, cross-track arcs,
      legend dots). Ten hues tuned per theme: saturated-enough to tell
@@ -127,35 +128,36 @@
   --dur-slow: 480ms;
 
   /* Code blocks invert: a bench screen inside the manual. */
-  --code-block-bg: 11 13 17;
-  --code-block-fg: 226 232 240;
-  --code-block-border: 38 43 52;
+  --code-block-bg: 26 24 22;
+  --code-block-fg: 236 230 224;
+  --code-block-border: 52 48 44;
 }
 
 :root.dark {
+  color-scheme: dark;
   /* The bench: near-black blue ink, hairline drafting grid, paper
      mono signal for anything you can move or have completed. */
-  --bg: 11 13 17;
-  --bg-elevated: 18 21 27;
-  --bg-code: 6 8 10;
-  --overlay: 26 30 38;
+  --bg: 20 20 20;                 /* reference charcoal */
+  --bg-elevated: 31 31 31;
+  --bg-code: 16 16 16;
+  --overlay: 46 46 46;
 
-  --fg: 232 235 238;
-  --fg-prose: 205 210 216;
-  --fg-muted: 154 161 170;
-  --fg-subtle: 120 127 136;
+  --fg: 236 236 236;              /* soft white, never pure white */
+  --fg-prose: 214 214 214;
+  --fg-muted: 155 155 155;
+  --fg-subtle: 138 138 138;      /* >=4.5:1 for 10-11px mono labels */
 
-  --border: 38 43 52;
-  --border-strong: 62 69 80;
+  --border: 45 45 45;
+  --border-strong: 72 72 72;
 
-  --accent: 245 245 244;          /* paper on the bench; ~15:1 on --bg */
-  --accent-hover: 212 212 212;    /* neutral dip on hover */
-  --accent-fg: 11 13 17;          /* ink on paper fills */
-  --accent-2: 245 245 244;        /* same mono voice for nav/progress */
-  --accent-2-hover: 212 212 212;
-  --accent-2-fg: 11 13 17;        /* ink on paper fills */
+  --accent: 233 138 102;          /* coral signal; ~6:1 on --bg */
+  --accent-hover: 240 163 130;    /* lighter coral on hover */
+  --accent-fg: 24 20 18;          /* charcoal on coral fills */
+  --accent-2: 233 138 102;        /* same voice for nav/progress */
+  --accent-2-hover: 240 163 130;
+  --accent-2-fg: 24 20 18;        /* charcoal on coral fills */
 
-  --grid: 30 34 42;
+  --grid: 32 32 32;
   --positive: 74 222 128;
   --negative: 248 113 113;
   --warning: 251 191 36;
@@ -165,14 +167,14 @@
   --series-3: 167 139 250;
   --series-4: 244 114 182;
 
-  --accent-soft: rgba(245, 245, 244, 0.14);
-  --accent-faint: rgba(245, 245, 244, 0.08);
-  --accent-dim: rgba(245, 245, 244, 0.32);
-  --accent-2-soft: rgba(245, 245, 244, 0.14);
-  --accent-2-faint: rgba(245, 245, 244, 0.08);
+  --accent-soft: rgba(233, 138, 102, 0.14);
+  --accent-faint: rgba(233, 138, 102, 0.08);
+  --accent-dim: rgba(233, 138, 102, 0.40);
+  --accent-2-soft: rgba(233, 138, 102, 0.14);
+  --accent-2-faint: rgba(233, 138, 102, 0.08);
 
-  --bg-elevated-hover: 24 28 35;
-  --accent-shadow: rgba(245, 245, 244, 0.18);
+  --bg-elevated-hover: 38 38 38;
+  --accent-shadow: rgba(233, 138, 102, 0.18);
 
   --negative-bg: rgba(248, 113, 113, 0.7);
   --shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.04);
@@ -184,7 +186,7 @@
     0 2px 4px rgba(0, 0, 0, 0.5),
     0 8px 24px rgba(0, 0, 0, 0.6);
 
-  --cell-halo: 11 13 17;
+  --cell-halo: 20 20 20;
 
   --track-1: 129 140 248;  /* indigo-400 */
   --track-2: 56 189 248;   /* sky-400 */
@@ -202,9 +204,9 @@
   --dur-base: 240ms;
   --dur-slow: 480ms;
 
-  --code-block-bg: 6 8 10;
-  --code-block-fg: 226 232 240;
-  --code-block-border: 38 43 52;
+  --code-block-bg: 14 14 14;
+  --code-block-fg: 232 226 220;
+  --code-block-border: 44 44 44;
 }
 
 /* Sticky header is two tiers on lesson routes (~84px). In-page anchors
@@ -529,8 +531,11 @@ html {
    =========================================================================== */
 .lesson-body {
   color: rgb(var(--fg-prose));
-  font-size: 1.0625rem;
-  line-height: 1.7;
+  /* Eye-strain budget: ~18px type, 1.75 leading, and a 68ch measure so
+     long lessons never stretch the eye across the column. */
+  font-size: 1.125rem;
+  line-height: 1.75;
+  max-width: 68ch;
 }
 .lesson-body > * + * {
   margin-top: 1.25rem;
@@ -1015,5 +1020,45 @@ details[open] > .summary-marker::before {
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
+  }
+}
+
+/* ===========================================================================
+   Print: the manual face on paper — prose and figures only, no chrome.
+   =========================================================================== */
+@media print {
+  header,
+  footer,
+  nav,
+  [role='application'],
+  .no-print {
+    display: none !important;
+  }
+  html,
+  body {
+    background: #fff !important;
+  }
+  * {
+    color: #000 !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+  main {
+    max-width: 100% !important;
+    padding: 0 !important;
+  }
+  .lesson-body {
+    font-size: 12pt;
+    line-height: 1.6;
+  }
+  .lesson-body a {
+    border-bottom: none;
+    text-decoration: underline;
+  }
+  /* Keep cards and figures from splitting across pages. */
+  li,
+  figure,
+  .bezel {
+    break-inside: avoid;
   }
 }

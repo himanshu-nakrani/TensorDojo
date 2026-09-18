@@ -357,8 +357,8 @@ config as `rgb(var(--token) / <alpha-value>)`. Existing classes
 without per-component overrides.
 
 **One mono signal, strict jobs.** The design ("scientific instrument")
-runs a single accent voice that inverts with the face: ink on the paper
-manual, paper on the dark bench. `--accent` marks what the reader can
+runs a single accent voice that inverts with the face: terracotta on the warm paper
+manual, coral on the charcoal bench. `--accent` marks what the reader can
 *move* — sliders, knobs, draggable tips, live readouts; `--accent-2`
 (same value, kept as a separate token so the split stays auditable)
 marks *navigation and progress* — links, resume, progress bars, belts.

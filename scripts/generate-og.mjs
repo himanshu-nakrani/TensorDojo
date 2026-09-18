@@ -25,8 +25,8 @@ const html = `<!doctype html>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   html, body { width: 1200px; height: 630px; overflow: hidden; }
   body {
-    background: #0b0d11;
-    color: #e2e8f0;
+    background: #141414;
+    color: #ececec;
     font-family: 'IBM Plex Sans', sans-serif;
     position: relative;
     padding: 72px 88px;
@@ -61,15 +61,15 @@ const html = `<!doctype html>
     font-family: 'IBM Plex Sans', sans-serif;
     font-weight: 600;
     font-size: 78px; line-height: 1.06; letter-spacing: -0.025em;
-    color: #f1f5f9;
+    color: #ececec;
     margin-top: auto;
     max-width: 760px;
     position: relative; z-index: 1;
   }
-  .title em { color: #22d3ee; font-style: italic; font-weight: 600; }
+  .title em { color: #e98a66; font-style: italic; font-weight: 600; }
   .sub {
     margin-top: 26px;
-    font-size: 26px; color: #94a3b8; max-width: 640px; line-height: 1.5;
+    font-size: 26px; color: #9b9b9b; max-width: 640px; line-height: 1.5;
     position: relative; z-index: 1;
   }
   .stats {
@@ -77,13 +77,13 @@ const html = `<!doctype html>
     font-family: 'IBM Plex Mono', monospace;
     position: relative; z-index: 1;
   }
-  .stat b { display: block; font-size: 34px; color: #f1f5f9; font-weight: 600; }
-  .stat span { font-size: 17px; color: #64748b; text-transform: lowercase; }
+  .stat b { display: block; font-size: 34px; color: #ececec; font-weight: 600; }
+  .stat span { font-size: 17px; color: #8a8a8a; text-transform: lowercase; }
   .fig {
     position: absolute; z-index: 1;
     right: 96px; top: 168px;
     width: 320px; height: 320px;
-    background: #12151b;
+    background: #1f1f1f;
     border: 1px solid #262b34;
     border-radius: 4px 16px 16px 4px;
     box-shadow: 0 24px 64px rgba(0,0,0,0.45);
@@ -98,7 +98,7 @@ const html = `<!doctype html>
     position: absolute; top: 18px; left: 24px;
     font-family: 'IBM Plex Mono', monospace;
     font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase;
-    color: #64748b;
+    color: #8a8a8a;
   }
 </style>
 </head>
