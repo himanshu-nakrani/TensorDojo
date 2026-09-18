@@ -3,6 +3,7 @@
 import { useEffect } from 'react';
 import { useLocation } from 'wouter';
 import { Link } from 'wouter';
+import { prefetchOnIntent } from '@/lib/prefetch';
 
 import { getLesson, prevNext } from '@/lib/lessons';
 import { trackForSlug } from '@/lib/lessons-meta';
@@ -78,6 +79,7 @@ export function PrevNext({ slug }: PrevNextProps) {
         {prevLesson ? (
           <Link
             href={`/lessons/${prevLesson.meta.slug}`}
+            {...prefetchOnIntent(prevLesson.meta.slug)}
             className="group flex items-start gap-3 text-muted hover:text-ink transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg focus-visible:text-ink min-w-0 rounded-sm max-w-[48%]"
           >
             <span
@@ -108,6 +110,7 @@ export function PrevNext({ slug }: PrevNextProps) {
         {nextLesson ? (
           <Link
             href={`/lessons/${nextLesson.meta.slug}`}
+            {...prefetchOnIntent(nextLesson.meta.slug)}
             className="group flex items-start gap-3 text-muted hover:text-ink transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg focus-visible:text-ink min-w-0 rounded-sm text-right ml-auto max-w-[48%]"
           >
             <span className="min-w-0">

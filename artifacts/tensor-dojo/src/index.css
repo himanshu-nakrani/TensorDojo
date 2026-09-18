@@ -1024,6 +1024,42 @@ details[open] > .summary-marker::before {
 }
 
 /* ===========================================================================
+   Code tokens — one palette for the dark wells in both themes.
+   =========================================================================== */
+.tok-k { color: #e98a66; }             /* keywords: the coral signal */
+.tok-s { color: #a9c49a; }             /* strings: muted sage */
+.tok-n { color: #e2b86b; }             /* numbers: warm sand */
+.tok-c { color: #8b8b8b; font-style: italic; }
+.tok-f { color: #f0ede8; }             /* call sites: soft white */
+
+/* ===========================================================================
+   Micro-lift: cards rise a hair on hover, settle on press.
+   =========================================================================== */
+.lift {
+  transition:
+    transform var(--dur-fast) var(--ease-sweep),
+    box-shadow var(--dur-fast) var(--ease-sweep),
+    border-color 120ms ease-out,
+    background-color 120ms ease-out;
+}
+.lift:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-card);
+}
+.lift:active {
+  transform: translateY(0);
+  box-shadow: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .lift,
+  .lift:hover,
+  .lift:active {
+    transform: none;
+    transition: border-color 120ms ease-out, background-color 120ms ease-out;
+  }
+}
+
+/* ===========================================================================
    Print: the manual face on paper — prose and figures only, no chrome.
    =========================================================================== */
 @media print {

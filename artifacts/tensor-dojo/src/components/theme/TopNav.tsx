@@ -8,13 +8,15 @@ import { Logo } from './Logo';
 import { useSearchPalette } from '@/components/search/SearchPalette';
 import { useCompletions } from '@/hooks/use-completions';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import {
+import { TRACKS,
   getLessonMeta,
   prevNext,
   readingOrder,
   trackForSlug,
 } from '@/lib/lessons-meta';
 import { track } from '@/lib/analytics';
+import { markCompleted, markIncomplete } from '@/lib/progress/completion';
+import { trackColor } from '@/lib/track-color';
 
 interface NavLink {
   href: string;
@@ -205,8 +207,11 @@ export function TopNav() {
                   href={link.href}
                   aria-current={active ? "page" : undefined}
                   className={clsx(
-                    'focus-ring inline-flex h-9 items-center rounded-md px-3 text-[13px] font-mono transition-colors',
-                    active ? 'text-accent-2' : 'text-fg-muted hover:text-ink',
+                    'focus-ring relative inline-flex h-9 items-center rounded-md px-3 text-[13px] font-mono transition-colors',
+                    "after:absolute after:left-3 after:right-3 after:bottom-1 after:h-px after:origin-left after:bg-accent-2 after:transition-transform after:duration-200 motion-reduce:after:transition-none",
+                    active
+                      ? 'text-accent-2 after:scale-x-100'
+                      : 'text-fg-muted hover:text-ink after:scale-x-0 hover:after:scale-x-100',
                   )}
                 >
                   {link.label}
@@ -280,6 +285,10 @@ export function TopNav() {
             index={lessonIndex}
             total={total}
             trackLabel={trackForSlug(lessonSlug)?.label}
+            trackIdx={
+              TRACKS.findIndex((t) => t.id === trackForSlug(lessonSlug)?.id)
+            }
+            slug={lessonSlug}
             title={lessonMeta.meta.title}
             prev={lessonNav.prev}
             next={lessonNav.next}
@@ -357,6 +366,8 @@ function LessonContextBar({
   index,
   total,
   trackLabel,
+  trackIdx,
+  slug,
   title,
   prev,
   next,
@@ -364,16 +375,32 @@ function LessonContextBar({
   index: number;
   total: number;
   trackLabel?: string;
+  /** Index into TRACKS for the data hue dot; -1 when unknown. */
+  trackIdx?: number;
+  slug: string;
   title: string;
   prev?: string;
   next?: string;
 }) {
+  const { set: completedSet } = useCompletions();
+  const done = completedSet.has(slug);
+  const toggleComplete = () => {
+    if (done) markIncomplete(slug);
+    else markCompleted(slug);
+  };
   return (
     <div className="border-t border-border/60">
       <div className="mx-auto flex h-9 max-w-[1500px] items-center gap-3 px-4 sm:px-6 font-mono text-[11px]">
         {trackLabel && (
-          <span className="uppercase tracking-[0.14em] text-accent-2 truncate max-w-[38vw] sm:max-w-none">
-            {trackLabel}
+          <span className="flex items-center gap-1.5 uppercase tracking-[0.14em] text-accent-2 truncate max-w-[38vw] sm:max-w-none">
+            {(trackIdx ?? -1) >= 0 && (
+              <span
+                aria-hidden="true"
+                className="h-2 w-2 shrink-0 rounded-full"
+                style={{ backgroundColor: trackColor(trackIdx!) }}
+              />
+            )}
+            <span className="truncate">{trackLabel}</span>
           </span>
         )}
         <span className="text-fg-subtle tabular-nums shrink-0">
@@ -381,6 +408,21 @@ function LessonContextBar({
         </span>
         <span className="hidden md:block text-fg-muted truncate">{title}</span>
         <span className="ml-auto flex items-center gap-1 shrink-0">
+          <button
+            type="button"
+            onClick={toggleComplete}
+            aria-pressed={done}
+            title={done ? 'Completed — undo' : 'Complete this lesson'}
+            aria-label={done ? 'Undo completion' : 'Complete this lesson'}
+            className={clsx(
+              'focus-ring mr-1 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border text-[10px] font-bold transition-colors',
+              done
+                ? 'border-accent-2 bg-accent-2 text-accent-2-fg'
+                : 'border-border-strong text-transparent hover:border-accent-2 hover:text-accent-2',
+            )}
+          >
+            ✓
+          </button>
           {prev ? (
             <Link
               href={`/lessons/${prev}`}

@@ -3,7 +3,7 @@ import { TopNav } from '@/components/theme/TopNav';
 import { SearchPaletteProvider } from '@/components/search/SearchPalette';
 import { Spinner } from '@/components/ui/spinner';
 import { TooltipProvider } from '@/components/ui/tooltip';
-import { Component, lazy, Suspense, type ErrorInfo, type ReactNode } from 'react';
+import { Component, lazy, Suspense, useEffect, useRef, type ErrorInfo, type ReactNode } from 'react';
 
 const HomePage = lazy(() => import('@/pages/HomePage'));
 const MapPage = lazy(() => import('@/pages/MapPage'));
@@ -20,6 +20,22 @@ const PageLoader = () => (
   </div>
 );
 
+/** After a client-side navigation, hand focus to the page landmark so
+ *  screen-reader and keyboard users land on content, not the old page's
+ *  chrome. Skips the first paint and never fights scroll restore. */
+function FocusMainOnRoute() {
+  const [pathname] = useLocation();
+  const first = useRef(true);
+  useEffect(() => {
+    if (first.current) {
+      first.current = false;
+      return;
+    }
+    document.getElementById('main')?.focus({ preventScroll: true });
+  }, [pathname]);
+  return null;
+}
+
 function RouteFade({ children }: { children: ReactNode }) {
   const [pathname] = useLocation();
   return (
@@ -31,13 +47,16 @@ function RouteFade({ children }: { children: ReactNode }) {
 
 function Router() {
   return (
-    <Switch>
+    <>
+      <FocusMainOnRoute />
+      <Switch>
       <Route path="/" component={HomePage} />
       <Route path="/map" component={MapPage} />
       <Route path="/lessons" component={LessonsPage} />
       <Route path="/lessons/:slug" component={LessonPage} />
       <Route component={NotFoundPage} />
-    </Switch>
+      </Switch>
+    </>
   );
 }
 

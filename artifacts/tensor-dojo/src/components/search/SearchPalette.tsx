@@ -288,7 +288,7 @@ function PaletteOverlay({
                     key={`recent-${item.slug}`}
                     value={`recent ${item.title} ${item.summary} ${item.trackLabel}`}
                     onSelect={() => onSelect(item.slug)}
-                    className="group flex flex-col gap-0.5 rounded-md px-3 py-2 cursor-pointer data-[selected=true]:bg-accent-2-soft data-[selected=true]:text-ink"
+                    className="group flex flex-col gap-0.5 rounded-md px-3 py-2 cursor-pointer data-[selected=true]:bg-accent-2-soft data-[selected=true]:text-ink data-[selected=true]:shadow-[inset_2px_0_0_rgb(var(--accent-2))]"
                   >
                     <div className="flex items-baseline justify-between gap-3">
                       <span className="text-[14px] text-ink font-medium leading-tight">
