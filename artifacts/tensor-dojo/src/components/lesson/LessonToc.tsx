@@ -23,32 +23,33 @@ export function LessonToc({ slug }: { slug: string }) {
     setEntries([]);
     setActive(null);
 
-    // The MDX body renders after the lazy lesson module resolves; poll
-    // briefly until the headings exist (max ~5s).
-    let cancelled = false;
-    let tries = 0;
-    const timer = window.setInterval(() => {
-      if (cancelled) return;
-      tries += 1;
+    // The MDX body renders after the lazy lesson module resolves, so
+    // watch for the headings instead of polling on a timer.
+    const scan = () => {
       const body = document.querySelector('.lesson-body');
       const headings = body ? Array.from(body.querySelectorAll('h2')) : [];
-      if (headings.length > 0 || tries > 25) {
-        window.clearInterval(timer);
-        if (cancelled || headings.length === 0) return;
-        const found: TocEntry[] = headings.map((h) => {
-          if (!h.id) {
-            tocCounter += 1;
-            h.id = `toc-${slug}-${tocCounter}`;
-          }
-          return { id: h.id, text: h.textContent ?? '' };
-        });
-        setEntries(found);
-      }
-    }, 200);
+      if (headings.length === 0) return false;
+      const found: TocEntry[] = headings.map((h) => {
+        if (!h.id) {
+          tocCounter += 1;
+          h.id = `toc-${slug}-${tocCounter}`;
+        }
+        return { id: h.id, text: h.textContent ?? '' };
+      });
+      setEntries(found);
+      return true;
+    };
+    if (scan()) return;
 
+    const observer = new MutationObserver(() => {
+      if (scan()) observer.disconnect();
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
+    // Give up quietly if a lesson ever ships without sections.
+    const timeout = window.setTimeout(() => observer.disconnect(), 5000);
     return () => {
-      cancelled = true;
-      window.clearInterval(timer);
+      observer.disconnect();
+      window.clearTimeout(timeout);
     };
   }, [slug]);
 

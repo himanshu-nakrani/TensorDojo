@@ -36,7 +36,7 @@ export default function NotFoundPage() {
         concept map shows how they connect.
       </p>
       {randomLesson && (
-        <div className="mb-10 rounded-md border border-border bg-surface p-4">
+        <div className="bezel mb-10 p-4">
           <p className="text-[11px] uppercase tracking-[0.14em] font-mono text-accent-2 mb-1.5">
             Or take a random detour
           </p>
@@ -50,7 +50,7 @@ export default function NotFoundPage() {
             <button
               type="button"
               onClick={() => setRandomSlug((prev) => pickRandomSlug(prev))}
-              className="focus-ring rounded-md border border-border px-3 py-1.5 text-[11px] uppercase tracking-[0.12em] font-mono text-muted hover:border-accent-2 hover:text-accent-2 transition-colors"
+              className="focus-ring rounded-sm border border-border px-3 py-1.5 text-[11px] uppercase tracking-[0.12em] font-mono text-muted hover:border-accent-2 hover:text-accent-2 transition-colors"
             >
               Reroll
             </button>
@@ -60,13 +60,19 @@ export default function NotFoundPage() {
       <div className="flex flex-wrap items-center gap-x-6 gap-y-3 text-[0.95rem]">
         <Link
           href="/"
-          className="text-accent-2 hover:text-accent-2-hover transition-colors border-b border-accent-2/40 hover:border-accent-2"
+          className="focus-ring rounded-sm text-accent-2 hover:text-accent-2-hover transition-colors border-b border-accent-2/40 hover:border-accent-2"
         >
           ← Home
         </Link>
         <Link
+          href="/lessons"
+          className="focus-ring text-muted hover:text-ink transition-colors border-b border-border-strong hover:border-accent-2"
+        >
+          All lessons →
+        </Link>
+        <Link
           href="/map"
-          className="text-muted hover:text-ink transition-colors border-b border-border-strong hover:border-accent-2"
+          className="focus-ring text-muted hover:text-ink transition-colors border-b border-border-strong hover:border-accent-2"
         >
           Concept map →
         </Link>

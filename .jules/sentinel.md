@@ -73,3 +73,7 @@
 **Vulnerability:** The Express API server did not explicitly restrict HTTP methods, potentially allowing unusual methods like `TRACE` or `TRACK` which can be exploited for Cross-Site Tracing (XST) to bypass HttpOnly cookies, or cause unexpected behavior in downstream proxies.
 **Learning:** By default, Express will handle any method if a middleware or route matches (e.g. `app.use()`). It's a fundamental security practice (Defense in Depth) to explicitly reject methods that the application does not intend to support before they reach any further processing.
 **Prevention:** Always implement an early middleware that checks `req.method` against a strict allowlist (e.g., GET, POST, PUT, DELETE, PATCH, OPTIONS, HEAD) and returns a 405 Method Not Allowed response for anything else.
+## 2025-03-09 - Deprecated X-XSS-Protection Header
+**Vulnerability:** The Express API server included the deprecated `X-XSS-Protection` header set to `1; mode=block`.
+**Learning:** The `X-XSS-Protection` header is deprecated, ignored by modern browsers, and its `1; mode=block` configuration can be exploited by attackers to block legitimate scripts from executing, thereby introducing XSS vulnerabilities in older browsers. Security best practices advise against using it.
+**Prevention:** Rely on a strong Content Security Policy (CSP) instead, and do not add the `X-XSS-Protection` header to Express configurations or static frontend deployments.

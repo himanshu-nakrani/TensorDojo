@@ -33,6 +33,6 @@ for derived state, and wraps in `<SimFrame title=...>`. Use the
 `headerAction={...}` when the title row needs toggle pills, a
 segmented control, or multiple buttons.
 
-Visual: the accent color (themed `--accent`, cyan) is reserved for things the
+Visual: the accent color (themed `--accent` — ink on paper, paper on ink) is reserved for things the
 reader can manipulate — draggable tips, slider thumbs, dominant
 bars, focused interactive cards. Static content never uses it.

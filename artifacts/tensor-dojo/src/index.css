@@ -28,20 +28,28 @@
    tokens; only the values swap.
 
    Signal rules:
-     --accent    the manipulable signal (cyan). Sliders, knobs,
-                 draggable tips, live values. Nothing chrome wears it.
-     --accent-2  the navigation signal (blue). Progress, resume,
-                 links, active nav. Never on a sim control.
+     --accent / --accent-2  one mono signal voice (ink on the paper
+                 face, paper on the bench face). Fills invert —
+                 ink-on-paper, paper-on-ink — so controls, progress,
+                 resume and links all speak the same language; the
+                 two names survive so the sim/chrome split stays
+                 auditable in the markup.
      --positive / --negative / --warning keep their semantic jobs.
+     --track-N / --series-N stay polychrome: they encode data,
+                 not chrome.
    =========================================================================== */
 
 :root {
   /* Typefaces — Plex Sans for prose/display, Plex Mono for every
      label, readout, and figure number. Display is sans-semibold
      tight-tracked (the instrument voice replaced the serif). */
-  --font-sans: 'IBM Plex Sans';
+  /* Atkinson Hyperlegible (Braille Institute) for prose + display:
+     open apertures, exaggerated letterform differences, bigger x-height
+     — the most readable face we can self-serve for long lesson text.
+     Plex Mono keeps the instrument voice for labels and readouts. */
+  --font-sans: 'Atkinson Hyperlegible';
   --font-mono: 'IBM Plex Mono';
-  --font-display: 'IBM Plex Sans';
+  --font-display: 'Atkinson Hyperlegible';
 
   /* Surface tiers: canvas → raised (cards) → sunken (wells, inputs)
      → overlay (menus, toasts). */
@@ -58,12 +66,12 @@
   --border: 214 214 214;
   --border-strong: 168 168 168;
 
-  --accent: 14 116 144;           /* cyan-700; 5.4:1 on --bg */
-  --accent-hover: 21 94 117;      /* cyan-800 */
-  --accent-fg: 255 255 255;
-  --accent-2: 37 99 235;          /* blue-600 — navigation signal */
-  --accent-2-hover: 29 78 216;
-  --accent-2-fg: 255 255 255;     /* text on accent-2 fills (light) */
+  --accent: 23 23 23;             /* the ink itself; ~15:1 on --bg */
+  --accent-hover: 64 64 64;       /* neutral lift on hover */
+  --accent-fg: 245 245 244;       /* paper on ink fills */
+  --accent-2: 23 23 23;           /* same mono voice for nav/progress */
+  --accent-2-hover: 64 64 64;
+  --accent-2-fg: 245 245 244;     /* paper on ink fills */
 
   --grid: 228 228 227;
   --positive: 21 128 61;
@@ -75,14 +83,14 @@
   --series-3: 124 58 237;
   --series-4: 190 24 93;          /* pink-600 — clear of cyan + blue */
 
-  --accent-soft: rgba(14, 116, 144, 0.10);
-  --accent-faint: rgba(14, 116, 144, 0.06);
-  --accent-dim: rgba(14, 116, 144, 0.35);
-  --accent-2-soft: rgba(37, 99, 235, 0.10);
-  --accent-2-faint: rgba(37, 99, 235, 0.06);
+  --accent-soft: rgba(23, 23, 23, 0.10);
+  --accent-faint: rgba(23, 23, 23, 0.06);
+  --accent-dim: rgba(23, 23, 23, 0.35);
+  --accent-2-soft: rgba(23, 23, 23, 0.10);
+  --accent-2-faint: rgba(23, 23, 23, 0.06);
 
   --bg-elevated-hover: 245 245 244;
-  --accent-shadow: rgba(14, 116, 144, 0.20);
+  --accent-shadow: rgba(23, 23, 23, 0.20);
 
   --negative-bg: rgba(185, 28, 28, 0.7);
   --shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.7);
@@ -125,8 +133,8 @@
 }
 
 :root.dark {
-  /* The bench: near-black blue ink, hairline drafting grid, cyan
-     signal for anything you can move. */
+  /* The bench: near-black blue ink, hairline drafting grid, paper
+     mono signal for anything you can move or have completed. */
   --bg: 11 13 17;
   --bg-elevated: 18 21 27;
   --bg-code: 6 8 10;
@@ -140,12 +148,12 @@
   --border: 38 43 52;
   --border-strong: 62 69 80;
 
-  --accent: 34 211 238;           /* cyan-400; ~10:1 on --bg */
-  --accent-hover: 103 232 249;    /* cyan-300 */
-  --accent-fg: 8 47 63;           /* cyan-950 text on cyan fills */
-  --accent-2: 96 165 250;         /* blue-400 */
-  --accent-2-hover: 147 197 253;
-  --accent-2-fg: 2 6 23;          /* slate-950 text on blue-400 fills */
+  --accent: 245 245 244;          /* paper on the bench; ~15:1 on --bg */
+  --accent-hover: 212 212 212;    /* neutral dip on hover */
+  --accent-fg: 11 13 17;          /* ink on paper fills */
+  --accent-2: 245 245 244;        /* same mono voice for nav/progress */
+  --accent-2-hover: 212 212 212;
+  --accent-2-fg: 11 13 17;        /* ink on paper fills */
 
   --grid: 30 34 42;
   --positive: 74 222 128;
@@ -157,14 +165,14 @@
   --series-3: 167 139 250;
   --series-4: 244 114 182;
 
-  --accent-soft: rgba(34, 211, 238, 0.14);
-  --accent-faint: rgba(34, 211, 238, 0.08);
-  --accent-dim: rgba(34, 211, 238, 0.32);
-  --accent-2-soft: rgba(96, 165, 250, 0.16);
-  --accent-2-faint: rgba(96, 165, 250, 0.10);
+  --accent-soft: rgba(245, 245, 244, 0.14);
+  --accent-faint: rgba(245, 245, 244, 0.08);
+  --accent-dim: rgba(245, 245, 244, 0.32);
+  --accent-2-soft: rgba(245, 245, 244, 0.14);
+  --accent-2-faint: rgba(245, 245, 244, 0.08);
 
   --bg-elevated-hover: 24 28 35;
-  --accent-shadow: rgba(34, 211, 238, 0.18);
+  --accent-shadow: rgba(245, 245, 244, 0.18);
 
   --negative-bg: rgba(248, 113, 113, 0.7);
   --shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.04);
@@ -536,6 +544,40 @@ html {
   margin-top: 3.5rem;
   margin-bottom: 1rem;
 }
+/* Readability: balanced rag on headings, pretty rag on long prose
+   (both no-ops where unsupported). */
+h1,
+h2,
+h3 {
+  text-wrap: balance;
+}
+.lesson-body p,
+.lesson-body li {
+  text-wrap: pretty;
+}
+
+/* Instrument marker for disclosure summaries: mono +/− instead of the
+   platform triangle. */
+.summary-marker {
+  list-style: none;
+}
+.summary-marker::-webkit-details-marker {
+  display: none;
+}
+.summary-marker::before {
+  content: '+';
+  display: inline-block;
+  width: 1em;
+  color: rgb(var(--fg-subtle));
+  transition: color 120ms;
+}
+details[open] > .summary-marker::before {
+  content: '−';
+}
+.summary-marker:hover::before {
+  color: rgb(var(--accent));
+}
+
 .lesson-body h2:first-child {
   margin-top: 0;
 }

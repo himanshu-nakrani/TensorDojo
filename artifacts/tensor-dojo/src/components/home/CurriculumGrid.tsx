@@ -104,7 +104,7 @@ export function CurriculumGrid() {
                     aria-label={`${track.label}: ${done} of ${track.slugs.length} lessons complete`}
                   >
                     <div
-                      className="h-full rounded-full bg-accent-2 transition-[width] duration-500"
+                      className="h-full rounded-full bg-accent-2 transition-[width] duration-500 motion-reduce:transition-none"
                       style={{ width: `${Math.round(pct * 100)}%` }}
                     />
                   </div>
@@ -115,8 +115,10 @@ export function CurriculumGrid() {
                         : isActive
                           ? done > 0
                             ? 'Continue'
-                          : 'Start here'
-                          : 'Up next'}
+                            : 'Start here'
+                          : done > 0
+                            ? 'In progress'
+                            : 'Queued'}
                     </span>
                     <span
                       aria-hidden="true"

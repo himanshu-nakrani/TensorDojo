@@ -403,7 +403,7 @@ export function LessonDirectory() {
                   aria-label={`${bucket.label} progress`}
                 >
                   <div
-                    className="h-full rounded-full bg-accent-2 transition-[width] duration-500"
+                    className="h-full rounded-full bg-accent-2 transition-[width] duration-500 motion-reduce:transition-none"
                     style={{ width: `${Math.round(pct * 100)}%` }}
                   />
                 </div>

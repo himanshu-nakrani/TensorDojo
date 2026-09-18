@@ -356,16 +356,20 @@ config as `rgb(var(--token) / <alpha-value>)`. Existing classes
 (`bg-bg`, `text-ink`, `border-border`, `bg-bg/40`) work in both themes
 without per-component overrides.
 
-**Two signals, strict jobs.** The design ("scientific instrument") runs
-two accents: `--accent` (cyan) marks only what the reader can *move* —
-sliders, knobs, draggable tips, live readouts; `--accent-2` (blue) marks
-*navigation and progress* — links, resume, progress bars, belts. Static
-chrome never wears either. Light mode is the printed manual (paper
-stone), dark mode the bench (near-black ink); both share one geometry
-of hairlines, bezels, and sharp corners.
+**One mono signal, strict jobs.** The design ("scientific instrument")
+runs a single accent voice that inverts with the face: ink on the paper
+manual, paper on the dark bench. `--accent` marks what the reader can
+*move* — sliders, knobs, draggable tips, live readouts; `--accent-2`
+(same value, kept as a separate token so the split stays auditable)
+marks *navigation and progress* — links, resume, progress bars, belts.
+Static chrome wears neither. Data encodings (`--track-N`, `--series-N`)
+stay polychrome. Light mode is the printed manual (paper stone), dark
+mode the bench (near-black ink); both share one geometry of hairlines,
+bezels, and sharp corners.
 
-**Typography**: IBM Plex Sans (prose + display, semibold tight) +
-IBM Plex Mono (every label, readout, and figure number).
+**Typography**: Atkinson Hyperlegible (prose + display — open
+apertures and exaggerated letterform differences for long lesson text)
++ IBM Plex Mono (every label, readout, and figure number).
 
 **Math**: KaTeX via `remark-math` + `rehype-katex`. Display mode for
 the headline equation of a section, inline for everything else.

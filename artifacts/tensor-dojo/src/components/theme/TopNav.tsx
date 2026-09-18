@@ -178,7 +178,11 @@ export function TopNav() {
       >
         Skip to main content
       </a>
-      <header className="sticky top-0 z-40 border-b border-border/60 bg-bg/80 backdrop-blur-sm supports-[backdrop-filter]:bg-bg/60">
+      {/* Solid, not translucent: over dense lesson content a blurred
+          semi-transparent bar picks up the shapes behind it (dark code
+          blocks read as a floating slab) and costs a backdrop-filter
+          paint on every scroll frame. */}
+      <header className="sticky top-0 z-40 border-b border-border/60 bg-bg">
         <div className="mx-auto flex h-12 max-w-[1500px] items-center justify-between gap-4 px-4 sm:px-6">
           <Link
             href="/"
