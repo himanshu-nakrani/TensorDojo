@@ -167,10 +167,11 @@ export function HeroInteractive() {
         {!reduced && (
           <button
             type="button"
+            onPointerDown={(e) => e.stopPropagation()}
             onClick={toggleCycle}
             aria-pressed={pinned}
             title={pinned ? 'Resume the figure rotation' : 'Stop the figure rotation'}
-            className="focus-ring ml-auto hidden sm:inline-flex items-baseline gap-1.5 text-[10px] font-mono text-fg-subtle transition-colors hover:text-ink"
+            className="focus-ring ml-auto inline-flex items-baseline gap-1.5 text-[10px] font-mono text-fg-subtle transition-colors hover:text-ink"
           >
             <span aria-hidden="true">{pinned ? '▶' : '❚❚'}</span>
             {pinned ? 'resume cycling' : 'stop cycling'}
