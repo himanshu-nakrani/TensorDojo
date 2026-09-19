@@ -184,7 +184,7 @@ export function TopNav() {
           semi-transparent bar picks up the shapes behind it (dark code
           blocks read as a floating slab) and costs a backdrop-filter
           paint on every scroll frame. */}
-      <header className="sticky top-0 z-40 border-b border-border/60 bg-bg">
+      <header className="no-print sticky top-0 z-40 border-b border-border/60 bg-bg">
         <div className="mx-auto flex h-12 max-w-[1500px] items-center justify-between gap-4 px-4 sm:px-6">
           <Link
             href="/"

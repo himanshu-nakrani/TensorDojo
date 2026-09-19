@@ -49,7 +49,7 @@ const html = `<!doctype html>
     right: -140px; top: -180px;
     width: 640px; height: 640px;
     border-radius: 50%;
-    background: radial-gradient(circle, rgba(34,211,238,0.14), transparent 65%);
+    background: radial-gradient(circle, rgba(233,138,102,0.14), transparent 65%);
   }
   .brand {
     display: flex; align-items: center; gap: 16px;
@@ -84,7 +84,7 @@ const html = `<!doctype html>
     right: 96px; top: 168px;
     width: 320px; height: 320px;
     background: #1f1f1f;
-    border: 1px solid #262b34;
+    border: 1px solid #2e2e2e;
     border-radius: 4px 16px 16px 4px;
     box-shadow: 0 24px 64px rgba(0,0,0,0.45);
     overflow: hidden;
@@ -92,7 +92,7 @@ const html = `<!doctype html>
   .fig::before {
     content: '';
     position: absolute; left: 0; top: 0; bottom: 0; width: 5px;
-    background: linear-gradient(180deg, #22d3ee, rgba(34,211,238,0.5));
+    background: linear-gradient(180deg, #e98a66, rgba(233,138,102,0.5));
   }
   .fig .cap {
     position: absolute; top: 18px; left: 24px;
@@ -105,10 +105,10 @@ const html = `<!doctype html>
 <body>
   <div class="brand">
     <svg width="30" height="30" viewBox="0 0 24 24" fill="none">
-      <path d="M19.2 4.8 L21.4 12.6 L13.6 19.2 L4.8 19.2 Z" fill="#22d3ee" opacity="0.22"/>
+      <path d="M19.2 4.8 L21.4 12.6 L13.6 19.2 L4.8 19.2 Z" fill="#e98a66" opacity="0.16"/>
       <path d="M4.8 19.2 L19.2 4.8" stroke="#f1f5f9" stroke-width="1.8" stroke-linecap="round"/>
       <path d="M4.8 19.2 L13.6 19.2" stroke="#f1f5f9" stroke-width="1.8" stroke-linecap="round" opacity="0.55"/>
-      <circle cx="19.2" cy="4.8" r="2.3" fill="#60a5fa"/>
+      <circle cx="19.2" cy="4.8" r="2.3" fill="#e98a66"/>
       <circle cx="4.8" cy="19.2" r="1.5" fill="#f1f5f9"/>
     </svg>
     tensor dojo

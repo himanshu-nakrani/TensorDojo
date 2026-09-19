@@ -1063,7 +1063,8 @@ details[open] > .summary-marker::before {
    Print: the manual face on paper — prose and figures only, no chrome.
    =========================================================================== */
 @media print {
-  header,
+  body > div > header,
+  header:has(nav),
   footer,
   nav,
   [role='application'],
@@ -1073,11 +1074,20 @@ details[open] > .summary-marker::before {
   html,
   body {
     background: #fff !important;
+    color: #000 !important;
   }
-  * {
+  *,
+  *::before,
+  *::after {
+    background: transparent !important;
     color: #000 !important;
     box-shadow: none !important;
     text-shadow: none !important;
+  }
+  pre,
+  code {
+    background: #f4f4f2 !important;
+    color: #111 !important;
   }
   main {
     max-width: 100% !important;
