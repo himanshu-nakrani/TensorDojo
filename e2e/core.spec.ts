@@ -68,3 +68,18 @@ test('activation lesson loads the assessment and feedback loop', async ({ page }
   await page.reload();
   await expect(page.getByText(/Mastered · 1 attempt/i)).toBeVisible();
 });
+
+test('lessons directory filter persists to the url and back', async ({ page }) => {
+  await page.goto('/lessons');
+  await page.getByRole('button', { name: /^Complete/ }).click();
+  await expect(page).toHaveURL(/status=done/);
+  await expect(page.getByText(/No lessons match this filter yet/)).toBeVisible();
+
+  await page.getByRole('button', { name: 'Show all lessons' }).click();
+  await expect(page).not.toHaveURL(/status=/);
+  await expect(page.getByRole('heading', { name: 'Foundations of similarity' })).toBeVisible();
+
+  // A filtered url hydrates the same view on a fresh load.
+  await page.goto('/lessons?status=new');
+  await expect(page.getByRole('button', { name: /^Not started/ })).toHaveAttribute('aria-pressed', 'true');
+});

@@ -59,7 +59,7 @@ function applyTheme(next: Theme): void {
   // Browser chrome / overscroll should follow the app theme, not the
   // OS preference the meta tag was born with.
   const tc = document.querySelector('meta[name="theme-color"]');
-  if (tc) tc.setAttribute('content', next === 'dark' ? '#0b0d11' : '#f5f5f4');
+  if (tc) tc.setAttribute('content', next === 'dark' ? '#141414' : '#f7f4f0');
   // Two RAFs: the first lets the class change paint, the second
   // lets the browser apply the new token values; only then do we
   // re-enable transitions.

@@ -20,7 +20,7 @@
     <meta name="twitter:image" content="https://tensordojo.vercel.app/og.png" />
     <!-- Single tag; the bootstrap script below (and use-theme on
          toggle) keeps it in sync with the *app* theme, not the OS. -->
-    <meta name="theme-color" content="#0b0d11" />
+    <meta name="theme-color" content="#141414" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
@@ -39,7 +39,7 @@
       : ls ? ls === 'dark' : (sysKnown ? mq.matches : true);
     if (dark) document.documentElement.classList.add('dark');
     var tc = document.querySelector('meta[name="theme-color"]');
-    if (tc) tc.setAttribute('content', dark ? '#0b0d11' : '#f5f5f4');
+    if (tc) tc.setAttribute('content', dark ? '#141414' : '#f7f4f0');
   } catch (e) {}
 })();
     </script>

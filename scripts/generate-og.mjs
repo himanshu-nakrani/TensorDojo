@@ -25,8 +25,8 @@ const html = `<!doctype html>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   html, body { width: 1200px; height: 630px; overflow: hidden; }
   body {
-    background: #0b0d11;
-    color: #e2e8f0;
+    background: #141414;
+    color: #ececec;
     font-family: 'IBM Plex Sans', sans-serif;
     position: relative;
     padding: 72px 88px;
@@ -49,7 +49,7 @@ const html = `<!doctype html>
     right: -140px; top: -180px;
     width: 640px; height: 640px;
     border-radius: 50%;
-    background: radial-gradient(circle, rgba(34,211,238,0.14), transparent 65%);
+    background: radial-gradient(circle, rgba(233,138,102,0.14), transparent 65%);
   }
   .brand {
     display: flex; align-items: center; gap: 16px;
@@ -61,15 +61,15 @@ const html = `<!doctype html>
     font-family: 'IBM Plex Sans', sans-serif;
     font-weight: 600;
     font-size: 78px; line-height: 1.06; letter-spacing: -0.025em;
-    color: #f1f5f9;
+    color: #ececec;
     margin-top: auto;
     max-width: 760px;
     position: relative; z-index: 1;
   }
-  .title em { color: #22d3ee; font-style: italic; font-weight: 600; }
+  .title em { color: #e98a66; font-style: italic; font-weight: 600; }
   .sub {
     margin-top: 26px;
-    font-size: 26px; color: #94a3b8; max-width: 640px; line-height: 1.5;
+    font-size: 26px; color: #9b9b9b; max-width: 640px; line-height: 1.5;
     position: relative; z-index: 1;
   }
   .stats {
@@ -77,14 +77,14 @@ const html = `<!doctype html>
     font-family: 'IBM Plex Mono', monospace;
     position: relative; z-index: 1;
   }
-  .stat b { display: block; font-size: 34px; color: #f1f5f9; font-weight: 600; }
-  .stat span { font-size: 17px; color: #64748b; text-transform: lowercase; }
+  .stat b { display: block; font-size: 34px; color: #ececec; font-weight: 600; }
+  .stat span { font-size: 17px; color: #8a8a8a; text-transform: lowercase; }
   .fig {
     position: absolute; z-index: 1;
     right: 96px; top: 168px;
     width: 320px; height: 320px;
-    background: #12151b;
-    border: 1px solid #262b34;
+    background: #1f1f1f;
+    border: 1px solid #2e2e2e;
     border-radius: 4px 16px 16px 4px;
     box-shadow: 0 24px 64px rgba(0,0,0,0.45);
     overflow: hidden;
@@ -92,23 +92,23 @@ const html = `<!doctype html>
   .fig::before {
     content: '';
     position: absolute; left: 0; top: 0; bottom: 0; width: 5px;
-    background: linear-gradient(180deg, #22d3ee, rgba(34,211,238,0.5));
+    background: linear-gradient(180deg, #e98a66, rgba(233,138,102,0.5));
   }
   .fig .cap {
     position: absolute; top: 18px; left: 24px;
     font-family: 'IBM Plex Mono', monospace;
     font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase;
-    color: #64748b;
+    color: #8a8a8a;
   }
 </style>
 </head>
 <body>
   <div class="brand">
     <svg width="30" height="30" viewBox="0 0 24 24" fill="none">
-      <path d="M19.2 4.8 L21.4 12.6 L13.6 19.2 L4.8 19.2 Z" fill="#22d3ee" opacity="0.22"/>
+      <path d="M19.2 4.8 L21.4 12.6 L13.6 19.2 L4.8 19.2 Z" fill="#e98a66" opacity="0.16"/>
       <path d="M4.8 19.2 L19.2 4.8" stroke="#f1f5f9" stroke-width="1.8" stroke-linecap="round"/>
       <path d="M4.8 19.2 L13.6 19.2" stroke="#f1f5f9" stroke-width="1.8" stroke-linecap="round" opacity="0.55"/>
-      <circle cx="19.2" cy="4.8" r="2.3" fill="#60a5fa"/>
+      <circle cx="19.2" cy="4.8" r="2.3" fill="#e98a66"/>
       <circle cx="4.8" cy="19.2" r="1.5" fill="#f1f5f9"/>
     </svg>
     tensor dojo

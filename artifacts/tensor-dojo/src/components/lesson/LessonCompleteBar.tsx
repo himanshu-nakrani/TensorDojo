@@ -56,7 +56,7 @@ export function LessonCompleteBar({ slug }: LessonCompleteBarProps) {
 
   if (!done) {
     return (
-      <div className="mt-12 flex flex-wrap items-center justify-between gap-4 rounded-lg border border-dashed border-border-strong px-5 py-4">
+      <div className="no-print mt-12 flex flex-wrap items-center justify-between gap-4 rounded-lg border border-dashed border-border-strong px-5 py-4">
         <p className="text-[13px] text-fg-muted">
           Finished this one? Mark it complete to track your way through the
           curriculum.

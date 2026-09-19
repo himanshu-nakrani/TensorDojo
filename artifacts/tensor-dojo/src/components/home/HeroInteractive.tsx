@@ -79,12 +79,22 @@ const ROTATE_MS = 9000;
  */
 export function HeroInteractive() {
   const [index, setIndex] = useState(0);
-  // Reduced-motion readers get a static figure: the rotator never starts.
-  const [pinned, setPinned] = useState(() => {
+  // Reduced-motion readers get a static figure: the rotator never
+  // starts and the cycle toggle stays hidden.
+  const [reduced] = useState(() => {
     if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') return false;
     return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   });
+  const [pinned, setPinned] = useState(reduced);
   const pinnedRef = useRef(pinned);
+
+  // Eyes get a rest button: stop/resume the auto-cycle without having
+  // to interact with the figure itself.
+  const toggleCycle = useCallback(() => {
+    const next = !pinnedRef.current;
+    pinnedRef.current = next;
+    setPinned(next);
+  }, []);
 
   const pin = useCallback(() => {
     if (!pinnedRef.current) {
@@ -154,13 +164,18 @@ export function HeroInteractive() {
             {f.tab}
           </button>
         ))}
-        {!pinned && (
-          <span
-            aria-hidden="true"
-            className="ml-auto hidden sm:block text-[10px] font-mono text-fg-subtle"
+        {!reduced && (
+          <button
+            type="button"
+            onPointerDown={(e) => e.stopPropagation()}
+            onClick={toggleCycle}
+            aria-pressed={pinned}
+            title={pinned ? 'Resume the figure rotation' : 'Stop the figure rotation'}
+            className="focus-ring ml-auto inline-flex items-baseline gap-1.5 text-[10px] font-mono text-fg-subtle transition-colors hover:text-ink"
           >
-            {pinned ? 'paused — yours to drag' : 'auto-cycling'}
-          </span>
+            <span aria-hidden="true">{pinned ? '▶' : '❚❚'}</span>
+            {pinned ? 'resume cycling' : 'stop cycling'}
+          </button>
         )}
       </div>
 
