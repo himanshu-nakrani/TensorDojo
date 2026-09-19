@@ -11,6 +11,7 @@ import dagre from 'dagre';
 import { getVisited, getLastVisited } from '@/lib/progress/visits';
 import { useCompletions } from '@/hooks/use-completions';
 import { trackColor } from '@/lib/track-color';
+import { prefetchOnIntent } from '@/lib/prefetch';
 import {
   Tooltip,
   TooltipContent,
@@ -741,6 +742,7 @@ function GraphNodeCard({
     >
       <Link
         href={`/lessons/${node.id}`}
+        {...prefetchOnIntent(node.id)}
         onClick={(e) => {
           if (suppressNav()) e.preventDefault();
         }}
@@ -881,8 +883,9 @@ function MapList({
                 <li key={lesson.slug}>
                   <Link
                     href={`/lessons/${lesson.slug}`}
+                    {...prefetchOnIntent(lesson.slug)}
                     className={[
-                      'block min-h-[64px] rounded-lg border bg-bg-elevated p-3 transition-colors focus-ring card-surface',
+                      'lift block min-h-[64px] rounded-lg border bg-bg-elevated p-3 focus-ring card-surface',
                       isResume
                         ? 'border-accent-2 ring-2 ring-accent-2/30'
                         : isVisited

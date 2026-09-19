@@ -1,6 +1,7 @@
 import katex from 'katex';
 import 'katex/dist/katex.min.css';
 import { ReactNode } from 'react';
+import { highlightPython } from '@/lib/highlight';
 import clsx from 'clsx';
 
 interface MathCodeProps {
@@ -60,7 +61,7 @@ export function MathCode({ math, code, caption, className }: MathCodeProps) {
               scroll). At full prose width an 80-char line fits without
               scroll on every viewport above ~640px. */}
           <pre className="m-0 font-mono text-[13px] leading-relaxed overflow-x-auto">
-            <code>{code}</code>
+            <code>{highlightPython(code)}</code>
           </pre>
         </div>
       </div>

@@ -1,5 +1,7 @@
-import { Suspense, use, useState, useEffect } from 'react';
+import { Suspense, use, useState, useEffect , useRef } from 'react';
 import { useParams, useLocation } from 'wouter';
+import { MDXProvider } from '@mdx-js/react';
+import { highlightPython } from '@/lib/highlight';
 import { LessonShell } from '@/components/lesson/LessonShell';
 import { Workbench } from '@/components/lesson/Workbench';
 import { PrevNext } from '@/components/lesson/PrevNext';
@@ -84,6 +86,32 @@ function LessonContent({ slug }: { slug: string }) {
     };
   }, [slug]);
 
+  // Returning readers land where they left off: remember the scroll
+  // offset per slug for the session and restore it once the lazy MDX
+  // has painted (hash links still win).
+  const restoredRef = useRef<string | null>(null);
+  useEffect(() => {
+    if (loading || restoredRef.current === slug) return;
+    restoredRef.current = slug;
+    const key = `tld-scroll:${slug}`;
+    const saved = window.sessionStorage.getItem(key);
+    if (saved && !window.location.hash) {
+      window.scrollTo({ top: Number(saved) || 0, behavior: 'instant' });
+    }
+    let raf = 0;
+    const onScroll = () => {
+      window.cancelAnimationFrame(raf);
+      raf = window.requestAnimationFrame(() => {
+        window.sessionStorage.setItem(key, String(window.scrollY));
+      });
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      window.cancelAnimationFrame(raf);
+    };
+  }, [slug, loading]);
+
   if (loading) {
     return (
       <LessonShell title={meta.title} minutes={meta.minutes} summary={meta.summary} objectives={meta.objectives}>
@@ -115,7 +143,27 @@ function LessonContent({ slug }: { slug: string }) {
   const Lesson = lessonModule?.default;
   if (!Lesson) return null;
 
+
   const defaultActive = interactives[0]?.id ?? '';
+
+  // Lesson code fences render through the same highlighter as the
+  // MathCode wells, so every block on the page shares one voice.
+  const mdxComponents = {
+    pre: (props: React.ComponentProps<'pre'>) => {
+      const child = props.children as React.ReactElement<{ children?: unknown }> | undefined;
+      const text =
+        child && typeof child.props?.children === 'string'
+          ? (child.props.children as string)
+          : null;
+      if (text === null) return <pre {...props} />;
+      const { children: _drop, ...rest } = props;
+      return (
+        <pre {...rest}>
+          <code>{highlightPython(text)}</code>
+        </pre>
+      );
+    },
+  };
 
   return (
     <LessonShell title={meta.title} minutes={meta.minutes} summary={meta.summary} objectives={meta.objectives}>
@@ -125,7 +173,11 @@ function LessonContent({ slug }: { slug: string }) {
       <Workbench
         interactives={interactives}
         defaultActive={defaultActive}
-        prose={<Lesson />}
+        prose={
+          <MDXProvider components={mdxComponents}>
+            <Lesson />
+          </MDXProvider>
+        }
       />
       <LessonCompleteBar slug={slug} />
       <PrevNext slug={slug} />

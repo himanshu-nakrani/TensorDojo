@@ -5,6 +5,7 @@ import { TRACKS, getLessonMeta, type LessonMetaEntry } from '@/lib/lessons-meta'
 import { getVisited, getLastVisited } from '@/lib/progress/visits';
 import { useCompletions } from '@/hooks/use-completions';
 import { trackColor } from '@/lib/track-color';
+import { prefetchOnIntent } from '@/lib/prefetch';
 
 /**
  * The /lessons directory: a status toolbar (overall belt meter +
@@ -419,7 +420,8 @@ export function LessonDirectory() {
                       <li key={lesson.meta.slug}>
                         <Link
                           href={`/lessons/${lesson.meta.slug}`}
-                          className="group flex h-full flex-col gap-1.5 rounded-sm border border-border border-l-2 border-l-border bg-surface p-4 transition-colors hover:border-border-strong hover:border-l-accent-2 hover:bg-surface-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
+                          {...prefetchOnIntent(lesson.meta.slug)}
+                          className="lift group flex h-full flex-col gap-1.5 rounded-sm border border-border border-l-2 border-l-border bg-surface p-4 hover:border-border-strong hover:border-l-accent-2 hover:bg-surface-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
                         >
                           <div className="flex items-baseline gap-2.5">
                             {status === 'done' ? (
