@@ -133,17 +133,19 @@ function gradNorms(
   return norms;
 }
 
+const MAX_N = 24;
+const D = 4;
+const STATIC_LAYERS = Array.from({ length: MAX_N }, (_, i) => randomLayer(D, 0.6, 42 + i * 7));
+const STATIC_X0 = Array.from({ length: D }, (_, i) => Math.sin(i * 0.7));
+
 export function ResidualStackExplorer({ preset }: { preset?: ResidualStackExplorerPreset }) {
   const [n, setN] = useState(preset?.n ?? 8);
   const [useResidual, setUseResidual] = useState(true);
   const [useLayerNorm, setUseLayerNorm] = useState(false);
-  const d = 4;
+  const d = D;
 
-  const layers = useMemo(
-    () => Array.from({ length: n }, (_, i) => randomLayer(d, 0.6, 42 + i * 7)),
-    [n, d],
-  );
-  const x0 = useMemo(() => Array.from({ length: d }, (_, i) => Math.sin(i * 0.7)), [d]);
+  const layers = useMemo(() => STATIC_LAYERS.slice(0, n), [n]);
+  const x0 = STATIC_X0;
 
   const { acts } = useMemo(
     () => forward(x0, layers, useResidual),
