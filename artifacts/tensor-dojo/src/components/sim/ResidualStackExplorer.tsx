@@ -142,8 +142,6 @@ export function ResidualStackExplorer({ preset }: { preset?: ResidualStackExplor
   const [n, setN] = useState(preset?.n ?? 8);
   const [useResidual, setUseResidual] = useState(true);
   const [useLayerNorm, setUseLayerNorm] = useState(false);
-  const d = D;
-
   const layers = useMemo(() => STATIC_LAYERS.slice(0, n), [n]);
   const x0 = STATIC_X0;
 
