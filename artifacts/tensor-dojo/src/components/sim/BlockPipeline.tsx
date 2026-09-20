@@ -1,17 +1,15 @@
-
-
-import { useMemo, useState } from 'react';
-import clsx from 'clsx';
-import { Heatmap } from '@/components/sim/primitives/Heatmap';
-import { Slider } from '@/components/sim/primitives/Slider';
-import { SimFrame } from '@/components/sim/primitives/SimFrame';
-import { sinusoidalPE } from '@/lib/math/positional';
+import { useMemo, useState } from "react";
+import clsx from "clsx";
+import { Heatmap } from "@/components/sim/primitives/Heatmap";
+import { Slider } from "@/components/sim/primitives/Slider";
+import { SimFrame } from "@/components/sim/primitives/SimFrame";
+import { sinusoidalPE } from "@/lib/math/positional";
 import {
   transformerBlock,
   type TransformerBlockInput,
   type TransformerBlockOutput,
-} from '@/lib/math/transformer-block';
-import { softmaxRows } from '@/lib/math/softmax';
+} from "@/lib/math/transformer-block";
+import { softmaxRows } from "@/lib/math/softmax";
 
 // -----------------------------------------------------------------------------
 // Authored constants
@@ -35,7 +33,12 @@ const H = 4;
 const D_K = D / H;
 const T = 4;
 
-const POS_ANGLES: readonly number[] = [0, Math.PI / 2, Math.PI, (3 * Math.PI) / 2];
+const POS_ANGLES: readonly number[] = [
+  0,
+  Math.PI / 2,
+  Math.PI,
+  (3 * Math.PI) / 2,
+];
 
 // Per-head Wk rotation (radians). Q uses identity; K is the input rotated.
 //   head 0: rotation = π/2 → attends to position i-1
@@ -49,12 +52,9 @@ const HEAD_K_ROTATIONS: readonly number[] = [
   (3 * Math.PI) / 2,
 ];
 
-const HEAD_LABELS: readonly string[] = [
-  'i − 1',
-  'i',
-  'i + 1',
-  'i + 2',
-];
+const HEAD_LABELS: readonly string[] = ["i − 1", "i", "i + 1", "i + 2"];
+
+const PE_MATRIX = sinusoidalPE(T, D);
 
 function rotation2D(theta: number): number[][] {
   return [
@@ -159,9 +159,9 @@ const POSITIONS_0123 = POS_ANGLES; // [0, π/2, π, 3π/2]
 
 const SENTENCES: readonly Sentence[] = [
   {
-    id: 'coref',
-    label: 'the cat saw the  (coreference)',
-    tokens: ['the', 'cat', 'saw', 'the'],
+    id: "coref",
+    label: "the cat saw the  (coreference)",
+    tokens: ["the", "cat", "saw", "the"],
     embeds: [
       makeEmbed([POSITIONS_0123[0]!], 0), // "the"
       makeEmbed([POSITIONS_0123[1]!], 1), // "cat"
@@ -170,9 +170,9 @@ const SENTENCES: readonly Sentence[] = [
     ],
   },
   {
-    id: 'syn',
-    label: 'she runs fast now  (syntactic)',
-    tokens: ['she', 'runs', 'fast', 'now'],
+    id: "syn",
+    label: "she runs fast now  (syntactic)",
+    tokens: ["she", "runs", "fast", "now"],
     embeds: [
       makeEmbed([POSITIONS_0123[0]!], 0),
       makeEmbed([POSITIONS_0123[1]!], 1),
@@ -181,9 +181,9 @@ const SENTENCES: readonly Sentence[] = [
     ],
   },
   {
-    id: 'pos',
-    label: 'first one then last  (positional)',
-    tokens: ['first', 'one', 'then', 'last'],
+    id: "pos",
+    label: "first one then last  (positional)",
+    tokens: ["first", "one", "then", "last"],
     embeds: [
       makeEmbed([POSITIONS_0123[0]!], 0),
       makeEmbed([POSITIONS_0123[1]!], 1),
@@ -192,9 +192,9 @@ const SENTENCES: readonly Sentence[] = [
     ],
   },
   {
-    id: 'trivial',
-    label: 'a a a a  (uniform)',
-    tokens: ['a', 'a', 'a', 'a'],
+    id: "trivial",
+    label: "a a a a  (uniform)",
+    tokens: ["a", "a", "a", "a"],
     embeds: [
       makeEmbed([POSITIONS_0123[0]!], 0),
       makeEmbed([POSITIONS_0123[1]!], 0),
@@ -209,7 +209,7 @@ const SENTENCES: readonly Sentence[] = [
 // -----------------------------------------------------------------------------
 
 export function BlockPipeline() {
-  const [sentenceId, setSentenceId] = useState<string>('coref');
+  const [sentenceId, setSentenceId] = useState<string>("coref");
   const [headIdx, setHeadIdx] = useState<number>(0);
   const [showAllHeads, setShowAllHeads] = useState<boolean>(false);
   const [useRes1, setUseRes1] = useState<boolean>(true);
@@ -225,9 +225,8 @@ export function BlockPipeline() {
 
   // Build the input: xIn = embed + PE for the chosen sentence.
   const xIn = useMemo(() => {
-    const pe = sinusoidalPE(T, D);
     return sentence.embeds.map((row, t) =>
-      row.map((v, k) => v + pe[t]![k]!),
+      row.map((v, k) => v + PE_MATRIX[t]![k]!),
     );
   }, [sentence]);
 
@@ -325,7 +324,7 @@ export function BlockPipeline() {
   const showDepth = blockDepth > 1;
 
   const reset = () => {
-    setSentenceId('coref');
+    setSentenceId("coref");
     setHeadIdx(0);
     setShowAllHeads(false);
     setUseRes1(true);
@@ -465,10 +464,10 @@ function Controls(props: ControlsProps) {
             type="button"
             onClick={() => props.setHeadIdx(h)}
             className={clsx(
-              'text-[11px] uppercase tracking-[0.12em] font-mono px-2 py-0.5 rounded border focus-ring transition-colors',
+              "text-[11px] uppercase tracking-[0.12em] font-mono px-2 py-0.5 rounded border focus-ring transition-colors",
               props.headIdx === h
-                ? 'border-accent text-accent'
-                : 'border-border text-muted hover:text-ink',
+                ? "border-accent text-accent"
+                : "border-border text-muted hover:text-ink",
             )}
             aria-pressed={props.headIdx === h}
           >
@@ -479,10 +478,10 @@ function Controls(props: ControlsProps) {
           type="button"
           onClick={() => props.setShowAllHeads(!props.showAllHeads)}
           className={clsx(
-            'text-[11px] uppercase tracking-[0.12em] font-mono px-2 py-0.5 rounded border focus-ring transition-colors',
+            "text-[11px] uppercase tracking-[0.12em] font-mono px-2 py-0.5 rounded border focus-ring transition-colors",
             props.showAllHeads
-              ? 'border-accent text-accent'
-              : 'border-border text-muted hover:text-ink',
+              ? "border-accent text-accent"
+              : "border-border text-muted hover:text-ink",
           )}
           aria-pressed={props.showAllHeads}
         >
@@ -494,21 +493,13 @@ function Controls(props: ControlsProps) {
         <span className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mr-1">
           Toggles
         </span>
-        <Toggle
-          label="LN 1"
-          on={props.useLN1}
-          onChange={props.setUseLN1}
-        />
+        <Toggle label="LN 1" on={props.useLN1} onChange={props.setUseLN1} />
         <Toggle
           label="Residual 1"
           on={props.useRes1}
           onChange={props.setUseRes1}
         />
-        <Toggle
-          label="LN 2"
-          on={props.useLN2}
-          onChange={props.setUseLN2}
-        />
+        <Toggle label="LN 2" on={props.useLN2} onChange={props.setUseLN2} />
         <Toggle
           label="Residual 2"
           on={props.useRes2}
@@ -550,14 +541,14 @@ function Toggle({
       type="button"
       onClick={() => onChange(!on)}
       className={clsx(
-        'text-[11px] uppercase tracking-[0.12em] font-mono px-2 py-0.5 rounded border focus-ring transition-colors',
+        "text-[11px] uppercase tracking-[0.12em] font-mono px-2 py-0.5 rounded border focus-ring transition-colors",
         on
-          ? 'border-accent text-accent'
-          : 'border-border text-muted hover:text-ink',
+          ? "border-accent text-accent"
+          : "border-border text-muted hover:text-ink",
       )}
       aria-pressed={on}
     >
-      {label}: {on ? 'on' : 'off'}
+      {label}: {on ? "on" : "off"}
     </button>
   );
 }
@@ -613,24 +604,24 @@ function DataFlow({
         title="Row 1 — Input"
         cells={[
           {
-            kind: 'matrix',
-            label: 'token embed',
+            kind: "matrix",
+            label: "token embed",
             values: sentence.embeds as number[][],
-            tooltip: 'token embeddings, shape (4, 8), per-token learned lookup',
+            tooltip: "token embeddings, shape (4, 8), per-token learned lookup",
           },
-          { kind: 'op', op: '+' },
+          { kind: "op", op: "+" },
           {
-            kind: 'matrix',
-            label: 'PE',
-            values: sinusoidalPE(T, D),
-            tooltip: 'positional encoding, shape (4, 8), sinusoidal',
+            kind: "matrix",
+            label: "PE",
+            values: PE_MATRIX,
+            tooltip: "positional encoding, shape (4, 8), sinusoidal",
           },
-          { kind: 'op', op: '=' },
+          { kind: "op", op: "=" },
           {
-            kind: 'matrix',
-            label: 'input x',
+            kind: "matrix",
+            label: "input x",
             values: xIn,
-            tooltip: 'input to block, shape (4, 8), embed + PE',
+            tooltip: "input to block, shape (4, 8), embed + PE",
             highlight: true,
           },
         ]}
@@ -640,53 +631,53 @@ function DataFlow({
         title="Row 2 — Pre-norm + attention"
         cells={[
           {
-            kind: 'matrix',
-            label: toggles.useLN1 ? 'LN1' : 'xIn',
+            kind: "matrix",
+            label: toggles.useLN1 ? "LN1" : "xIn",
             values: lastBlock.xNorm1,
             tooltip: toggles.useLN1
-              ? 'LayerNorm 1, shape (4, 8), zero mean, unit variance per token'
-              : 'LN1 disabled — xIn used directly, scale unbounded',
+              ? "LayerNorm 1, shape (4, 8), zero mean, unit variance per token"
+              : "LN1 disabled — xIn used directly, scale unbounded",
           },
-          { kind: 'op', op: '→' },
+          { kind: "op", op: "→" },
           {
-            kind: 'matrix',
+            kind: "matrix",
             label: `Q h${headIdx + 1}`,
             values: headData.Qh,
             tooltip: `head ${headIdx + 1} query vectors, shape (4, 2)`,
           },
           {
-            kind: 'matrix',
+            kind: "matrix",
             label: `K h${headIdx + 1}`,
             values: headData.Kh,
             tooltip: `head ${headIdx + 1} key vectors, shape (4, 2)`,
           },
           {
-            kind: 'matrix',
+            kind: "matrix",
             label: `V h${headIdx + 1}`,
             values: headData.Vh,
             tooltip: `head ${headIdx + 1} value vectors, shape (4, 2)`,
           },
-          { kind: 'op', op: '→' },
+          { kind: "op", op: "→" },
           {
-            kind: 'score',
-            label: 'scores',
+            kind: "score",
+            label: "scores",
             values: headData.scores,
             tooltip: `head ${headIdx + 1} scores with causal mask, shape (4, 4)`,
           },
-          { kind: 'op', op: '→' },
+          { kind: "op", op: "→" },
           {
-            kind: 'score',
-            label: 'weights',
+            kind: "score",
+            label: "weights",
             values: headData.weights,
             tooltip: `head ${headIdx + 1} attention weights, shape (4, 4), row-wise softmax`,
             highlight: true,
           },
-          { kind: 'op', op: '→' },
+          { kind: "op", op: "→" },
           {
-            kind: 'matrix',
-            label: 'attn out',
+            kind: "matrix",
+            label: "attn out",
             values: lastBlock.attnOut,
-            tooltip: 'multi-head attention output, shape (4, 8)',
+            tooltip: "multi-head attention output, shape (4, 8)",
           },
         ]}
       />
@@ -695,36 +686,36 @@ function DataFlow({
         title="Row 3 — Residual 1 + pre-norm"
         cells={[
           {
-            kind: 'matrix',
-            label: 'attn out',
+            kind: "matrix",
+            label: "attn out",
             values: lastBlock.attnOut,
-            tooltip: 'attention output from Row 2',
+            tooltip: "attention output from Row 2",
           },
-          { kind: 'op', op: toggles.useRes1 ? '+' : '·' },
+          { kind: "op", op: toggles.useRes1 ? "+" : "·" },
           {
-            kind: 'matrix',
-            label: 'xIn',
+            kind: "matrix",
+            label: "xIn",
             values: xIn,
-            tooltip: 'block input from Row 1',
+            tooltip: "block input from Row 1",
           },
-          { kind: 'op', op: '=' },
+          { kind: "op", op: "=" },
           {
-            kind: 'matrix',
-            label: toggles.useRes1 ? 'h' : 'h = attn',
+            kind: "matrix",
+            label: toggles.useRes1 ? "h" : "h = attn",
             values: lastBlock.residual1,
             tooltip: toggles.useRes1
-              ? 'h = xIn + attn, residual stream after attention'
-              : 'residual 1 disabled — h = attn out, the residual stream lost xIn',
+              ? "h = xIn + attn, residual stream after attention"
+              : "residual 1 disabled — h = attn out, the residual stream lost xIn",
             highlight: true,
           },
-          { kind: 'op', op: '→' },
+          { kind: "op", op: "→" },
           {
-            kind: 'matrix',
-            label: toggles.useLN2 ? 'LN2' : 'h',
+            kind: "matrix",
+            label: toggles.useLN2 ? "LN2" : "h",
             values: lastBlock.xNorm2,
             tooltip: toggles.useLN2
-              ? 'LayerNorm 2, shape (4, 8), zero mean, unit variance per token'
-              : 'LN2 disabled — h used directly, FFN input scale unbounded',
+              ? "LayerNorm 2, shape (4, 8), zero mean, unit variance per token"
+              : "LN2 disabled — h used directly, FFN input scale unbounded",
           },
         ]}
       />
@@ -733,31 +724,31 @@ function DataFlow({
         title="Row 4 — FFN + residual 2"
         cells={[
           {
-            kind: 'matrix',
-            label: 'LN2',
+            kind: "matrix",
+            label: "LN2",
             values: lastBlock.xNorm2,
-            tooltip: 'LayerNorm 2 output from Row 3',
+            tooltip: "LayerNorm 2 output from Row 3",
           },
-          { kind: 'op', op: '→' },
+          { kind: "op", op: "→" },
           {
-            kind: 'matrix',
-            label: 'FFN out',
+            kind: "matrix",
+            label: "FFN out",
             values: lastBlock.ffnOut,
-            tooltip: 'two-layer FFN output, shape (4, 8), GELU activation',
+            tooltip: "two-layer FFN output, shape (4, 8), GELU activation",
           },
-          { kind: 'op', op: toggles.useRes2 ? '+' : '·' },
+          { kind: "op", op: toggles.useRes2 ? "+" : "·" },
           {
-            kind: 'matrix',
-            label: 'h',
+            kind: "matrix",
+            label: "h",
             values: lastBlock.residual1,
-            tooltip: 'residual stream h from Row 3',
+            tooltip: "residual stream h from Row 3",
           },
-          { kind: 'op', op: '=' },
+          { kind: "op", op: "=" },
           {
-            kind: 'matrix',
-            label: 'block out',
+            kind: "matrix",
+            label: "block out",
             values: lastBlock.xOut,
-            tooltip: 'block output, shape (4, 8), feeds the next block',
+            tooltip: "block output, shape (4, 8), feeds the next block",
             highlight: true,
           },
         ]}
@@ -792,7 +783,7 @@ function DataFlow({
 }
 
 interface RowCell {
-  kind: 'matrix' | 'score' | 'op';
+  kind: "matrix" | "score" | "op";
   label?: string;
   values?: number[][];
   tooltip?: string;
@@ -816,19 +807,19 @@ function Row({ title, cells }: { title: string; cells: RowCell[] }) {
 }
 
 function RowCellView({ cell }: { cell: RowCell }) {
-  if (cell.kind === 'op') {
+  if (cell.kind === "op") {
     return (
       <div className="text-muted font-mono text-[16px] px-1 select-none">
         {cell.op}
       </div>
     );
   }
-  const isMatrix = cell.kind === 'matrix';
+  const isMatrix = cell.kind === "matrix";
   return (
     <div
       className={clsx(
-        'flex flex-col items-center shrink-0',
-        cell.highlight && 'ring-1 ring-accent/40 rounded p-1',
+        "flex flex-col items-center shrink-0",
+        cell.highlight && "ring-1 ring-accent/40 rounded p-1",
       )}
       title={cell.tooltip}
     >
@@ -837,7 +828,7 @@ function RowCellView({ cell }: { cell: RowCell }) {
       </div>
       <Heatmap
         values={cell.values!}
-        colormap={isMatrix ? 'diverging' : 'accent'}
+        colormap={isMatrix ? "diverging" : "accent"}
         cellSize={isMatrix ? 14 : 18}
         precision={2}
         compact
@@ -865,9 +856,8 @@ function DepthView({
   // For the depth view, also report the cosine similarity of each
   // block's output to the original input embedding (the "drift" story).
   const drift = useMemo(() => {
-    const pe = sinusoidalPE(T, D);
     const input = sentence.embeds.map((row, t) =>
-      row.map((v, k) => v + pe[t]![k]!),
+      row.map((v, k) => v + PE_MATRIX[t]![k]!),
     );
     return depthOutputs.map((out) => {
       // Average cosine similarity across the 4 tokens.
@@ -892,58 +882,68 @@ function DepthView({
   return (
     <div className="space-y-4 overflow-x-auto">
       <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono">
-        Block depth view ({blockDepth} blocks stacked; toggles apply to every block)
+        Block depth view ({blockDepth} blocks stacked; toggles apply to every
+        block)
       </div>
       <div className="sim-split">
-      <div className="sim-split__grid">
-        <div className="space-y-2">
-          {depthOutputs.map((out, b) => (
-            <div
-              key={b}
-              className="rounded-lg border border-border bg-bg/30 p-2 flex items-center gap-3"
-              title={`output of block ${b + 1}, shape (4, 8)`}
-            >
-              <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono shrink-0 w-16">
-                block {b + 1}
-              </div>
-              <Heatmap
-                values={out}
-                colormap="diverging"
-                cellSize={12}
-                precision={2}
-                compact
-                rowLabels={sentence.tokens as string[]}
-                ariaLabel={`output of block ${b + 1}, shape (4, 8)`}
-              />
-            </div>
-          ))}
-        </div>
-        <div className="sim-split__aside rounded-lg border border-border bg-bg/30 p-3 min-w-[180px]">
-          <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-2">
-            Drift from input
-          </div>
-          <div className="space-y-1 font-mono text-[11px]">
-            {drift.map((c, b) => (
-              <div key={b} className="flex items-center justify-between gap-2">
-                <span className="text-dim">block {b + 1}</span>
-                <span className={clsx('tabular-nums', c < 0.5 ? 'text-[rgb(var(--negative))]' : 'text-ink')}>
-                  {c < 0.5 && '↓ '}{c.toFixed(3)}
-                </span>
+        <div className="sim-split__grid">
+          <div className="space-y-2">
+            {depthOutputs.map((out, b) => (
+              <div
+                key={b}
+                className="rounded-lg border border-border bg-bg/30 p-2 flex items-center gap-3"
+                title={`output of block ${b + 1}, shape (4, 8)`}
+              >
+                <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono shrink-0 w-16">
+                  block {b + 1}
+                </div>
+                <Heatmap
+                  values={out}
+                  colormap="diverging"
+                  cellSize={12}
+                  precision={2}
+                  compact
+                  rowLabels={sentence.tokens as string[]}
+                  ariaLabel={`output of block ${b + 1}, shape (4, 8)`}
+                />
               </div>
             ))}
           </div>
-          <div className="mt-3 text-[11px] text-dim font-mono leading-relaxed">
-            Cosine similarity of each block's output to the original input.
-            With residual + LN, the stream stays close to 1. Without,
-            it drifts toward 0 (or negative).
-          </div>
-          {(!toggles.useRes1 || !toggles.useRes2) && (
-            <div className="mt-2 text-[11px] text-[rgb(var(--negative))] font-mono leading-relaxed">
-              ⚠ a residual is off — drift accelerates with depth.
+          <div className="sim-split__aside rounded-lg border border-border bg-bg/30 p-3 min-w-[180px]">
+            <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-2">
+              Drift from input
             </div>
-          )}
+            <div className="space-y-1 font-mono text-[11px]">
+              {drift.map((c, b) => (
+                <div
+                  key={b}
+                  className="flex items-center justify-between gap-2"
+                >
+                  <span className="text-dim">block {b + 1}</span>
+                  <span
+                    className={clsx(
+                      "tabular-nums",
+                      c < 0.5 ? "text-[rgb(var(--negative))]" : "text-ink",
+                    )}
+                  >
+                    {c < 0.5 && "↓ "}
+                    {c.toFixed(3)}
+                  </span>
+                </div>
+              ))}
+            </div>
+            <div className="mt-3 text-[11px] text-dim font-mono leading-relaxed">
+              Cosine similarity of each block's output to the original input.
+              With residual + LN, the stream stays close to 1. Without, it
+              drifts toward 0 (or negative).
+            </div>
+            {(!toggles.useRes1 || !toggles.useRes2) && (
+              <div className="mt-2 text-[11px] text-[rgb(var(--negative))] font-mono leading-relaxed">
+                ⚠ a residual is off — drift accelerates with depth.
+              </div>
+            )}
+          </div>
         </div>
-      </div>
       </div>
     </div>
   );

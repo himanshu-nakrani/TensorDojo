@@ -1,14 +1,12 @@
-
-
-import { useMemo, useState } from 'react';
-import { Heatmap } from '@/components/sim/primitives/Heatmap';
-import { Slider } from '@/components/sim/primitives/Slider';
-import { SimFrame } from '@/components/sim/primitives/SimFrame';
-import { sinusoidalPE } from '@/lib/math/positional';
+import { useMemo, useState } from "react";
+import { Heatmap } from "@/components/sim/primitives/Heatmap";
+import { Slider } from "@/components/sim/primitives/Slider";
+import { SimFrame } from "@/components/sim/primitives/SimFrame";
+import { sinusoidalPE } from "@/lib/math/positional";
 import {
   transformerBlock,
   type TransformerBlockInput,
-} from '@/lib/math/transformer-block';
+} from "@/lib/math/transformer-block";
 
 // -----------------------------------------------------------------------------
 // BlockDepth
@@ -21,6 +19,10 @@ import {
 // of them visibly accelerates the drift.
 // -----------------------------------------------------------------------------
 
+const T = 4;
+const D = 8;
+const PE_MATRIX = sinusoidalPE(T, D);
+
 const SENTENCES: ReadonlyArray<{
   id: string;
   label: string;
@@ -28,9 +30,9 @@ const SENTENCES: ReadonlyArray<{
   embeds: ReadonlyArray<readonly number[]>;
 }> = [
   {
-    id: 'coref',
-    label: 'the cat saw the',
-    tokens: ['the', 'cat', 'saw', 'the'],
+    id: "coref",
+    label: "the cat saw the",
+    tokens: ["the", "cat", "saw", "the"],
     embeds: [
       [1, 0, 1, 0, 0, 0, 0, 0],
       [0, 1, 0, 1, 0, 0, 0, 0],
@@ -39,9 +41,9 @@ const SENTENCES: ReadonlyArray<{
     ],
   },
   {
-    id: 'trivial',
-    label: 'a a a a',
-    tokens: ['a', 'a', 'a', 'a'],
+    id: "trivial",
+    label: "a a a a",
+    tokens: ["a", "a", "a", "a"],
     embeds: [
       [1, 0, 1, 0, 0, 0, 0, 0],
       [0, 1, 1, 0, 0, 0, 0, 0],
@@ -54,7 +56,9 @@ const SENTENCES: ReadonlyArray<{
 // A simple block-input fixture. We do not need the centerpiece
 // interactive's full weight set here — the depth story is
 // qualitative, not quantitative.
-function makeBlockInput(x: ReadonlyArray<readonly number[]>): TransformerBlockInput {
+function makeBlockInput(
+  x: ReadonlyArray<readonly number[]>,
+): TransformerBlockInput {
   const D = 8;
   const dFf = 32;
   // W1, W2 deterministic (small scale — the drift comes from the
@@ -91,22 +95,18 @@ function identity(n: number): number[][] {
 }
 
 export function BlockDepth() {
-  const [sentenceId, setSentenceId] = useState<string>('coref');
+  const [sentenceId, setSentenceId] = useState<string>("coref");
   const [depth, setDepth] = useState<number>(3);
   const [useRes1, setUseRes1] = useState<boolean>(true);
   const [useRes2, setUseRes2] = useState<boolean>(true);
   const [useLN1, setUseLN1] = useState<boolean>(true);
   const [useLN2, setUseLN2] = useState<boolean>(true);
 
-  const sentence =
-    SENTENCES.find((s) => s.id === sentenceId) ?? SENTENCES[0]!;
+  const sentence = SENTENCES.find((s) => s.id === sentenceId) ?? SENTENCES[0]!;
 
   const { outputs, drift, xIn } = useMemo(() => {
-    const T = 4;
-    const D = 8;
-    const pe = sinusoidalPE(T, D);
     const x0 = sentence.embeds.map((row, t) =>
-      row.map((v, k) => v + pe[t]![k]!),
+      row.map((v, k) => v + PE_MATRIX[t]![k]!),
     );
     const input = makeBlockInput(x0);
     const allOutputs: number[][][] = [];
@@ -147,7 +147,7 @@ export function BlockDepth() {
   }, [sentence, depth, useRes1, useRes2, useLN1, useLN2]);
 
   const reset = () => {
-    setSentenceId('coref');
+    setSentenceId("coref");
     setDepth(3);
     setUseRes1(true);
     setUseRes2(true);
@@ -156,7 +156,10 @@ export function BlockDepth() {
   };
 
   return (
-    <SimFrame title="Stack N blocks · watch the residual stream drift" onReset={reset}>
+    <SimFrame
+      title="Stack N blocks · watch the residual stream drift"
+      onReset={reset}
+    >
       <div className="space-y-3 mb-5">
         <label className="flex items-center gap-2 text-[11px] uppercase tracking-[0.12em] text-dim font-mono">
           Sentence
@@ -184,7 +187,7 @@ export function BlockDepth() {
               max={6}
               step={1}
               onChange={setDepth}
-              formatValue={(v) => `${v} block${v === 1 ? '' : 's'}`}
+              formatValue={(v) => `${v} block${v === 1 ? "" : "s"}`}
               ariaLabel="Block depth"
             />
           </div>
@@ -250,19 +253,17 @@ export function BlockDepth() {
           </div>
           <div className="space-y-1 font-mono text-[11px]">
             {drift.map((c, b) => (
-              <div
-                key={b}
-                className="flex items-center justify-between gap-2"
-              >
+              <div key={b} className="flex items-center justify-between gap-2">
                 <span className="text-dim">block {b + 1}</span>
                 <span
                   className={
                     c < 0.5
-                      ? 'text-[rgb(var(--negative))] tabular-nums'
-                      : 'text-ink tabular-nums'
+                      ? "text-[rgb(var(--negative))] tabular-nums"
+                      : "text-ink tabular-nums"
                   }
                 >
-                  {c < 0.5 && '↓ '}{c.toFixed(3)}
+                  {c < 0.5 && "↓ "}
+                  {c.toFixed(3)}
                 </span>
               </div>
             ))}
@@ -270,11 +271,11 @@ export function BlockDepth() {
         </div>
         <div className="rounded border border-border bg-bg/30 p-3 text-[11px] text-muted font-mono leading-relaxed">
           Each block re-reads its input through attention and the FFN, then
-          writes the result back into the residual stream. The residual
-          stream is the message that flows through the network — every
-          sublayer is an edit, never a replacement. Toggle a residual off
-          and the stream is replaced by the sublayer's output; the deeper
-          you stack, the more it drifts.
+          writes the result back into the residual stream. The residual stream
+          is the message that flows through the network — every sublayer is an
+          edit, never a replacement. Toggle a residual off and the stream is
+          replaced by the sublayer's output; the deeper you stack, the more it
+          drifts.
         </div>
       </div>
     </SimFrame>
@@ -295,14 +296,14 @@ function MiniToggle({
       type="button"
       onClick={() => onChange(!on)}
       className={
-        'text-[11px] uppercase tracking-[0.12em] font-mono px-2 py-0.5 rounded border focus-ring transition-colors ' +
+        "text-[11px] uppercase tracking-[0.12em] font-mono px-2 py-0.5 rounded border focus-ring transition-colors " +
         (on
-          ? 'border-accent text-accent'
-          : 'border-border text-muted hover:text-ink')
+          ? "border-accent text-accent"
+          : "border-border text-muted hover:text-ink")
       }
       aria-pressed={on}
     >
-      {label}: {on ? 'on' : 'off'}
+      {label}: {on ? "on" : "off"}
     </button>
   );
 }
