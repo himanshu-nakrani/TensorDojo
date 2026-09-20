@@ -408,21 +408,27 @@ function LessonContextBar({
         </span>
         <span className="hidden md:block text-fg-muted truncate">{title}</span>
         <span className="ml-auto flex items-center gap-1 shrink-0">
-          <button
-            type="button"
-            onClick={toggleComplete}
-            aria-pressed={done}
-            title={done ? 'Completed — undo' : 'Complete this lesson'}
-            aria-label={done ? 'Undo completion' : 'Complete this lesson'}
-            className={clsx(
-              'focus-ring mr-1 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border text-[10px] font-bold transition-colors',
-              done
-                ? 'border-accent-2 bg-accent-2 text-accent-2-fg'
-                : 'border-border-strong text-transparent hover:border-accent-2 hover:text-accent-2',
-            )}
-          >
-            ✓
-          </button>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button
+                type="button"
+                onClick={toggleComplete}
+                aria-pressed={done}
+                aria-label={done ? 'Undo completion' : 'Complete this lesson'}
+                className={clsx(
+                  'focus-ring mr-1 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border text-[10px] font-bold transition-colors',
+                  done
+                    ? 'border-accent-2 bg-accent-2 text-accent-2-fg'
+                    : 'border-border-strong text-transparent hover:border-accent-2 hover:text-accent-2',
+                )}
+              >
+                ✓
+              </button>
+            </TooltipTrigger>
+            <TooltipContent>
+              {done ? 'Completed — undo' : 'Complete this lesson'}
+            </TooltipContent>
+          </Tooltip>
           {prev ? (
             <Link
               href={`/lessons/${prev}`}
