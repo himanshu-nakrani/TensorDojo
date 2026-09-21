@@ -58,3 +58,6 @@
 ## 2025-02-18 - Pre-compute static ResidualStack layers
 **Learning:** `ResidualStackExplorer.tsx` generated the static `layers` array (a heavy O(N*d^2) matrix generation) using `useMemo` on every component mount. `useMemo` caching does not persist across route navigations, leading to duplicated heavy object creation on the main thread and slowing down page initialization.
 **Action:** Lift state computations that strictly rely on module-level constants (like `randomLayer(D, 0.6, 42 + i * 7)`) outside of the component context into module-level constant precalculations (`STATIC_LAYERS` and `STATIC_X0`), mapping state values by slicing (`.slice(0, n)`) rather than recalculating.
+## 2025-02-18 - BatchNormExplorer UI toggle triggering recomputation
+**Learning:** Found that `BatchNormExplorer` recalculated a 150-step SGD training loop inside a `useMemo` every time the `useBN` toggle state changed because `useBN` was unnecessarily included in the dependency array `[mod, useBN]`. It also regenerated synthetic datasets inside the hook.
+**Action:** Remove purely visual/display state from the dependency array of expensive computations, and hoist static data generation (like `synthetic(40, 0)`) to module-level constants to run once at load time.
