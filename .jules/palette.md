@@ -35,3 +35,7 @@
 ## 2024-05-14 - Tooltips for icon-only navigation buttons
 **Learning:** Native `title` attributes for tooltips on icon-only buttons (like Theme toggles or mobile search/menu buttons) offer poor accessibility and look unpolished. The application's own design system `Tooltip` components are a much better fit for sighted users.
 **Action:** When identifying icon-only buttons with `title` attributes or missing visual hints, replace or add them with styled tooltips using the existing UI components (`TooltipProvider`, `TooltipTrigger`, `TooltipContent`), ensuring the provider wraps the necessary component tree (like `WouterRouter` in `App.tsx`).
+
+## 2026-09-21 - Custom design tokens in UI primitives
+**Learning:** When integrating generic UI components (like Radix Tooltip) that may have been generated with default Tailwind colors (like `bg-primary`, `text-primary-foreground`), they will appear unstyled or broken because this app uses a custom set of design tokens (like `bg-bg-elevated`, `text-ink`, `border-border`).
+**Action:** When integrating generic UI components (like default Shadcn or Radix primitives) in `tensor-dojo`, always ensure their default Tailwind classes are replaced with the project's custom theme tokens to prevent invisible or unstyled elements.
