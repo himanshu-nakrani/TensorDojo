@@ -58,3 +58,6 @@
 ## 2025-02-18 - Pre-compute static ResidualStack layers
 **Learning:** `ResidualStackExplorer.tsx` generated the static `layers` array (a heavy O(N*d^2) matrix generation) using `useMemo` on every component mount. `useMemo` caching does not persist across route navigations, leading to duplicated heavy object creation on the main thread and slowing down page initialization.
 **Action:** Lift state computations that strictly rely on module-level constants (like `randomLayer(D, 0.6, 42 + i * 7)`) outside of the component context into module-level constant precalculations (`STATIC_LAYERS` and `STATIC_X0`), mapping state values by slicing (`.slice(0, n)`) rather than recalculating.
+## 2025-02-18 - Candidate sorting components pre-computation
+**Learning:** Found that `CandidateSort.tsx` and `CandidateCosine.tsx` were repeatedly mapping over static constant `CANDIDATES` arrays inside `useMemo` hooks to generate derived objects for their `VectorCanvas`. Because the mapped output creates new objects on every evaluation, moving a slider triggered continuous object allocation and GC pressure.
+**Action:** Always lift array transformations over purely static module constants (like `.map()` over predefined options) into module-level variables (e.g. `STATIC_CANDIDATE_VECTORS`) to avoid O(N) object reallocation inside React hooks.

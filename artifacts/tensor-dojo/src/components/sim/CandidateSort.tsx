@@ -1,13 +1,11 @@
-
-
-import { useMemo, useState } from 'react';
-import clsx from 'clsx';
+import { useMemo, useState } from "react";
+import clsx from "clsx";
 import {
   VectorCanvas,
   type VectorCanvasVector,
-} from '@/components/sim/primitives/VectorCanvas';
-import { SimFrame } from '@/components/sim/primitives/SimFrame';
-import { dot } from '@/lib/math/linalg';
+} from "@/components/sim/primitives/VectorCanvas";
+import { SimFrame } from "@/components/sim/primitives/SimFrame";
+import { dot } from "@/lib/math/linalg";
 
 export interface CandidateSortPreset {
   query?: readonly [number, number];
@@ -15,13 +13,25 @@ export interface CandidateSortPreset {
 
 const DEFAULT_QUERY: [number, number] = [1.2, 0.4];
 
-const CANDIDATES: ReadonlyArray<{ id: string; label: string; value: [number, number] }> = [
-  { id: 'c1', label: 'c₁', value: [1.5, 0.0] },
-  { id: 'c2', label: 'c₂', value: [0.4, 1.4] },
-  { id: 'c3', label: 'c₃', value: [-1.0, 0.6] },
-  { id: 'c4', label: 'c₄', value: [0.8, -0.9] },
-  { id: 'c5', label: 'c₅', value: [-0.6, -1.1] },
+const CANDIDATES: ReadonlyArray<{
+  id: string;
+  label: string;
+  value: [number, number];
+}> = [
+  { id: "c1", label: "c₁", value: [1.5, 0.0] },
+  { id: "c2", label: "c₂", value: [0.4, 1.4] },
+  { id: "c3", label: "c₃", value: [-1.0, 0.6] },
+  { id: "c4", label: "c₄", value: [0.8, -0.9] },
+  { id: "c5", label: "c₅", value: [-0.6, -1.1] },
 ];
+
+// ⚡ Bolt Optimization: Pre-compute static array derivations at the module level
+// rather than doing it inside useMemo on every slider drag.
+const STATIC_CANDIDATE_VECTORS: VectorCanvasVector[] = CANDIDATES.map((c) => ({
+  id: c.id,
+  label: c.label,
+  value: c.value,
+}));
 
 const SCALE = 4; // bar scale for q·c values.
 
@@ -51,15 +61,12 @@ export function CandidateSort({ preset }: { preset?: CandidateSortPreset }) {
   // The query is the only manipulable element; candidates are dimmer
   // because they are not (here) draggable.
   const vectors: VectorCanvasVector[] = useMemo(
-    () => [
-      { id: 'q', label: 'q', value: query },
-      ...CANDIDATES.map((c) => ({ id: c.id, label: c.label, value: c.value })),
-    ],
+    () => [{ id: "q", label: "q", value: query }, ...STATIC_CANDIDATE_VECTORS],
     [query],
   );
 
   const setVector = (id: string, value: [number, number]) => {
-    if (id === 'q') setQuery(value);
+    if (id === "q") setQuery(value);
     // Candidates are not draggable in this interactive.
   };
 
@@ -69,8 +76,9 @@ export function CandidateSort({ preset }: { preset?: CandidateSortPreset }) {
       onReset={() => setQuery([...DEFAULT_QUERY])}
     >
       <p className="text-[12px] text-muted mb-5 font-mono">
-        Drag <span className="text-accent">q</span> (only q is draggable). The 5 fixed candidates re-sort by{' '}
-        <span className="text-ink">q · cᵢ</span> in real time.
+        Drag <span className="text-accent">q</span> (only q is draggable). The 5
+        fixed candidates re-sort by <span className="text-ink">q · cᵢ</span> in
+        real time.
       </p>
 
       <VectorCanvas
@@ -86,15 +94,13 @@ export function CandidateSort({ preset }: { preset?: CandidateSortPreset }) {
             key={c.id}
             className="grid grid-cols-[2.5rem_2rem_minmax(0,1fr)_4rem] items-center gap-3"
           >
-            <span className="text-dim tabular-nums text-right">
-              {i + 1}
-            </span>
+            <span className="text-dim tabular-nums text-right">{i + 1}</span>
             <span className="text-muted">{c.label}</span>
             <SignedBar value={c.score} max={SCALE} />
             <span
               className={clsx(
-                'tabular-nums text-right',
-                c.score === scored[0]?.score ? 'text-accent' : 'text-ink',
+                "tabular-nums text-right",
+                c.score === scored[0]?.score ? "text-accent" : "text-ink",
               )}
             >
               {fmt(c.score, 2)}
@@ -119,8 +125,8 @@ function SignedBar({ value, max }: { value: number; max: number }) {
       />
       <div
         className={clsx(
-          'absolute inset-y-0 transition-all duration-200 ease-out',
-          positive ? 'bg-accent' : 'bg-[var(--negative-bg)]',
+          "absolute inset-y-0 transition-all duration-200 ease-out",
+          positive ? "bg-accent" : "bg-[var(--negative-bg)]",
         )}
         style={
           positive

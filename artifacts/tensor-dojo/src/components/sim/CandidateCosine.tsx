@@ -1,13 +1,11 @@
-
-
-import { useMemo, useState } from 'react';
-import clsx from 'clsx';
+import { useMemo, useState } from "react";
+import clsx from "clsx";
 import {
   VectorCanvas,
   type VectorCanvasVector,
-} from '@/components/sim/primitives/VectorCanvas';
-import { SimFrame } from '@/components/sim/primitives/SimFrame';
-import { cosTheta, dot, magnitude } from '@/lib/math/linalg';
+} from "@/components/sim/primitives/VectorCanvas";
+import { SimFrame } from "@/components/sim/primitives/SimFrame";
+import { cosTheta, dot, magnitude } from "@/lib/math/linalg";
 
 export interface CandidateCosinePreset {
   q?: readonly [number, number];
@@ -23,14 +21,32 @@ const FIXED_CANDIDATES: ReadonlyArray<{
   label: string;
   value: readonly [number, number];
 }> = [
-  { id: 'c1', label: 'c₁', value: [1.0, 0.0] },
-  { id: 'c2', label: 'c₂', value: [0.6, 0.9] },
-  { id: 'c3', label: 'c₃', value: [-0.4, 1.1] },
-  { id: 'c4', label: 'c₄', value: [0.0, -1.0] },
-  { id: 'c5', label: 'c₅', value: [0.8, -0.5] },
+  { id: "c1", label: "c₁", value: [1.0, 0.0] },
+  { id: "c2", label: "c₂", value: [0.6, 0.9] },
+  { id: "c3", label: "c₃", value: [-0.4, 1.1] },
+  { id: "c4", label: "c₄", value: [0.0, -1.0] },
+  { id: "c5", label: "c₅", value: [0.8, -0.5] },
 ];
-const RESIZABLE_ID = 'cr';
-const RESIZABLE_LABEL = 'c_R';
+
+// ⚡ Bolt Optimization: Pre-compute static array derivations at the module level
+// rather than allocating new objects inside useMemo on every slider drag.
+const STATIC_CANDIDATES_BASE = FIXED_CANDIDATES.map((c) => ({
+  id: c.id,
+  label: c.label,
+  value: c.value,
+  resizable: false,
+}));
+
+const STATIC_CANDIDATE_VECTORS: VectorCanvasVector[] = FIXED_CANDIDATES.map(
+  (c) => ({
+    id: c.id,
+    label: c.label,
+    value: c.value,
+  }),
+);
+
+const RESIZABLE_ID = "cr";
+const RESIZABLE_LABEL = "c_R";
 const RESIZABLE_DIR: [number, number] = [1, 0.4]; // direction
 const DEFAULT_RESIZABLE_LEN = 0.7;
 
@@ -45,7 +61,11 @@ function fmt(x: number, digits = 2): string {
  * resizable length so the reader can see how magnitude moves the
  * raw dot product but leaves cosine alone.
  */
-export function CandidateCosine({ preset }: { preset?: CandidateCosinePreset }) {
+export function CandidateCosine({
+  preset,
+}: {
+  preset?: CandidateCosinePreset;
+}) {
   const [q, setQ] = useState<[number, number]>(() => {
     const p = preset?.q;
     return [p?.[0] ?? DEFAULT_Q[0], p?.[1] ?? DEFAULT_Q[1]];
@@ -56,14 +76,12 @@ export function CandidateCosine({ preset }: { preset?: CandidateCosinePreset }) 
 
   const candidates = useMemo(() => {
     const dirMag = magnitude(RESIZABLE_DIR);
-    const unit = [RESIZABLE_DIR[0] / dirMag, RESIZABLE_DIR[1] / dirMag] as const;
+    const unit = [
+      RESIZABLE_DIR[0] / dirMag,
+      RESIZABLE_DIR[1] / dirMag,
+    ] as const;
     return [
-      ...FIXED_CANDIDATES.map((c) => ({
-        id: c.id,
-        label: c.label,
-        value: c.value,
-        resizable: false,
-      })),
+      ...STATIC_CANDIDATES_BASE,
       {
         id: RESIZABLE_ID,
         label: RESIZABLE_LABEL,
@@ -93,12 +111,8 @@ export function CandidateCosine({ preset }: { preset?: CandidateCosinePreset }) 
 
   const vectors: VectorCanvasVector[] = useMemo(
     () => [
-      { id: 'q', label: 'q', value: q },
-      ...FIXED_CANDIDATES.map((c) => ({
-        id: c.id,
-        label: c.label,
-        value: c.value,
-      })),
+      { id: "q", label: "q", value: q },
+      ...STATIC_CANDIDATE_VECTORS,
       {
         id: RESIZABLE_ID,
         label: RESIZABLE_LABEL,
@@ -112,7 +126,7 @@ export function CandidateCosine({ preset }: { preset?: CandidateCosinePreset }) 
   );
 
   const setVector = (id: string, value: [number, number]) => {
-    if (id === 'q') setQ(value);
+    if (id === "q") setQ(value);
     // candidate tips are not user-movable; the resizable one is a length slider.
   };
 
@@ -128,77 +142,86 @@ export function CandidateCosine({ preset }: { preset?: CandidateCosinePreset }) 
       }}
     >
       <div className="sim-split">
-      <div className="sim-split__grid">
-        <div>
-          <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-2">
-            Query <span className="text-accent">q</span> (drag) · 5 fixed candidates · c_R has a length slider below
-          </div>
-          <VectorCanvas
-            vectors={vectors}
-            onChange={setVector}
-            height={300}
-            ariaLabel="Query vector q and 5 fixed candidate vectors. Drag q to recompute."
-          />
-          <p className="mt-2 text-[11px] text-muted font-mono">
-            Drag <span className="text-accent">q</span>, then slide c_R's length below. The dot product changes with c_R's length; the cosine similarity does not.
-          </p>
-        </div>
-
-        <div
-          className="sim-split__aside space-y-2"
-          style={{ ['--sim-aside-w' as string]: '26rem' }}
-        >
-          <header className="grid grid-cols-[80px_1fr_1fr] gap-3 text-[11px] uppercase tracking-[0.12em] text-dim font-mono pb-1 border-b border-border">
-            <span>candidate</span>
-            <span className="text-right">q · c</span>
-            <span className="text-right">cos θ</span>
-          </header>
-          {rankedByDot.map((r) => (
-            <div
-              key={r.id}
-              className={clsx(
-                'grid grid-cols-[80px_1fr_1fr] gap-3 items-center font-mono text-[12px] tabular-nums',
-                r.resizable && 'bg-bg/40 rounded px-2 py-1 -mx-2',
-              )}
-            >
-              <div className="flex flex-col">
-                <span className="text-ink">{r.label}</span>
-                {r.resizable && (
-                  <span className="text-[11px] text-dim">‖c_R‖ = {fmt(magnitude(r.value), 1)}</span>
-                )}
-              </div>
-              <SignedBar value={r.qDot} max={maxAbs} />
-              <SignedBar value={r.cos} max={1} accent />
+        <div className="sim-split__grid">
+          <div>
+            <div className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono mb-2">
+              Query <span className="text-accent">q</span> (drag) · 5 fixed
+              candidates · c_R has a length slider below
             </div>
-          ))}
+            <VectorCanvas
+              vectors={vectors}
+              onChange={setVector}
+              height={300}
+              ariaLabel="Query vector q and 5 fixed candidate vectors. Drag q to recompute."
+            />
+            <p className="mt-2 text-[11px] text-muted font-mono">
+              Drag <span className="text-accent">q</span>, then slide c_R's
+              length below. The dot product changes with c_R's length; the
+              cosine similarity does not.
+            </p>
+          </div>
 
-          <div className="pt-3 mt-2 border-t border-border space-y-2">
-            <label className="block">
-              <div className="flex items-baseline justify-between mb-1">
-                <span className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono">
-                  c_R length
-                </span>
-                <span className="font-mono text-[12px] text-ink tabular-nums">
-                  {fmt(resizableLen, 2)}
-                </span>
+          <div
+            className="sim-split__aside space-y-2"
+            style={{ ["--sim-aside-w" as string]: "26rem" }}
+          >
+            <header className="grid grid-cols-[80px_1fr_1fr] gap-3 text-[11px] uppercase tracking-[0.12em] text-dim font-mono pb-1 border-b border-border">
+              <span>candidate</span>
+              <span className="text-right">q · c</span>
+              <span className="text-right">cos θ</span>
+            </header>
+            {rankedByDot.map((r) => (
+              <div
+                key={r.id}
+                className={clsx(
+                  "grid grid-cols-[80px_1fr_1fr] gap-3 items-center font-mono text-[12px] tabular-nums",
+                  r.resizable && "bg-bg/40 rounded px-2 py-1 -mx-2",
+                )}
+              >
+                <div className="flex flex-col">
+                  <span className="text-ink">{r.label}</span>
+                  {r.resizable && (
+                    <span className="text-[11px] text-dim">
+                      ‖c_R‖ = {fmt(magnitude(r.value), 1)}
+                    </span>
+                  )}
+                </div>
+                <SignedBar value={r.qDot} max={maxAbs} />
+                <SignedBar value={r.cos} max={1} accent />
               </div>
-              <input
-                type="range"
-                min={0.1}
-                max={2.5}
-                step={0.05}
-                value={resizableLen}
-                onChange={(e) =>
-                  setResizableLen(parseFloat(e.target.value) || DEFAULT_RESIZABLE_LEN)
-                }
-                className="slider w-full"
-                style={{ ['--fill' as string]: `${((resizableLen - 0.1) / 2.4) * 100}%` }}
-                aria-label="Length of resizable candidate"
-              />
-            </label>
+            ))}
+
+            <div className="pt-3 mt-2 border-t border-border space-y-2">
+              <label className="block">
+                <div className="flex items-baseline justify-between mb-1">
+                  <span className="text-[11px] uppercase tracking-[0.12em] text-dim font-mono">
+                    c_R length
+                  </span>
+                  <span className="font-mono text-[12px] text-ink tabular-nums">
+                    {fmt(resizableLen, 2)}
+                  </span>
+                </div>
+                <input
+                  type="range"
+                  min={0.1}
+                  max={2.5}
+                  step={0.05}
+                  value={resizableLen}
+                  onChange={(e) =>
+                    setResizableLen(
+                      parseFloat(e.target.value) || DEFAULT_RESIZABLE_LEN,
+                    )
+                  }
+                  className="slider w-full"
+                  style={{
+                    ["--fill" as string]: `${((resizableLen - 0.1) / 2.4) * 100}%`,
+                  }}
+                  aria-label="Length of resizable candidate"
+                />
+              </label>
+            </div>
           </div>
         </div>
-      </div>
       </div>
     </SimFrame>
   );
@@ -220,19 +243,19 @@ function SignedBar({
       <div className="absolute left-1/2 top-0 bottom-0 w-px bg-border-strong" />
       <div
         className={clsx(
-          'absolute top-0 bottom-0 transition-all duration-150',
-          accent ? 'bg-accent' : 'bg-ink/70',
+          "absolute top-0 bottom-0 transition-all duration-150",
+          accent ? "bg-accent" : "bg-ink/70",
         )}
         style={
           t >= 0
-            ? { left: '50%', width: `${pct}%` }
-            : { right: '50%', width: `${pct}%` }
+            ? { left: "50%", width: `${pct}%` }
+            : { right: "50%", width: `${pct}%` }
         }
       />
       <span
         className={clsx(
-          'absolute right-1 top-1/2 -translate-y-1/2 text-[11px] font-mono tabular-nums',
-          accent ? 'text-accent' : 'text-ink',
+          "absolute right-1 top-1/2 -translate-y-1/2 text-[11px] font-mono tabular-nums",
+          accent ? "text-accent" : "text-ink",
         )}
       >
         {fmt(value)}
