@@ -35,3 +35,7 @@
 ## 2024-05-14 - Tooltips for icon-only navigation buttons
 **Learning:** Native `title` attributes for tooltips on icon-only buttons (like Theme toggles or mobile search/menu buttons) offer poor accessibility and look unpolished. The application's own design system `Tooltip` components are a much better fit for sighted users.
 **Action:** When identifying icon-only buttons with `title` attributes or missing visual hints, replace or add them with styled tooltips using the existing UI components (`TooltipProvider`, `TooltipTrigger`, `TooltipContent`), ensuring the provider wraps the necessary component tree (like `WouterRouter` in `App.tsx`).
+
+## 2024-05-18 - Replacing Native Browser Tooltips for Icon-Only Buttons
+**Learning:** Native `title` attributes on interactive icon-only elements provide slow visual feedback and look inconsistent with the application design system. However, when migrating them to styled `<Tooltip>` components (like Radix/shadcn), it is critical to preserve the actual accessible name using `aria-label` directly on the focusable element (`<button>` or `<Link>`) and use the tooltip strictly for progressive enhancement of the hover state.
+**Action:** Always verify that `<TooltipTrigger asChild>` is used properly to pass down attributes, and ensure the `aria-label` remains on the interactive child so screen readers don't lose context.
