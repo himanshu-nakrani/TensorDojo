@@ -408,21 +408,27 @@ function LessonContextBar({
         </span>
         <span className="hidden md:block text-fg-muted truncate">{title}</span>
         <span className="ml-auto flex items-center gap-1 shrink-0">
-          <button
-            type="button"
-            onClick={toggleComplete}
-            aria-pressed={done}
-            title={done ? 'Completed — undo' : 'Complete this lesson'}
-            aria-label={done ? 'Undo completion' : 'Complete this lesson'}
-            className={clsx(
-              'focus-ring mr-1 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border text-[10px] font-bold transition-colors',
-              done
-                ? 'border-accent-2 bg-accent-2 text-accent-2-fg'
-                : 'border-border-strong text-transparent hover:border-accent-2 hover:text-accent-2',
-            )}
-          >
-            ✓
-          </button>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button
+                type="button"
+                onClick={toggleComplete}
+                aria-pressed={done}
+                aria-label={done ? 'Undo completion' : 'Complete this lesson'}
+                className={clsx(
+                  'focus-ring mr-1 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border text-[10px] font-bold transition-colors',
+                  done
+                    ? 'border-accent-2 bg-accent-2 text-accent-2-fg'
+                    : 'border-border-strong text-transparent hover:border-accent-2 hover:text-accent-2',
+                )}
+              >
+                ✓
+              </button>
+            </TooltipTrigger>
+            <TooltipContent side="bottom">
+              <p>{done ? 'Completed — undo' : 'Complete this lesson'}</p>
+            </TooltipContent>
+          </Tooltip>
           {prev ? (
             <Link
               href={`/lessons/${prev}`}
@@ -469,40 +475,46 @@ function ProgressRing({
   const r = 8;
   const c = 2 * Math.PI * r;
   return (
-    <Link
-      href="/lessons"
-      aria-label={`${count} of ${total} lessons complete — see all progress`}
-      title={`${count}/${total} complete`}
-      className={clsx(
-        'focus-ring inline-flex items-center gap-1.5 rounded-md transition-colors',
-        compact ? 'h-11 px-2' : 'h-9 ml-1 px-2',
-      )}
-    >
-      <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true">
-        <circle
-          cx="10"
-          cy="10"
-          r={r}
-          fill="none"
-          stroke="rgb(var(--border-strong))"
-          strokeWidth="2"
-        />
-        <circle
-          cx="10"
-          cy="10"
-          r={r}
-          fill="none"
-          stroke="rgb(var(--accent-2))"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeDasharray={`${(frac * c).toFixed(2)} ${c.toFixed(2)}`}
-          transform="rotate(-90 10 10)"
-        />
-      </svg>
-      <span className="hidden lg:inline text-[11px] font-mono text-fg-muted tabular-nums">
-        {count}/{total}
-      </span>
-    </Link>
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <Link
+          href="/lessons"
+          aria-label={`${count} of ${total} lessons complete — see all progress`}
+          className={clsx(
+            'focus-ring inline-flex items-center gap-1.5 rounded-md transition-colors',
+            compact ? 'h-11 px-2' : 'h-9 ml-1 px-2',
+          )}
+        >
+          <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true">
+            <circle
+              cx="10"
+              cy="10"
+              r={r}
+              fill="none"
+              stroke="rgb(var(--border-strong))"
+              strokeWidth="2"
+            />
+            <circle
+              cx="10"
+              cy="10"
+              r={r}
+              fill="none"
+              stroke="rgb(var(--accent-2))"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeDasharray={`${(frac * c).toFixed(2)} ${c.toFixed(2)}`}
+              transform="rotate(-90 10 10)"
+            />
+          </svg>
+          <span className="hidden lg:inline text-[11px] font-mono text-fg-muted tabular-nums">
+            {count}/{total}
+          </span>
+        </Link>
+      </TooltipTrigger>
+      <TooltipContent side="bottom">
+        <p>{count}/{total} complete</p>
+      </TooltipContent>
+    </Tooltip>
   );
 }
 
