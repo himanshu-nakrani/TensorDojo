@@ -342,6 +342,10 @@ export function readingOrder(): readonly string[] {
   return STATIC_READING_ORDER;
 }
 
+export function lessonIndex(slug: string): number {
+  return SLUG_INDEX.get(slug) ?? -1;
+}
+
 export function prevNext(slug: string): { prev?: string; next?: string } {
   const i = SLUG_INDEX.get(slug);
   if (i === undefined) return {};
