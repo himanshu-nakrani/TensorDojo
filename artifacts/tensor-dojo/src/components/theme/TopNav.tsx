@@ -12,6 +12,7 @@ import { TRACKS,
   getLessonMeta,
   prevNext,
   readingOrder,
+  lessonIndex as getLessonIndex,
   trackForSlug,
 } from '@/lib/lessons-meta';
 import { track } from '@/lib/analytics';
@@ -51,13 +52,12 @@ export function TopNav() {
   const [pathname] = useLocation();
   const [open, setOpen] = useState(false);
   const { count } = useCompletions();
-  const order = useMemo(() => readingOrder(), []);
-  const total = order.length;
+  const total = readingOrder().length;
   const onLesson = pathname.startsWith('/lessons/');
   const lessonSlug = onLesson ? pathname.slice('/lessons/'.length) : '';
   // Index comes from readingOrder() — the same sequence prevNext()
   // walks — so the "NN/80" readout and the ← → arrows never disagree.
-  const lessonIndex = lessonSlug ? order.indexOf(lessonSlug) : -1;
+  const lessonIndex = lessonSlug ? getLessonIndex(lessonSlug) : -1;
   const lessonMeta = useMemo(
     () => (lessonSlug ? getLessonMeta(lessonSlug) : undefined),
     [lessonSlug],
