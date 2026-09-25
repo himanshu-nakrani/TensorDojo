@@ -224,6 +224,9 @@ function batchLoss(p: MlpParams, data: Example[]): number {
   return s / data.length;
 }
 
+const STATIC_TRAIN = synthetic(40, 0);
+const STATIC_TEST = synthetic(40, 1);
+
 /**
  * Centerpiece for the batch-norm lesson. A 3-class MLP trained
  * with batch-norm on (after the first ReLU) vs off, from the
@@ -247,12 +250,12 @@ export function BatchNormExplorer() {
     };
   }, []);
 
-  // Run a 200-step training with and without BN. We re-run when
-  // the toggle changes (cheap enough).
+  // Run a 150-step training with and without BN once.
+  // Optimization: Remove `useBN` from useMemo dependencies so the
+  // expensive O(N) training loop doesn't re-run every time the
+  // UI toggle is clicked. Hoist datasets to module scope (`STATIC_TRAIN`).
   const result = useMemo(() => {
     if (!mod) return null;
-    const train = synthetic(40, 0);
-    const test = synthetic(40, 1);
     const runOne = (useBNLocal: boolean): { loss: number[]; testLoss: number[]; layer1Norm: number[]; layer2Norm: number[] } => {
       let p = initParams(0);
       const bnParams = mod.defaultBNParams(8);
@@ -260,11 +263,11 @@ export function BatchNormExplorer() {
       const testLoss: number[] = [];
       const layer1Norm: number[] = [];
       const layer2Norm: number[] = [];
-      loss.push(batchLoss(p, train));
-      testLoss.push(batchLoss(p, test));
+      loss.push(batchLoss(p, STATIC_TRAIN));
+      testLoss.push(batchLoss(p, STATIC_TEST));
       const lr = 0.05;
       for (let t = 0; t < 150; t += 1) {
-        const g = batchGrad(p, train);
+        const g = batchGrad(p, STATIC_TRAIN);
         p = sgdStep(p, g, lr);
         if (useBNLocal) {
           // Apply BN after ReLU at h1 and h2 (in-place, on the
@@ -273,7 +276,7 @@ export function BatchNormExplorer() {
           // post-hoc re-normalizing.
           const h1Batch: number[][] = [];
           const h2Batch: number[][] = [];
-          for (const ex of train) {
+          for (const ex of STATIC_TRAIN) {
             const f = forward(p, ex.x);
             h1Batch.push(f.h1);
             h2Batch.push(f.h2);
@@ -285,17 +288,17 @@ export function BatchNormExplorer() {
         if ((t + 1) % 15 === 0 || t === 0) {
           let n1 = 0;
           let n2 = 0;
-          for (const ex of train) {
+          for (const ex of STATIC_TRAIN) {
             const f = forward(p, ex.x);
             for (let i = 0; i < 8; i += 1) {
               n1 += (f.h1[i] ?? 0) * (f.h1[i] ?? 0);
               n2 += (f.h2[i] ?? 0) * (f.h2[i] ?? 0);
             }
           }
-          layer1Norm.push(Math.sqrt(n1 / (train.length * 8)));
-          layer2Norm.push(Math.sqrt(n2 / (train.length * 8)));
-          loss.push(batchLoss(p, train));
-          testLoss.push(batchLoss(p, test));
+          layer1Norm.push(Math.sqrt(n1 / (STATIC_TRAIN.length * 8)));
+          layer2Norm.push(Math.sqrt(n2 / (STATIC_TRAIN.length * 8)));
+          loss.push(batchLoss(p, STATIC_TRAIN));
+          testLoss.push(batchLoss(p, STATIC_TEST));
         }
       }
       return { loss, testLoss, layer1Norm, layer2Norm };
@@ -303,7 +306,7 @@ export function BatchNormExplorer() {
     const on = runOne(true);
     const off = runOne(false);
     return { on, off };
-  }, [mod, useBN]);
+  }, [mod]);
 
   const reset = () => {
     setUseBN(true);

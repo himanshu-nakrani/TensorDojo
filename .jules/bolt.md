@@ -61,3 +61,6 @@
 ## 2025-02-18 - TopNav reading order O(N) array lookup fix
 **Learning:** Found that `TopNav.tsx` was extracting the full `order` array using `useMemo(() => readingOrder(), [])` and calling `order.indexOf(lessonSlug)` on every render or slug change. `readingOrder()` just returns the static `STATIC_READING_ORDER`. Furthermore, the O(N) array search is unnecessary because a constant `SLUG_INDEX` Map already exists in the backend module.
 **Action:** Replace `indexOf` lookups on statically known arrays with O(1) Map lookups by exposing access to the pre-computed dictionary/Map (like `lessonIndex(slug)` from `lessons-meta.ts`). Avoid using `useMemo` for functions that simply return a static array reference.
+## 2025-02-18 - BatchNormExplorer UI toggle triggering recomputation
+**Learning:** Found that `BatchNormExplorer` recalculated a 150-step SGD training loop inside a `useMemo` every time the `useBN` toggle state changed because `useBN` was unnecessarily included in the dependency array `[mod, useBN]`. It also regenerated synthetic datasets inside the hook.
+**Action:** Remove purely visual/display state from the dependency array of expensive computations, and hoist static data generation (like `synthetic(40, 0)`) to module-level constants to run once at load time.
