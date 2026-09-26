@@ -77,3 +77,7 @@
 **Vulnerability:** The Express API server included the deprecated `X-XSS-Protection` header set to `1; mode=block`.
 **Learning:** The `X-XSS-Protection` header is deprecated, ignored by modern browsers, and its `1; mode=block` configuration can be exploited by attackers to block legitimate scripts from executing, thereby introducing XSS vulnerabilities in older browsers. Security best practices advise against using it.
 **Prevention:** Rely on a strong Content Security Policy (CSP) instead, and do not add the `X-XSS-Protection` header to Express configurations or static frontend deployments.
+## 2026-10-25 - Missing COOP Header
+**Vulnerability:** The application was missing the `Cross-Origin-Opener-Policy` (COOP) security header in both the Express API server and the Vercel static frontend configuration.
+**Learning:** Without COOP set to `same-origin`, an application is more susceptible to side-channel attacks like Spectre and cross-origin information leaks, as it allows documents to share a browsing context group with cross-origin documents.
+**Prevention:** Always implement the `Cross-Origin-Opener-Policy: same-origin` header in both Express middleware and static deployment configurations (e.g., `vercel.json`) as part of a defense-in-depth strategy.
