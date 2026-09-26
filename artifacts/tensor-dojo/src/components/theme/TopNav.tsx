@@ -430,24 +430,38 @@ function LessonContextBar({
             </TooltipContent>
           </Tooltip>
           {prev ? (
-            <Link
-              href={`/lessons/${prev}`}
-              aria-label="Previous lesson"
-              className="focus-ring inline-flex h-7 w-7 items-center justify-center rounded-sm border border-border text-fg-muted hover:border-accent-2 hover:text-accent-2 transition-colors"
-            >
-              ←
-            </Link>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Link
+                  href={`/lessons/${prev}`}
+                  aria-label="Previous lesson"
+                  className="focus-ring inline-flex h-7 w-7 items-center justify-center rounded-sm border border-border text-fg-muted hover:border-accent-2 hover:text-accent-2 transition-colors"
+                >
+                  ←
+                </Link>
+              </TooltipTrigger>
+              <TooltipContent side="bottom">
+                <p>Previous lesson</p>
+              </TooltipContent>
+            </Tooltip>
           ) : (
             <span aria-hidden="true" className="inline-flex h-7 w-7 items-center justify-center text-border-strong">←</span>
           )}
           {next ? (
-            <Link
-              href={`/lessons/${next}`}
-              aria-label="Next lesson"
-              className="focus-ring inline-flex h-7 w-7 items-center justify-center rounded-sm border border-border text-fg-muted hover:border-accent-2 hover:text-accent-2 transition-colors"
-            >
-              →
-            </Link>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Link
+                  href={`/lessons/${next}`}
+                  aria-label="Next lesson"
+                  className="focus-ring inline-flex h-7 w-7 items-center justify-center rounded-sm border border-border text-fg-muted hover:border-accent-2 hover:text-accent-2 transition-colors"
+                >
+                  →
+                </Link>
+              </TooltipTrigger>
+              <TooltipContent side="bottom">
+                <p>Next lesson</p>
+              </TooltipContent>
+            </Tooltip>
           ) : (
             <span aria-hidden="true" className="inline-flex h-7 w-7 items-center justify-center text-border-strong">→</span>
           )}
