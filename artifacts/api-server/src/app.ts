@@ -32,6 +32,7 @@ app.use((_req: Request, res: Response, next: NextFunction) => {
   res.setHeader("X-DNS-Prefetch-Control", "off");
   res.setHeader("X-Download-Options", "noopen");
   res.setHeader("X-Permitted-Cross-Domain-Policies", "none");
+  res.setHeader("Cross-Origin-Opener-Policy", "same-origin");
   next();
 });
 
