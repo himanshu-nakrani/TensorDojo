@@ -29,10 +29,20 @@ const FIXED_CANDIDATES: ReadonlyArray<{
   { id: 'c4', label: 'c₄', value: [0.0, -1.0] },
   { id: 'c5', label: 'c₅', value: [0.8, -0.5] },
 ];
+
+const STATIC_FIXED_CANDIDATES = FIXED_CANDIDATES.map((c) => ({
+  id: c.id,
+  label: c.label,
+  value: c.value,
+  resizable: false,
+}));
+
 const RESIZABLE_ID = 'cr';
 const RESIZABLE_LABEL = 'c_R';
 const RESIZABLE_DIR: [number, number] = [1, 0.4]; // direction
 const DEFAULT_RESIZABLE_LEN = 0.7;
+const RESIZABLE_DIR_MAG = magnitude(RESIZABLE_DIR);
+const RESIZABLE_UNIT = [RESIZABLE_DIR[0] / RESIZABLE_DIR_MAG, RESIZABLE_DIR[1] / RESIZABLE_DIR_MAG] as const;
 
 function fmt(x: number, digits = 2): string {
   if (Math.abs(x) < Math.pow(10, -digits)) return (0).toFixed(digits);
@@ -55,19 +65,12 @@ export function CandidateCosine({ preset }: { preset?: CandidateCosinePreset }) 
   );
 
   const candidates = useMemo(() => {
-    const dirMag = magnitude(RESIZABLE_DIR);
-    const unit = [RESIZABLE_DIR[0] / dirMag, RESIZABLE_DIR[1] / dirMag] as const;
     return [
-      ...FIXED_CANDIDATES.map((c) => ({
-        id: c.id,
-        label: c.label,
-        value: c.value,
-        resizable: false,
-      })),
+      ...STATIC_FIXED_CANDIDATES,
       {
         id: RESIZABLE_ID,
         label: RESIZABLE_LABEL,
-        value: [unit[0] * resizableLen, unit[1] * resizableLen] as readonly [
+        value: [RESIZABLE_UNIT[0] * resizableLen, RESIZABLE_UNIT[1] * resizableLen] as readonly [
           number,
           number,
         ],
@@ -94,17 +97,13 @@ export function CandidateCosine({ preset }: { preset?: CandidateCosinePreset }) 
   const vectors: VectorCanvasVector[] = useMemo(
     () => [
       { id: 'q', label: 'q', value: q },
-      ...FIXED_CANDIDATES.map((c) => ({
-        id: c.id,
-        label: c.label,
-        value: c.value,
-      })),
+      ...FIXED_CANDIDATES,
       {
         id: RESIZABLE_ID,
         label: RESIZABLE_LABEL,
         value: [
-          RESIZABLE_DIR[0] * resizableLen,
-          RESIZABLE_DIR[1] * resizableLen,
+          RESIZABLE_UNIT[0] * resizableLen,
+          RESIZABLE_UNIT[1] * resizableLen,
         ],
       },
     ],

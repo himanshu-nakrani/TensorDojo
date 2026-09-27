@@ -64,3 +64,6 @@
 ## 2025-02-18 - BatchNormExplorer UI toggle triggering recomputation
 **Learning:** Found that `BatchNormExplorer` recalculated a 150-step SGD training loop inside a `useMemo` every time the `useBN` toggle state changed because `useBN` was unnecessarily included in the dependency array `[mod, useBN]`. It also regenerated synthetic datasets inside the hook.
 **Action:** Remove purely visual/display state from the dependency array of expensive computations, and hoist static data generation (like `synthetic(40, 0)`) to module-level constants to run once at load time.
+## 2025-02-18 - CandidateCosine Pre-computation
+**Learning:** Found that `CandidateCosine.tsx` was recreating the static `FIXED_CANDIDATES` objects and recalculating the static `RESIZABLE_UNIT` inside `useMemo` hooks on every slider drag or component remount. `useMemo` caching does not persist across route navigations, and mapping static data during renders adds unnecessary overhead.
+**Action:** Lift state mappings that strictly rely on module-level constants (like mapping `FIXED_CANDIDATES` to add `resizable: false`, or normalizing a direction vector) outside of the component context (into module-level constant precalculations `STATIC_FIXED_CANDIDATES` and `RESIZABLE_UNIT`) so that they run exactly once at evaluation time, shifting work off the main thread during component render/mount.
