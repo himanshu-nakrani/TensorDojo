@@ -14,6 +14,7 @@ import { TRACKS,
   readingOrder,
   lessonIndex as getLessonIndex,
   trackForSlug,
+  trackIndexForSlug,
 } from '@/lib/lessons-meta';
 import { track } from '@/lib/analytics';
 import { markCompleted, markIncomplete } from '@/lib/progress/completion';
@@ -285,9 +286,7 @@ export function TopNav() {
             index={lessonIndex}
             total={total}
             trackLabel={trackForSlug(lessonSlug)?.label}
-            trackIdx={
-              TRACKS.findIndex((t) => t.id === trackForSlug(lessonSlug)?.id)
-            }
+            trackIdx={trackIndexForSlug(lessonSlug)}
             slug={lessonSlug}
             title={lessonMeta.meta.title}
             prev={lessonNav.prev}

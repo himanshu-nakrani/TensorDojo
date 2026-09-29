@@ -334,6 +334,9 @@ const STATIC_READING_ORDER = TRACKS.flatMap((t) => t.slugs);
 const SLUG_TO_TRACK = new Map<string, LessonTrack>(
   TRACKS.flatMap((t) => t.slugs.map((slug) => [slug, t]))
 );
+const SLUG_TO_TRACK_INDEX = new Map<string, number>(
+  TRACKS.flatMap((t, i) => t.slugs.map((slug) => [slug, i]))
+);
 const SLUG_INDEX = new Map<string, number>(
   STATIC_READING_ORDER.map((slug, i) => [slug, i])
 );
@@ -358,4 +361,8 @@ export function prevNext(slug: string): { prev?: string; next?: string } {
 /** Look up which track a slug belongs to. Returns undefined if unknown. */
 export function trackForSlug(slug: string): LessonTrack | undefined {
   return SLUG_TO_TRACK.get(slug);
+}
+
+export function trackIndexForSlug(slug: string): number {
+  return SLUG_TO_TRACK_INDEX.get(slug) ?? -1;
 }
