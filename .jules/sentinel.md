@@ -83,3 +83,8 @@
 **Vulnerability:** Missing `Cross-Origin-Opener-Policy` header in both the Express API server and the Vercel static frontend configuration, potentially allowing cross-origin information leaks and side-channel attacks like Spectre.
 **Learning:** Adding the `Cross-Origin-Opener-Policy: same-origin` header mitigates these cross-origin attacks by ensuring that the document is isolated from cross-origin documents. This header is essential for a comprehensive defense-in-depth strategy.
 **Prevention:** Ensure that `Cross-Origin-Opener-Policy` is included in the list of standard security headers applied to Express endpoints and static asset deployments.
+
+## 2025-03-09 - Upgrade vulnerable transitive dependencies via pnpm overrides
+**Vulnerability:** Found multiple high and moderate severity vulnerabilities in dependencies (`fast-uri`, `brace-expansion`, `markdown-it`, etc.) during routine `pnpm audit`.
+**Learning:** Using `pnpm audit` effectively identifies vulnerable packages across the workspace. Since it's a monorepo, many of these vulnerabilities are inherited via transitive dependencies from deeply nested toolchains (e.g. `orval`, `@vitejs/plugin-react`).
+**Prevention:** Pin patched versions in `pnpm-workspace.yaml` `overrides` (e.g. `fast-uri@>=3.0.0 <3.1.8: '>=3.1.8'`) rather than stacking `pnpm audit --fix` range selectors without careful review. Audit-fix output should be migrated into `pnpm-workspace.yaml`. Re-run `pnpm i` so the lockfile snapshot matches the pin.
