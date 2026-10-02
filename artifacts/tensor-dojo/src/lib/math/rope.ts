@@ -43,17 +43,29 @@ export function applyRope(
   base: number = ROPE_BASE_DEFAULT,
 ): number[] {
   if (vec.length % 2 !== 0) {
-    throw new Error('applyRope requires an even-length vector (pairs of dims)');
+    throw new Error("applyRope requires an even-length vector (pairs of dims)");
   }
   const d = vec.length;
   const out = new Array<number>(d);
-  for (let k = 0; k < d / 2; k++) {
-    const theta = pos * Math.pow(base, (-2 * k) / d);
+  const halfD = d / 2;
+
+  // Math.pow(base, (-2 * k) / d) = (base^(-2/d))^k
+  // We can calculate the multiplier for k=1 and multiply by it in each step
+  const invBaseStep = Math.pow(base, -2 / d);
+  let invBaseK = 1;
+
+  for (let k = 0; k < halfD; k++) {
+    const theta = pos * invBaseK;
+    invBaseK *= invBaseStep;
+
     const x0 = vec[2 * k]!;
     const x1 = vec[2 * k + 1]!;
-    const [r0, r1] = rotatePair([x0, x1], theta);
-    out[2 * k] = r0;
-    out[2 * k + 1] = r1;
+
+    // Inline rotatePair for minor speedup
+    const c = Math.cos(theta);
+    const s = Math.sin(theta);
+    out[2 * k] = x0 * c - x1 * s;
+    out[2 * k + 1] = x0 * s + x1 * c;
   }
   return out;
 }
@@ -69,8 +81,8 @@ export function ropeAngle(
   d: number,
   base: number = ROPE_BASE_DEFAULT,
 ): number {
-  if (d % 2 !== 0) throw new Error('d must be even');
-  if (k < 0 || k >= d / 2) throw new Error('k out of range');
+  if (d % 2 !== 0) throw new Error("d must be even");
+  if (k < 0 || k >= d / 2) throw new Error("k out of range");
   return pos * Math.pow(base, (-2 * k) / d);
 }
 
@@ -79,7 +91,7 @@ export function ropeAngle(
  * RoPE module.
  */
 export function dot(a: readonly number[], b: readonly number[]): number {
-  if (a.length !== b.length) throw new Error('length mismatch');
+  if (a.length !== b.length) throw new Error("length mismatch");
   let s = 0;
   for (let i = 0; i < a.length; i++) s += a[i]! * b[i]!;
   return s;
