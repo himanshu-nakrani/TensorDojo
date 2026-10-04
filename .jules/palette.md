@@ -35,3 +35,6 @@
 ## 2024-05-14 - Tooltips for icon-only navigation buttons
 **Learning:** Native `title` attributes for tooltips on icon-only buttons (like Theme toggles or mobile search/menu buttons) offer poor accessibility and look unpolished. The application's own design system `Tooltip` components are a much better fit for sighted users.
 **Action:** When identifying icon-only buttons with `title` attributes or missing visual hints, replace or add them with styled tooltips using the existing UI components (`TooltipProvider`, `TooltipTrigger`, `TooltipContent`), ensuring the provider wraps the necessary component tree (like `WouterRouter` in `App.tsx`).
+## 2024-12-08 - Accessible Loading States for Global Loaders
+**Learning:** Initial full-page loading indicators (like `PageLoader`) missed an `aria-live="polite"` attribute on the parent wrapper with `role="status"`. This is required to ensure an accessible and intuitive user experience for screen readers during route transitions or async module fetching.
+**Action:** Always combine a visual indicator (such as a Spinner component) with `role="status"` and `aria-live="polite"` on the parent wrapper to ensure an accessible and intuitive user experience for screen readers.
