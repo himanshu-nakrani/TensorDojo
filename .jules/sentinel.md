@@ -83,3 +83,7 @@
 **Vulnerability:** Missing `Cross-Origin-Opener-Policy` header in both the Express API server and the Vercel static frontend configuration, potentially allowing cross-origin information leaks and side-channel attacks like Spectre.
 **Learning:** Adding the `Cross-Origin-Opener-Policy: same-origin` header mitigates these cross-origin attacks by ensuring that the document is isolated from cross-origin documents. This header is essential for a comprehensive defense-in-depth strategy.
 **Prevention:** Ensure that `Cross-Origin-Opener-Policy` is included in the list of standard security headers applied to Express endpoints and static asset deployments.
+## 2024-10-05 - Missing SameSite Attribute on Cookies
+**Vulnerability:** The sidebar state cookie was being set without a `SameSite` attribute. This could potentially allow the cookie to be sent in cross-site requests, increasing the risk of Cross-Site Request Forgery (CSRF) or cross-site tracking.
+**Learning:** Even for non-authentication cookies like UI state, it's best practice to set `SameSite=Lax` (or `Strict`) to prevent unintended cross-site leakage and adhere to modern secure-by-default cookie policies.
+**Prevention:** Always explicitly define the `SameSite` attribute when setting cookies via `document.cookie` or server-side headers.
