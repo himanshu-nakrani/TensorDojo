@@ -6,6 +6,19 @@ import { NumberInput } from '@/components/sim/primitives/NumberInput';
 import { SimFrame } from '@/components/sim/primitives/SimFrame';
 import { sinusoidalPE } from '@/lib/math/positional';
 
+// Cache the generated PE grids to avoid O(N*d) matrix allocation on the main thread during slider dragging.
+const PE_CACHE = new Map<string, number[][]>();
+function getPE(maxPos: number, d: number) {
+  const key = `${maxPos}-${d}`;
+  let pe = PE_CACHE.get(key);
+  if (!pe) {
+    pe = sinusoidalPE(maxPos, d);
+    PE_CACHE.set(key, pe);
+  }
+  return pe;
+}
+
+
 export interface PositionalEncodingHeatmapPreset {
   maxPos?: number;
   d?: number;
@@ -23,7 +36,7 @@ export function PositionalEncodingHeatmap({ preset }: { preset?: PositionalEncod
   const [a, setA] = useState(0);
   const [b, setB] = useState(4);
 
-  const pe = useMemo(() => sinusoidalPE(maxPos, d), [maxPos, d]);
+  const pe = useMemo(() => getPE(maxPos, d), [maxPos, d]);
   const dotAB = useMemo(() => {
     if (a >= pe.length || b >= pe.length) return 0;
     const va = pe[a]!;

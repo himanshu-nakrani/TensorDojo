@@ -35,6 +35,8 @@ const H = 4;
 const D_K = D / H;
 const T = 4;
 
+const STATIC_PE = sinusoidalPE(T, D);
+
 const POS_ANGLES: readonly number[] = [0, Math.PI / 2, Math.PI, (3 * Math.PI) / 2];
 
 // Per-head Wk rotation (radians). Q uses identity; K is the input rotated.
@@ -225,7 +227,7 @@ export function BlockPipeline() {
 
   // Build the input: xIn = embed + PE for the chosen sentence.
   const xIn = useMemo(() => {
-    const pe = sinusoidalPE(T, D);
+    const pe = STATIC_PE;
     return sentence.embeds.map((row, t) =>
       row.map((v, k) => v + pe[t]![k]!),
     );
@@ -622,7 +624,7 @@ function DataFlow({
           {
             kind: 'matrix',
             label: 'PE',
-            values: sinusoidalPE(T, D),
+            values: STATIC_PE,
             tooltip: 'positional encoding, shape (4, 8), sinusoidal',
           },
           { kind: 'op', op: '=' },
@@ -865,7 +867,7 @@ function DepthView({
   // For the depth view, also report the cosine similarity of each
   // block's output to the original input embedding (the "drift" story).
   const drift = useMemo(() => {
-    const pe = sinusoidalPE(T, D);
+    const pe = STATIC_PE;
     const input = sentence.embeds.map((row, t) =>
       row.map((v, k) => v + pe[t]![k]!),
     );
