@@ -90,6 +90,10 @@ function identity(n: number): number[][] {
   return m;
 }
 
+const T = 4;
+const D = 8;
+const STATIC_PE = sinusoidalPE(T, D);
+
 export function BlockDepth() {
   const [sentenceId, setSentenceId] = useState<string>('coref');
   const [depth, setDepth] = useState<number>(3);
@@ -102,9 +106,7 @@ export function BlockDepth() {
     SENTENCES.find((s) => s.id === sentenceId) ?? SENTENCES[0]!;
 
   const { outputs, drift, xIn } = useMemo(() => {
-    const T = 4;
-    const D = 8;
-    const pe = sinusoidalPE(T, D);
+    const pe = STATIC_PE;
     const x0 = sentence.embeds.map((row, t) =>
       row.map((v, k) => v + pe[t]![k]!),
     );

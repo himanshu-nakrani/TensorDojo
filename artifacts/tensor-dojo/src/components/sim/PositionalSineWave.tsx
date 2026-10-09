@@ -4,6 +4,22 @@ import { useMemo, useState } from 'react';
 import { SimFrame } from '@/components/sim/primitives/SimFrame';
 import { sinusoidalPEComponent } from '@/lib/math/positional';
 
+// Cache the generated PE components to avoid array allocation on the main thread during slider dragging.
+const SINE_CACHE = new Map<string, number[]>();
+function getSineSeries(maxPos: number, dim: number, dEven: number) {
+  const key = `${maxPos}-${dim}-${dEven}`;
+  let series = SINE_CACHE.get(key);
+  if (!series) {
+    series = [];
+    for (let pos = 0; pos < maxPos; pos += 1) {
+      series.push(sinusoidalPEComponent(pos, dim, dEven));
+    }
+    SINE_CACHE.set(key, series);
+  }
+  return series;
+}
+
+
 
 export interface PositionalSineWavePreset {
   maxPos?: number;
@@ -21,13 +37,7 @@ export function PositionalSineWave({ preset }: { preset?: PositionalSineWavePres
   const [dim, setDim] = useState(0);
 
   const dEven = d % 2 === 0 ? d : d + 1;
-  const series = useMemo(() => {
-    const arr: number[] = [];
-    for (let pos = 0; pos < maxPos; pos += 1) {
-      arr.push(sinusoidalPEComponent(pos, dim, dEven));
-    }
-    return arr;
-  }, [maxPos, dEven, dim]);
+  const series = useMemo(() => getSineSeries(maxPos, dim, dEven), [maxPos, dEven, dim]);
 
   const W = 600;
   const H = 180;
