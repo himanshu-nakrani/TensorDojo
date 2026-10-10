@@ -87,3 +87,7 @@
 **Vulnerability:** The sidebar state cookie was missing the `SameSite` attribute.
 **Learning:** Even non-authentication cookies like UI state should explicitly set `SameSite=Lax` or `Strict` to mitigate CSRF risks and ensure predictable cross-origin behavior.
 **Prevention:** Always explicitly define the `SameSite` attribute when setting cookies via `document.cookie` or server-side headers.
+## 2025-03-09 - proxy-addr IPv4-mapped IPv6 IP spoofing
+**Vulnerability:** A critical IP spoofing vulnerability in `proxy-addr` (CVE/GHSA-jqcg-44mw-7w3h) allows an attacker to spoof their IP address when IPv4-mapped IPv6 trust subnets are used.
+**Learning:** Foundational Express dependencies like `proxy-addr` (which is used under the hood by Express for `trust proxy`) can have critical security flaws that affect IP-based rate limiting and logging. Running `pnpm audit` is critical for identifying vulnerabilities in deeply nested dependencies.
+**Prevention:** Pin patched versions of transitive vulnerabilities in `pnpm-workspace.yaml` `overrides` to ensure all packages in the monorepo use the secure version.
