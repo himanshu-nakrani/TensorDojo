@@ -87,3 +87,7 @@
 **Vulnerability:** The sidebar state cookie was missing the `SameSite` attribute.
 **Learning:** Even non-authentication cookies like UI state should explicitly set `SameSite=Lax` or `Strict` to mitigate CSRF risks and ensure predictable cross-origin behavior.
 **Prevention:** Always explicitly define the `SameSite` attribute when setting cookies via `document.cookie` or server-side headers.
+## 2023-10-27 - proxy-addr IP spoofing via IPv4-mapped IPv6 trust subnet
+**Vulnerability:** A critical vulnerability (CVE / GHSA-jqcg-44mw-7w3h) in the `proxy-addr` package allowed IP spoofing via IPv4-mapped IPv6 trust subnets when verifying client IPs behind a proxy.
+**Learning:** High-severity dependency vulnerabilities can arise deep in the dependency tree (e.g. `express` depending on `proxy-addr`). Standard `pnpm audit` checks might not be sufficient if there's no immediate upstream release that resolves the issue across all dependencies.
+**Prevention:** Regularly run `pnpm audit` and utilize `pnpm-workspace.yaml` `overrides` to immediately pin vulnerable dependencies (like `proxy-addr: 2.0.8`) to patched versions, bypassing slow upstream updates.
