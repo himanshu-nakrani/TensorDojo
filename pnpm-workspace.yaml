@@ -46,6 +46,10 @@ onlyBuiltDependencies:
   - unrs-resolver
 
 overrides:
+  source-map-js: "1.2.2"
+  fast-glob: "3.3.3"
+
+  proxy-addr: "2.0.8"
   '@vitest/mocker@>=2.1.0 <4.1.11': ^4.1.11
   'js-yaml@>=4.0.0 <4.3.2': ^4.3.2
   'vitest@>=2.1.0 <4.1.11': ^4.1.11
