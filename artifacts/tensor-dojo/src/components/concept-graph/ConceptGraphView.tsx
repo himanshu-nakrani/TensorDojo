@@ -72,6 +72,7 @@ interface GraphEdge {
   /** track index of the *source* node — used to colour cross edges. */
   trackIdx: number;
   points: Array<{ x: number; y: number }>;
+  svgPath: string;
 }
 
 interface LaidOutGraph {
@@ -83,6 +84,26 @@ interface LaidOutGraph {
   neighbours: Map<string, Set<string>>;
   /** id -> set of incident edge ids. */
   incident: Map<string, Set<string>>;
+}
+
+/** Catmull-Rom → cubic bezier so dagre's polyline routing reads as
+ *  a smooth curve. */
+function edgePath(points: Array<{ x: number; y: number }>): string {
+  if (points.length < 2) return '';
+  const p = points;
+  let d = `M ${p[0]!.x.toFixed(1)} ${p[0]!.y.toFixed(1)}`;
+  for (let i = 0; i < p.length - 1; i++) {
+    const p0 = p[i - 1] ?? p[i]!;
+    const p1 = p[i]!;
+    const p2 = p[i + 1]!;
+    const p3 = p[i + 2] ?? p2;
+    const c1x = p1.x + (p2.x - p0.x) / 6;
+    const c1y = p1.y + (p2.y - p0.y) / 6;
+    const c2x = p2.x - (p3.x - p1.x) / 6;
+    const c2y = p2.y - (p3.y - p1.y) / 6;
+    d += ` C ${c1x.toFixed(1)} ${c1y.toFixed(1)}, ${c2x.toFixed(1)} ${c2y.toFixed(1)}, ${p2.x.toFixed(1)} ${p2.y.toFixed(1)}`;
+  }
+  return d;
 }
 
 export function layoutGraph(sections: TrackSection[]): LaidOutGraph {
@@ -187,7 +208,7 @@ export function layoutGraph(sections: TrackSection[]): LaidOutGraph {
   for (const d of edgeDescs) {
     const e = g.edge({ v: d.from, w: d.to, name: d.id });
     if (!e || !e.points) continue;
-    edges.push({ ...d, points: e.points });
+    edges.push({ ...d, points: e.points, svgPath: edgePath(e.points) });
     addN(d.from, d.to);
     addN(d.to, d.from);
     addI(d.from, d.id);
@@ -203,26 +224,6 @@ export function layoutGraph(sections: TrackSection[]): LaidOutGraph {
     neighbours,
     incident,
   };
-}
-
-/** Catmull-Rom → cubic bezier so dagre's polyline routing reads as
- *  a smooth curve. */
-function edgePath(points: Array<{ x: number; y: number }>): string {
-  if (points.length < 2) return '';
-  const p = points;
-  let d = `M ${p[0]!.x.toFixed(1)} ${p[0]!.y.toFixed(1)}`;
-  for (let i = 0; i < p.length - 1; i++) {
-    const p0 = p[i - 1] ?? p[i]!;
-    const p1 = p[i]!;
-    const p2 = p[i + 1]!;
-    const p3 = p[i + 2] ?? p2;
-    const c1x = p1.x + (p2.x - p0.x) / 6;
-    const c1y = p1.y + (p2.y - p0.y) / 6;
-    const c2x = p2.x - (p3.x - p1.x) / 6;
-    const c2y = p2.y - (p3.y - p1.y) / 6;
-    d += ` C ${c1x.toFixed(1)} ${c1y.toFixed(1)}, ${c2x.toFixed(1)} ${c2y.toFixed(1)}, ${p2.x.toFixed(1)} ${p2.y.toFixed(1)}`;
-  }
-  return d;
 }
 
 const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v));
@@ -610,7 +611,7 @@ function MapGraph({
               return (
                 <path
                   key={edge.id}
-                  d={edgePath(edge.points)}
+                  d={edge.svgPath}
                   fill="none"
                   stroke={color}
                   strokeWidth={isActive ? 2.4 : travelled ? 1.8 : 1.4}
