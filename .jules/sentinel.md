@@ -87,3 +87,7 @@
 **Vulnerability:** The sidebar state cookie was missing the `SameSite` attribute.
 **Learning:** Even non-authentication cookies like UI state should explicitly set `SameSite=Lax` or `Strict` to mitigate CSRF risks and ensure predictable cross-origin behavior.
 **Prevention:** Always explicitly define the `SameSite` attribute when setting cookies via `document.cookie` or server-side headers.
+## 2026-10-14 - Upgrade proxy-addr to fix critical IP spoofing CVE
+**Vulnerability:** proxy-addr (< 2.0.8) is vulnerable to IP spoofing where IPv4-mapped IPv6 addresses can bypass IP checks and trust subnets.
+**Learning:** Security tools and reverse proxies relying on Express's IP parsing can be completely bypassed by an attacker spoofing IPv6 mapped IPv4 addresses if the underlying proxy-addr dependency is outdated.
+**Prevention:** Use `pnpm audit` frequently and override critical vulnerable transitive dependencies in `pnpm-workspace.yaml`.
