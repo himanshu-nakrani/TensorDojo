@@ -49,6 +49,7 @@ overrides:
   '@vitest/mocker@>=2.1.0 <4.1.11': ^4.1.11
   'js-yaml@>=4.0.0 <4.3.2': ^4.3.2
   'vitest@>=2.1.0 <4.1.11': ^4.1.11
+  proxy-addr: 2.0.8
   '@esbuild-kit/esm-loader': npm:tsx@^4.21.0
   '@expo/ngrok-bin>@expo/ngrok-bin-darwin-arm64': '-'
   '@expo/ngrok-bin>@expo/ngrok-bin-darwin-x64': '-'
