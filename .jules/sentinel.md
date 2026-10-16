@@ -87,3 +87,7 @@
 **Vulnerability:** The sidebar state cookie was missing the `SameSite` attribute.
 **Learning:** Even non-authentication cookies like UI state should explicitly set `SameSite=Lax` or `Strict` to mitigate CSRF risks and ensure predictable cross-origin behavior.
 **Prevention:** Always explicitly define the `SameSite` attribute when setting cookies via `document.cookie` or server-side headers.
+## 2025-02-14 - Fix IP spoofing vulnerability in proxy-addr
+**Vulnerability:** CRITICAL IP spoofing vulnerability in the `proxy-addr` transitive dependency used by Express.
+**Learning:** Hardcoded transient dependencies within frameworks like Express can carry significant security vulnerabilities. It is crucial to manage these carefully and override problematic dependencies, especially since we cannot easily remove or update them directly in our `package.json` file.
+**Prevention:** Global transitive dependencies should be patched via the `overrides` section in `pnpm-workspace.yaml` instead of directly injecting the dependency into a project’s `dependencies` array. This ensures it's resolved project-wide without polluting the specific manifest.
