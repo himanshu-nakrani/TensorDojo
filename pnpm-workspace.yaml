@@ -112,6 +112,7 @@ overrides:
   markdown-it: 14.3.1
   nanoid: 3.3.18
   postcss: 8.5.26
+  proxy-addr: 2.0.8
   qs: 6.16.0
   rollup>@rollup/rollup-android-arm-eabi: '-'
   rollup>@rollup/rollup-android-arm64: '-'
