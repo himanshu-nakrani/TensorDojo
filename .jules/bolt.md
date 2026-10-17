@@ -74,3 +74,6 @@
 ## 2025-02-18 - PositionalEncoding heatmap slider lazy cache
 **Learning:** Found that `PositionalEncodingHeatmap.tsx` and `PositionalSineWave.tsx` recalculate PE matrices and vectors inside `useMemo` when dragging the dimension/maxPos sliders. The combination space is somewhat large to eagerly precompute at module load, but running allocations on the main thread during a slider drag can cause UI jank.
 **Action:** Use a lazy module-level cache (e.g. `PE_CACHE = new Map()`) to store previously computed matrices/vectors based on slider combinations. The first drag hits the main thread, but subsequent visits are instant O(1) lookups, providing a much smoother dragging experience.
+## 2025-02-18 - Trivial Vector Math useMemo Optimization
+**Learning:** Found that `DotProductExplorer.tsx` and `ProjectionExplorer.tsx` wrapped computationally trivial operations (like `dot(a, b)`, `magnitude(a)`, `cosTheta(a, b)`, `projection(a, b)`, and `residual(a, b)`) in `useMemo` hooks. For small inputs like 2D vector arrays, the overhead of React's `useMemo` allocation and dependency checking exceeds the cost of direct recalculation, degrading performance rather than improving it.
+**Action:** Avoid wrapping computationally trivial or primitive operations (e.g., basic arithmetic, simple vector math) in `useMemo`. Direct calculation is faster and more memory-efficient.

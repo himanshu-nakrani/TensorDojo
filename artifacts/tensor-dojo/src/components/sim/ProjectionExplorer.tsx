@@ -33,21 +33,16 @@ export function ProjectionExplorer({ preset }: { preset?: ProjectionExplorerPres
   });
   const [showUnit, setShowUnit] = useState(false);
 
-  const proj = useMemo(() => projection(a, b), [a, b]);
-  const res = useMemo(() => residual(a, b), [a, b]);
+  const proj = projection(a, b);
+  const res = residual(a, b);
   const projMag = magnitude(proj);
   const resMag = magnitude(res);
-  const cos = useMemo(() => cosTheta(a, b), [a, b]);
+  const cos = cosTheta(a, b);
   const aMag = magnitude(a);
   const bMag = magnitude(b);
-  const aUnit = useMemo(() => {
-    const m = magnitude(a);
-    return m === 0 ? [0, 0] : [a[0] / m, a[1] / m] as const;
-  }, [a]);
-  const bUnit = useMemo(() => {
-    const m = magnitude(b);
-    return m === 0 ? [0, 0] : [b[0] / m, b[1] / m] as const;
-  }, [b]);
+  // ⚡ Bolt Optimization: Avoid useMemo for trivial arithmetic. The hook overhead is slower than calculating.
+  const aUnit = aMag === 0 ? [0, 0] : [a[0] / aMag, a[1] / aMag] as const;
+  const bUnit = bMag === 0 ? [0, 0] : [b[0] / bMag, b[1] / bMag] as const;
 
   const vectors: VectorCanvasVector[] = useMemo(
     () => [

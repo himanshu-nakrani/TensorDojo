@@ -1,6 +1,6 @@
 
 
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import clsx from 'clsx';
 import {
   VectorCanvas,
@@ -48,10 +48,11 @@ export function DotProductExplorer({
     return [v[0], v[1]];
   });
 
-  const dp = useCountUp(useMemo(() => dot(a, b), [a, b]));
-  const ma = useCountUp(useMemo(() => magnitude(a), [a]));
-  const mb = useCountUp(useMemo(() => magnitude(b), [b]));
-  const c = useCountUp(useMemo(() => cosTheta(a, b), [a, b]));
+  // ⚡ Bolt Optimization: Avoid useMemo for trivial arithmetic like 2D math. The hook overhead is slower than recalculating.
+  const dp = useCountUp(dot(a, b));
+  const ma = useCountUp(magnitude(a));
+  const mb = useCountUp(magnitude(b));
+  const c = useCountUp(cosTheta(a, b));
 
   const vectors: VectorCanvasVector[] = [
     { id: 'a', label: 'a', value: a },
