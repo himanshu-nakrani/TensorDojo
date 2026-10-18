@@ -72,6 +72,8 @@ interface GraphEdge {
   /** track index of the *source* node — used to colour cross edges. */
   trackIdx: number;
   points: Array<{ x: number; y: number }>;
+  /** Pre-computed SVG path string to avoid O(E) allocations on every pan/zoom frame. */
+  pathD: string;
 }
 
 interface LaidOutGraph {
@@ -187,7 +189,7 @@ export function layoutGraph(sections: TrackSection[]): LaidOutGraph {
   for (const d of edgeDescs) {
     const e = g.edge({ v: d.from, w: d.to, name: d.id });
     if (!e || !e.points) continue;
-    edges.push({ ...d, points: e.points });
+    edges.push({ ...d, points: e.points, pathD: edgePath(e.points) });
     addN(d.from, d.to);
     addN(d.to, d.from);
     addI(d.from, d.id);
@@ -610,7 +612,7 @@ function MapGraph({
               return (
                 <path
                   key={edge.id}
-                  d={edgePath(edge.points)}
+                  d={edge.pathD}
                   fill="none"
                   stroke={color}
                   strokeWidth={isActive ? 2.4 : travelled ? 1.8 : 1.4}
