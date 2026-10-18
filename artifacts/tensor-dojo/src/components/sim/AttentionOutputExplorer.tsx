@@ -53,6 +53,16 @@ function fmt(x: number, digits = 2): string {
 
 type WMode = 'softmax' | 'one-hot' | 'uniform';
 
+const STATIC_W_UNIFORM = Array.from({ length: N_TOKENS }, () =>
+  new Array<number>(N_TOKENS).fill(1 / N_TOKENS),
+);
+
+const STATIC_W_ONE_HOT = Array.from({ length: N_TOKENS }, () => {
+  const row = new Array<number>(N_TOKENS).fill(0);
+  row[2] = 1;
+  return row;
+});
+
 export function AttentionOutputExplorer() {
   const [v, setV] = useState<[number, number][]>(() =>
     DEFAULT_V.map((p) => [p[0], p[1]]),
@@ -65,15 +75,9 @@ export function AttentionOutputExplorer() {
       return computeWeights(DEFAULT_Q, DEFAULT_K, temperature);
     }
     if (wMode === 'uniform') {
-      return Array.from({ length: N_TOKENS }, () =>
-        new Array<number>(N_TOKENS).fill(1 / N_TOKENS),
-      );
+      return STATIC_W_UNIFORM;
     }
-    return Array.from({ length: N_TOKENS }, () => {
-      const row = new Array<number>(N_TOKENS).fill(0);
-      row[2] = 1;
-      return row;
-    });
+    return STATIC_W_ONE_HOT;
   }, [wMode, temperature]);
 
   const output: [number, number][] = useMemo(() => {
