@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import clsx from 'clsx';
 import { Link } from 'wouter';
+import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip';
 import { DotProductExplorer } from '@/components/sim/DotProductExplorer';
 import { InteractiveSkeleton } from '@/components/lesson/InteractiveSkeleton';
 import dynamic from '@/lib/dynamic';
@@ -165,17 +166,23 @@ export function HeroInteractive() {
           </button>
         ))}
         {!reduced && (
-          <button
-            type="button"
-            onPointerDown={(e) => e.stopPropagation()}
-            onClick={toggleCycle}
-            aria-pressed={pinned}
-            title={pinned ? 'Resume the figure rotation' : 'Stop the figure rotation'}
-            className="focus-ring ml-auto inline-flex items-baseline gap-1.5 text-[10px] font-mono text-fg-subtle transition-colors hover:text-ink"
-          >
-            <span aria-hidden="true">{pinned ? '▶' : '❚❚'}</span>
-            {pinned ? 'resume cycling' : 'stop cycling'}
-          </button>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button
+                type="button"
+                onPointerDown={(e) => e.stopPropagation()}
+                onClick={toggleCycle}
+                aria-pressed={pinned}
+                className="focus-ring ml-auto inline-flex items-baseline gap-1.5 text-[10px] font-mono text-fg-subtle transition-colors hover:text-ink"
+              >
+                <span aria-hidden="true">{pinned ? '▶' : '❚❚'}</span>
+                {pinned ? 'resume cycling' : 'stop cycling'}
+              </button>
+            </TooltipTrigger>
+            <TooltipContent side="bottom">
+              <p>{pinned ? 'Resume the figure rotation' : 'Stop the figure rotation'}</p>
+            </TooltipContent>
+          </Tooltip>
         )}
       </div>
 
