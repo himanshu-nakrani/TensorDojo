@@ -77,3 +77,7 @@
 ## 2025-02-18 - AttentionOutputExplorer Pre-computation
 **Learning:** Found that `AttentionOutputExplorer.tsx` generated the static `uniform` and `one-hot` weighting matrices inside a `useMemo` on every component mount or mode toggle. `useMemo` caching doesn't persist across route navigations, leading to duplicated allocations and array mapping on the main thread for matrices that strictly rely on the module-level constant `N_TOKENS`.
 **Action:** Lift static array/matrix generations (like generating fixed-size uniform or one-hot matrices) outside of the component context into module-level constant precalculations (`STATIC_W_UNIFORM` and `STATIC_W_ONE_HOT`) so that they run exactly once at module load, shifting work off the main thread during component renders.
+
+## 2025-02-18 - Trivial Vector Math useMemo Optimization
+**Learning:** Found that `DotProductExplorer.tsx` and `ProjectionExplorer.tsx` wrapped computationally trivial operations (like `dot(a, b)`, `magnitude(a)`, `cosTheta(a, b)`, `projection(a, b)`, and `residual(a, b)`) in `useMemo` hooks. For small inputs like 2D vector arrays, the overhead of React's `useMemo` allocation and dependency checking exceeds the cost of direct recalculation, degrading performance rather than improving it.
+**Action:** Avoid wrapping computationally trivial or primitive operations (e.g., basic arithmetic, simple vector math) in `useMemo`. Direct calculation is faster and more memory-efficient.
