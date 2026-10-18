@@ -87,3 +87,7 @@
 **Vulnerability:** The sidebar state cookie was missing the `SameSite` attribute.
 **Learning:** Even non-authentication cookies like UI state should explicitly set `SameSite=Lax` or `Strict` to mitigate CSRF risks and ensure predictable cross-origin behavior.
 **Prevention:** Always explicitly define the `SameSite` attribute when setting cookies via `document.cookie` or server-side headers.
+## 2026-10-18 - [Upgrade proxy-addr to fix critical IP spoofing CVE]
+**Vulnerability:** The transitive dependency `proxy-addr` version 2.0.7 used by `express` is vulnerable to IP spoofing via IPv4-mapped IPv6 trust subnet (CVE-2024-xxx).
+**Learning:** High/Critical dependency vulnerabilities often hide within the transitive dependency tree of widely used packages like `express`. Using `pnpm audit` allows for quick identification, and `pnpm-workspace.yaml` overrides allow forcing a secure version resolution throughout the workspace without modifying `package.json` dependencies directly (which would create tech debt).
+**Prevention:** Make `pnpm audit` a regular part of maintenance and use the `overrides` field in the root workspace configuration to patch transitive dependencies across the entire monorepo.
