@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'wouter';
 import clsx from 'clsx';
 import { TRACKS, getLessonMeta, type LessonMetaEntry } from '@/lib/lessons-meta';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { getVisited, getLastVisited } from '@/lib/progress/visits';
 import { useCompletions } from '@/hooks/use-completions';
 import { trackColor } from '@/lib/track-color';
@@ -200,23 +201,28 @@ export function LessonDirectory() {
               ).length;
               const pct = done / b.lessons.length;
               return (
-                <a
-                  key={b.id}
-                  href={`#track-${b.id}`}
-                  tabIndex={-1}
-                  aria-hidden="true"
-                  title={`${b.label} — ${done}/${b.lessons.length}`}
-                  className="group relative h-[10px] flex-1 overflow-hidden rounded-[2px] bg-border"
-                >
-                  <span
-                    className={clsx(
-                      'absolute inset-y-0 left-0 transition-[width] duration-500 motion-reduce:transition-none',
-                      pct === 1 ? 'bg-accent-2' : 'bg-accent-2/60',
-                      'group-hover:bg-accent-2',
-                    )}
-                    style={{ width: `${Math.round(pct * 100)}%` }}
-                  />
-                </a>
+                <Tooltip key={b.id}>
+                  <TooltipTrigger asChild>
+                    <a
+                      href={`#track-${b.id}`}
+                      tabIndex={-1}
+                      aria-hidden="true"
+                      className="group relative h-[10px] flex-1 overflow-hidden rounded-[2px] bg-border"
+                    >
+                      <span
+                        className={clsx(
+                          'absolute inset-y-0 left-0 transition-[width] duration-500 motion-reduce:transition-none',
+                          pct === 1 ? 'bg-accent-2' : 'bg-accent-2/60',
+                          'group-hover:bg-accent-2',
+                        )}
+                        style={{ width: `${Math.round(pct * 100)}%` }}
+                      />
+                    </a>
+                  </TooltipTrigger>
+                  <TooltipContent side="top">
+                    <p>{`${b.label} — ${done}/${b.lessons.length}`}</p>
+                  </TooltipContent>
+                </Tooltip>
               );
             })}
           </div>
@@ -424,30 +430,37 @@ export function LessonDirectory() {
                           className="lift group flex h-full flex-col gap-1.5 rounded-sm border border-border border-l-2 border-l-border bg-surface p-4 hover:border-border-strong hover:border-l-accent-2 hover:bg-surface-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
                         >
                           <div className="flex items-baseline gap-2.5">
-                            {status === 'done' ? (
-                              <span
-                                aria-hidden="true"
-                                className="inline-flex h-[15px] w-[15px] shrink-0 translate-y-[2px] items-center justify-center rounded-full bg-accent-2 text-[9px] font-bold text-accent-2-fg"
-                                title="Complete"
-                              >
-                                ✓
-                              </span>
-                            ) : (
-                              <span
-                                aria-hidden="true"
-                                className={clsx(
-                                  'inline-block h-2 w-2 shrink-0 rounded-full translate-y-[1px]',
-                                  status === 'progress'
-                                    ? 'bg-accent-2 ring-2 ring-accent-2/20'
-                                    : 'border border-border-strong',
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                {status === 'done' ? (
+                                  <span
+                                    aria-hidden="true"
+                                    className="inline-flex h-[15px] w-[15px] shrink-0 translate-y-[2px] items-center justify-center rounded-full bg-accent-2 text-[9px] font-bold text-accent-2-fg"
+                                  >
+                                    ✓
+                                  </span>
+                                ) : (
+                                  <span
+                                    aria-hidden="true"
+                                    className={clsx(
+                                      'inline-block h-2 w-2 shrink-0 rounded-full translate-y-[1px]',
+                                      status === 'progress'
+                                        ? 'bg-accent-2 ring-2 ring-accent-2/20'
+                                        : 'border border-border-strong',
+                                    )}
+                                  />
                                 )}
-                                title={
-                                  status === 'progress'
-                                    ? 'Visited'
-                                    : 'Not yet visited'
-                                }
-                              />
-                            )}
+                              </TooltipTrigger>
+                              <TooltipContent side="top">
+                                <p>
+                                  {status === 'done'
+                                    ? 'Complete'
+                                    : status === 'progress'
+                                      ? 'Visited'
+                                      : 'Not yet visited'}
+                                </p>
+                              </TooltipContent>
+                            </Tooltip>
                             <span
                               className="text-[10px] font-mono tabular-nums"
                               style={{ color: trackColor(trackNo - 1) }}
