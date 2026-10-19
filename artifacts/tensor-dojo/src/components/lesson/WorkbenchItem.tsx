@@ -8,6 +8,7 @@ import {
   type ReactNode,
 } from 'react';
 import clsx from 'clsx';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface WorkbenchItemProps {
   id: string;
@@ -99,14 +100,20 @@ export const WorkbenchItem = forwardRef<HTMLDivElement, WorkbenchItemProps>(
               </span>
             )}
           </span>
-          <span
-            aria-hidden="true"
-            title={isActive ? 'Active' : 'Idle'}
-            className={clsx(
-              'shrink-0 h-1.5 w-1.5 rounded-full',
-              isActive ? 'bg-accent shadow-[0_0_6px_var(--accent-shadow)]' : 'bg-border-strong',
-            )}
-          />
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <span
+                aria-hidden="true"
+                className={clsx(
+                  'shrink-0 h-1.5 w-1.5 rounded-full',
+                  isActive ? 'bg-accent shadow-[0_0_6px_var(--accent-shadow)]' : 'bg-border-strong',
+                )}
+              />
+            </TooltipTrigger>
+            <TooltipContent side="top">
+              <p>{isActive ? 'Active' : 'Idle'}</p>
+            </TooltipContent>
+          </Tooltip>
         </button>
 
         {isActive && (
