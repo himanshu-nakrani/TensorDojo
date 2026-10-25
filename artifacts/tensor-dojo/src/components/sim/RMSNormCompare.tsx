@@ -20,18 +20,17 @@ export function RMSNormCompare() {
   const [meanOffset, setMeanOffset] = useState(0);
   const [scale, setScale] = useState(1);
 
-  const input = useMemo(() => {
-    return BASE.map((v) => v * scale + meanOffset);
-  }, [meanOffset, scale]);
+  // ⚡ Bolt Optimization: Avoid useMemo for trivial 8-element array operations.
+  // When dragging the sliders, `meanOffset` and `scale` update continuously, which
+  // invalidates the cache every render anyway. The hook's tracking and allocation
+  // overhead here is actually slower than just directly computing these basic numbers.
+  const input = BASE.map((v) => v * scale + meanOffset);
 
-  const lnOut = useMemo(() => layerNorm(input), [input]);
-  const rnOut = useMemo(() => rmsNorm(input), [input]);
+  const lnOut = layerNorm(input);
+  const rnOut = rmsNorm(input);
 
-  const inputMean = useMemo(
-    () => input.reduce((s, v) => s + v, 0) / input.length,
-    [input],
-  );
-  const inputRMS = useMemo(() => rms(input), [input]);
+  const inputMean = input.reduce((s, v) => s + v, 0) / input.length;
+  const inputRMS = rms(input);
 
   return (
     <SimFrame
