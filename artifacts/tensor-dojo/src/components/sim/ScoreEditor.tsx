@@ -1,6 +1,6 @@
 
 
-import { useMemo, useRef, useState, KeyboardEvent } from 'react';
+import { useRef, useState, KeyboardEvent } from 'react';
 import { NumberInput } from '@/components/sim/primitives/NumberInput';
 import { SimFrame } from '@/components/sim/primitives/SimFrame';
 import { argmax, softmax } from '@/lib/math/softmax';
@@ -25,12 +25,10 @@ export function ScoreEditor({ preset }: { preset?: ScoreEditorPreset }) {
   ]);
   const inputRefs = useRef<Array<HTMLInputElement | null>>([]);
 
-  const distribution = useMemo(() => softmax(scores), [scores]);
-  const dominant = useMemo(() => argmax(distribution), [distribution]);
-  const sumLabel = useMemo(
-    () => distribution.reduce((a, b) => a + b, 0).toFixed(3),
-    [distribution],
-  );
+  // ⚡ Bolt Optimization: Avoid useMemo for trivial arithmetic like 1D math. The hook overhead is slower than recalculating.
+  const distribution = softmax(scores);
+  const dominant = argmax(distribution);
+  const sumLabel = distribution.reduce((a, b) => a + b, 0).toFixed(3);
 
   const setScore = (i: number, v: number) => {
     setScores((prev) => {

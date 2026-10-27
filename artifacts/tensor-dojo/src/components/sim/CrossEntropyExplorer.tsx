@@ -1,6 +1,6 @@
 
 
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { Slider } from '@/components/sim/primitives/Slider';
 import { BarChart } from '@/components/sim/primitives/BarChart';
 import { SimFrame } from '@/components/sim/primitives/SimFrame';
@@ -56,8 +56,9 @@ export function CrossEntropyExplorer() {
   );
   const [trueIndex, setTrueIndex] = useState<number>(0); // "the"
 
-  const probs = useMemo(() => softmax(logits), [logits]);
-  const loss = useMemo(() => crossEntropy(probs, trueIndex), [probs, trueIndex]);
+  // ⚡ Bolt Optimization: Avoid useMemo for trivial arithmetic like 1D math. The hook overhead is slower than recalculating.
+  const probs = softmax(logits);
+  const loss = crossEntropy(probs, trueIndex);
   const pTrue = probs[trueIndex] as number;
 
   const setLogit = (i: number, v: number) => {
