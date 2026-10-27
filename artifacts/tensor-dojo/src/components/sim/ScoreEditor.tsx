@@ -1,6 +1,6 @@
 
 
-import { useMemo, useRef, useState, KeyboardEvent } from 'react';
+import { useRef, useState, KeyboardEvent } from 'react';
 import { NumberInput } from '@/components/sim/primitives/NumberInput';
 import { SimFrame } from '@/components/sim/primitives/SimFrame';
 import { argmax, softmax } from '@/lib/math/softmax';

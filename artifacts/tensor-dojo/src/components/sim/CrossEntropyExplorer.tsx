@@ -1,6 +1,6 @@
 
 
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { Slider } from '@/components/sim/primitives/Slider';
 import { BarChart } from '@/components/sim/primitives/BarChart';
 import { SimFrame } from '@/components/sim/primitives/SimFrame';
