@@ -1,6 +1,6 @@
 
 
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import clsx from 'clsx';
 import {
   VectorCanvas,
@@ -41,22 +41,19 @@ export function CandidateSort({ preset }: { preset?: CandidateSortPreset }) {
     return [v[0], v[1]];
   });
 
-  const scored = useMemo(() => {
-    return CANDIDATES.map((c) => ({
-      ...c,
-      score: dot(query, c.value),
-    })).sort((a, b) => b.score - a.score);
-  }, [query]);
+  // ⚡ Bolt Optimization: Avoid useMemo for trivial 2D vector arithmetic and small
+  // array (5 items) allocations/mappings. The hook overhead is slower than recalculating.
+  const scored = CANDIDATES.map((c) => ({
+    ...c,
+    score: dot(query, c.value),
+  })).sort((a, b) => b.score - a.score);
 
   // The query is the only manipulable element; candidates are dimmer
   // because they are not (here) draggable.
-  const vectors: VectorCanvasVector[] = useMemo(
-    () => [
-      { id: 'q', label: 'q', value: query },
-      ...CANDIDATES.map((c) => ({ id: c.id, label: c.label, value: c.value })),
-    ],
-    [query],
-  );
+  const vectors: VectorCanvasVector[] = [
+    { id: 'q', label: 'q', value: query },
+    ...CANDIDATES.map((c) => ({ id: c.id, label: c.label, value: c.value })),
+  ];
 
   const setVector = (id: string, value: [number, number]) => {
     if (id === 'q') setQuery(value);

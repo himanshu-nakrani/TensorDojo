@@ -1,6 +1,6 @@
 
 
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import clsx from 'clsx';
 import {
   VectorCanvas,
@@ -64,51 +64,41 @@ export function CandidateCosine({ preset }: { preset?: CandidateCosinePreset }) 
     () => preset?.resizableLength ?? DEFAULT_RESIZABLE_LEN,
   );
 
-  const candidates = useMemo(() => {
-    return [
-      ...STATIC_FIXED_CANDIDATES,
-      {
-        id: RESIZABLE_ID,
-        label: RESIZABLE_LABEL,
-        value: [RESIZABLE_UNIT[0] * resizableLen, RESIZABLE_UNIT[1] * resizableLen] as readonly [
-          number,
-          number,
-        ],
-        resizable: true,
-      },
-    ];
-  }, [resizableLen]);
+  // ⚡ Bolt Optimization: Avoid useMemo for trivial 2D vector arithmetic and small
+  // array (6 items) allocations/mappings. The hook overhead is slower than recalculating.
+  const candidates = [
+    ...STATIC_FIXED_CANDIDATES,
+    {
+      id: RESIZABLE_ID,
+      label: RESIZABLE_LABEL,
+      value: [RESIZABLE_UNIT[0] * resizableLen, RESIZABLE_UNIT[1] * resizableLen] as readonly [
+        number,
+        number,
+      ],
+      resizable: true,
+    },
+  ];
 
-  const rows = useMemo(
-    () =>
-      candidates.map((c) => {
-        const qDot = dot(q, c.value);
-        const cos = cosTheta(q, c.value);
-        return { ...c, qDot, cos };
-      }),
-    [candidates, q],
-  );
+  const rows = candidates.map((c) => {
+    const qDot = dot(q, c.value);
+    const cos = cosTheta(q, c.value);
+    return { ...c, qDot, cos };
+  });
 
-  const rankedByDot = useMemo(
-    () => [...rows].sort((a, b) => b.qDot - a.qDot),
-    [rows],
-  );
+  const rankedByDot = [...rows].sort((a, b) => b.qDot - a.qDot);
 
-  const vectors: VectorCanvasVector[] = useMemo(
-    () => [
-      { id: 'q', label: 'q', value: q },
-      ...FIXED_CANDIDATES,
-      {
-        id: RESIZABLE_ID,
-        label: RESIZABLE_LABEL,
-        value: [
-          RESIZABLE_UNIT[0] * resizableLen,
-          RESIZABLE_UNIT[1] * resizableLen,
-        ],
-      },
-    ],
-    [q, resizableLen],
-  );
+  const vectors: VectorCanvasVector[] = [
+    { id: 'q', label: 'q', value: q },
+    ...FIXED_CANDIDATES,
+    {
+      id: RESIZABLE_ID,
+      label: RESIZABLE_LABEL,
+      value: [
+        RESIZABLE_UNIT[0] * resizableLen,
+        RESIZABLE_UNIT[1] * resizableLen,
+      ],
+    },
+  ];
 
   const setVector = (id: string, value: [number, number]) => {
     if (id === 'q') setQ(value);
