@@ -1,6 +1,6 @@
 
 
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { SimFrame } from '@/components/sim/primitives/SimFrame';
 import { layerNorm } from '@/lib/math/layernorm';
 import { rms, rmsNorm } from '@/lib/math/rmsnorm';
