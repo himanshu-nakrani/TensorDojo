@@ -142,6 +142,27 @@ export function GradientDescentExplorer() {
   const endLoss = loss(end);
   const diverged = runResult.divergedAt !== null;
 
+  // By extracting the static surface grid to useMemo, we prevent React from having to
+  // allocate and map ~3600 <rect> objects on every slider drag when eta or numSteps change.
+  const surfaceCells = useMemo(() => {
+    return STATIC_SURFACE.grid.map((row, i) =>
+      row.map((v, j) => {
+        const s = cellStyle(v);
+        return (
+          <rect
+            key={`c${i}-${j}`}
+            x={toScreenX(X_RANGE[0] + (j / (STATIC_SURFACE.NX - 1)) * (X_RANGE[1] - X_RANGE[0]))}
+            y={toScreenY(Y_RANGE[0] + (i / (STATIC_SURFACE.NY - 1)) * (Y_RANGE[1] - Y_RANGE[0]))}
+            width={PLOT_W / (STATIC_SURFACE.NX - 1) + 0.5}
+            height={PLOT_H / (STATIC_SURFACE.NY - 1) + 0.5}
+            fill={s.fill}
+            opacity={s.opacity}
+          />
+        );
+      })
+    );
+  }, []);
+
   return (
     <SimFrame
       title="Walk downhill · pick η · watch the trajectory"
@@ -182,22 +203,7 @@ export function GradientDescentExplorer() {
             aria-label="2D loss surface with a gradient-descent trajectory."
           >
             {/* Surface cells */}
-            {STATIC_SURFACE.grid.map((row, i) =>
-              row.map((v, j) => {
-                const s = cellStyle(v);
-                return (
-                  <rect
-                    key={`c${i}-${j}`}
-                    x={toScreenX(X_RANGE[0] + (j / (STATIC_SURFACE.NX - 1)) * (X_RANGE[1] - X_RANGE[0]))}
-                    y={toScreenY(Y_RANGE[0] + (i / (STATIC_SURFACE.NY - 1)) * (Y_RANGE[1] - Y_RANGE[0]))}
-                    width={PLOT_W / (STATIC_SURFACE.NX - 1) + 0.5}
-                    height={PLOT_H / (STATIC_SURFACE.NY - 1) + 0.5}
-                    fill={s.fill}
-                    opacity={s.opacity}
-                  />
-                );
-              }),
-            )}
+            {surfaceCells}
             {/* Trajectory. Filter out non-finite points so a diverged
                 trajectory doesn't try to draw lines through the entire
                 plot via "Infinity,Infinity" SVG points. */}
