@@ -107,6 +107,31 @@ export function LossLandscape() {
   const cellSize = W / GRID;
   const range = fMax - fMin || 1;
 
+  // By extracting the static cells grid to useMemo, we prevent React from having to
+  // allocate and map ~2300 <rect> objects on every animation frame when `shown` changes.
+  const surfaceCells = useMemo(() => {
+    return cells.flatMap((row, i) =>
+      row.map((v, j) => {
+        // Normalize loss into [0, 1] for shading; clamp.
+        const t = Math.max(0, Math.min(1, (v - fMin) / range));
+        // Light → dark teal gradient. Low loss = dark, high
+        // loss = light. Using inline rgba on the accent
+        // channel so it themes with the rest of the page.
+        const alpha = 0.15 + (1 - t) * 0.55; // dark in basins
+        return (
+          <rect
+            key={`${i}-${j}`}
+            x={j * cellSize}
+            y={H - (i + 1) * cellSize}
+            width={cellSize + 0.5}
+            height={cellSize + 0.5}
+            fill={`rgba(var(--accent) / ${alpha.toFixed(3)})`}
+          />
+        );
+      })
+    );
+  }, [cells, fMin, range, cellSize]);
+
   return (
     <SimFrame
       title="Click anywhere · watch SGD walk to a stationary point"
@@ -164,26 +189,7 @@ export function LossLandscape() {
             role="img"
             aria-label="Loss surface heatmap. Click anywhere — or use the start x and start y sliders — to drop a starting point for SGD."
           >
-            {cells.flatMap((row, i) =>
-              row.map((v, j) => {
-                // Normalize loss into [0, 1] for shading; clamp.
-                const t = Math.max(0, Math.min(1, (v - fMin) / range));
-                // Light → dark teal gradient. Low loss = dark, high
-                // loss = light. Using inline rgba on the accent
-                // channel so it themes with the rest of the page.
-                const alpha = 0.15 + (1 - t) * 0.55; // dark in basins
-                return (
-                  <rect
-                    key={`${i}-${j}`}
-                    x={j * cellSize}
-                    y={H - (i + 1) * cellSize}
-                    width={cellSize + 0.5}
-                    height={cellSize + 0.5}
-                    fill={`rgba(var(--accent) / ${alpha.toFixed(3)})`}
-                  />
-                );
-              }),
-            )}
+            {surfaceCells}
             {/* Axes */}
             <line
               x1={W / 2}
