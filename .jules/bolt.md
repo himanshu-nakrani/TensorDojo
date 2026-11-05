@@ -92,3 +92,7 @@
 ## 2026-10-29 - GradientDescentExplorer and LossLandscape constant element hoisting
 **Learning:** Found that `LossLandscape.tsx` (the shared component) and `GradientDescentExplorer.tsx` computed 2304 and 3600 SVG `<rect>` elements respectively inside their render blocks. Because `LossLandscape` updates state every 60ms during animation and `GradientDescentExplorer` updates heavily during slider interaction, generating these massive arrays directly inline caused main-thread blocking and frame drops.
 **Action:** Extract large static element maps (like mapping heatmaps onto an array of `<rect>` elements) into `useMemo` hooks (e.g. `const surfaceCells = useMemo(() => ...)`). By making the rendering of these static arrays dependent only on the static data (or no dependencies at all), we skip re-allocating thousands of virtual DOM nodes on every animation frame or slider drag.
+
+## 2026-10-29 - Nested Loop Single-Variable Dependencies (Positional Encoding)
+**Learning:** The original `sinusoidalPE` implementation calculated the denominator `Math.pow(PE_BASE, i / halfD)` inside an inner `i` loop nested within a `pos` loop, resulting in O(maxPos * d) expensive exponentiations. However, `denom` depends only on `i`, not on `pos`.
+**Action:** Always look for nested loops where intermediate calculations depend on only one of the loop variables. By simply swapping the loop order (outer loop over dimensions `i`, inner loop over positions `pos`), we act as an implicit cache, computing the expensive `Math.pow` only O(d) times without needing extra memory allocation.
