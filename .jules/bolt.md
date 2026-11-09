@@ -92,3 +92,7 @@
 ## 2026-10-29 - GradientDescentExplorer and LossLandscape constant element hoisting
 **Learning:** Found that `LossLandscape.tsx` (the shared component) and `GradientDescentExplorer.tsx` computed 2304 and 3600 SVG `<rect>` elements respectively inside their render blocks. Because `LossLandscape` updates state every 60ms during animation and `GradientDescentExplorer` updates heavily during slider interaction, generating these massive arrays directly inline caused main-thread blocking and frame drops.
 **Action:** Extract large static element maps (like mapping heatmaps onto an array of `<rect>` elements) into `useMemo` hooks (e.g. `const surfaceCells = useMemo(() => ...)`). By making the rendering of these static arrays dependent only on the static data (or no dependencies at all), we skip re-allocating thousands of virtual DOM nodes on every animation frame or slider drag.
+
+## 2025-02-18 - RagExplorer topK useMemo overhead removal
+**Learning:** Found that `RagExplorer.tsx` used a `useMemo` hook for `topK`, which just performed a trivial 3-element `slice` of a static array. For trivial operations, the React hook overhead (allocation, dependency tracking, closure generation) is actually slower than just recalculating the value directly during render.
+**Action:** Avoid wrapping trivial slicing or vector math in `useMemo`. Ensure that `useMemo` is strictly reserved for computationally heavy tasks.
