@@ -91,3 +91,7 @@
 **Vulnerability:** The transitive dependency `proxy-addr` version 2.0.7 used by `express` is vulnerable to IP spoofing via IPv4-mapped IPv6 trust subnet (CVE-2024-xxx).
 **Learning:** High/Critical dependency vulnerabilities often hide within the transitive dependency tree of widely used packages like `express`. Using `pnpm audit` allows for quick identification, and `pnpm-workspace.yaml` overrides allow forcing a secure version resolution throughout the workspace without modifying `package.json` dependencies directly (which would create tech debt).
 **Prevention:** Make `pnpm audit` a regular part of maintenance and use the `overrides` field in the root workspace configuration to patch transitive dependencies across the entire monorepo.
+## 2025-03-09 - Upgrade body-parser to fix High Severity DoS CVE
+**Vulnerability:** The `express` library pulls in `body-parser` as a transitive dependency. An older version of `body-parser` (< 2.4.0) has a high-severity Denial of Service (DoS) vulnerability via trailing bytes after a compressed request body.
+**Learning:** High severity dependency vulnerabilities often exist within the transitive dependency tree of widely used packages like `express`. Identifying these early with `pnpm audit` prevents potential application DoS vectors from external HTTP requests.
+**Prevention:** Pin the patched version of the transitive dependency (e.g., `body-parser: 2.4.0`) in the `overrides` section of `pnpm-workspace.yaml`.
