@@ -1,6 +1,6 @@
 
 
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import clsx from 'clsx';
 import { SimFrame } from '@/components/sim/primitives/SimFrame';
 import { CORPUS, QUERIES, rankDocs, topK } from '@/lib/math/rag';
@@ -26,7 +26,8 @@ export function RagExplorer() {
 
   const query = QUERIES.find((q) => q.id === queryId)!;
   const ranked = PRECOMPUTED_RANKINGS[queryId]!;
-  const top = useMemo(() => topK(ranked, k), [ranked, k]);
+  // ⚡ Bolt Optimization: Avoid useMemo for simple slicing. The hook overhead is slower than recalculating.
+  const top = topK(ranked, k);
   const topScore = ranked[0]?.score ?? 0;
 
   // Threshold heuristic: below 0.6 the top match is weak enough that
