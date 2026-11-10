@@ -260,21 +260,28 @@ function SidebarTrigger({
   const { toggleSidebar } = useSidebar();
 
   return (
-    <Button
-      data-sidebar="trigger"
-      data-slot="sidebar-trigger"
-      variant="ghost"
-      size="icon"
-      className={cn('h-7 w-7', className)}
-      onClick={(event) => {
-        onClick?.(event);
-        toggleSidebar();
-      }}
-      {...props}
-    >
-      <PanelLeftIcon />
-      <span className="sr-only">Toggle Sidebar</span>
-    </Button>
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <Button
+          data-sidebar="trigger"
+          data-slot="sidebar-trigger"
+          variant="ghost"
+          size="icon"
+          className={cn('h-7 w-7', className)}
+          onClick={(event) => {
+            onClick?.(event);
+            toggleSidebar();
+          }}
+          {...props}
+        >
+          <PanelLeftIcon />
+          <span className="sr-only">Toggle Sidebar</span>
+        </Button>
+      </TooltipTrigger>
+      <TooltipContent side="right">
+        <p>Toggle Sidebar</p>
+      </TooltipContent>
+    </Tooltip>
   );
 }
 
@@ -283,24 +290,30 @@ function SidebarRail({ className, ...props }: React.ComponentProps<'button'>) {
 
   // Note: Tailwind v3.4 doesn't support "in-" selectors. So the rail won't work perfectly.
   return (
-    <button
-      data-sidebar="rail"
-      data-slot="sidebar-rail"
-      aria-label="Toggle Sidebar"
-      tabIndex={-1}
-      onClick={toggleSidebar}
-      title="Toggle Sidebar"
-      className={cn(
-        'hover:after:bg-sidebar-border absolute inset-y-0 z-20 hidden w-4 -translate-x-1/2 transition-all ease-linear group-data-[side=left]:-right-4 group-data-[side=right]:left-0 after:absolute after:inset-y-0 after:left-1/2 after:w-[2px] sm:flex',
-        'in-data-[side=left]:cursor-w-resize in-data-[side=right]:cursor-e-resize',
-        '[[data-side=left][data-state=collapsed]_&]:cursor-e-resize [[data-side=right][data-state=collapsed]_&]:cursor-w-resize',
-        'hover:group-data-[collapsible=offcanvas]:bg-sidebar group-data-[collapsible=offcanvas]:translate-x-0 group-data-[collapsible=offcanvas]:after:left-full',
-        '[[data-side=left][data-collapsible=offcanvas]_&]:-right-2',
-        '[[data-side=right][data-collapsible=offcanvas]_&]:-left-2',
-        className,
-      )}
-      {...props}
-    />
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <button
+          data-sidebar="rail"
+          data-slot="sidebar-rail"
+          aria-label="Toggle Sidebar"
+          tabIndex={-1}
+          onClick={toggleSidebar}
+          className={cn(
+            'hover:after:bg-sidebar-border absolute inset-y-0 z-20 hidden w-4 -translate-x-1/2 transition-all ease-linear group-data-[side=left]:-right-4 group-data-[side=right]:left-0 after:absolute after:inset-y-0 after:left-1/2 after:w-[2px] sm:flex',
+            'in-data-[side=left]:cursor-w-resize in-data-[side=right]:cursor-e-resize',
+            '[[data-side=left][data-state=collapsed]_&]:cursor-e-resize [[data-side=right][data-state=collapsed]_&]:cursor-w-resize',
+            'hover:group-data-[collapsible=offcanvas]:bg-sidebar group-data-[collapsible=offcanvas]:translate-x-0 group-data-[collapsible=offcanvas]:after:left-full',
+            '[[data-side=left][data-collapsible=offcanvas]_&]:-right-2',
+            '[[data-side=right][data-collapsible=offcanvas]_&]:-left-2',
+            className,
+          )}
+          {...props}
+        />
+      </TooltipTrigger>
+      <TooltipContent side="right">
+        <p>Toggle Sidebar</p>
+      </TooltipContent>
+    </Tooltip>
   );
 }
 

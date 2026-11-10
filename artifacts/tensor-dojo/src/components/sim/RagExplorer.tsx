@@ -26,9 +26,7 @@ export function RagExplorer() {
 
   const query = QUERIES.find((q) => q.id === queryId)!;
   const ranked = PRECOMPUTED_RANKINGS[queryId]!;
-
-  // ⚡ Bolt Optimization: Avoid useMemo for trivial operations like small array slicing.
-  // The hook overhead is slower than recalculating inline.
+  // ⚡ Bolt Optimization: Avoid useMemo for simple slicing. The hook overhead is slower than recalculating.
   const top = topK(ranked, k);
   const topScore = ranked[0]?.score ?? 0;
 
