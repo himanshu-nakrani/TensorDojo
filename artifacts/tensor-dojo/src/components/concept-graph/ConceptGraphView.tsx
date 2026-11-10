@@ -556,6 +556,65 @@ function MapGraph({
 
   const activeEdges = active ? graph.incident.get(active) ?? new Set<string>() : null;
 
+  // ⚡ Bolt Optimization: Constant Element Hoisting
+  // Wrap the generation of large static JSX element collections in useMemo.
+  // This prevents React from reallocating virtual DOM objects on every component
+  // re-render during high-frequency updates (e.g., pan/zoom changing the `view` state).
+  const renderedEdges = useMemo(() => {
+    return graph.edges.map((edge) => {
+      const isActive = activeEdges?.has(edge.id) ?? false;
+      const dim = (activeSet !== null && !isActive) || (hlIdx >= 0 && edge.trackIdx !== hlIdx);
+      const travelled =
+        edge.kind === 'seq' &&
+        completed.has(edge.from) &&
+        completed.has(edge.to);
+      const color = travelled
+        ? 'rgb(var(--accent-2))'
+        : edge.kind === 'cross'
+          ? trackColor(edge.trackIdx)
+          : 'rgb(var(--border-strong))';
+      const baseOpacity = travelled ? 0.9 : edge.kind === 'cross' ? 0.5 : 0.55;
+      return (
+        <path
+          key={edge.id}
+          d={edge.pathD}
+          fill="none"
+          stroke={color}
+          strokeWidth={isActive ? 2.4 : travelled ? 1.8 : 1.4}
+          strokeDasharray={edge.kind === 'cross' ? '5 5' : undefined}
+          strokeLinecap="round"
+          markerEnd="url(#cg-arrow)"
+          style={{
+            color,
+            opacity: dim ? 0.07 : isActive ? 1 : baseOpacity,
+            transition: 'opacity 120ms, stroke-width 120ms',
+          }}
+        />
+      );
+    });
+  }, [graph.edges, activeEdges, activeSet, hlIdx, completed]);
+
+  const renderedNodes = useMemo(() => {
+    return graph.nodes.map((node) => (
+      <GraphNodeCard
+        key={node.id}
+        node={node}
+        visited={visited.has(node.id)}
+        completed={completed.has(node.id)}
+        resume={resumeSlug === node.id}
+        dim={(activeSet !== null && !activeSet.has(node.id)) || (hlIdx >= 0 && node.trackIdx !== hlIdx)}
+        highlighted={active === node.id}
+        onActivate={() => setActive(node.id)}
+        onDeactivate={() => setActive((cur) => (cur === node.id ? null : cur))}
+        onFocusNode={() => {
+          setActive(node.id);
+          centerOn(node);
+        }}
+        suppressNav={() => drag.current.moved}
+      />
+    ));
+  }, [graph.nodes, visited, completed, resumeSlug, activeSet, hlIdx, active, centerOn]);
+
   return (
     <div className="relative">
       <div
@@ -594,60 +653,11 @@ function MapGraph({
                 <path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor" />
               </marker>
             </defs>
-            {graph.edges.map((edge) => {
-              const isActive = activeEdges?.has(edge.id) ?? false;
-              const dim = (activeSet !== null && !isActive) || (hlIdx >= 0 && edge.trackIdx !== hlIdx);
-              // Sequence edges between two completed lessons light up
-              // as the reader's travelled path through the graph.
-              const travelled =
-                edge.kind === 'seq' &&
-                completed.has(edge.from) &&
-                completed.has(edge.to);
-              const color = travelled
-                ? 'rgb(var(--accent-2))'
-                : edge.kind === 'cross'
-                  ? trackColor(edge.trackIdx)
-                  : 'rgb(var(--border-strong))';
-              const baseOpacity = travelled ? 0.9 : edge.kind === 'cross' ? 0.5 : 0.55;
-              return (
-                <path
-                  key={edge.id}
-                  d={edge.pathD}
-                  fill="none"
-                  stroke={color}
-                  strokeWidth={isActive ? 2.4 : travelled ? 1.8 : 1.4}
-                  strokeDasharray={edge.kind === 'cross' ? '5 5' : undefined}
-                  strokeLinecap="round"
-                  markerEnd="url(#cg-arrow)"
-                  style={{
-                    color,
-                    opacity: dim ? 0.07 : isActive ? 1 : baseOpacity,
-                    transition: 'opacity 120ms, stroke-width 120ms',
-                  }}
-                />
-              );
-            })}
+            {renderedEdges}
           </svg>
 
           <div className="absolute left-0 top-0" style={{ width: `${graph.width}px`, height: `${graph.height}px` }}>
-            {graph.nodes.map((node) => (
-              <GraphNodeCard
-                key={node.id}
-                node={node}
-                visited={visited.has(node.id)}
-                completed={completed.has(node.id)}
-                resume={resumeSlug === node.id}
-                dim={(activeSet !== null && !activeSet.has(node.id)) || (hlIdx >= 0 && node.trackIdx !== hlIdx)}
-                highlighted={active === node.id}
-                onActivate={() => setActive(node.id)}
-                onDeactivate={() => setActive((cur) => (cur === node.id ? null : cur))}
-                onFocusNode={() => {
-                  setActive(node.id);
-                  centerOn(node);
-                }}
-                suppressNav={() => drag.current.moved}
-              />
-            ))}
+            {renderedNodes}
           </div>
         </div>
 

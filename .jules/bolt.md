@@ -1,3 +1,6 @@
+## 2025-02-12 - ConceptGraphView Element Hoisting
+**Learning:** In interactive pan/zoom SVG visualizations (`ConceptGraphView.tsx`), mapping over large arrays (like hundreds of nodes and edges) inline within the render function causes severe frame drops. The React reconciler has to recreate the virtual DOM for thousands of static `<path>` and component elements on every `view` state change (pan/zoom).
+**Action:** Extract large static collections of JSX elements (like rendered `<path>` edges and `<GraphNodeCard>` nodes) into `useMemo` blocks with appropriate dependency arrays. This technique, called Constant Element Hoisting, allows React to re-use the exact same object references during continuous high-frequency updates, significantly speeding up the main thread during interactions.
 ## 2025-02-18 - LessonCardList optimization
 **Learning:** Found an unnecessary recomputation in `LessonCardList.tsx` where static data `listLessonMeta` and `TRACKS` was mapped and filtered on every render.
 **Action:** Always lift static mappings outside of the component body, especially those depending on static modules or constants.
