@@ -45,6 +45,14 @@ const VOCABS: ReadonlyArray<{
   },
 ];
 
+// ⚡ Bolt Optimization: Pre-compute static BPE training at module load
+// since VOCABS are static, we avoid O(N) training allocations on the main thread
+// every time the component remounts (which clears useMemo).
+const PRECOMPUTED_BPE: Record<string, ReturnType<typeof learnBPE>> = {};
+for (const v of VOCABS) {
+  PRECOMPUTED_BPE[v.id] = learnBPE(v.corpus, v.numMerges);
+}
+
 const DEFAULT_INPUT = 'lowest newer widely';
 
 export function BPETokenizer() {
@@ -52,10 +60,7 @@ export function BPETokenizer() {
   const [input, setInput] = useState<string>(DEFAULT_INPUT);
 
   const vocabDef = VOCABS.find((v) => v.id === vocabId) ?? VOCABS[1]!;
-  const training = useMemo(
-    () => learnBPE(vocabDef.corpus, vocabDef.numMerges),
-    [vocabDef],
-  );
+  const training = PRECOMPUTED_BPE[vocabDef.id]!;
   const tokens = useMemo(
     () => encode(input, training.merges),
     [input, training],
