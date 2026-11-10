@@ -26,13 +26,15 @@ export function sinusoidalPE(maxPos: number, d: number): number[][] {
   );
   const halfD = d / 2;
   for (let i = 0; i < halfD; i += 1) {
-    // PE(pos, 2i)   = sin(pos / PE_BASE^(i / halfD))
-    // PE(pos, 2i+1) = cos(pos / PE_BASE^(i / halfD))
-    // The exponent i / halfD equals 2i / d in dim space, matching the
-    // Vaswani formula. The resulting wavelength per component is
-    // 2π · PE_BASE^(i / halfD) — what the sim labels.
+    // ⚡ Bolt Optimization: Swap loop order. Math.pow is expensive and depends only on i.
+    // By keeping i on the outside, we cache the denominator calculation O(D) times instead of O(pos * D).
     const denom = Math.pow(PE_BASE, i / halfD);
     for (let pos = 0; pos < maxPos; pos += 1) {
+      // PE(pos, 2i)   = sin(pos / PE_BASE^(i / halfD))
+      // PE(pos, 2i+1) = cos(pos / PE_BASE^(i / halfD))
+      // The exponent i / halfD equals 2i / d in dim space, matching the
+      // Vaswani formula. The resulting wavelength per component is
+      // 2π · PE_BASE^(i / halfD) — what the sim labels.
       const angle = pos / denom;
       const row = out[pos]!;
       row[2 * i] = Math.sin(angle);

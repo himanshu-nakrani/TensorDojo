@@ -1,3 +1,6 @@
+## 2025-02-12 - ConceptGraphView Element Hoisting
+**Learning:** In interactive pan/zoom SVG visualizations (`ConceptGraphView.tsx`), mapping over large arrays (like hundreds of nodes and edges) inline within the render function causes severe frame drops. The React reconciler has to recreate the virtual DOM for thousands of static `<path>` and component elements on every `view` state change (pan/zoom).
+**Action:** Extract large static collections of JSX elements (like rendered `<path>` edges and `<GraphNodeCard>` nodes) into `useMemo` blocks with appropriate dependency arrays. This technique, called Constant Element Hoisting, allows React to re-use the exact same object references during continuous high-frequency updates, significantly speeding up the main thread during interactions.
 ## 2025-02-18 - LessonCardList optimization
 **Learning:** Found an unnecessary recomputation in `LessonCardList.tsx` where static data `listLessonMeta` and `TRACKS` was mapped and filtered on every render.
 **Action:** Always lift static mappings outside of the component body, especially those depending on static modules or constants.
@@ -96,3 +99,9 @@
 ## 2026-10-29 - Nested Loop Single-Variable Dependencies (Positional Encoding)
 **Learning:** The original `sinusoidalPE` implementation calculated the denominator `Math.pow(PE_BASE, i / halfD)` inside an inner `i` loop nested within a `pos` loop, resulting in O(maxPos * d) expensive exponentiations. However, `denom` depends only on `i`, not on `pos`.
 **Action:** Always look for nested loops where intermediate calculations depend on only one of the loop variables. By simply swapping the loop order (outer loop over dimensions `i`, inner loop over positions `pos`), we act as an implicit cache, computing the expensive `Math.pow` only O(d) times without needing extra memory allocation.
+## 2025-02-18 - RagExplorer topK useMemo overhead removal
+**Learning:** Found that `RagExplorer.tsx` used a `useMemo` hook for `topK`, which just performed a trivial 3-element `slice` of a static array. For trivial operations, the React hook overhead (allocation, dependency tracking, closure generation) is actually slower than just recalculating the value directly during render.
+**Action:** Avoid wrapping trivial slicing or vector math in `useMemo`. Ensure that `useMemo` is strictly reserved for computationally heavy tasks.
+## 2025-02-18 - Loop swap to implicitly cache static axes
+**Learning:** Found that `sinusoidalPE` was nesting loops with the position `pos` on the outside and dimension index `i` on the inside. Since the computationally expensive `Math.pow(PE_BASE, i / halfD)` calculation is strictly a function of the inner dimension index `i`, it was being recalculated for every single position (O(pos * D) times).
+**Action:** When computing matrices with nested loops (like positional encodings), order the loops so that expensive calculations dependent on only one variable (e.g., `Math.pow` on dimension index) are in the outer loop, caching them implicitly and preventing redundant O(N*M) recalculations.
