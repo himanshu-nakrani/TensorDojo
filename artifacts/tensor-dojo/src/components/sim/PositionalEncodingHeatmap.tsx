@@ -37,14 +37,14 @@ export function PositionalEncodingHeatmap({ preset }: { preset?: PositionalEncod
   const [b, setB] = useState(4);
 
   const pe = useMemo(() => getPE(maxPos, d), [maxPos, d]);
-  const dotAB = useMemo(() => {
-    if (a >= pe.length || b >= pe.length) return 0;
+
+  // ⚡ Bolt Optimization: Avoid useMemo for computationally trivial operations like 1D vector math. The hook overhead is slower than recalculating inline.
+  let dotAB = 0;
+  if (a < pe.length && b < pe.length) {
     const va = pe[a]!;
     const vb = pe[b]!;
-    let s = 0;
-    for (let i = 0; i < va.length; i += 1) s += (va[i] as number) * (vb[i] as number);
-    return s;
-  }, [pe, a, b]);
+    for (let i = 0; i < va.length; i += 1) dotAB += (va[i] as number) * (vb[i] as number);
+  }
 
   const reset = () => {
     setMaxPos(preset?.maxPos ?? 16);
